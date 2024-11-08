@@ -4,7 +4,7 @@ import sys
 sys.path.append('../HDF5_BLS')
 
 from HDF5_BLS import HDF5_BLS
-
+pip
 import matplotlib.pyplot as plt
 from scipy import optimize, stats
 import numpy as np
