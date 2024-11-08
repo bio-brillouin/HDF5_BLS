@@ -1,12 +1,11 @@
 LICENSE
 README.md
 pyproject.toml
-setup.cfg
-setup.py
 HDF5_BLS/HDF5_BLS.py
 HDF5_BLS/__init__.py
 HDF5_BLS.egg-info/PKG-INFO
 HDF5_BLS.egg-info/SOURCES.txt
 HDF5_BLS.egg-info/dependency_links.txt
+HDF5_BLS.egg-info/requires.txt
 HDF5_BLS.egg-info/top_level.txt
 test/test.py

@@ -49,3 +49,4 @@ print(f"    - Offset: {poptAS[1]:.1f} ± {vAS[1]:.3f}")
 print(f"    - Shift: {poptAS[2]:.2f} ± {vAS[2]:.3f} GHz")
 print(f"    - Linewidth: {poptAS[3]:.2f} ± {vAS[3]:.3f} GHz")
 
+hdf5.save_hdf5_as("test/test.hdf5")
