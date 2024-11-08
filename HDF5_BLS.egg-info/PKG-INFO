@@ -1,20 +1,15 @@
 Metadata-Version: 2.1
 Name: HDF5_BLS
-Version: 0.0.3
-Summary: A package to convert Brillouin spectra to a HDF5 file
-Author-email: Pierre Bouvet <pierre.bouvet@meduniwien.ac.at>
-Project-URL: Homepage, https://github.com/PierreBouvet/HDF5_BLS
-Project-URL: Issues, https://github.com/PierreBouvet/HDF5_BLS/issues
-Classifier: Programming Language :: Python :: 3
-Classifier: License :: OSI Approved :: MIT License
-Classifier: Operating System :: OS Independent
-Requires-Python: >=3.8
+Version: 0.0.5
+Summary: A package to convert Brillouin spectra to a HDF5 file and use them
+Home-page: https://github.com/PierreBouvet/HDF5_BLS
+Author: Pierre Bouvet
+Author-email: pierre.bouvet@meduniwien.ac.at
 Description-Content-Type: text/markdown
-License-File: LICENSE
-Requires-Dist: numpy
-Requires-Dist: h5py
-Requires-Dist: csv
-Requires-Dist: pillow
+License-File: LICENSE.txt
+Requires-Dist: h5py>=3
+Requires-Dist: pillow>=11
+Requires-Dist: numpy>=2
 
 # HDF5_BLS
 

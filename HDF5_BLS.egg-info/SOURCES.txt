@@ -1,6 +1,6 @@
-LICENSE
+LICENSE.txt
 README.md
-pyproject.toml
+setup.py
 HDF5_BLS/HDF5_BLS.py
 HDF5_BLS/__init__.py
 HDF5_BLS.egg-info/PKG-INFO

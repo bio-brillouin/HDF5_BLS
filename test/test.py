@@ -1,7 +1,7 @@
-import sys
+# import sys
 
-# setting path
-sys.path.append('../HDF5_BLS')
+# # setting path
+# sys.path.append('../HDF5_BLS')
 
 from HDF5_BLS import HDF5_BLS
 import matplotlib.pyplot as plt

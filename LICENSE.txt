@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2024 MedUniVienna Elsayad Lab
+Copyright (c) 2024 Pierre Bouvet
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
