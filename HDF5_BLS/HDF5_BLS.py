@@ -2,7 +2,9 @@ import h5py
 import numpy as np
 import csv
 import os
-import matplotlib.pyplot as plt
+from PIL import Image
+
+BLS_HDF5_Version = "0.1"
 
 class HDF5_BLS:
     def __init__(self):
@@ -12,19 +14,20 @@ class HDF5_BLS:
         self.raw_data = None
         self.calibration_curve = None
         self.impulse_response = None
+        self.loader = Load_Data()
 
     def open_data(self, filepath):
         """Opens a raw data file based on its file extension and stores the filepath."""
         self.filepath = filepath
         _, file_extension = os.path.splitext(filepath)
-        loader = Load_Data()
+        
         
         if file_extension.lower() == ".dat":
             # Load .DAT file format data
-            self.raw_data, self.attributes = loader.load_dat_file(filepath)
-        elif file_extension.lower() == ".tiff":
+            self.raw_data, self.attributes = self.loader.load_dat_file(filepath)
+        elif file_extension.lower() == ".tif":
             # Load .TIFF file format data
-            self.raw_data = self.load_tiff_file(filepath)
+            self.raw_data, self.attributes = self.loader.load_tiff_file(filepath)
         else:
             raise ValueError(f"Unsupported file format: {file_extension}")
         
@@ -93,7 +96,6 @@ class HDF5_BLS:
 
 class Load_Data():
     def __init__(self):
-        print("Load Data created")
         pass
 
     def load_dat_file(self, filepath):
@@ -120,7 +122,7 @@ class Load_Data():
                 if line.strip().isdigit():
                     data.append(int(line.strip()))
         data = np.array(data)
-        attributes['FILEPROP.BLS_HDF5_Version'] = '0.1'
+        attributes['FILEPROP.BLS_HDF5_Version'] = BLS_HDF5_Version
         attributes['FILEPROP.Name'] = name
         attributes['MEASURE.Sample'] = metadata["Sample"]
         attributes['SPECTROMETER.Scanning_Strategy'] = "point_scanning"
@@ -134,5 +136,15 @@ class Load_Data():
         attributes['SPECTROMETER.Spectral_Resolution'] = str(spectral_resolution)
         return data, attributes
 
+    def load_tiff_file(self,filepath):
+        data = []
+        name, _ = os.path.splitext(filepath)
+        attributes = {}
 
+        im = Image.open(filepath)
+        data = np.array(im)
 
+        attributes['FILEPROP.BLS_HDF5_Version'] = BLS_HDF5_Version
+        attributes['FILEPROP.Name'] = name
+
+        return data, attributes

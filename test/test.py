@@ -16,6 +16,7 @@ filepath = 'test/test_data/GHOST_example.DAT'
 
 hdf5 = HDF5_BLS.HDF5_BLS()
 hdf5.open_data(filepath)
+
 scan_amplitude = float(hdf5.attributes["SPECTROMETER.Scan_Amplitude"])
 hdf5.define_abscissa(-scan_amplitude/2, scan_amplitude/2, hdf5.raw_data.shape[-1])
 
