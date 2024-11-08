@@ -18,7 +18,8 @@
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Features" href="features.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -40,16 +41,14 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">HDF5_BLS documentation</a><ul>
-<li><a class="reference internal" href="#features">Features</a></li>
-<li><a class="reference internal" href="#download">Download</a></li>
-<li><a class="reference internal" href="#example">Example</a></li>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="features.html">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example.html">Examples</a></li>
 </ul>
-</li>
-</ul>
-</div>
+
         </div>
       </div>
     </nav>
@@ -81,69 +80,41 @@
 <li><p><strong>.DAT</strong> files: spectra returned by the GHOST software</p></li>
 <li><p><strong>.TIF</strong> files: an image format that can be used to export 2D detector images.</p></li>
 </ul>
-<section id="features">
-<h2>Features<a class="headerlink" href="#features" title="Link to this heading"></a></h2>
-<ul class="simple">
-<li><p>Load raw BLS data from .DAT and .TIF files</p></li>
-<li><p>Define or import abscissa values</p></li>
-<li><p>Add calibration and impulse response curves to the HDF5 file</p></li>
-<li><p>Attach metadata attributes for experimental setup and measurement details</p></li>
-<li><p>Save data and metadata to an HDF5 file for standardized storage</p></li>
-</ul>
-</section>
-<section id="download">
-<h2>Download<a class="headerlink" href="#download" title="Link to this heading"></a></h2>
-<p>The library is conveniently stored on the Python Package Index and can be downloaded with this code:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">pip</span> <span class="n">install</span> <span class="n">HDF5_BLS</span>
-</pre></div>
-</div>
-</section>
-<section id="example">
-<h2>Example<a class="headerlink" href="#example" title="Link to this heading"></a></h2>
-<p>Here we provide a simple example where we import a spectrum, define an abscissa for the adta, add properties, a calibration and impulse response curve and finally export everything into a HDF5 file.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">HDF5_BLS</span> <span class="kn">import</span> <span class="n">HDF5_BLS</span>
-<span class="linenos"> 2</span>
-<span class="linenos"> 3</span><span class="c1"># Initialize the HDF5_BLS object</span>
-<span class="linenos"> 4</span><span class="n">bls</span> <span class="o">=</span> <span class="n">HDF5_BLS</span><span class="p">()</span>
-<span class="linenos"> 5</span>
-<span class="linenos"> 6</span><span class="c1"># Open raw data from a .DAT file and store it in the object</span>
-<span class="linenos"> 7</span><span class="n">bls</span><span class="o">.</span><span class="n">open_data</span><span class="p">(</span><span class="s2">&quot;example.DAT&quot;</span><span class="p">)</span>
-<span class="linenos"> 8</span>
-<span class="linenos"> 9</span><span class="c1"># Define an abscissa for the data</span>
-<span class="linenos">10</span><span class="n">bls</span><span class="o">.</span><span class="n">define_abscissa</span><span class="p">(</span><span class="n">min_val</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_val</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">nb_samples</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
-<span class="linenos">11</span>
-<span class="linenos">12</span><span class="c1"># Add metadata attributes describing the measurement and spectrometer settings</span>
-<span class="linenos">13</span><span class="n">bls</span><span class="o">.</span><span class="n">properties_data</span><span class="p">(</span>
-<span class="linenos">14</span>   <span class="n">MEASURE_Sample</span><span class="o">=</span><span class="s2">&quot;Water&quot;</span><span class="p">,</span>
-<span class="linenos">15</span>   <span class="n">MEASURE_Date</span><span class="o">=</span><span class="s2">&quot;2024-11-06&quot;</span><span class="p">,</span>
-<span class="linenos">16</span>   <span class="n">MEASURE_Exposure</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>                  <span class="c1"># in seconds</span>
-<span class="linenos">17</span>   <span class="n">MEASURE_Dimension</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-<span class="linenos">18</span>   <span class="n">SPECTROMETER_Type</span><span class="o">=</span><span class="s2">&quot;TFP&quot;</span><span class="p">,</span>
-<span class="linenos">19</span>   <span class="n">SPECTROMETER_Model</span><span class="o">=</span><span class="s2">&quot;JRS-TFP2&quot;</span><span class="p">,</span>
-<span class="linenos">20</span>   <span class="n">SPECTROMETER_Wavelength</span><span class="o">=</span><span class="mf">532.0</span><span class="p">,</span>          <span class="c1"># in nm</span>
-<span class="linenos">21</span>   <span class="n">SPECTROMETER_Illumination_Type</span><span class="o">=</span><span class="s2">&quot;CW&quot;</span><span class="p">,</span>
-<span class="linenos">22</span>   <span class="n">SPECTROMETER_Spectral_Resolution</span><span class="o">=</span><span class="mf">15.0</span><span class="p">,</span>  <span class="c1"># in MHz</span>
-<span class="linenos">23</span><span class="p">)</span>
-<span class="linenos">24</span>
-<span class="linenos">25</span><span class="c1"># Load and add a calibration curve from a .DAT file (optional)</span>
-<span class="linenos">26</span><span class="n">bls</span><span class="o">.</span><span class="n">open_calibration</span><span class="p">(</span><span class="s2">&quot;calibration_curve.dat&quot;</span><span class="p">)</span>
-<span class="linenos">27</span>
-<span class="linenos">28</span><span class="c1"># Load and add an impulse response curve (optional)</span>
-<span class="linenos">29</span><span class="n">bls</span><span class="o">.</span><span class="n">open_IR</span><span class="p">(</span><span class="s2">&quot;impulse_response.dat&quot;</span><span class="p">)</span>
-<span class="linenos">30</span>
-<span class="linenos">31</span><span class="c1"># Save the data, abscissa, and metadata attributes to an HDF5 file</span>
-<span class="linenos">32</span><span class="n">bls</span><span class="o">.</span><span class="n">save_hdf5_as</span><span class="p">(</span><span class="s2">&quot;output_data.h5&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
 <div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="features.html">Features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules.html#HDF5_BLS.HDF5_BLS"><code class="docutils literal notranslate"><span class="pre">HDF5_BLS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules.html#HDF5_BLS.Load_Data"><code class="docutils literal notranslate"><span class="pre">Load_Data</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="example.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="example.html#creation-of-hdf5-file-from-raw-data">Creation of HDF5 file from raw data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example.html#adding-properties-to-the-hdf5-file">Adding properties to the hdf5 file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example.html#adding-abscissa-to-the-data">Adding abscissa to the data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example.html#adding-calibration-curves-and-impulse-responses-to-the-data">Adding calibration curves and impulse responses to the data</a></li>
+</ul>
+</li>
+</ul>
 </div>
 </section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
 </section>
 
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="features.html" class="btn btn-neutral float-right" title="Features" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 
