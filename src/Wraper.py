@@ -3,14 +3,10 @@ import numpy as np
 import csv
 import os
 from PIL import Image
-from configparser import ConfigParser
 
 from Load_data import Load_Data
 
-config = ConfigParser()
-config.read(["src/config.ini", "config.ini"])
-
-BLS_HDF5_Version = config["General"]["version_hdf5_bls"]
+BLS_HDF5_Version = 0.1
 
 class Wraper:
     def __init__(self):

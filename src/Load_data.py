@@ -1,14 +1,10 @@
 
-from configparser import ConfigParser
 import numpy as np
 import os
 from PIL import Image
 import h5py
 
-config = ConfigParser()
-config.read(["src/config.ini", "config.ini"])
-
-BLS_HDF5_Version = config["General"]["version_hdf5_bls"]
+BLS_HDF5_Version = 0.1
 
 class Load_Data():
     def __init__(self):
