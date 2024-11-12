@@ -7,8 +7,7 @@ import os
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path('../src/').resolve()))
-
+sys.path.append('../src')
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
