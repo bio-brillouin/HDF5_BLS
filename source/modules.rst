@@ -1,18 +1,17 @@
 Modules
 =======
 
-HDF5_BLS
---------
-
-.. automodule:: HDF5_BLS
+.. autoclass:: Wraper::Wraper
    :members:
    :undoc-members:
    :show-inheritance:
 
-Load_Data
----------
+.. autoclass:: Load_data::Load_Data
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
-.. automodule:: Load_data
+.. autoclass:: Treat::Treat
    :members:
    :undoc-members:
    :show-inheritance:

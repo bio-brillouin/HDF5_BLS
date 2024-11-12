@@ -19,5 +19,6 @@ setup(
         "h5py >= 3",
         "pillow >= 11",
         "numpy >= 2"
+        "scipy >= 1.14"
         ],
 ) 

@@ -6,7 +6,7 @@ from PIL import Image
 import h5py
 
 config = ConfigParser()
-config.read(["HDF5_BLS/config.ini", "config.ini"])
+config.read(["src/config.ini", "config.ini"])
 
 BLS_HDF5_Version = config["General"]["version_hdf5_bls"]
 

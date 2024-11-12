@@ -8,13 +8,11 @@ from configparser import ConfigParser
 from Load_data import Load_Data
 
 config = ConfigParser()
-config.read(["HDF5_BLS/config.ini", "config.ini"])
+config.read(["src/config.ini", "config.ini"])
 
 BLS_HDF5_Version = config["General"]["version_hdf5_bls"]
 
-print(BLS_HDF5_Version)
-
-class HDF5_BLS:
+class Wraper:
     def __init__(self):
         self.filepath = None
         self.attributes = {}
@@ -29,8 +27,6 @@ class HDF5_BLS:
     
         Parameters
         ----------
-        self:
-
         min_val : float                           
             First point of the abscissa
         max_val : float                           
@@ -84,7 +80,7 @@ class HDF5_BLS:
         self.abscissa, _ = self.loader.load_general(filepath)
         return self.abscissa
   
-    def import_properties_data(self, filepath_csv):
+    def import_properties_data(self, filepath):
         """Imports properties from a CSV file into a dictionary.
     
         Parameters
@@ -97,7 +93,7 @@ class HDF5_BLS:
         self.attributes : dic
             The dictionnary containing all the attributes
         """
-        with open(filepath_csv, mode='r') as csv_file:
+        with open(filepath, mode='r') as csv_file:
             csv_reader = csv.reader(csv_file)
             for row in csv_reader:
                 key, value = row
@@ -189,7 +185,7 @@ class HDF5_BLS:
         self.attributes = kwargs
         return self.attributes
 
-    def save_hdf5_as(self, save_filepath):
+    def save_hdf5_as(self, filepath):
         """Saves the data and attributes to an HDF5 file.
     
         Parameters
@@ -203,7 +199,7 @@ class HDF5_BLS:
             True if the file was saved correctly, False if not
         """
         try:
-            with h5py.File(save_filepath, 'w') as hdf5_file:
+            with h5py.File(filepath, 'w') as hdf5_file:
                 # Save attributes
                 for key, value in self.attributes.items():
                     hdf5_file.attrs[key] = value
