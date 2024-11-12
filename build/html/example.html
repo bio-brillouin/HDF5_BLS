@@ -86,7 +86,7 @@
 <section id="creation-of-hdf5-file-from-raw-data">
 <h2>Creation of HDF5 file from raw data<a class="headerlink" href="#creation-of-hdf5-file-from-raw-data" title="Link to this heading"></a></h2>
 <p>If a file <em>“example.dat”</em> obtained with the GHOST software has to be imported, these are the commands we can use:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">Wraper</span> <span class="kn">import</span> <span class="n">Wraper</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">HDF5_BLS</span> <span class="kn">import</span> <span class="n">Wraper</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="c1"># Initialize the HDF5_BLS object</span>
 <span class="linenos"> 4</span><span class="n">wrp</span> <span class="o">=</span> <span class="n">Wraper</span><span class="p">()</span>
@@ -147,18 +147,20 @@
 <section id="treating-a-spectrum">
 <h2>Treating a spectrum<a class="headerlink" href="#treating-a-spectrum" title="Link to this heading"></a></h2>
 <p>When the data have been opened, it is possible to treat them with the “Treat” module</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="n">treat</span> <span class="o">=</span> <span class="n">Treat</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">HDF5_BLS</span> <span class="kn">import</span> <span class="n">Treat</span>
 <span class="linenos"> 2</span>
-<span class="linenos"> 3</span><span class="n">opt</span><span class="p">,</span> <span class="n">std</span> <span class="o">=</span> <span class="n">treat</span><span class="o">.</span><span class="n">fit_model</span><span class="p">(</span><span class="n">wrp</span><span class="o">.</span><span class="n">abscissa</span><span class="p">,</span>
-<span class="linenos"> 4</span>             <span class="n">wrp</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
-<span class="linenos"> 5</span>             <span class="mf">7.43</span><span class="p">,</span>
-<span class="linenos"> 6</span>             <span class="mi">1</span><span class="p">,</span>
-<span class="linenos"> 7</span>             <span class="n">normalize</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-<span class="linenos"> 8</span>             <span class="n">model</span> <span class="o">=</span> <span class="s2">&quot;Lorentz&quot;</span><span class="p">,</span>
-<span class="linenos"> 9</span>             <span class="n">fit_S_and_AS</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-<span class="linenos">10</span>             <span class="n">window_peak_find</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-<span class="linenos">11</span>             <span class="n">window_peak_fit</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
-<span class="linenos">12</span>             <span class="n">correct_elastic</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+<span class="linenos"> 3</span><span class="n">treat</span> <span class="o">=</span> <span class="n">Treat</span><span class="p">()</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="n">opt</span><span class="p">,</span> <span class="n">std</span> <span class="o">=</span> <span class="n">treat</span><span class="o">.</span><span class="n">fit_model</span><span class="p">(</span><span class="n">wrp</span><span class="o">.</span><span class="n">abscissa</span><span class="p">,</span>
+<span class="linenos"> 6</span>             <span class="n">wrp</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+<span class="linenos"> 7</span>             <span class="mf">7.43</span><span class="p">,</span>
+<span class="linenos"> 8</span>             <span class="mi">1</span><span class="p">,</span>
+<span class="linenos"> 9</span>             <span class="n">normalize</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="linenos">10</span>             <span class="n">model</span> <span class="o">=</span> <span class="s2">&quot;Lorentz&quot;</span><span class="p">,</span>
+<span class="linenos">11</span>             <span class="n">fit_S_and_AS</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="linenos">12</span>             <span class="n">window_peak_find</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+<span class="linenos">13</span>             <span class="n">window_peak_fit</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+<span class="linenos">14</span>             <span class="n">correct_elastic</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>This code will return the result of the fit (in the presented case, a Lorentzian lineshape) together with the standard deviation on the fitted parameters</p>
