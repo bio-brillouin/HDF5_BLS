@@ -11,7 +11,7 @@ If a file *"example.dat"* obtained with the GHOST software has to be imported, t
 .. code:: python
    :number-lines:
 
-   from Wraper import Wraper
+   from HDF5_BLS import Wraper
 
    # Initialize the HDF5_BLS object
    wrp = Wraper()
@@ -88,6 +88,8 @@ When the data have been opened, it is possible to treat them with the "Treat" mo
 
 .. code:: python
    :number-lines:
+
+   from HDF5_BLS import Treat
 
    treat = Treat()
 

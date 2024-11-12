@@ -7,7 +7,7 @@ with open(path.join(working_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='HDF5_BLS', # name of pack which will be package dir below project
-    version='0.0.6',
+    version='0.0.8',
     url='https://github.com/PierreBouvet/HDF5_BLS',
     author='Pierre Bouvet',
     author_email='pierre.bouvet@meduniwien.ac.at',
@@ -18,7 +18,7 @@ setup(
     install_requires=[
         "h5py >= 3",
         "pillow >= 11",
-        "numpy >= 2"
+        "numpy >= 2",
         "scipy >= 1.14"
         ],
 ) 
