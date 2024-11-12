@@ -20,11 +20,3 @@ HDF5_BLS is a Python library for handling Brillouin Light Scattering (BLS) data 
    modules
    example
 
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-   
