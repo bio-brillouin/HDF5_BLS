@@ -53,9 +53,7 @@ class Treat():
     def fit_model(self, frequency, data, center_frequency, linewidth, normalize = True, model = "Lorentz", fit_S_and_AS = True, window_peak_find = 1, window_peak_fit = 3, correct_elastic = False):
         r"""Fitting function that performs a fit on the selected spectrum and returns the fitted values and the standard deviations on the fitted parameters. When 2 peaks are fitted, the standard deviation returned by the function corresponds to the standard deviation of two independent events, that is 
         
-        .. math:: 
-        
-        std_{avg} = \\sqrt{std_S^2 + std_{AS}^2}
+        .. math:: std_{avg} = \\sqrt{std_S^2 + std_{AS}^2}
 
         Parameters
         ----------
