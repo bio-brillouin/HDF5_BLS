@@ -8,9 +8,11 @@ from configparser import ConfigParser
 from Load_data import Load_Data
 
 config = ConfigParser()
-config.read("HDF5_BLS/config.ini", "config.ini")
+config.read(["HDF5_BLS/config.ini", "config.ini"])
 
-BLS_HDF5_Version = config["Genereal Parameters"]["version_hdf5_bls"]
+BLS_HDF5_Version = config["General"]["version_hdf5_bls"]
+
+print(BLS_HDF5_Version)
 
 class HDF5_BLS:
     def __init__(self):
