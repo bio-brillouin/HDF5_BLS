@@ -4,7 +4,7 @@ import csv
 import os
 from PIL import Image
 
-from src.Load_data import Load_Data
+from Load_data import Load_Data
 
 BLS_HDF5_Version = 0.1
 
