@@ -4,7 +4,7 @@ import csv
 import os
 from PIL import Image
 
-from Load_data import Load_Data
+from src.Load_data import Load_Data
 
 BLS_HDF5_Version = 0.1
 
@@ -18,7 +18,7 @@ class Wraper:
         self.impulse_response = None
         self.loader = Load_Data()
 
-    def define_abscissa(self, min_val, max_val, nb_samples):
+    def define_abscissa_1D(self, min_val, max_val, nb_samples):
         """Defines a new abscissa axis based on min, max values, and number of samples.
     
         Parameters
@@ -39,12 +39,12 @@ class Wraper:
         return self.abscissa
 
     def export_properties_data(self, filepath_csv):
-        """Exports properties to a CSV file.
+        """Exports properties to a CSV file. This csv is meant to be made once to store all the properties of the spectrometer and then minimally adjusted to the sample being measured.
     
         Parameters
         ----------
         filepath_csv : str                           
-            The filepath to the csv storing the properties of the measure. This csv is meant to be made once to store all the properties of the spectrometer and then minimally adjusted to the sample being measured.
+            The filepath to the csv storing the properties of the measure. 
         
         Returns
         -------
