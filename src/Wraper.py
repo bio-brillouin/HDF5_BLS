@@ -5,9 +5,10 @@ import os
 from PIL import Image
 
 try:
-    from src.Load_data import Load_Data
-except:
     from Load_data import Load_Data
+except:
+    from src.Load_data import Load_Data
+    
 
 BLS_HDF5_Version = 0.1
 
