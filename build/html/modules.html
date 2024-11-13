@@ -48,7 +48,7 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Modules</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#Wraper.Wraper"><code class="docutils literal notranslate"><span class="pre">Wraper</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Wraper.Wraper.define_abscissa"><code class="docutils literal notranslate"><span class="pre">Wraper.define_abscissa()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Wraper.Wraper.define_abscissa_1D"><code class="docutils literal notranslate"><span class="pre">Wraper.define_abscissa_1D()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Wraper.Wraper.export_properties_data"><code class="docutils literal notranslate"><span class="pre">Wraper.export_properties_data()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Wraper.Wraper.import_abscissa"><code class="docutils literal notranslate"><span class="pre">Wraper.import_abscissa()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Wraper.Wraper.import_properties_data"><code class="docutils literal notranslate"><span class="pre">Wraper.import_properties_data()</span></code></a></li>
@@ -71,6 +71,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#Treat.Treat.fit_model"><code class="docutils literal notranslate"><span class="pre">Treat.fit_model()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Treat.Treat.normalize_data"><code class="docutils literal notranslate"><span class="pre">Treat.normalize_data()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Treat.Treat.remove_offset"><code class="docutils literal notranslate"><span class="pre">Treat.remove_offset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Treat.Treat.resample"><code class="docutils literal notranslate"><span class="pre">Treat.resample()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -109,8 +110,8 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Wraper</span></span><a class="headerlink" href="#Wraper.Wraper" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
-<dt class="sig sig-object py" id="Wraper.Wraper.define_abscissa">
-<span class="sig-name descname"><span class="pre">define_abscissa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">min_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb_samples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Wraper.Wraper.define_abscissa" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="Wraper.Wraper.define_abscissa_1D">
+<span class="sig-name descname"><span class="pre">define_abscissa_1D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">min_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb_samples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Wraper.Wraper.define_abscissa_1D" title="Link to this definition"></a></dt>
 <dd><p>Defines a new abscissa axis based on min, max values, and number of samples.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -132,10 +133,10 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="Wraper.Wraper.export_properties_data">
 <span class="sig-name descname"><span class="pre">export_properties_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath_csv</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Wraper.Wraper.export_properties_data" title="Link to this definition"></a></dt>
-<dd><p>Exports properties to a CSV file.</p>
+<dd><p>Exports properties to a CSV file. This csv is meant to be made once to store all the properties of the spectrometer and then minimally adjusted to the sample being measured.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>filepath_csv</strong> (<em>str</em>) – The filepath to the csv storing the properties of the measure. This csv is meant to be made once to store all the properties of the spectrometer and then minimally adjusted to the sample being measured.</p>
+<dd class="field-odd"><p><strong>filepath_csv</strong> (<em>str</em>) – The filepath to the csv storing the properties of the measure.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>boolean</strong> – True if the file was exported properly, false if an error occured.</p>
@@ -368,6 +369,7 @@
 <dt class="sig sig-object py" id="Treat.Treat">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Treat</span></span><a class="headerlink" href="#Treat.Treat" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class is meant to offer a standard way of treating the data. Please refer to the dedicated notebook (found on GitHub) to find explicit descriptions of the algorithms.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="Treat.Treat.fit_model">
 <span class="sig-name descname"><span class="pre">fit_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequency</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_frequency</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linewidth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Lorentz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit_S_and_AS</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_peak_find</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_peak_fit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correct_elastic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Treat.Treat.fit_model" title="Link to this definition"></a></dt>
@@ -432,6 +434,27 @@
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Treat.Treat.resample">
+<span class="sig-name descname"><span class="pre">resample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequency</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Treat.Treat.resample" title="Link to this definition"></a></dt>
+<dd><p>Resamples the frequency and data arrays by creating a new frequency array where samples are equidistant</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frequency</strong> (<em>numpy array</em>) – The frequency array used for resampling with samples of same widths</p></li>
+<li><p><strong>data</strong> (<em>numpy array</em>) – The data array that will be resampled following the resampling of the frequency axis. The resampling on the data is done by locally fitting a quadratic polynomial.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>new_frequency</strong> (<em>numpy array</em>) – The resampled frequency array</p></li>
+<li><p><strong>new_data</strong> (<em>numpy array</em>) – The resampled data array</p></li>
+</ul>
+</p>
 </dd>
 </dl>
 </dd></dl>

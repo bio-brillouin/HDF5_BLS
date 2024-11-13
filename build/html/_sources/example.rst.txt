@@ -56,7 +56,7 @@ If we now look at a ranges of measures where we monitor a physical evolution and
    :number-lines:
 
    # Define an abscissa for the data
-   wrp.define_abscissa(min_val=0, max_val=100, nb_samples=1000)
+   wrp.define_abscissa_1D(min_val=0, max_val=100, nb_samples=1000)
 
 Or just open the file containing the independent measures (for example a measure of temperature in a sample):
 
