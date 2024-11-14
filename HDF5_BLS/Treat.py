@@ -10,7 +10,9 @@ class TreatmentError(Exception):
 
 
 class Treat():
-    """This class is meant to offer a standard way of treating the data. Please refer to the dedicated 'notebook <https://github.com/PierreBouvet/HDF5_BLS/blob/main/notebooks/Treat.ipynb>' to find explicit descriptions of the algorithms.
+    """This class is meant to offer a standard way of treating the data. Please refer to the dedicated `notebook`_. to find explicit descriptions of the algorithms.
+
+    .. _notebook: https://github.com/PierreBouvet/HDF5_BLS/blob/main/notebooks/Treat.ipynb
     """
     def __init__(self):
         self.treat_steps = []
