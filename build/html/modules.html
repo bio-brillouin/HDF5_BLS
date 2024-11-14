@@ -72,6 +72,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#Treat.Treat.normalize_data"><code class="docutils literal notranslate"><span class="pre">Treat.normalize_data()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Treat.Treat.remove_offset"><code class="docutils literal notranslate"><span class="pre">Treat.remove_offset()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Treat.Treat.resample"><code class="docutils literal notranslate"><span class="pre">Treat.resample()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Treat.Treat.wndw_data_from_freq"><code class="docutils literal notranslate"><span class="pre">Treat.wndw_data_from_freq()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -372,7 +373,7 @@
 <p>This class is meant to offer a standard way of treating the data. Please refer to the dedicated notebook (found on GitHub) to find explicit descriptions of the algorithms.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="Treat.Treat.fit_model">
-<span class="sig-name descname"><span class="pre">fit_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequency</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_frequency</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linewidth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Lorentz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit_S_and_AS</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_peak_find</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_peak_fit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correct_elastic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Treat.Treat.fit_model" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">fit_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequency</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_frequency</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linewidth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Lorentz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit_S_and_AS</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_peak_find</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_peak_fit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correct_elastic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">IR_wndw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Treat.Treat.fit_model" title="Link to this definition"></a></dt>
 <dd><p>Fitting function that performs a fit on the selected spectrum and returns the fitted values and the standard deviations on the fitted parameters. When 2 peaks are fitted, the standard deviation returned by the function corresponds to the standard deviation of two independent events, that is std_{avg} = sqrt{std_{S}^2 + std_{AS}^2}</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -387,6 +388,7 @@
 <li><p><strong>window_peak_find</strong> (<em>float</em><em>, </em><em>optional</em>) – The width in GHz where to find the peak, by default 1GHz</p></li>
 <li><p><strong>window_peak_fit</strong> (<em>float</em><em>, </em><em>optional</em>) – The width in GHz of the windo used to fit the peak, by default 3 GHz</p></li>
 <li><p><strong>correct_elastic</strong> (<em>bool</em><em>, </em><em>optional</em>) – Wether to correct for the presence of an elastic peak by setting adding a linear function to the model, by default False</p></li>
+<li><p><strong>wndw_IR</strong> (<em>2-tuple</em><em>, </em><em>optional</em>) – The position on the spectrum where an impulse response can be taken</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -453,6 +455,29 @@
 <dd class="field-even"><p><ul class="simple">
 <li><p><strong>new_frequency</strong> (<em>numpy array</em>) – The resampled frequency array</p></li>
 <li><p><strong>new_data</strong> (<em>numpy array</em>) – The resampled data array</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Treat.Treat.wndw_data_from_freq">
+<span class="sig-name descname"><span class="pre">wndw_data_from_freq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Treat.Treat.wndw_data_from_freq" title="Link to this definition"></a></dt>
+<dd><p>Returns a window of the data and the frequency arrays corresponding to a given region of the frequency array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy array</em>) – The raw data array</p></li>
+<li><p><strong>freq</strong> (<em>numpy array</em>) – The frequency array</p></li>
+<li><p><strong>fmin</strong> (<em>float</em>) – The left side of the window. Note that if the window is symetric, fmax is not needed and -fmin will be taken as the right side of the window</p></li>
+<li><p><strong>fmax</strong> (<em>_type_</em><em>, </em><em>optional</em>) – The right side of the window. Optional when the window is symetric, hence fmax = -fmin, by default None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>numpy array</em> – The windowed frequency</p></li>
+<li><p><em>numpy array</em> – The windowed data</p></li>
 </ul>
 </p>
 </dd>
