@@ -11,17 +11,20 @@ wrp.define_abscissa_1D(-scan_amplitude/2, scan_amplitude/2, wrp.data.shape[-1])
 
 treat = Treat()
 
-opt, std = treat.fit_model(wrp.abscissa,
-                wrp.data,
-                7.43,
-                1,
-                normalize = True, 
-                model = "Lorentz", 
-                fit_S_and_AS = True, 
-                window_peak_find = 1, 
-                window_peak_fit = 3, 
-                correct_elastic = True,
-                IR_wndw = [-0.5,0.5])
+for i in range(100):
+    opt, std = treat.fit_model(wrp.abscissa,
+                    wrp.data,
+                    7.43,
+                    1,
+                    normalize = True, 
+                    model = "Lorentz", 
+                    fit_S_and_AS = True, 
+                    window_peak_find = 1, 
+                    window_peak_fit = 3, 
+                    correct_elastic = True,
+                    IR_wndw = [-0.5,0.5])
 
-print(opt, std)
+# print(opt, std)
+
+# for e in treat.treat_steps: print(e)
 

@@ -93,15 +93,24 @@ When the data have been opened, it is possible to treat them with the "Treat" mo
 
    treat = Treat()
 
-   opt, std = treat.fit_model(wrp.abscissa,
-                wrp.data,
-                7.43,
-                1,
-                normalize = True, 
-                model = "Lorentz", 
-                fit_S_and_AS = True, 
-                window_peak_find = 1, 
-                window_peak_fit = 3, 
-                correct_elastic = False)
+   opt, std = treat.fit_model(wrp.abscissa, # The frequency axis of the data
+                              wrp.data, # The data
+                              7.43, # The estimated shift position
+                              1, # The estimated linewidth
+                              normalize = True, # A parameter to normalize peaks beofre fitting them
+                              model = "Lorentz", # The choice of the model (in this case, a Lorentzian lineshape)
+                              fit_S_and_AS = True, # Fitting will be performed on both the Stokes and anti-Stokes peaks
+                              window_peak_find = 1, # The window in GHz where to find the peaks
+                              window_peak_fit = 3, # The window in GHz in which to fit the peaks
+                              correct_elastic = True, # A parameter to correct for the influence of the elastic peak on the signal
+                              IR_wndw = [-0.5,0.5]) # The position of the elastic peak on the spectrum, used as the impulse response function of the instrument
 
-This code will return the result of the fit (in the presented case, a Lorentzian lineshape) together with the standard deviation on the fitted parameters
+This code will return the result of the fit (in the presented case, a Lorentzian lineshape) together with the standard deviation on the fitted parameters.
+Note that all the steps performed during this treatment can be reviewed by accessing the dedicated list:
+
+.. code:: python
+   :number-lines:
+
+   treat.steps
+
+Note also that any errors during treatment will result in a TreatmentError with a description of the error for debugging.

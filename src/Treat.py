@@ -3,6 +3,12 @@ from scipy import optimize
 
 Treat_version = 0.1
 
+
+class TreatmentError(Exception):
+    def __init__(self, message):
+        super().__init__(message)
+
+
 class Treat():
     """This class is meant to offer a standard way of treating the data. Please refer to the dedicated notebook (found on GitHub) to find explicit descriptions of the algorithms.
     """
@@ -10,8 +16,8 @@ class Treat():
         self.treat_steps = []
         self.version = Treat_version
     
-    def fit_model(self, frequency, data, center_frequency, linewidth, normalize = True, model = "Lorentz", fit_S_and_AS = True, window_peak_find = 1, window_peak_fit = 3, correct_elastic = False, IR_wndw = None):
-        """Fitting function that performs a fit on the selected spectrum and returns the fitted values and the standard deviations on the fitted parameters. When 2 peaks are fitted, the standard deviation returned by the function corresponds to the standard deviation of two independent events, that is std_{avg} = sqrt{std_{S}^2 + std_{AS}^2}
+    def fit_model(self, frequency, data, center_frequency, linewidth, normalize = True, model = "Lorentz", fit_S_and_AS = True, window_peak_find = 1, window_peak_fit = 3, correct_elastic = False, IR_wndw = None, freq_IR = None, data_IR = None):
+        """Fitting function that performs a fit on the selected spectrum and returns the fitted values and the standard deviations on the fitted parameters. When 2 peaks are fitted, the standard deviation returned by the function corresponds to the standard deviation of two independent events, that is std_{avg} = sqrt{std_{S}^2 + std_{AS}^2}. This function also takes into account the impulse response of the spectrometer when applying the fit, which therefore returns a 
 
         Parameters
         ----------
@@ -36,7 +42,11 @@ class Treat():
         correct_elastic : bool, optional
             Wether to correct for the presence of an elastic peak by setting adding a linear function to the model, by default False
         wndw_IR : 2-tuple, optional
-            The position on the spectrum where an impulse response can be taken
+            If the impulse response can be recovered from the spectrum, the corresponding window on the frequency axis where to recover the response
+        freq_IR : numpy array, optional
+            The frequency of the impulse response
+        data_IR : numpy array, optional
+            The data of the impulse response
 
         Returns
         -------
@@ -45,52 +55,73 @@ class Treat():
         variance: tuple
             The returned variance on the fitted parameters (offset, amplitude, center_frequency, linewidth)
         """
+        # Reinitialize the list used to store the treatment steps
+        self.treat_steps = []
+
+        # Resample the data so that the frequency axis has a constant step size
         frequency, data = self.resample(frequency, data)
-        if not IR_wndw is None: _, IR = self.wndw_data_from_freq(data, frequency,IR_wndw[0],IR_wndw[1])
+        
+        # Extract the impulse response
+        convolution = False
+        if not IR_wndw is None: 
+            _, IR = self.wndw_data_from_freq(data, frequency,IR_wndw[0],IR_wndw[1])
+            IR = IR - min(IR) # Rough removal of any offset
+            IR = IR/max(IR) # Rough normalization of the peak
+            convolution = True
+            self.treat_steps.append(f"Add convolution by the impulse response in the fitting function")
+        elif not freq_IR is None:
+            assert freq_IR.size == data_IR.size, "the drequency array and data array fro the impulse response are not of same size"
+            wndw = np.where((frequency>=min(freq_IR))&(frequency<=max(freq_IR)))
+            _, IR = self.resample(freq_IR, data_IR, frequency[wndw])
+            IR = IR - min(IR) # Rough removal of any offset
+            IR = IR/max(IR) # Rough normalization of the peak
+            convolution = True
+            self.treat_steps.append(f"Add convolution by the impulse response in the fitting function")
+        else:
+            self.treat_steps.append(f"No convolution by the impulse response in the fitting function were added")
 
         # Define the fitting functions taking into account the convolutions.
         def lorentzian(nu, b, a, nu0, gamma):
             func = b + a*(gamma/2)**2/((nu-nu0)**2+(gamma/2)**2)
-            if not IR_wndw is None:
-                return np.convolve(func, IR, "same")
+            if convolution: return np.convolve(func, IR, "same")
             return func
         
         def lorentzian_elastic(nu, ae, be, a, nu0, gamma):
             func =  be + ae*nu + a*(gamma/2)**2/((nu-nu0)**2+(gamma/2)**2)
-            if not IR_wndw is None:
-                return np.convolve(func, IR, "same")
+            if convolution: return np.convolve(func, IR, "same")
             return func
         
         def DHO(nu, b, a, nu0, gamma):
             func = b + a*(gamma*nu0**2)/((nu**2-nu0**2)**2+gamma*nu0**2)
-            if not IR_wndw is None:
-                return np.convolve(func, IR, "same")
+            if convolution: return np.convolve(func, IR, "same")
             return func
         
         def DHO_elastic(nu, ae, be, a, nu0, gamma):
             func = be + ae*nu + a*(gamma*nu0**2)/((nu**2-nu0**2)**2+gamma*nu0**2)
-            if not IR_wndw is None:
-                return np.convolve(func, IR, "same")
+            if convolution: return np.convolve(func, IR, "same")
             return func
         
         # Refine the position of the peak with a quadratic polynomial fit
-        if fit_S_and_AS:
-            center_frequency = abs(center_frequency)
-            window_peak_find_S = np.where(np.abs(frequency+center_frequency)<window_peak_find/2)
-            pol_temp_S = np.polyfit(frequency[window_peak_find_S], data[window_peak_find_S],2)
-            center_frequency_S = -pol_temp_S[1]/(2*pol_temp_S[0])
-            window_peak_find_AS = np.where(np.abs(frequency-center_frequency)<window_peak_find/2)
-            pol_temp_AS = np.polyfit(frequency[window_peak_find_AS], data[window_peak_find_AS],2)
-            center_frequency_AS = -pol_temp_AS[1]/(2*pol_temp_AS[0])
+        try:
+            if fit_S_and_AS:
+                center_frequency = abs(center_frequency)
+                window_peak_find_S = np.where(np.abs(frequency+center_frequency)<window_peak_find/2)
+                pol_temp_S = np.polyfit(frequency[window_peak_find_S], data[window_peak_find_S],2)
+                center_frequency_S = -pol_temp_S[1]/(2*pol_temp_S[0])
+                window_peak_find_AS = np.where(np.abs(frequency-center_frequency)<window_peak_find/2)
+                pol_temp_AS = np.polyfit(frequency[window_peak_find_AS], data[window_peak_find_AS],2)
+                center_frequency_AS = -pol_temp_AS[1]/(2*pol_temp_AS[0])
 
-            self.treat_steps.append(f"Windowing of Stokes and anti-Stokes peaks around {center_frequency_S:.2f}GHz and {center_frequency_AS:.2f}GHz respectively")
+                self.treat_steps.append(f"Windowing of Stokes and anti-Stokes peaks around {center_frequency_S:.2f}GHz and {center_frequency_AS:.2f}GHz respectively")
 
-            center_frequency = center_frequency_S
-        else:
-            window_peak_find = np.where(np.abs(frequency-center_frequency)<window_peak_find/2)
-            pol_temp = np.polyfit(frequency[window_peak_find], data[window_peak_find],2)
-            center_frequency = -pol_temp[1]/(2*pol_temp[0])
-            self.treat_steps.append(f"Windowing of a single peak around {center_frequency:.2f}GHz ")
+                center_frequency = center_frequency_S
+            else:
+                window_peak_find = np.where(np.abs(frequency-center_frequency)<window_peak_find/2)
+                pol_temp = np.polyfit(frequency[window_peak_find], data[window_peak_find],2)
+                center_frequency = -pol_temp[1]/(2*pol_temp[0])
+                self.treat_steps.append(f"Windowing of a single peak around {center_frequency:.2f}GHz ")
+        except:
+            raise TreatmentError("The windowing of the peaks before treatment failed.")
 
         # Normalize the data is not already done
         if normalize: 
@@ -157,6 +188,7 @@ class Treat():
                                             p0)
             
             std = np.sqrt(np.diag(pcov))
+        self.treat_steps.append(treat_step)
 
         return popt, std
 
@@ -234,7 +266,7 @@ class Treat():
         self.treat_steps.append(f"Removing data's offset by averaging the data value around the point of lowest intensity")
         return data_treat
 
-    def resample(self, frequency, data):
+    def resample(self, frequency, data, new_frequency = None):
         """Resamples the frequency and data arrays by creating a new frequency array where samples are equidistant
 
         Parameters
@@ -243,6 +275,8 @@ class Treat():
             The frequency array used for resampling with samples of same widths
         data : numpy array
             The data array that will be resampled following the resampling of the frequency axis. The resampling on the data is done by locally fitting a quadratic polynomial.
+        new_frequency : numpy array, optional
+            A new frequency array to resample the data on.
 
         Returns
         -------
@@ -252,8 +286,9 @@ class Treat():
             The resampled data array
         """
         # Creates the new arrays
-        new_frequency = np.linspace(frequency[0], frequency[-1], frequency.size)
-        new_data = np.zeros(frequency.size)
+        if new_frequency is None: 
+            new_frequency = np.linspace(frequency[0], frequency[-1], frequency.size)
+        new_data = np.zeros(new_frequency.size)
 
         # Resampling by fitting a quadratic polynomial
         for i,f in enumerate(new_frequency):
