@@ -56,7 +56,7 @@ If we now look at a ranges of measures where we monitor a physical evolution and
    :number-lines:
 
    # Define an abscissa for the data
-   wrp.define_abscissa_1D(min_val=0, max_val=100, nb_samples=1000)
+   wrp.define_frequency_1D(min_val=0, max_val=100, nb_samples=1000)
 
 Or just open the file containing the independent measures (for example a measure of temperature in a sample):
 
@@ -64,7 +64,7 @@ Or just open the file containing the independent measures (for example a measure
    :number-lines:
 
    # Load an abscissa file for the data
-   wrp.import_abscissa("values.dat")
+   wrp.import_frequency("values.dat")
 
 Adding calibration curves and impulse responses to the data
 -----------------------------------------------------------
@@ -93,7 +93,7 @@ When the data have been opened, it is possible to treat them with the "Treat" mo
 
    treat = Treat()
 
-   opt, std = treat.fit_model(wrp.abscissa, # The frequency axis of the data
+   opt, std = treat.fit_model(wrp.frequency, # The frequency axis of the data
                               wrp.data, # The data
                               7.43, # The estimated shift position
                               1, # The estimated linewidth

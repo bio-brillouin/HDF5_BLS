@@ -124,12 +124,12 @@
 <h2>Adding abscissa to the data<a class="headerlink" href="#adding-abscissa-to-the-data" title="Link to this heading"></a></h2>
 <p>If we now look at a ranges of measures where we monitor a physical evolution and assess the changes in the BLS spectra. We can input the abscissa in our HDF5 file either by specifying the ranges we were looking at (for example if we were moving the sample at a constant speed during measure):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="c1"># Define an abscissa for the data</span>
-<span class="linenos">2</span><span class="n">wrp</span><span class="o">.</span><span class="n">define_abscissa_1D</span><span class="p">(</span><span class="n">min_val</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_val</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">nb_samples</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="linenos">2</span><span class="n">wrp</span><span class="o">.</span><span class="n">define_frequency_1D</span><span class="p">(</span><span class="n">min_val</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_val</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">nb_samples</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Or just open the file containing the independent measures (for example a measure of temperature in a sample):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="c1"># Load an abscissa file for the data</span>
-<span class="linenos">2</span><span class="n">wrp</span><span class="o">.</span><span class="n">import_abscissa</span><span class="p">(</span><span class="s2">&quot;values.dat&quot;</span><span class="p">)</span>
+<span class="linenos">2</span><span class="n">wrp</span><span class="o">.</span><span class="n">import_frequency</span><span class="p">(</span><span class="s2">&quot;values.dat&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -151,7 +151,7 @@
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="n">treat</span> <span class="o">=</span> <span class="n">Treat</span><span class="p">()</span>
 <span class="linenos"> 4</span>
-<span class="linenos"> 5</span><span class="n">opt</span><span class="p">,</span> <span class="n">std</span> <span class="o">=</span> <span class="n">treat</span><span class="o">.</span><span class="n">fit_model</span><span class="p">(</span><span class="n">wrp</span><span class="o">.</span><span class="n">abscissa</span><span class="p">,</span> <span class="c1"># The frequency axis of the data</span>
+<span class="linenos"> 5</span><span class="n">opt</span><span class="p">,</span> <span class="n">std</span> <span class="o">=</span> <span class="n">treat</span><span class="o">.</span><span class="n">fit_model</span><span class="p">(</span><span class="n">wrp</span><span class="o">.</span><span class="n">frequency</span><span class="p">,</span> <span class="c1"># The frequency axis of the data</span>
 <span class="linenos"> 6</span>                           <span class="n">wrp</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="c1"># The data</span>
 <span class="linenos"> 7</span>                           <span class="mf">7.43</span><span class="p">,</span> <span class="c1"># The estimated shift position</span>
 <span class="linenos"> 8</span>                           <span class="mi">1</span><span class="p">,</span> <span class="c1"># The estimated linewidth</span>

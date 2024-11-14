@@ -48,9 +48,9 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Modules</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#Wraper.Wraper"><code class="docutils literal notranslate"><span class="pre">Wraper</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Wraper.Wraper.define_abscissa_1D"><code class="docutils literal notranslate"><span class="pre">Wraper.define_abscissa_1D()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Wraper.Wraper.define_frequency_1D"><code class="docutils literal notranslate"><span class="pre">Wraper.define_frequency_1D()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Wraper.Wraper.export_properties_data"><code class="docutils literal notranslate"><span class="pre">Wraper.export_properties_data()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Wraper.Wraper.import_abscissa"><code class="docutils literal notranslate"><span class="pre">Wraper.import_abscissa()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Wraper.Wraper.import_frequency"><code class="docutils literal notranslate"><span class="pre">Wraper.import_frequency()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Wraper.Wraper.import_properties_data"><code class="docutils literal notranslate"><span class="pre">Wraper.import_properties_data()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Wraper.Wraper.open_IR"><code class="docutils literal notranslate"><span class="pre">Wraper.open_IR()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Wraper.Wraper.open_calibration"><code class="docutils literal notranslate"><span class="pre">Wraper.open_calibration()</span></code></a></li>
@@ -111,19 +111,19 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Wraper</span></span><a class="headerlink" href="#Wraper.Wraper" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
-<dt class="sig sig-object py" id="Wraper.Wraper.define_abscissa_1D">
-<span class="sig-name descname"><span class="pre">define_abscissa_1D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">min_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb_samples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Wraper.Wraper.define_abscissa_1D" title="Link to this definition"></a></dt>
-<dd><p>Defines a new abscissa axis based on min, max values, and number of samples.</p>
+<dt class="sig sig-object py" id="Wraper.Wraper.define_frequency_1D">
+<span class="sig-name descname"><span class="pre">define_frequency_1D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">min_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb_samples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Wraper.Wraper.define_frequency_1D" title="Link to this definition"></a></dt>
+<dd><p>Defines a frequency axis based on min, max values, and number of samples. Usable when the sampling frequency is precisely known, in TFP spectrometers for example.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>min_val</strong> (<em>float</em>) – First point of the abscissa</p></li>
-<li><p><strong>max_val</strong> (<em>float</em>) – Last point of the abscissa</p></li>
-<li><p><strong>nb_sambles</strong> (<em>float</em>) – Number of samples in the abscissa</p></li>
+<li><p><strong>min_val</strong> (<em>float</em>) – Frequency value of the first channel</p></li>
+<li><p><strong>max_val</strong> (<em>float</em>) – Frequency value of the last channel</p></li>
+<li><p><strong>nb_sambles</strong> (<em>float</em>) – Number of samples in the frequency array</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>self.abscissa</strong> – The abscissa values</p>
+<dd class="field-even"><p><strong>self.frequency</strong> – The frequency array</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>numpy array</p>
@@ -149,15 +149,15 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="Wraper.Wraper.import_abscissa">
-<span class="sig-name descname"><span class="pre">import_abscissa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Wraper.Wraper.import_abscissa" title="Link to this definition"></a></dt>
-<dd><p>Imports abscissa points from a file and returns the associated array.</p>
+<dt class="sig sig-object py" id="Wraper.Wraper.import_frequency">
+<span class="sig-name descname"><span class="pre">import_frequency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Wraper.Wraper.import_frequency" title="Link to this definition"></a></dt>
+<dd><p>Imports frequency points from a file and returns the associated array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – The filepath to the values of the abscissa</p>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – The filepath to the values of the frequency array</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>self.abscissa</strong> – The numpy array corresponding to the abscissa being imported</p>
+<dd class="field-even"><p><strong>self.frequency</strong> – The numpy array corresponding to the frequency being imported</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>numpy array</p>

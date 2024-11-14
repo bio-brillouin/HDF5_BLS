@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: HDF5_BLS
-Version: 0.0.8
+Version: 0.0.9
 Summary: A package to convert Brillouin spectra to a HDF5 file and use them
 Home-page: https://github.com/PierreBouvet/HDF5_BLS
 Author: Pierre Bouvet

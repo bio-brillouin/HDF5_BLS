@@ -7,7 +7,7 @@ from PIL import Image
 try:
     from Load_data import Load_Data
 except:
-    from src.Load_data import Load_Data
+    from HDF5_BLS.Load_data import Load_Data
     
 
 BLS_HDF5_Version = 0.1
@@ -16,31 +16,31 @@ class Wraper:
     def __init__(self):
         self.filepath = None
         self.attributes = {}
-        self.abscissa = None
+        self.frequency = None
         self.raw_data = None
         self.calibration_curve = None
         self.impulse_response = None
         self.loader = Load_Data()
 
-    def define_abscissa_1D(self, min_val, max_val, nb_samples):
-        """Defines a new abscissa axis based on min, max values, and number of samples.
+    def define_frequency_1D(self, min_val, max_val, nb_samples):
+        """Defines a frequency axis based on min, max values, and number of samples. Usable when the sampling frequency is precisely known, in TFP spectrometers for example.
     
         Parameters
         ----------
         min_val : float                           
-            First point of the abscissa
+            Frequency value of the first channel
         max_val : float                           
-            Last point of the abscissa
+            Frequency value of the last channel
         nb_sambles : float                           
-            Number of samples in the abscissa
+            Number of samples in the frequency array
         
         Returns
         -------
-        self.abscissa : numpy array
-            The abscissa values
+        self.frequency : numpy array
+            The frequency array
         """
-        self.abscissa = np.linspace(min_val, max_val, nb_samples)
-        return self.abscissa
+        self.frequency = np.linspace(min_val, max_val, nb_samples)
+        return self.frequency
 
     def export_properties_data(self, filepath_csv):
         """Exports properties to a CSV file. This csv is meant to be made once to store all the properties of the spectrometer and then minimally adjusted to the sample being measured.
@@ -64,21 +64,21 @@ class Wraper:
         except:
             return False
 
-    def import_abscissa(self, filepath):
-        """Imports abscissa points from a file and returns the associated array.
+    def import_frequency(self, filepath):
+        """Imports frequency points from a file and returns the associated array.
     
         Parameters
         ----------
         filepath : str                           
-            The filepath to the values of the abscissa
+            The filepath to the values of the frequency array
         
         Returns
         -------
-        self.abscissa : numpy array
-            The numpy array corresponding to the abscissa being imported
+        self.frequency : numpy array
+            The numpy array corresponding to the frequency being imported
         """
-        self.abscissa, _ = self.loader.load_general(filepath)
-        return self.abscissa
+        self.frequency, _ = self.loader.load_general(filepath)
+        return self.frequency
   
     def import_properties_data(self, filepath):
         """Imports properties from a CSV file into a dictionary.
@@ -208,8 +208,8 @@ class Wraper:
                 if self.raw_data is not None:
                     hdf5_file.create_dataset('Raw_Data', data=self.raw_data)
                     print("added Raw data")
-                if self.abscissa is not None:
-                    hdf5_file.create_dataset('Abscissa', data=self.abscissa)
+                if self.frequency is not None:
+                    hdf5_file.create_dataset('Frequency', data=self.frequency)
                 if self.calibration_curve is not None:
                     hdf5_file.create_dataset('Calibration_Curve', data=self.calibration_curve)
                 if self.impulse_response is not None:

@@ -10,7 +10,7 @@ class TreatmentError(Exception):
 
 
 class Treat():
-    """This class is meant to offer a standard way of treating the data. Please refer to the dedicated notebook (found on GitHub) to find explicit descriptions of the algorithms.
+    """This class is meant to offer a standard way of treating the data. Please refer to the dedicated 'notebook <>' to find explicit descriptions of the algorithms.
     """
     def __init__(self):
         self.treat_steps = []
@@ -55,6 +55,10 @@ class Treat():
         variance: tuple
             The returned variance on the fitted parameters (offset, amplitude, center_frequency, linewidth)
         """
+        # Reinitialize the list used to store the treatment steps
+        self.treat_steps = []
+
+        # Resample the data so that the frequency axis has a constant step size
         frequency, data = self.resample(frequency, data)
         
         # Extract the impulse response

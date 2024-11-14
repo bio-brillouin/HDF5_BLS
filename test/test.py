@@ -1,5 +1,5 @@
-from HDF5_BLS import Wraper
-from HDF5_BLS import Treat
+from HDF5_BLS.Wraper import Wraper
+from HDF5_BLS.Treat import Treat
 
 filepath = '/Users/pierrebouvet/Documents/Code/HDF5_BLS/test/test_data/GHOST_example.DAT'
 
@@ -7,12 +7,12 @@ wrp = Wraper()
 wrp.open_data(filepath)
 
 scan_amplitude = float(wrp.attributes["SPECTROMETER.Scan_Amplitude"])
-wrp.define_abscissa_1D(-scan_amplitude/2, scan_amplitude/2, wrp.data.shape[-1])
+wrp.define_frequency_1D(-scan_amplitude/2, scan_amplitude/2, wrp.data.shape[-1])
 
 treat = Treat()
 
 for i in range(100):
-    opt, std = treat.fit_model(wrp.abscissa,
+    opt, std = treat.fit_model(wrp.frequency,
                     wrp.data,
                     7.43,
                     1,
@@ -24,7 +24,7 @@ for i in range(100):
                     correct_elastic = True,
                     IR_wndw = [-0.5,0.5])
 
-# print(opt, std)
+print(opt, std)
 
 # for e in treat.treat_steps: print(e)
 
