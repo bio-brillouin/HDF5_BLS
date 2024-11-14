@@ -21,6 +21,23 @@ class Wraper:
         self.calibration_curve = None
         self.impulse_response = None
         self.loader = Load_Data()
+        self.data = {}
+
+    def add_hdf5_to_wraper(self, filepath, parent_group = "Data"):
+        """Adds an hdf5 file to the wrapper by specifying in which group the data have to be stored. Default is the "Data" group. When adding the data, the attributes of the HDF5 file are only added to the created group if they are different from the parent's attribute.
+
+        Parameters
+        ----------
+        filepath : str
+            The filepath of the hdf5 file to add.
+        parent_group : str, optional
+            The parent group where to store the data of the HDF5 file, by default the parent group, "Data"
+        """
+        # TODO
+        print("To do")
+        
+                
+         
 
     def define_frequency_1D(self, min_val, max_val, nb_samples):
         """Defines a frequency axis based on min, max values, and number of samples. Usable when the sampling frequency is precisely known, in TFP spectrometers for example.
@@ -204,16 +221,18 @@ class Wraper:
                 for key, value in self.attributes.items():
                     hdf5_file.attrs[key] = value
                 
+                # Create Data group
+                data_group = hdf5_file.create_group("Data")
+
                 # Save datasets if they exist
                 if self.raw_data is not None:
-                    hdf5_file.create_dataset('Raw_Data', data=self.raw_data)
-                    print("added Raw data")
+                    data_group.create_dataset('Raw_data', data=self.raw_data)
                 if self.frequency is not None:
-                    hdf5_file.create_dataset('Frequency', data=self.frequency)
+                    data_group.create_dataset('Frequency', data=self.frequency)
                 if self.calibration_curve is not None:
-                    hdf5_file.create_dataset('Calibration_Curve', data=self.calibration_curve)
+                    data_group.create_dataset('Calibration', data=self.calibration_curve)
                 if self.impulse_response is not None:
-                    hdf5_file.create_dataset('Impulse_Response', data=self.impulse_response)
+                    data_group.create_dataset('Impulse_response', data=self.impulse_response)
             return True
         except:
             return False
