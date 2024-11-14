@@ -1,7 +1,6 @@
 from HDF5_BLS import Wraper
 from HDF5_BLS import Treat
 
-
 filepath = '/Users/pierrebouvet/Documents/Code/HDF5_BLS/test/test_data/GHOST_example.DAT'
 
 wrp = Wraper()
@@ -21,8 +20,8 @@ opt, std = treat.fit_model(wrp.abscissa,
                 fit_S_and_AS = True, 
                 window_peak_find = 1, 
                 window_peak_fit = 3, 
-                correct_elastic = False)
+                correct_elastic = True,
+                IR_wndw = [-0.5,0.5])
 
 print(opt, std)
-
 

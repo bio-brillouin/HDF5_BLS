@@ -10,7 +10,7 @@ class Treat():
         self.treat_steps = []
         self.version = Treat_version
     
-    def fit_model(self, frequency, data, center_frequency, linewidth, normalize = True, model = "Lorentz", fit_S_and_AS = True, window_peak_find = 1, window_peak_fit = 3, correct_elastic = False):
+    def fit_model(self, frequency, data, center_frequency, linewidth, normalize = True, model = "Lorentz", fit_S_and_AS = True, window_peak_find = 1, window_peak_fit = 3, correct_elastic = False, IR_wndw = None):
         """Fitting function that performs a fit on the selected spectrum and returns the fitted values and the standard deviations on the fitted parameters. When 2 peaks are fitted, the standard deviation returned by the function corresponds to the standard deviation of two independent events, that is std_{avg} = sqrt{std_{S}^2 + std_{AS}^2}
 
         Parameters
@@ -35,6 +35,8 @@ class Treat():
             The width in GHz of the windo used to fit the peak, by default 3 GHz
         correct_elastic : bool, optional
             Wether to correct for the presence of an elastic peak by setting adding a linear function to the model, by default False
+        wndw_IR : 2-tuple, optional
+            The position on the spectrum where an impulse response can be taken
 
         Returns
         -------
@@ -43,17 +45,33 @@ class Treat():
         variance: tuple
             The returned variance on the fitted parameters (offset, amplitude, center_frequency, linewidth)
         """
+        frequency, data = self.resample(frequency, data)
+        if not IR_wndw is None: _, IR = self.wndw_data_from_freq(data, frequency,IR_wndw[0],IR_wndw[1])
+
+        # Define the fitting functions taking into account the convolutions.
         def lorentzian(nu, b, a, nu0, gamma):
-            return b + a*(gamma/2)**2/((nu-nu0)**2+(gamma/2)**2)
+            func = b + a*(gamma/2)**2/((nu-nu0)**2+(gamma/2)**2)
+            if not IR_wndw is None:
+                return np.convolve(func, IR, "same")
+            return func
         
         def lorentzian_elastic(nu, ae, be, a, nu0, gamma):
-            return be + ae*nu + a*(gamma/2)**2/((nu-nu0)**2+(gamma/2)**2)
+            func =  be + ae*nu + a*(gamma/2)**2/((nu-nu0)**2+(gamma/2)**2)
+            if not IR_wndw is None:
+                return np.convolve(func, IR, "same")
+            return func
         
         def DHO(nu, b, a, nu0, gamma):
-            return b + a*(gamma*nu0**2)/((nu**2-nu0**2)**2+gamma*nu0**2)
+            func = b + a*(gamma*nu0**2)/((nu**2-nu0**2)**2+gamma*nu0**2)
+            if not IR_wndw is None:
+                return np.convolve(func, IR, "same")
+            return func
         
         def DHO_elastic(nu, ae, be, a, nu0, gamma):
-            return be + ae*nu + a*(gamma*nu0**2)/((nu**2-nu0**2)**2+gamma*nu0**2)
+            func = be + ae*nu + a*(gamma*nu0**2)/((nu**2-nu0**2)**2+gamma*nu0**2)
+            if not IR_wndw is None:
+                return np.convolve(func, IR, "same")
+            return func
         
         # Refine the position of the peak with a quadratic polynomial fit
         if fit_S_and_AS:
@@ -94,7 +112,7 @@ class Treat():
             # Define the fit function
             models = {"Lorentz": lorentzian, "DHO": DHO, "Lorentz_e": lorentzian_elastic, "DHO_e": DHO_elastic}
             f = models[model]
-
+            
             # Define the windows of fit
             window_S = np.where(np.abs(frequency-center_frequency_S)<window_peak_fit/2)
             window_AS = np.where(np.abs(frequency-center_frequency_AS)<window_peak_fit/2)
@@ -141,6 +159,32 @@ class Treat():
             std = np.sqrt(np.diag(pcov))
 
         return popt, std
+
+    def wndw_data_from_freq(self, data, freq, fmin, fmax = None):
+        """Returns a window of the data and the frequency arrays corresponding to a given region of the frequency array.
+
+        Parameters
+        ----------
+        data : numpy array
+            The raw data array
+        freq : numpy array
+            The frequency array
+        fmin : float
+            The left side of the window. Note that if the window is symetric, fmax is not needed and -fmin will be taken as the right side of the window
+        fmax : _type_, optional
+            The right side of the window. Optional when the window is symetric, hence fmax = -fmin, by default None
+
+        Returns
+        -------
+        numpy array
+            The windowed frequency
+        numpy array
+            The windowed data
+        """
+        if type(fmax) is None: fmax = -fmin
+        if fmin>fmax: fmin, fmax = fmax, fmin
+        wndw = np.where((freq>fmin)&(freq<fmax))
+        return freq[wndw], data[wndw]
 
     def normalize_data(self, data, window = 10, peak_pos = -1, remove_offset = True):
         """Normalizes a data array to an amplitude of 1 after removing the offset
