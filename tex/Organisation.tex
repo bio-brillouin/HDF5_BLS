@@ -82,7 +82,7 @@
         before computing xy={l=15pt},
       }
       [HDF5 file
-        [Attributes (type: HDF5 attributes)]
+        [Attributes (type: HDF5 attributes stored as text)]
         [Data (type: object)
         [Raw Data (type: Dataset)]
         ]
@@ -110,7 +110,7 @@
         before computing xy={l=15pt},
       }
       [HDF5 file
-        [Attributes (type: HDF5 attributes)]
+        [Attributes (type: HDF5 attributes stored as text)]
         [Data (type: object)
           [Raw spectrum (type: dataset)]
           [Calibration spectrum (type: dataset)]
@@ -137,7 +137,7 @@
         before computing xy={l=15pt},
       }
       [HDF5 file
-        [Attributes (type: HDF5 attributes)]
+        [Attributes (type: HDF5 attributes stored as text)]
         [Data (type: object)
           [Data\_0 (type: object)
             [Data\_0\_0 (type: object)
@@ -219,8 +219,12 @@ This list is prone to evolve and we encourage everyone interested in this projec
       \draw [arrow] (in3) -- (stop);
       \node (inc4) [code, right of=stop, xshift=3cm] {Call to \bf{wraper}};
       \node (inw4) [code, right of=inc4, xshift=3cm] {\shortstack{Export of wraper to HDF5 file}};
-      \end{tikzpicture}
+    \end{tikzpicture}
 
+\section{Independent use of the module}
+  
+  The module can be used independently of the wraper module, by simply calling the desired functions of the three sub-modules "load\_data", "pre\_treat" and "treat".
+    
 
 
   % \subsection{Schematical idea}
