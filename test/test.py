@@ -24,7 +24,13 @@ for i in range(100):
                     correct_elastic = True,
                     IR_wndw = [-0.5,0.5])
 
-print(opt, std)
+# print(opt, std)
+
+import matplotlib.pyplot as plt
+
+plt.figure()
+plt.plot(wrp.frequency, wrp.data)
+plt.show()
 
 # for e in treat.treat_steps: print(e)
 

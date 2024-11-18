@@ -1,0 +1,7 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{Storing\040raw\040data\040in\040HDF5\040wrapers}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Concept}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Use\040of\040the\040file\040format\040to\040wrap\040data}{section.2}% 4
+\BOOKMARK [1][-]{section.3}{Data\040types}{}% 5
+\BOOKMARK [1][-]{section.4}{List\040of\040attributes}{}% 6
+\BOOKMARK [1][-]{section.5}{HDF5_Brillouin_creator\040modules\040structure}{}% 7
