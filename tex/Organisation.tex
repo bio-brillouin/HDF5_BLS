@@ -59,7 +59,7 @@
         before computing xy={l=15pt},
       }
       [HDF5 file
-        [Data (type: object)
+        [Data (type: group)
         [Raw Data (type: Dataset)]
         ]
       ]
@@ -83,7 +83,7 @@
       }
       [HDF5 file
         [Attributes (type: HDF5 attributes stored as text)]
-        [Data (type: object)
+        [Data (type: group)
         [Raw Data (type: Dataset)]
         ]
       ]
@@ -111,7 +111,7 @@
       }
       [HDF5 file
         [Attributes (type: HDF5 attributes stored as text)]
-        [Data (type: object)
+        [Data (type: group)
           [Raw spectrum (type: dataset)]
           [Calibration spectrum (type: dataset)]
           [Impulse response (type: dataset)]
@@ -138,17 +138,17 @@
       }
       [HDF5 file
         [Attributes (type: HDF5 attributes stored as text)]
-        [Data (type: object)
-          [Data\_0 (type: object)
-            [Data\_0\_0 (type: object)
-            [Data\_0\_0\_0 (type: object)]
-            [Data\_0\_0\_1 (type: object)]
+        [Data (type: group)
+          [Data\_0 (type: group)
+            [Data\_0\_0 (type: group)
+            [Data\_0\_0\_0 (type: group)]
+            [Data\_0\_0\_1 (type: group)]
             [...]
             ]
-            [Data\_0\_1 (type: object)]
+            [Data\_0\_1 (type: group)]
             [...]
           ]
-          [Data\_1 (type: object)]
+          [Data\_1 (type: group)]
           [...]
         ]
       ]
@@ -175,7 +175,7 @@
 
 \section{List of attributes}
 
-One key condition for this format to be useful for meta-studies, is to allow users to access the same parameters of the measures in different files. To do so, we propose a normalization of the name of the attributes. This list will evolve and can be found on the dedicated GitHub page of the project in "Spreadsheets/Attributes.xlsx".
+One key condition for this format to be useful for meta-studies, is to allow users to access the same parameters of the measures in different files. To do so, we propose a normalization of the name of the attributes. This list will evolve and can be found on the dedicated GitHub page of the project in "spreadsheets/attributes.xlsx".
 
 These attributes are divided in three sections:
 \begin{itemize}
