@@ -15,7 +15,9 @@ pip install HDF5_BLS
 
 ## Documentation
 
-A full documentation is accessible at [this link](https://hdf5-bls.readthedocs.io/en/latest/)
+A full documentation is accessible at [this link](https://hdf5-bls.readthedocs.io/en/latest/).
+
+An additional short presentation of the module is stored on the GitHub repository in [tex/Organisation.pdf](https://github.com/bio-brillouin/HDF5_BLS/blob/main/tex/Organisation.pdf)
 
 ## Contributing
 
