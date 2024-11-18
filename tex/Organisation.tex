@@ -224,45 +224,5 @@ This list is prone to evolve and we encourage everyone interested in this projec
 \section{Independent use of the module}
   
   The module can be used independently of the wraper module, by simply calling the desired functions of the three sub-modules "load\_data", "pre\_treat" and "treat".
-    
-
-
-  % \subsection{Schematical idea}
-
-  %   To facilitate the creation of HDF5 files, we have developped a Python class to create HDF5 file containers. This program works as follows: \newline
-
-  %   \begin{tikzpicture}[node distance=2cm]
-  %   \node (start) [startstop] {Start};
-  %   \node (in1) [io, below of=start] {Indicate Filepath of the raw data};
-  %   \draw [arrow] (start) -- (in1);
-  %   \node (pro1) [process, below of=in1] {Get dimension of the data};
-  %   \draw [arrow] (in1) -- (pro1);
-  %   \node (dec1) [decision, below of=pro1, xshift=-5cm] {If $dim = 0$};
-  %   \draw [arrow] (pro1) -| (dec1);
-  %   \node (dec2) [decision, below of=pro1, xshift=5cm] {If $dim > 0$};
-  %   \draw [arrow] (pro1) -| (dec2);
-  %   \node (in2) [io, below of=dec2, yshift=-0.5cm] {Define/Import the abscissa};
-  %   \draw [arrow] (dec2) -- (in2);
-  %   \node (in3) [io, below of=pro1, yshift=-4.5cm, xshift=-2cm] {Indicate properties of the data};
-  %   \draw [arrow] (in2) -| (in3);
-  %   \draw [arrow] (dec1) -| (in3);
-  %   \node (pro2) [process, right of=in3, xshift=6cm] {Export/Import properties};
-  %   \draw [arrow] (pro2) -- (in3);
-  %   \draw [arrow] (in3) -- (pro2);
-  %   \node (in4) [io, below of=in3, xshift=6cm] {\shortstack{Add calibration curves,\\impulse responses, ...}};
-  %   \draw [arrow] (in3) |- (in4);
-  %   \node (in4b) [io, below of=in4] {\shortstack{Indicate properties \\of added data}};
-  %   \draw [arrow] (in4) -- (in4b);
-  %   \node (in5) [io, below of=in4b, xshift=-6cm] {Define filepath for the HDF5 file};
-  %   \draw [arrow] (in4b) -| (in5);
-  %   \draw [arrow] (in3) -- node[anchor=east]{\shortstack{Depending if \\calibration curves\\exist}} (in5);
-  %   \node (pro3) [process, below of=in5] {Export HDF5 file};
-  %   \draw [arrow] (in5) -- (pro3);
-  %   \node (stop) [startstop,  below of=pro3] {End};
-  %   \draw [arrow] (pro3) -- (stop);
-  %   \end{tikzpicture}
-
-
-
 
 \end{document}
