@@ -4,13 +4,15 @@ import csv
 import os
 from PIL import Image
 
-try:
-    from Load_data import load_general, load_dat_file, load_hdf5_file, load_tiff_file
+try: # Used to patch an error in the generation of the documentation
+    from load_data import load_general, load_dat_file, load_hdf5_file, load_tiff_file
+    from treat import Treat
 except:
-    from HDF5_BLS.Load_data import load_general, load_dat_file, load_hdf5_file, load_tiff_file
+    from HDF5_BLS.load_data import load_general, load_dat_file, load_hdf5_file, load_tiff_file
+    from HDF5_BLS.treat import Treat
     
 
-BLS_HDF5_Version = 0.1
+BLS_HDF5_Version = "0.0"
 
 class WraperError(Exception):
     def __init__(self, msg) -> None:
@@ -51,8 +53,9 @@ class Wraper:
         # Add the raw data to the "Raw_data" dataset of the wrapper and writes the dimensionnality of the data
         self.data["Raw_data"] = data
         self.data_attributes["Raw_data"] = {"ID":"Raw_data"}
-        if store_filepath: self.data_attributes["Raw_data"]["Filepath"] = True
-        self.attributes["MEASURE.Dimensionnality_of_measure"]=len(data.shape)
+        if store_filepath: self.data_attributes["Raw_data"]["Filepath"] = filepath
+        attributes["MEASURE.Dimensionnality_of_measure"]=len(data.shape)
+        self.data_attributes["Raw_data"]["Name"] = "Raw data"
         
         # Generate the abscissa corresponding to the different dimensions
         abscissa_name = ""
@@ -60,7 +63,10 @@ class Wraper:
             self.data[f"Abscissa_{i}"] = np.arange(k)
             self.data_attributes[f"Abscissa_{i}"] = {"ID":f"Abscissa_{i}"}
             abscissa_name = abscissa_name+"_,"
-        self.attributes["MEASURE.Abscissa_Names"] = abscissa_name[:-1]
+        attributes["MEASURE.Abscissa_Names"] = abscissa_name[:-1]
+
+        #Indicates the version of the BLS_HDF5 library
+        attributes["FILEPROP.BLS_HDF5_Version"] = BLS_HDF5_Version
         
         # Storing the retrieved attributes
         self.attributes = attributes
@@ -113,6 +119,11 @@ class Wraper:
             self.data_attributes[f"Abscissa_{dimension}"]["Name"] = name
             temp = self.attributes["MEASURE.Abscissa_Names"].split(",")
             temp[dimension] = name
+            self.attributes["MEASURE.Abscissa_Names"] = ",".join(temp)
+        else:
+            self.data_attributes[f"Abscissa_{dimension}"]["Name"] = "Abscissa"
+            temp = self.attributes["MEASURE.Abscissa_Names"].split(",")
+            temp[dimension] = "Abscissa"
             self.attributes["MEASURE.Abscissa_Names"] = ",".join(temp)
     
     def import_abscissa_1D(self, dimension, filepath, name = None):
@@ -172,19 +183,8 @@ class Wraper:
             raise WraperError("The wraper could not be saved as a HDF5 file")
 
 
-def load_general(f):
-    return np.arange(10**4).reshape((10,10,10,10)), {}
-
-wrp = Wraper()
-wrp.open_data("")
-wrp.assign_name_all_abscissa("Position x, Position y, Position z, Channels")
-wrp.create_abscissa_1D_min_max(0,-10,10,"Position x new")
-wrp.save_as_hdf5("/Users/pierrebouvet/Documents/Code/HDF5_BLS/test/test.h5")
-print(wrp.attributes["MEASURE.Abscissa_Names"])
-print(wrp.data_attributes)
-print(wrp.data[f"Abscissa_{0}"])
-
-
+# def load_general(f):
+#     return np.arange(10**4).reshape((10,10,10,10)), {}
 
     # def add_hdf5_to_wraper(self, filepath, parent_group = "Data"):
     #     """Adds an hdf5 file to the wrapper by specifying in which group the data have to be stored. Default is the "Data" group. When adding the data, the attributes of the HDF5 file are only added to the created group if they are different from the parent's attribute.

@@ -4,8 +4,6 @@ import os
 from PIL import Image
 import h5py
 
-BLS_HDF5_Version = 0.1
-
 def load_dat_file(filepath):
     """Loads files obtained with the GHOST software
 
@@ -44,7 +42,6 @@ def load_dat_file(filepath):
             if line.strip().isdigit():
                 data.append(int(line.strip()))
     data = np.array(data)
-    attributes['FILEPROP.BLS_HDF5_Version'] = BLS_HDF5_Version
     attributes['FILEPROP.Name'] = name
     attributes['MEASURE.Sample'] = metadata["Sample"]
     attributes['SPECTROMETER.Scanning_Strategy'] = "point_scanning"
@@ -80,7 +77,6 @@ def load_tiff_file(filepath):
     im = Image.open(filepath)
     data = np.array(im)
 
-    attributes['FILEPROP.BLS_HDF5_Version'] = BLS_HDF5_Version
     attributes['FILEPROP.Name'] = name
 
     return data, attributes
