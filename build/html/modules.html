@@ -49,9 +49,12 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Modules</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#wraper">Wraper</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#wraper.Wraper"><code class="docutils literal notranslate"><span class="pre">Wraper</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#wraper.Wraper.add_hdf5_to_wraper"><code class="docutils literal notranslate"><span class="pre">Wraper.add_hdf5_to_wraper()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#wraper.Wraper.assign_name_all_abscissa"><code class="docutils literal notranslate"><span class="pre">Wraper.assign_name_all_abscissa()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#wraper.Wraper.assign_name_one_abscissa"><code class="docutils literal notranslate"><span class="pre">Wraper.assign_name_one_abscissa()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#wraper.Wraper.create_abscissa_1D_min_max"><code class="docutils literal notranslate"><span class="pre">Wraper.create_abscissa_1D_min_max()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#wraper.Wraper.import_abscissa_1D"><code class="docutils literal notranslate"><span class="pre">Wraper.import_abscissa_1D()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#wraper.Wraper.import_properties_data"><code class="docutils literal notranslate"><span class="pre">Wraper.import_properties_data()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#wraper.Wraper.open_data"><code class="docutils literal notranslate"><span class="pre">Wraper.open_data()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#wraper.Wraper.save_as_hdf5"><code class="docutils literal notranslate"><span class="pre">Wraper.save_as_hdf5()</span></code></a></li>
 </ul>
@@ -61,7 +64,6 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-load_data">Load_data</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#load_data.load_dat_file"><code class="docutils literal notranslate"><span class="pre">load_dat_file()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#load_data.load_general"><code class="docutils literal notranslate"><span class="pre">load_general()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#load_data.load_hdf5_file"><code class="docutils literal notranslate"><span class="pre">load_hdf5_file()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#load_data.load_tiff_file"><code class="docutils literal notranslate"><span class="pre">load_tiff_file()</span></code></a></li>
 </ul>
 </li>
@@ -111,7 +113,7 @@
 <h2>Wraper<a class="headerlink" href="#wraper" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="wraper.Wraper">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Wraper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wraper.Wraper" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Wraper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_attributes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wraper.Wraper" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This object is used to store data and attributes in a unified structure.</p>
 <dl class="field-list simple">
@@ -124,6 +126,21 @@
 </dd>
 </dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="wraper.Wraper.add_hdf5_to_wraper">
+<span class="sig-name descname"><span class="pre">add_hdf5_to_wraper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wraper.Wraper.add_hdf5_to_wraper" title="Link to this definition"></a></dt>
+<dd><p>Adds an hdf5 file to the wrapper by specifying in which group the data have to be stored. Default is the “Data” group. When adding the data, the attributes of the HDF5 file are only added to the created group if they are different from the parent’s attribute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> (<em>str</em>) – The filepath of the hdf5 file to add.</p></li>
+<li><p><strong>parent_group</strong> (<em>str</em><em>, </em><em>optional</em>) – The parent group where to store the data of the HDF5 file, by default the parent group is the top group “Data”. The format of this group should be “Data.Data_0.Data_0_0”</p></li>
+<li><p><strong>create_group</strong> (<em>bool</em><em>, </em><em>default True</em>) – This parameter should be set to False if different techniques were used to acquire different datasets. This is particularly usefull if fluorescent images are taken after or during the same experiment. Note that only data of same shape, and sharing the same abscissa can be used in a given group.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="wraper.Wraper.assign_name_all_abscissa">
 <span class="sig-name descname"><span class="pre">assign_name_all_abscissa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">abscissa</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wraper.Wraper.assign_name_all_abscissa" title="Link to this definition"></a></dt>
 <dd><p>Adds as attributes of the abscissas and the raw data, the names of the abscissas</p>
@@ -133,6 +150,20 @@
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>WraperError</strong> – If the length of the abscissa is different from the dimensionality of the data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="wraper.Wraper.assign_name_one_abscissa">
+<span class="sig-name descname"><span class="pre">assign_name_one_abscissa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">abscissa_nb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wraper.Wraper.assign_name_one_abscissa" title="Link to this definition"></a></dt>
+<dd><p>Adds as attributes of the abscissas and the raw data, the names of the abscissas</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>abscissa_nb</strong> (<em>str</em>) – The number of the abscissa to rename (“i” or “i-j”)</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – The new name of the abscissa to rename</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -170,6 +201,23 @@
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>WraperError</strong> – If the dimension given is higher than the dimension of the data</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="wraper.Wraper.import_properties_data">
+<span class="sig-name descname"><span class="pre">import_properties_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#wraper.Wraper.import_properties_data" title="Link to this definition"></a></dt>
+<dd><p>Imports properties from a CSV file into a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath_csv</strong> (<em>str</em>) – The filepath to the csv storing the properties of the measure. This csv is meant to be made once to store all the properties of the spectrometer and then minimally adjusted to the sample being measured.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>self.attributes</strong> – The dictionnary containing all the attributes</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dic</p>
 </dd>
 </dl>
 </dd></dl>
@@ -232,24 +280,6 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – The filepath to the file</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>data</strong> (<em>np.array</em>) – The data stored in the file</p></li>
-<li><p><strong>attributes</strong> (<em>dic</em>) – A dictionnary with all the properties that could be recovered from the file</p></li>
-</ul>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="load_data.load_hdf5_file">
-<span class="sig-name descname"><span class="pre">load_hdf5_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#load_data.load_hdf5_file" title="Link to this definition"></a></dt>
-<dd><p>Loads HDF5 files</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – The filepath to the HDF5 file</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
