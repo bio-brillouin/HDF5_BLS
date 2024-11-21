@@ -42,7 +42,7 @@ def load_dat_file(filepath):
             if line.strip().isdigit():
                 data.append(int(line.strip()))
     data = np.array(data)
-    attributes['FILEPROP.Name'] = name
+    attributes['FILEPROP.Name'] = name.split("/")[-1]
     attributes['MEASURE.Sample'] = metadata["Sample"]
     attributes['SPECTROMETER.Scanning_Strategy'] = "point_scanning"
     attributes['SPECTROMETER.Type'] = "TFP"
@@ -79,30 +79,6 @@ def load_tiff_file(filepath):
 
     attributes['FILEPROP.Name'] = name
 
-    return data, attributes
-
-def load_hdf5_file(filepath):
-    """Loads HDF5 files
-
-    Parameters
-    ----------
-    filepath : str                           
-        The filepath to the HDF5 file
-    
-    Returns
-    -------
-    data : np.array
-        The data stored in the file
-    attributes : dic
-        A dictionnary with all the properties that could be recovered from the file
-    """
-    attributes = {}
-    with h5py.File(filepath, 'r') as hdf5_file:
-        data = hdf5_file["Data"][:]
-        
-        for key in hdf5_file.attrs.keys():
-            attributes[key] = hdf5_file.attrs[key]
-        
     return data, attributes
 
 def load_general(filepath):
