@@ -53,6 +53,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#Wraper.Wraper.create_abscissa_1D_min_max"><code class="docutils literal notranslate"><span class="pre">Wraper.create_abscissa_1D_min_max()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Wraper.Wraper.import_abscissa_1D"><code class="docutils literal notranslate"><span class="pre">Wraper.import_abscissa_1D()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#Wraper.Wraper.open_data"><code class="docutils literal notranslate"><span class="pre">Wraper.open_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Wraper.Wraper.save_as_hdf5"><code class="docutils literal notranslate"><span class="pre">Wraper.save_as_hdf5()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -183,6 +184,23 @@
 <li><p><strong>filepath</strong> (<em>str</em>) – The filepath to the raw data file</p></li>
 <li><p><strong>store_filepath</strong> (<em>bool</em><em>, </em><em>default True</em>) – A boolean parameter to store the original filepath of the raw data in the attributes of “Raw_data”</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Wraper.Wraper.save_as_hdf5">
+<span class="sig-name descname"><span class="pre">save_as_hdf5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Wraper.Wraper.save_as_hdf5" title="Link to this definition"></a></dt>
+<dd><p>Saves the data and attributes to an HDF5 file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>save_filepath</strong> (<em>str</em>) – The filepath where to save the hdf5 file</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>boolean</strong> – True if the file was saved correctly, False if not</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>boolean</p>
 </dd>
 </dl>
 </dd></dl>

@@ -141,6 +141,35 @@ class Wraper:
             temp[dimension] = name
             self.attributes["MEASURE.Abscissa_Names"] = ",".join(temp)
 
+    def save_as_hdf5(self,filepath):
+        """Saves the data and attributes to an HDF5 file.
+    
+        Parameters
+        ----------
+        save_filepath : str                           
+            The filepath where to save the hdf5 file
+        
+        Returns
+        -------
+        boolean : boolean
+            True if the file was saved correctly, False if not
+        """
+        try:
+            with h5py.File(filepath, 'w') as hdf5_file:
+                # Save attributes
+                for key, value in self.attributes.items():
+                    hdf5_file.attrs[key] = value
+                
+                # Create Data group
+                data_group = hdf5_file.create_group("Data")
+
+                # Save datasets 
+                for key in self.data.keys():
+                    dg = data_group.create_dataset(key, data=self.data[key])
+                    for k, v in self.data_attributes[key].items():
+                        dg.attrs[k] = v
+        except:
+            raise WraperError("The wraper could not be saved as a HDF5 file")
 
 
 # def load_general(f):
