@@ -6,7 +6,7 @@ Modules
    :undoc-members:
    :show-inheritance:
 
-.. autoclass:: Load_data::Load_Data
+.. automodule:: Load_data
    :members:
    :undoc-members:
    :show-inheritance:
