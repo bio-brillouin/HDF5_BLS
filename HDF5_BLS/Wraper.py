@@ -149,10 +149,10 @@ class Wraper:
         save_filepath : str                           
             The filepath where to save the hdf5 file
         
-        Returns
+        Raises
         -------
-        boolean : boolean
-            True if the file was saved correctly, False if not
+        WraperError
+            Raises an error if the file could not be saved
         """
         try:
             with h5py.File(filepath, 'w') as hdf5_file:
@@ -172,16 +172,18 @@ class Wraper:
             raise WraperError("The wraper could not be saved as a HDF5 file")
 
 
-# def load_general(f):
-#     return np.arange(10**4).reshape((10,10,10,10)), {}
+def load_general(f):
+    return np.arange(10**4).reshape((10,10,10,10)), {}
 
-# wrp = Wraper()
-# wrp.open_data("")
-# wrp.assign_name_all_abscissa("Position x, Position y, Position z, Channels")
-# wrp.create_abscissa_1D_min_max(0,-10,10,"Position x new")
-# print(wrp.attributes["MEASURE.Abscissa_Names"])
-# print(wrp.data_attributes)
-# print(wrp.data[f"Abscissa_{0}"])
+wrp = Wraper()
+wrp.open_data("")
+wrp.assign_name_all_abscissa("Position x, Position y, Position z, Channels")
+wrp.create_abscissa_1D_min_max(0,-10,10,"Position x new")
+wrp.save_as_hdf5("/Users/pierrebouvet/Documents/Code/HDF5_BLS/test/test.h5")
+print(wrp.attributes["MEASURE.Abscissa_Names"])
+print(wrp.data_attributes)
+print(wrp.data[f"Abscissa_{0}"])
+
 
 
     # def add_hdf5_to_wraper(self, filepath, parent_group = "Data"):
