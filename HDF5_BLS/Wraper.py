@@ -143,16 +143,16 @@ class Wraper:
 
 
 
-def load_general(f):
-    return np.arange(10**4).reshape((10,10,10,10)), {}
+# def load_general(f):
+#     return np.arange(10**4).reshape((10,10,10,10)), {}
 
-wrp = Wraper()
-wrp.open_data("")
-wrp.assign_name_all_abscissa("Position x, Position y, Position z, Channels")
-wrp.create_abscissa_1D_min_max(0,-10,10,"Position x new")
-print(wrp.attributes["MEASURE.Abscissa_Names"])
-print(wrp.data_attributes)
-print(wrp.data[f"Abscissa_{0}"])
+# wrp = Wraper()
+# wrp.open_data("")
+# wrp.assign_name_all_abscissa("Position x, Position y, Position z, Channels")
+# wrp.create_abscissa_1D_min_max(0,-10,10,"Position x new")
+# print(wrp.attributes["MEASURE.Abscissa_Names"])
+# print(wrp.data_attributes)
+# print(wrp.data[f"Abscissa_{0}"])
 
 
     # def add_hdf5_to_wraper(self, filepath, parent_group = "Data"):
