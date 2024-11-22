@@ -44,7 +44,7 @@ class Treat():
         correct_elastic : bool, optional
             Wether to correct for the presence of an elastic peak by setting adding a linear function to the model, by default False
         wndw_IR : 2-tuple, optional
-            If the impulse response can be recovered from the spectrum, the corresponding window on the frequency axis where to recover the response
+            If the impulse response can be recovered from the spectrum, the corresponding window on the frequency axis where to recover the response. The window width of the impulse response should be shorter than the window used for the fit of peak, if not this raises an error.
         freq_IR : numpy array, optional
             The frequency of the impulse response
         data_IR : numpy array, optional
@@ -151,6 +151,8 @@ class Treat():
             window_AS = np.where(np.abs(frequency-center_frequency_AS)<window_peak_fit/2)
 
             # Apply the fit on both peaks
+            if IR.size > window_S[0].size:
+                raise TreatmentError("The size of the impulse response is larger than the window of fit. Please increase the fit window or decrease the IR window.")
             popt_S, pcov_S = optimize.curve_fit(f,
                                                 frequency[window_S],
                                                 data[window_S],
@@ -160,6 +162,8 @@ class Treat():
                                                   frequency[window_AS],
                                                   data[window_AS],
                                                   p0_AS)
+            
+            
             
             # Extract the errors in the form of standard deviations
             std_S = np.sqrt(np.diag(pcov_S))

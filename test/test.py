@@ -16,7 +16,7 @@ scan_amplitude = float(wrp.attributes["SPECTROMETER.Scan_Amplitude"])
 wrp.create_abscissa_1D_min_max(0,-scan_amplitude/2, scan_amplitude/2,"Frequency (GHz)")
 
 # Saving the wraper as a H5 file
-wrp.save_as_hdf5("/Users/pierrebouvet/Documents/Code/HDF5_BLS/test/test.h5")
+# wrp.save_as_hdf5("/Users/pierrebouvet/Documents/Code/HDF5_BLS/test/test.h5")
 
 treat = Treat()
 
@@ -32,15 +32,6 @@ opt, std = treat.fit_model(wrp.data["Abscissa_0"],
                             correct_elastic = True,
                             IR_wndw = [-0.5,0.5])
 
-print(opt, std)
-
-
-print(wrp.data.keys())
-wrp.add_hdf5_to_wraper("/Users/pierrebouvet/Documents/Code/HDF5_BLS/test/test.h5")
-print(wrp.data.keys())
-wrp.add_hdf5_to_wraper("/Users/pierrebouvet/Documents/Code/HDF5_BLS/test/test.h5")
-print(wrp.data.keys())
-print(wrp.data["Data_0"].data.keys())
-print(wrp.data["Data_1"].data.keys())
-print(wrp.data["Data_2"].data.keys())
+print(opt) 
+print(std)
 
