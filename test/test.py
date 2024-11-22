@@ -15,33 +15,25 @@ wrp.open_data(filepath)
 scan_amplitude = float(wrp.attributes["SPECTROMETER.Scan_Amplitude"])
 wrp.create_abscissa_1D_min_max(0,-scan_amplitude/2, scan_amplitude/2,"Frequency (GHz)")
 
-# # Saving the wraper as a H5 file
-# wrp.save_as_hdf5("/Users/pierrebouvet/Documents/Code/HDF5_BLS/test/test.h5")
+# Saving the wraper as a H5 file
+wrp.save_as_hdf5("/Users/pierrebouvet/Documents/Code/HDF5_BLS/test/test.h5")
 
-# treat = Treat()
+treat = Treat()
 
-# for i in range(100):
-#     opt, std = treat.fit_model(wrp.data["Abscissa_0"],
-#                     wrp.data["Raw_data"],
-#                     7.43,
-#                     1,
-#                     normalize = True, 
-#                     model = "Lorentz", 
-#                     fit_S_and_AS = True, 
-#                     window_peak_find = 1, 
-#                     window_peak_fit = 3, 
-#                     correct_elastic = True,
-#                     IR_wndw = [-0.5,0.5])
+opt, std = treat.fit_model(wrp.data["Abscissa_0"],
+                            wrp.data["Raw_data"],
+                            7.43,
+                            1,
+                            normalize = True, 
+                            model = "Lorentz", 
+                            fit_S_and_AS = True, 
+                            window_peak_find = 1, 
+                            window_peak_fit = 3, 
+                            correct_elastic = True,
+                            IR_wndw = [-0.5,0.5])
 
-# print(opt, std)
+print(opt, std)
 
-# import matplotlib.pyplot as plt
-
-# plt.figure()
-# plt.plot(wrp.data["Abscissa_0"], wrp.data["Raw_data"])
-# plt.show()
-
-# for e in treat.treat_steps: print(e)
 
 print(wrp.data.keys())
 wrp.add_hdf5_to_wraper("/Users/pierrebouvet/Documents/Code/HDF5_BLS/test/test.h5")
