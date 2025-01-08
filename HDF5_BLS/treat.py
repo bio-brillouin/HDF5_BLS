@@ -230,6 +230,118 @@ class Treat():
         wndw = np.where((freq>fmin)&(freq<fmax))
         return freq[wndw], data[wndw]
 
+    def model_lorentzian(nu, b, a, nu0, gamma, IR = None):
+        """Model of a simple lorentzian lineshape
+
+        Parameters
+        ----------
+        nu : array
+            The frequency array
+        b : float
+            The constant offset of the data
+        a : float
+            The amplitude of the peak
+        nu0 : float
+            The center position of the function
+        gamma : float
+            The linewidth of the function
+        IR : array, optional
+            The impulse response of the instrument, by default None
+
+        Returns
+        -------
+        function
+            The function associated to the given parameters
+        """
+        func = b + a*(gamma/2)**2/((nu-nu0)**2+(gamma/2)**2)
+        if IR is not None: return np.convolve(func, IR, "same")
+        return func
+    
+    def model_lorentzian_elastic(nu, ae, be, a, nu0, gamma, IR = None):
+        """Model of a simple lorentzian lineshape
+
+        Parameters
+        ----------
+        nu : array
+            The frequency array
+        ae : float
+            The slope of the first order Taylor expansion of the elastic peak at the position of the peak fitted
+        be : float
+            The constant offset of the data
+        a : float
+            The amplitude of the peak
+        nu0 : float
+            The center position of the function
+        gamma : float
+            The linewidth of the function
+        IR : array, optional
+            The impulse response of the instrument, by default None
+
+        Returns
+        -------
+        function
+            The function associated to the given parameters
+        """
+        func =  be + ae*nu + a*(gamma/2)**2/((nu-nu0)**2+(gamma/2)**2)
+        if IR is not None: return np.convolve(func, IR, "same")
+        return func
+    
+    def model_DHO(nu, b, a, nu0, gamma, IR = None):
+        """Model of a simple lorentzian lineshape
+
+        Parameters
+        ----------
+        nu : array
+            The frequency array
+        b : float
+            The constant offset of the data
+        a : float
+            The amplitude of the peak
+        nu0 : float
+            The center position of the function
+        gamma : float
+            The linewidth of the function
+        IR : array, optional
+            The impulse response of the instrument, by default None
+
+        Returns
+        -------
+        function
+            The function associated to the given parameters
+        """
+        func = b + a*(gamma*nu0**2)/((nu**2-nu0**2)**2+gamma*nu0**2)
+        if IR is not None: return np.convolve(func, IR, "same")
+        return func
+    
+    def model_DHO_elastic(nu, ae, be, a, nu0, gamma, IR = None):
+        """Model of a simple lorentzian lineshape
+
+        Parameters
+        ----------
+        nu : array
+            The frequency array
+        ae : float
+            The slope of the first order Taylor expansion of the elastic peak at the position of the peak fitted
+        be : float
+            The constant offset of the data
+        a : float
+            The amplitude of the peak
+        nu0 : float
+            The center position of the function
+        gamma : float
+            The linewidth of the function
+        IR : array, optional
+            The impulse response of the instrument, by default None
+
+        Returns
+        -------
+        function
+            The function associated to the given parameters
+        """
+        func = be + ae*nu + a*(gamma*nu0**2)/((nu**2-nu0**2)**2+gamma*nu0**2)
+        if IR is not None: return np.convolve(func, IR, "same")
+        return func
+
     def normalize_data(self, data, window = 10, peak_pos = -1, remove_offset = True):
         """Normalizes a data array to an amplitude of 1 after removing the offset
     

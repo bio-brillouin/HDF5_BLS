@@ -5,6 +5,7 @@
 **/.DS_Store
 dist/
 tests/example_creator.py
+__pycache__/
 guides/Module/ModuleDevelopperGuide.aux
 guides/Module/ModuleDevelopperGuide.fdb_latexmk
 guides/Module/ModuleDevelopperGuide.fls

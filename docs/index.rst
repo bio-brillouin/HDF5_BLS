@@ -18,7 +18,6 @@ Contents:
    :caption: Contents:
    
    modules
-   examples
    
 
 Indices and tables

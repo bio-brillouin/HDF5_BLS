@@ -5,8 +5,8 @@ import os
 from PIL import Image
 import copy
 
-from load_data import load_general, load_dat_file, load_tiff_file
-from treat import Treat
+from HDF5_BLS.load_data import load_general, load_dat_file, load_tiff_file
+from HDF5_BLS.treat import Treat
     
 BLS_HDF5_Version = "0.0"
 

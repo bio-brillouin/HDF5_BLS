@@ -5,6 +5,7 @@ from PySide6 import QtGui as qtg
 
 from Main import main
 
+
 if __name__ == "__main__":
     app = qtw.QApplication(sys.argv)
     window = main.MainWindow()
