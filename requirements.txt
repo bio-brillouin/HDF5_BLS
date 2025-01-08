@@ -11,3 +11,7 @@ pytest
 # Library dependencies
 setuptools
 wheel
+
+# Documentation dependencies
+sphinx
+sphinx-rtd-theme
