@@ -1,0 +1,439 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HDF5_BLS.treat &mdash; HDF5_BLS v0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=34cd777e"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            HDF5_BLS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">HDF5_BLS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">HDF5_BLS.treat</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for HDF5_BLS.treat</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">optimize</span>
+
+<span class="n">Treat_version</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+
+<div class="viewcode-block" id="TreatmentError">
+<a class="viewcode-back" href="../../HDF5_BLS.html#HDF5_BLS.treat.TreatmentError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TreatmentError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Treat">
+<a class="viewcode-back" href="../../HDF5_BLS.html#HDF5_BLS.treat.Treat">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Treat</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This class is meant to offer a standard way of treating the data. Please refer to the dedicated `notebook`_. to find explicit descriptions of the algorithms.</span>
+
+<span class="sd">    .. _notebook: https://github.com/PierreBouvet/HDF5_BLS/blob/main/notebooks/Treat.ipynb</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">treat_steps</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">Treat_version</span>
+    
+<div class="viewcode-block" id="Treat.fit_model">
+<a class="viewcode-back" href="../../HDF5_BLS.html#HDF5_BLS.treat.Treat.fit_model">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frequency</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">center_frequency</span><span class="p">,</span> <span class="n">linewidth</span><span class="p">,</span> <span class="n">normalize</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">model</span> <span class="o">=</span> <span class="s2">&quot;Lorentz&quot;</span><span class="p">,</span> <span class="n">fit_S_and_AS</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">window_peak_find</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">window_peak_fit</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">correct_elastic</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">IR_wndw</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">freq_IR</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">data_IR</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fitting function that performs a fit on the selected spectrum and returns the fitted values and the standard deviations on the fitted parameters. When 2 peaks are fitted, the standard deviation returned by the function corresponds to the standard deviation of two independent events, that is std_{avg} = sqrt{std_{S}^2 + std_{AS}^2}. This function also takes into account the impulse response of the spectrometer when applying the fit, which therefore returns a </span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        frequency : numpy array</span>
+<span class="sd">            The freaquency axis corresponding to the data</span>
+<span class="sd">        data : numpy array</span>
+<span class="sd">            The data to fit</span>
+<span class="sd">        center_frequency : float</span>
+<span class="sd">            The estimate expected shift frequency</span>
+<span class="sd">        linewidth : float</span>
+<span class="sd">            The expected linewidth</span>
+<span class="sd">        normalize : bool, optional</span>
+<span class="sd">            Wether a normalization is to be made on the data before treatment or not , by default True</span>
+<span class="sd">        model : str, optional</span>
+<span class="sd">            The model with which to fit the data. Accepted models are &quot;Lorentz&quot; and &quot;DHO&quot;, by default &quot;Lorentz&quot;</span>
+<span class="sd">        fit_S_and_AS : bool, optional</span>
+<span class="sd">            Wether to fit both the Stokes and Anti-Stokes peak during the fit (and return corresponding averaged values and propagated errors), by default True</span>
+<span class="sd">        window_peak_find : float, optional</span>
+<span class="sd">            The width in GHz where to find the peak, by default 1GHz</span>
+<span class="sd">        window_peak_fit : float, optional</span>
+<span class="sd">            The width in GHz of the windo used to fit the peak, by default 3 GHz</span>
+<span class="sd">        correct_elastic : bool, optional</span>
+<span class="sd">            Wether to correct for the presence of an elastic peak by setting adding a linear function to the model, by default False</span>
+<span class="sd">        wndw_IR : 2-tuple, optional</span>
+<span class="sd">            If the impulse response can be recovered from the spectrum, the corresponding window on the frequency axis where to recover the response. The window width of the impulse response should be shorter than the window used for the fit of peak, if not this raises an error.</span>
+<span class="sd">        freq_IR : numpy array, optional</span>
+<span class="sd">            The frequency of the impulse response</span>
+<span class="sd">        data_IR : numpy array, optional</span>
+<span class="sd">            The data of the impulse response</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        optimal_parameters: tuple</span>
+<span class="sd">            The returned optimal parameters for the fit (offset, amplitude, center_frequency, linewidth) averaged if both the Stokes and anti-Stokes peaks are used</span>
+<span class="sd">        variance: tuple</span>
+<span class="sd">            The returned variance on the fitted parameters (offset, amplitude, center_frequency, linewidth)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Reinitialize the list used to store the treatment steps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">treat_steps</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Resample the data so that the frequency axis has a constant step size</span>
+        <span class="n">frequency</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">frequency</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        
+        <span class="c1"># Extract the impulse response</span>
+        <span class="n">convolution</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">IR_wndw</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> 
+            <span class="n">_</span><span class="p">,</span> <span class="n">IR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wndw_data_from_freq</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">frequency</span><span class="p">,</span><span class="n">IR_wndw</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">IR_wndw</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">IR</span> <span class="o">=</span> <span class="n">IR</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">IR</span><span class="p">)</span> <span class="c1"># Rough removal of any offset</span>
+            <span class="n">IR</span> <span class="o">=</span> <span class="n">IR</span><span class="o">/</span><span class="nb">max</span><span class="p">(</span><span class="n">IR</span><span class="p">)</span> <span class="c1"># Rough normalization of the peak</span>
+            <span class="n">convolution</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">treat_steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Add convolution by the impulse response in the fitting function&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">freq_IR</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">freq_IR</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">data_IR</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="s2">&quot;the drequency array and data array fro the impulse response are not of same size&quot;</span>
+            <span class="n">wndw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">frequency</span><span class="o">&gt;=</span><span class="nb">min</span><span class="p">(</span><span class="n">freq_IR</span><span class="p">))</span><span class="o">&amp;</span><span class="p">(</span><span class="n">frequency</span><span class="o">&lt;=</span><span class="nb">max</span><span class="p">(</span><span class="n">freq_IR</span><span class="p">)))</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">IR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">freq_IR</span><span class="p">,</span> <span class="n">data_IR</span><span class="p">,</span> <span class="n">frequency</span><span class="p">[</span><span class="n">wndw</span><span class="p">])</span>
+            <span class="n">IR</span> <span class="o">=</span> <span class="n">IR</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">IR</span><span class="p">)</span> <span class="c1"># Rough removal of any offset</span>
+            <span class="n">IR</span> <span class="o">=</span> <span class="n">IR</span><span class="o">/</span><span class="nb">max</span><span class="p">(</span><span class="n">IR</span><span class="p">)</span> <span class="c1"># Rough normalization of the peak</span>
+            <span class="n">convolution</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">treat_steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Add convolution by the impulse response in the fitting function&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">treat_steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No convolution by the impulse response in the fitting function were added&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Define the fitting functions taking into account the convolutions.</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">lorentzian</span><span class="p">(</span><span class="n">nu</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">nu0</span><span class="p">,</span> <span class="n">gamma</span><span class="p">):</span>
+            <span class="n">func</span> <span class="o">=</span> <span class="n">b</span> <span class="o">+</span> <span class="n">a</span><span class="o">*</span><span class="p">(</span><span class="n">gamma</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">((</span><span class="n">nu</span><span class="o">-</span><span class="n">nu0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="p">(</span><span class="n">gamma</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">convolution</span><span class="p">:</span> <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">IR</span><span class="p">,</span> <span class="s2">&quot;same&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">func</span>
+        
+        <span class="k">def</span><span class="w"> </span><span class="nf">lorentzian_elastic</span><span class="p">(</span><span class="n">nu</span><span class="p">,</span> <span class="n">ae</span><span class="p">,</span> <span class="n">be</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">nu0</span><span class="p">,</span> <span class="n">gamma</span><span class="p">):</span>
+            <span class="n">func</span> <span class="o">=</span>  <span class="n">be</span> <span class="o">+</span> <span class="n">ae</span><span class="o">*</span><span class="n">nu</span> <span class="o">+</span> <span class="n">a</span><span class="o">*</span><span class="p">(</span><span class="n">gamma</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">((</span><span class="n">nu</span><span class="o">-</span><span class="n">nu0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="p">(</span><span class="n">gamma</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">convolution</span><span class="p">:</span> <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">IR</span><span class="p">,</span> <span class="s2">&quot;same&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">func</span>
+        
+        <span class="k">def</span><span class="w"> </span><span class="nf">DHO</span><span class="p">(</span><span class="n">nu</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">nu0</span><span class="p">,</span> <span class="n">gamma</span><span class="p">):</span>
+            <span class="n">func</span> <span class="o">=</span> <span class="n">b</span> <span class="o">+</span> <span class="n">a</span><span class="o">*</span><span class="p">(</span><span class="n">gamma</span><span class="o">*</span><span class="n">nu0</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">((</span><span class="n">nu</span><span class="o">**</span><span class="mi">2</span><span class="o">-</span><span class="n">nu0</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">gamma</span><span class="o">*</span><span class="n">nu0</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">convolution</span><span class="p">:</span> <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">IR</span><span class="p">,</span> <span class="s2">&quot;same&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">func</span>
+        
+        <span class="k">def</span><span class="w"> </span><span class="nf">DHO_elastic</span><span class="p">(</span><span class="n">nu</span><span class="p">,</span> <span class="n">ae</span><span class="p">,</span> <span class="n">be</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">nu0</span><span class="p">,</span> <span class="n">gamma</span><span class="p">):</span>
+            <span class="n">func</span> <span class="o">=</span> <span class="n">be</span> <span class="o">+</span> <span class="n">ae</span><span class="o">*</span><span class="n">nu</span> <span class="o">+</span> <span class="n">a</span><span class="o">*</span><span class="p">(</span><span class="n">gamma</span><span class="o">*</span><span class="n">nu0</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">((</span><span class="n">nu</span><span class="o">**</span><span class="mi">2</span><span class="o">-</span><span class="n">nu0</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">gamma</span><span class="o">*</span><span class="n">nu0</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">convolution</span><span class="p">:</span> <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">IR</span><span class="p">,</span> <span class="s2">&quot;same&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">func</span>
+        
+        <span class="c1"># Refine the position of the peak with a quadratic polynomial fit</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">fit_S_and_AS</span><span class="p">:</span>
+                <span class="n">center_frequency</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">center_frequency</span><span class="p">)</span>
+                <span class="n">window_peak_find_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">frequency</span><span class="o">+</span><span class="n">center_frequency</span><span class="p">)</span><span class="o">&lt;</span><span class="n">window_peak_find</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+                <span class="n">pol_temp_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">frequency</span><span class="p">[</span><span class="n">window_peak_find_S</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="n">window_peak_find_S</span><span class="p">],</span><span class="mi">2</span><span class="p">)</span>
+                <span class="n">window_peak_find_AS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">frequency</span><span class="o">-</span><span class="n">center_frequency</span><span class="p">)</span><span class="o">&lt;</span><span class="n">window_peak_find</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+                <span class="n">pol_temp_AS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">frequency</span><span class="p">[</span><span class="n">window_peak_find_AS</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="n">window_peak_find_AS</span><span class="p">],</span><span class="mi">2</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">window_peak_find_AS</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">3</span> <span class="ow">or</span> <span class="n">window_peak_find_S</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">TreatmentError</span><span class="p">(</span><span class="s2">&quot;The window size is too small to fit a polynomial&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">center_frequency_S</span> <span class="o">=</span> <span class="o">-</span><span class="n">pol_temp_S</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pol_temp_S</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="n">center_frequency_AS</span> <span class="o">=</span> <span class="o">-</span><span class="n">pol_temp_AS</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pol_temp_AS</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">treat_steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Windowing of Stokes and anti-Stokes peaks around </span><span class="si">{</span><span class="n">center_frequency_S</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">GHz and </span><span class="si">{</span><span class="n">center_frequency_AS</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">GHz respectively&quot;</span><span class="p">)</span>
+
+                    <span class="n">center_frequency</span> <span class="o">=</span> <span class="n">center_frequency_S</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">window_peak_find</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">frequency</span><span class="o">-</span><span class="n">center_frequency</span><span class="p">)</span><span class="o">&lt;</span><span class="n">window_peak_find</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+                <span class="n">pol_temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">frequency</span><span class="p">[</span><span class="n">window_peak_find</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="n">window_peak_find</span><span class="p">],</span><span class="mi">2</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">window_peak_find</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">TreatmentError</span><span class="p">(</span><span class="s2">&quot;The window size is too small to fit a polynomial&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">center_frequency</span> <span class="o">=</span> <span class="o">-</span><span class="n">pol_temp</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pol_temp</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">treat_steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Windowing of a single peak around </span><span class="si">{</span><span class="n">center_frequency</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">GHz &quot;</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">TreatmentError</span><span class="p">(</span><span class="s2">&quot;The windowing of the peaks before treatment failed.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Normalize the data is not already done</span>
+        <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span> 
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalize_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">peak_pos</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">frequency</span><span class="o">-</span><span class="n">center_frequency</span><span class="p">)))</span>
+
+        <span class="c1"># Apply the fit</span>
+        <span class="k">if</span> <span class="n">fit_S_and_AS</span><span class="p">:</span>
+            <span class="c1"># Define the initial parameters of the fit</span>
+            <span class="k">if</span> <span class="n">correct_elastic</span><span class="p">:</span> 
+                <span class="n">p0_S</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">center_frequency_S</span><span class="p">,</span> <span class="n">linewidth</span><span class="p">]</span>
+                <span class="n">p0_AS</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">center_frequency_AS</span><span class="p">,</span> <span class="n">linewidth</span><span class="p">]</span>
+                <span class="n">treat_step</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Fitting both Stokes and anti-Stokes peaks with a </span><span class="si">{</span><span class="n">model</span><span class="si">}</span><span class="s2"> model taking into account the effect of the elastic peak&quot;</span>
+                <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">+</span><span class="s2">&quot;_e&quot;</span>
+            <span class="k">else</span><span class="p">:</span> 
+                <span class="n">p0_S</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">center_frequency_S</span><span class="p">,</span> <span class="n">linewidth</span><span class="p">]</span>
+                <span class="n">p0_AS</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">center_frequency_AS</span><span class="p">,</span> <span class="n">linewidth</span><span class="p">]</span>
+                <span class="n">treat_step</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Fitting both Stokes and anti-Stokes peaks with a </span><span class="si">{</span><span class="n">model</span><span class="si">}</span><span class="s2"> model without taking into account the effect of the elastic peak&quot;</span>
+
+            <span class="c1"># Define the fit function</span>
+            <span class="n">models</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Lorentz&quot;</span><span class="p">:</span> <span class="n">lorentzian</span><span class="p">,</span> <span class="s2">&quot;DHO&quot;</span><span class="p">:</span> <span class="n">DHO</span><span class="p">,</span> <span class="s2">&quot;Lorentz_e&quot;</span><span class="p">:</span> <span class="n">lorentzian_elastic</span><span class="p">,</span> <span class="s2">&quot;DHO_e&quot;</span><span class="p">:</span> <span class="n">DHO_elastic</span><span class="p">}</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">models</span><span class="p">[</span><span class="n">model</span><span class="p">]</span>
+            
+            <span class="c1"># Define the windows of fit</span>
+            <span class="n">window_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">frequency</span><span class="o">-</span><span class="n">center_frequency_S</span><span class="p">)</span><span class="o">&lt;</span><span class="n">window_peak_fit</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">window_AS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">frequency</span><span class="o">-</span><span class="n">center_frequency_AS</span><span class="p">)</span><span class="o">&lt;</span><span class="n">window_peak_fit</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+
+            <span class="c1"># Apply the fit on both peaks</span>
+            <span class="k">if</span> <span class="n">convolution</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">IR</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="n">window_S</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">TreatmentError</span><span class="p">(</span><span class="s2">&quot;The size of the impulse response is larger than the window of fit. Please increase the fit window or decrease the IR window.&quot;</span><span class="p">)</span>
+            <span class="n">popt_S</span><span class="p">,</span> <span class="n">pcov_S</span> <span class="o">=</span> <span class="n">optimize</span><span class="o">.</span><span class="n">curve_fit</span><span class="p">(</span><span class="n">f</span><span class="p">,</span>
+                                                <span class="n">frequency</span><span class="p">[</span><span class="n">window_S</span><span class="p">],</span>
+                                                <span class="n">data</span><span class="p">[</span><span class="n">window_S</span><span class="p">],</span>
+                                                <span class="n">p0_S</span><span class="p">)</span>
+        
+            <span class="n">popt_AS</span><span class="p">,</span> <span class="n">pcov_AS</span> <span class="o">=</span> <span class="n">optimize</span><span class="o">.</span><span class="n">curve_fit</span><span class="p">(</span><span class="n">f</span><span class="p">,</span>
+                                                  <span class="n">frequency</span><span class="p">[</span><span class="n">window_AS</span><span class="p">],</span>
+                                                  <span class="n">data</span><span class="p">[</span><span class="n">window_AS</span><span class="p">],</span>
+                                                  <span class="n">p0_AS</span><span class="p">)</span>
+            
+            
+            
+            <span class="c1"># Extract the errors in the form of standard deviations</span>
+            <span class="n">std_S</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">pcov_S</span><span class="p">))</span>
+            <span class="n">std_AS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">pcov_AS</span><span class="p">))</span>
+            
+            <span class="n">std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">std_AS</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">std_S</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">popt</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">popt_S</span><span class="p">)</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">popt_AS</span><span class="p">))</span>
+            <span class="n">popt</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">popt_AS</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">popt_S</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+        
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">correct_elastic</span><span class="p">:</span> 
+                <span class="n">p0</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">center_frequency</span><span class="p">,</span> <span class="n">linewidth</span><span class="p">]</span>
+                <span class="n">treat_step</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Fitting given peakwith a </span><span class="si">{</span><span class="n">model</span><span class="si">}</span><span class="s2"> model, taking into account the effect of the elastic peak&quot;</span>
+                <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">+</span><span class="s2">&quot;_e&quot;</span>
+            <span class="k">else</span><span class="p">:</span> 
+                <span class="n">p0</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">center_frequency</span><span class="p">,</span> <span class="n">linewidth</span><span class="p">]</span>
+                <span class="n">treat_step</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Fitting given peak with a </span><span class="si">{</span><span class="n">model</span><span class="si">}</span><span class="s2"> model without taking into account the effect of the elastic peak&quot;</span>
+            
+            <span class="c1"># Define the fit function</span>
+            <span class="n">models</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Lorentz&quot;</span><span class="p">:</span> <span class="n">lorentzian</span><span class="p">,</span> <span class="s2">&quot;DHO&quot;</span><span class="p">:</span> <span class="n">DHO</span><span class="p">,</span> <span class="s2">&quot;Lorentz_e&quot;</span><span class="p">:</span> <span class="n">lorentzian_elastic</span><span class="p">,</span> <span class="s2">&quot;DHO_e&quot;</span><span class="p">:</span> <span class="n">DHO_elastic</span><span class="p">}</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">models</span><span class="p">[</span><span class="n">model</span><span class="p">]</span>
+
+            <span class="n">window</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">frequency</span><span class="o">-</span><span class="n">center_frequency</span><span class="p">)</span><span class="o">&lt;</span><span class="n">window_peak_fit</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+
+            <span class="n">popt</span><span class="p">,</span> <span class="n">pcov</span> <span class="o">=</span> <span class="n">optimize</span><span class="o">.</span><span class="n">curve_fit</span><span class="p">(</span><span class="n">f</span><span class="p">,</span>
+                                            <span class="n">frequency</span><span class="p">[</span><span class="n">window</span><span class="p">],</span>
+                                            <span class="n">data</span><span class="p">[</span><span class="n">window</span><span class="p">],</span>
+                                            <span class="n">p0</span><span class="p">)</span>
+            
+            <span class="n">std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">pcov</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">treat_steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">treat_step</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">popt</span><span class="p">,</span> <span class="n">std</span></div>
+
+
+<div class="viewcode-block" id="Treat.wndw_data_from_freq">
+<a class="viewcode-back" href="../../HDF5_BLS.html#HDF5_BLS.treat.Treat.wndw_data_from_freq">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wndw_data_from_freq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a window of the data and the frequency arrays corresponding to a given region of the frequency array.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data : numpy array</span>
+<span class="sd">            The raw data array</span>
+<span class="sd">        freq : numpy array</span>
+<span class="sd">            The frequency array</span>
+<span class="sd">        fmin : float</span>
+<span class="sd">            The left side of the window. Note that if the window is symetric, fmax is not needed and -fmin will be taken as the right side of the window</span>
+<span class="sd">        fmax : _type_, optional</span>
+<span class="sd">            The right side of the window. Optional when the window is symetric, hence fmax = -fmin, by default None</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        numpy array</span>
+<span class="sd">            The windowed frequency</span>
+<span class="sd">        numpy array</span>
+<span class="sd">            The windowed data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">fmax</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">fmax</span> <span class="o">=</span> <span class="o">-</span><span class="n">fmin</span>
+        <span class="k">if</span> <span class="n">fmin</span><span class="o">&gt;</span><span class="n">fmax</span><span class="p">:</span> <span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span> <span class="o">=</span> <span class="n">fmax</span><span class="p">,</span> <span class="n">fmin</span>
+        <span class="n">wndw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">freq</span><span class="o">&gt;</span><span class="n">fmin</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">freq</span><span class="o">&lt;</span><span class="n">fmax</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">freq</span><span class="p">[</span><span class="n">wndw</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="n">wndw</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="Treat.normalize_data">
+<a class="viewcode-back" href="../../HDF5_BLS.html#HDF5_BLS.treat.Treat.normalize_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">normalize_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">window</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">peak_pos</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">remove_offset</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Normalizes a data array to an amplitude of 1 after removing the offset</span>
+<span class="sd">    </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data : numpy array                           </span>
+<span class="sd">            The data that we want to normalize</span>
+<span class="sd">        window : int, optional </span>
+<span class="sd">            The window width around the position of the peak to refine its position and use its amplitude to normalize the signal. Default is 10</span>
+<span class="sd">        peak_pos : int, optional </span>
+<span class="sd">            The position of the peak in the data array. Defaults to the maximal value of the spectrum</span>
+<span class="sd">        remove_offset : bool, optional </span>
+<span class="sd">            Wether to remove the offset of the data or not before normalizing. Defaults to True.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        data_treat : numpy array</span>
+<span class="sd">            The data where the offset has been removed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">remove_offset</span><span class="p">:</span> 
+            <span class="n">data_treat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_offset</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">peak_pos</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span> 
+            <span class="n">peak_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">window</span> <span class="o">=</span> <span class="p">[</span><span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">peak_pos</span><span class="o">-</span><span class="n">window</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">peak_pos</span><span class="o">+</span><span class="n">window</span><span class="p">)]</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">window</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">window</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">treat_steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Normalizing the data based on the given peak&#39;s amplitude&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data_treat</span><span class="o">/</span><span class="n">val</span></div>
+
+    
+<div class="viewcode-block" id="Treat.remove_offset">
+<a class="viewcode-back" href="../../HDF5_BLS.html#HDF5_BLS.treat.Treat.remove_offset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">nb_points</span> <span class="o">=</span> <span class="mi">10</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Automatically identifies the offset of the signal and removes it by identifying the regions of points that are closer to zero and removing their average.</span>
+<span class="sd">    </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data : numpy array                           </span>
+<span class="sd">            The data that is going to be treated</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        data_treat : numpy array</span>
+<span class="sd">            The data where the offset has been removed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pos_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">window</span> <span class="o">=</span> <span class="p">[</span><span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">pos_min</span><span class="o">-</span><span class="n">nb_points</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">pos_min</span><span class="o">+</span><span class="n">nb_points</span><span class="p">)]</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">window</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">window</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+        <span class="n">data_treat</span> <span class="o">=</span> <span class="n">data</span> <span class="o">-</span> <span class="n">offset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">treat_steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Removing data&#39;s offset by averaging the data value around the point of lowest intensity&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data_treat</span></div>
+
+
+<div class="viewcode-block" id="Treat.resample">
+<a class="viewcode-back" href="../../HDF5_BLS.html#HDF5_BLS.treat.Treat.resample">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">resample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frequency</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">new_frequency</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Resamples the frequency and data arrays by creating a new frequency array where samples are equidistant</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        frequency : numpy array</span>
+<span class="sd">            The frequency array used for resampling with samples of same widths</span>
+<span class="sd">        data : numpy array</span>
+<span class="sd">            The data array that will be resampled following the resampling of the frequency axis. The resampling on the data is done by locally fitting a quadratic polynomial.</span>
+<span class="sd">        new_frequency : numpy array, optional</span>
+<span class="sd">            A new frequency array to resample the data on.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        new_frequency : numpy array</span>
+<span class="sd">            The resampled frequency array</span>
+<span class="sd">        new_data : numpy array</span>
+<span class="sd">            The resampled data array</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Creates the new arrays</span>
+        <span class="k">if</span> <span class="n">new_frequency</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> 
+            <span class="n">new_frequency</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">frequency</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">frequency</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">frequency</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+        <span class="n">new_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">new_frequency</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+
+        <span class="c1"># Resampling by fitting a quadratic polynomial</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">f</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">new_frequency</span><span class="p">):</span>
+            <span class="n">pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">frequency</span><span class="o">-</span><span class="n">f</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">pos</span><span class="o">&lt;</span><span class="mi">2</span><span class="p">:</span>
+                <span class="n">wndwf</span> <span class="o">=</span> <span class="n">frequency</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
+                <span class="n">wndwd</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">pos</span> <span class="o">&gt;</span> <span class="n">data</span><span class="o">.</span><span class="n">size</span><span class="o">-</span><span class="mi">3</span><span class="p">:</span>
+                <span class="n">wndwf</span> <span class="o">=</span> <span class="n">frequency</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span>
+                <span class="n">wndwd</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span>
+            <span class="k">else</span><span class="p">:</span> 
+                <span class="n">wndwf</span> <span class="o">=</span> <span class="n">frequency</span><span class="p">[</span><span class="n">pos</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="n">pos</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span>
+                <span class="n">wndwd</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">pos</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="n">pos</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">pol</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">wndwf</span><span class="p">,</span> <span class="n">wndwd</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">new_data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">poly1d</span><span class="p">(</span><span class="n">pol</span><span class="p">)(</span><span class="n">f</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">treat_steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Resample the signal&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_frequency</span><span class="p">,</span> <span class="n">new_data</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Pierre Bouvet.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

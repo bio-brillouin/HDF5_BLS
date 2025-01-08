@@ -1,0 +1,287 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HDF5_BLS.load_data &mdash; HDF5_BLS v0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=34cd777e"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            HDF5_BLS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">HDF5_BLS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">HDF5_BLS.load_data</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for HDF5_BLS.load_data</h1><div class="highlight"><pre>
+<span></span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PIL</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">h5py</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sif_parser</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+
+<div class="viewcode-block" id="load_dat_file">
+<a class="viewcode-back" href="../../HDF5_BLS.html#HDF5_BLS.load_data.load_dat_file">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_dat_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">creator</span> <span class="o">=</span> <span class="s2">&quot;GHOST&quot;</span><span class="p">):</span> <span class="c1"># Test made for GHOST</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads DAT files. The DAT files that can be read are obtained from the following configurations:</span>
+<span class="sd">    - GHOST software</span>
+<span class="sd">    - local exports with header</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filepath : str                           </span>
+<span class="sd">        The filepath to the GHOST file</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    data : np.array</span>
+<span class="sd">        The data stored in the file</span>
+<span class="sd">    attributes : dic</span>
+<span class="sd">        A dictionnary with all the properties that could be recovered from the file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">name</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+    <span class="n">attributes</span> <span class="o">=</span> <span class="p">{}</span>
+    
+    <span class="k">if</span> <span class="n">creator</span> <span class="o">==</span> <span class="s2">&quot;GHOST&quot;</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+            <span class="c1"># Extract metadata</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+                    <span class="k">continue</span>  <span class="c1"># Skip empty lines</span>
+                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">char</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]):</span>
+                    <span class="k">break</span>  <span class="c1"># Stop at the first number</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Split metadata into key-value pairs</span>
+                    <span class="k">if</span> <span class="s1">&#39;:&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                        <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                        <span class="n">metadata</span><span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="c1"># Extract numerical data</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+                    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()))</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;FILEPROP.Name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;MEASURE.Sample&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;Sample&quot;</span><span class="p">]</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;MEASURE.Date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;SPECTROMETER.Scanning_Strategy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;point_scanning&quot;</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;SPECTROMETER.Type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;TFP&quot;</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;SPECTROMETER.Illumination_Type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;CW&quot;</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;SPECTROMETER.Detector_Type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Photon Counter&quot;</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;SPECTROMETER.Filtering_Module&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;None&quot;</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;SPECTROMETER.Wavelength_nm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;Wavelength&quot;</span><span class="p">]</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;SPECTROMETER.Scan_Amplitude&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;Scan amplitude&quot;</span><span class="p">]</span>
+        <span class="n">spectral_resolution</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;Scan amplitude&quot;</span><span class="p">])</span><span class="o">/</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;SPECTROMETER.Spectral_Resolution&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">spectral_resolution</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">attributes</span></div>
+
+
+<div class="viewcode-block" id="load_tiff_file">
+<a class="viewcode-back" href="../../HDF5_BLS.html#HDF5_BLS.load_data.load_tiff_file">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_tiff_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span> <span class="c1"># Test made</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads files obtained with the GHOST software</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filepath : str                           </span>
+<span class="sd">        The filepath to the tif image</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    data : np.array</span>
+<span class="sd">        The data stored in the file</span>
+<span class="sd">    attributes : dic</span>
+<span class="sd">        A dictionnary with all the properties that could be recovered from the file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">name</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+    <span class="n">attributes</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;FILEPROP.Name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
+
+    <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">attributes</span></div>
+
+
+<div class="viewcode-block" id="load_npy_file">
+<a class="viewcode-back" href="../../HDF5_BLS.html#HDF5_BLS.load_data.load_npy_file">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_npy_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span> <span class="c1"># Test made</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads npy files</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filepath : str                           </span>
+<span class="sd">        The filepath to the npy file</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    data : np.array</span>
+<span class="sd">        The data stored in the file</span>
+<span class="sd">    attributes : dic</span>
+<span class="sd">        A dictionnary with all the properties that could be recovered from the file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+    <span class="n">attributes</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;FILEPROP.Name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
+    <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">attributes</span></div>
+
+
+<div class="viewcode-block" id="load_sif_file">
+<a class="viewcode-back" href="../../HDF5_BLS.html#HDF5_BLS.load_data.load_sif_file">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_sif_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span> 
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads npy files</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filepath : str                           </span>
+<span class="sd">        The filepath to the npy file</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    data : np.array</span>
+<span class="sd">        The data stored in the file</span>
+<span class="sd">    attributes : dic</span>
+<span class="sd">        A dictionnary with all the properties that could be recovered from the file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">name</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+    <span class="n">attributes</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">data</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">sif_parser</span><span class="o">.</span><span class="n">np_open</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+
+
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;MEASURE.Exposure_s&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;ExposureTime&quot;</span><span class="p">])</span>
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;SPECTROMETER.Detector_Model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;DetectorType&quot;</span><span class="p">]</span>
+    <span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;MEASURE.Date_of_measure&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;ExperimentTime&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">attributes</span></div>
+
+
+<div class="viewcode-block" id="load_general">
+<a class="viewcode-back" href="../../HDF5_BLS.html#HDF5_BLS.load_data.load_general">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_general</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span> <span class="c1"># Test made </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads files based on their extensions</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filepath : str                           </span>
+<span class="sd">        The filepath to the file</span>
+<span class="sd">    </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    data : np.array</span>
+<span class="sd">        The data stored in the file</span>
+<span class="sd">    attributes : dic</span>
+<span class="sd">        A dictionnary with all the properties that could be recovered from the file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">file_extension</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">file_extension</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;.dat&quot;</span><span class="p">:</span>
+        <span class="c1"># Load .DAT file format data</span>
+        <span class="k">return</span> <span class="n">load_dat_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">file_extension</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;.tif&quot;</span><span class="p">:</span>
+        <span class="c1"># Load .TIFF file format data</span>
+        <span class="k">return</span> <span class="n">load_tiff_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">file_extension</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;.npy&quot;</span><span class="p">:</span>
+        <span class="c1"># Load .npy file format data</span>
+        <span class="k">return</span> <span class="n">load_npy_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">file_extension</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;.sif&quot;</span><span class="p">:</span>
+        <span class="c1"># Load .npy file format data</span>
+        <span class="k">return</span> <span class="n">load_sif_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported file format: </span><span class="si">{</span><span class="n">file_extension</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Pierre Bouvet.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

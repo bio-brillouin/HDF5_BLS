@@ -1,0 +1,623 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HDF5_BLS package &mdash; HDF5_BLS v0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=34cd777e"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            HDF5_BLS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">HDF5_BLS package</a><ul>
+<li><a class="reference internal" href="#module-HDF5_BLS.load_data">HDF5_BLS.load_data module</a><ul>
+<li><a class="reference internal" href="#HDF5_BLS.load_data.load_dat_file"><code class="docutils literal notranslate"><span class="pre">load_dat_file()</span></code></a></li>
+<li><a class="reference internal" href="#HDF5_BLS.load_data.load_general"><code class="docutils literal notranslate"><span class="pre">load_general()</span></code></a></li>
+<li><a class="reference internal" href="#HDF5_BLS.load_data.load_npy_file"><code class="docutils literal notranslate"><span class="pre">load_npy_file()</span></code></a></li>
+<li><a class="reference internal" href="#HDF5_BLS.load_data.load_sif_file"><code class="docutils literal notranslate"><span class="pre">load_sif_file()</span></code></a></li>
+<li><a class="reference internal" href="#HDF5_BLS.load_data.load_tiff_file"><code class="docutils literal notranslate"><span class="pre">load_tiff_file()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-HDF5_BLS.treat">HDF5_BLS.treat module</a><ul>
+<li><a class="reference internal" href="#HDF5_BLS.treat.Treat"><code class="docutils literal notranslate"><span class="pre">Treat</span></code></a><ul>
+<li><a class="reference internal" href="#HDF5_BLS.treat.Treat.fit_model"><code class="docutils literal notranslate"><span class="pre">Treat.fit_model()</span></code></a></li>
+<li><a class="reference internal" href="#HDF5_BLS.treat.Treat.normalize_data"><code class="docutils literal notranslate"><span class="pre">Treat.normalize_data()</span></code></a></li>
+<li><a class="reference internal" href="#HDF5_BLS.treat.Treat.remove_offset"><code class="docutils literal notranslate"><span class="pre">Treat.remove_offset()</span></code></a></li>
+<li><a class="reference internal" href="#HDF5_BLS.treat.Treat.resample"><code class="docutils literal notranslate"><span class="pre">Treat.resample()</span></code></a></li>
+<li><a class="reference internal" href="#HDF5_BLS.treat.Treat.wndw_data_from_freq"><code class="docutils literal notranslate"><span class="pre">Treat.wndw_data_from_freq()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#HDF5_BLS.treat.TreatmentError"><code class="docutils literal notranslate"><span class="pre">TreatmentError</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-HDF5_BLS.wrapper">HDF5_BLS.wrapper module</a><ul>
+<li><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper"><code class="docutils literal notranslate"><span class="pre">Wrapper</span></code></a><ul>
+<li><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.attributes"><code class="docutils literal notranslate"><span class="pre">Wrapper.attributes</span></code></a></li>
+<li><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.data"><code class="docutils literal notranslate"><span class="pre">Wrapper.data</span></code></a></li>
+<li><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.data_attributes"><code class="docutils literal notranslate"><span class="pre">Wrapper.data_attributes</span></code></a></li>
+<li><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.add_data_group_to_wrapper"><code class="docutils literal notranslate"><span class="pre">Wrapper.add_data_group_to_wrapper()</span></code></a></li>
+<li><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.add_data_to_group"><code class="docutils literal notranslate"><span class="pre">Wrapper.add_data_to_group()</span></code></a></li>
+<li><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.add_hdf5_to_wrapper"><code class="docutils literal notranslate"><span class="pre">Wrapper.add_hdf5_to_wrapper()</span></code></a></li>
+<li><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.assign_name_all_abscissa"><code class="docutils literal notranslate"><span class="pre">Wrapper.assign_name_all_abscissa()</span></code></a></li>
+<li><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.assign_name_one_abscissa"><code class="docutils literal notranslate"><span class="pre">Wrapper.assign_name_one_abscissa()</span></code></a></li>
+<li><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.create_abscissa_1D_min_max"><code class="docutils literal notranslate"><span class="pre">Wrapper.create_abscissa_1D_min_max()</span></code></a></li>
+<li><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.import_abscissa_1D"><code class="docutils literal notranslate"><span class="pre">Wrapper.import_abscissa_1D()</span></code></a></li>
+<li><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.import_properties_data"><code class="docutils literal notranslate"><span class="pre">Wrapper.import_properties_data()</span></code></a></li>
+<li><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.save_as_hdf5"><code class="docutils literal notranslate"><span class="pre">Wrapper.save_as_hdf5()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#HDF5_BLS.wrapper.WrapperError"><code class="docutils literal notranslate"><span class="pre">WrapperError</span></code></a></li>
+<li><a class="reference internal" href="#HDF5_BLS.wrapper.add_data_to_wrapper"><code class="docutils literal notranslate"><span class="pre">add_data_to_wrapper()</span></code></a></li>
+<li><a class="reference internal" href="#HDF5_BLS.wrapper.load_hdf5_file"><code class="docutils literal notranslate"><span class="pre">load_hdf5_file()</span></code></a></li>
+<li><a class="reference internal" href="#HDF5_BLS.wrapper.merge_wrappers"><code class="docutils literal notranslate"><span class="pre">merge_wrappers()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">HDF5_BLS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">HDF5_BLS package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/HDF5_BLS.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="hdf5-bls-package">
+<h1>HDF5_BLS package<a class="headerlink" href="#hdf5-bls-package" title="Link to this heading"></a></h1>
+<section id="module-HDF5_BLS.load_data">
+<span id="hdf5-bls-load-data-module"></span><h2>HDF5_BLS.load_data module<a class="headerlink" href="#module-HDF5_BLS.load_data" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="HDF5_BLS.load_data.load_dat_file">
+<span class="sig-prename descclassname"><span class="pre">HDF5_BLS.load_data.</span></span><span class="sig-name descname"><span class="pre">load_dat_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">creator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'GHOST'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/HDF5_BLS/load_data.html#load_dat_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.load_data.load_dat_file" title="Link to this definition"></a></dt>
+<dd><p>Loads DAT files. The DAT files that can be read are obtained from the following configurations:
+- GHOST software
+- local exports with header</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – The filepath to the GHOST file</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>data</strong> (<em>np.array</em>) – The data stored in the file</p></li>
+<li><p><strong>attributes</strong> (<em>dic</em>) – A dictionnary with all the properties that could be recovered from the file</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HDF5_BLS.load_data.load_general">
+<span class="sig-prename descclassname"><span class="pre">HDF5_BLS.load_data.</span></span><span class="sig-name descname"><span class="pre">load_general</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/HDF5_BLS/load_data.html#load_general"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.load_data.load_general" title="Link to this definition"></a></dt>
+<dd><p>Loads files based on their extensions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – The filepath to the file</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>data</strong> (<em>np.array</em>) – The data stored in the file</p></li>
+<li><p><strong>attributes</strong> (<em>dic</em>) – A dictionnary with all the properties that could be recovered from the file</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HDF5_BLS.load_data.load_npy_file">
+<span class="sig-prename descclassname"><span class="pre">HDF5_BLS.load_data.</span></span><span class="sig-name descname"><span class="pre">load_npy_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/HDF5_BLS/load_data.html#load_npy_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.load_data.load_npy_file" title="Link to this definition"></a></dt>
+<dd><p>Loads npy files</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – The filepath to the npy file</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>data</strong> (<em>np.array</em>) – The data stored in the file</p></li>
+<li><p><strong>attributes</strong> (<em>dic</em>) – A dictionnary with all the properties that could be recovered from the file</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HDF5_BLS.load_data.load_sif_file">
+<span class="sig-prename descclassname"><span class="pre">HDF5_BLS.load_data.</span></span><span class="sig-name descname"><span class="pre">load_sif_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/HDF5_BLS/load_data.html#load_sif_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.load_data.load_sif_file" title="Link to this definition"></a></dt>
+<dd><p>Loads npy files</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – The filepath to the npy file</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>data</strong> (<em>np.array</em>) – The data stored in the file</p></li>
+<li><p><strong>attributes</strong> (<em>dic</em>) – A dictionnary with all the properties that could be recovered from the file</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HDF5_BLS.load_data.load_tiff_file">
+<span class="sig-prename descclassname"><span class="pre">HDF5_BLS.load_data.</span></span><span class="sig-name descname"><span class="pre">load_tiff_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/HDF5_BLS/load_data.html#load_tiff_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.load_data.load_tiff_file" title="Link to this definition"></a></dt>
+<dd><p>Loads files obtained with the GHOST software</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – The filepath to the tif image</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>data</strong> (<em>np.array</em>) – The data stored in the file</p></li>
+<li><p><strong>attributes</strong> (<em>dic</em>) – A dictionnary with all the properties that could be recovered from the file</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-HDF5_BLS.treat">
+<span id="hdf5-bls-treat-module"></span><h2>HDF5_BLS.treat module<a class="headerlink" href="#module-HDF5_BLS.treat" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="HDF5_BLS.treat.Treat">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HDF5_BLS.treat.</span></span><span class="sig-name descname"><span class="pre">Treat</span></span><a class="reference internal" href="_modules/HDF5_BLS/treat.html#Treat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.treat.Treat" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class is meant to offer a standard way of treating the data. Please refer to the dedicated <a class="reference external" href="https://github.com/PierreBouvet/HDF5_BLS/blob/main/notebooks/Treat.ipynb">notebook</a>. to find explicit descriptions of the algorithms.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="HDF5_BLS.treat.Treat.fit_model">
+<span class="sig-name descname"><span class="pre">fit_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequency</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_frequency</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linewidth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Lorentz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit_S_and_AS</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_peak_find</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_peak_fit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correct_elastic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">IR_wndw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq_IR</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_IR</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/HDF5_BLS/treat.html#Treat.fit_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.treat.Treat.fit_model" title="Link to this definition"></a></dt>
+<dd><p>Fitting function that performs a fit on the selected spectrum and returns the fitted values and the standard deviations on the fitted parameters. When 2 peaks are fitted, the standard deviation returned by the function corresponds to the standard deviation of two independent events, that is std_{avg} = sqrt{std_{S}^2 + std_{AS}^2}. This function also takes into account the impulse response of the spectrometer when applying the fit, which therefore returns a</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frequency</strong> (<em>numpy array</em>) – The freaquency axis corresponding to the data</p></li>
+<li><p><strong>data</strong> (<em>numpy array</em>) – The data to fit</p></li>
+<li><p><strong>center_frequency</strong> (<em>float</em>) – The estimate expected shift frequency</p></li>
+<li><p><strong>linewidth</strong> (<em>float</em>) – The expected linewidth</p></li>
+<li><p><strong>normalize</strong> (<em>bool</em><em>, </em><em>optional</em>) – Wether a normalization is to be made on the data before treatment or not , by default True</p></li>
+<li><p><strong>model</strong> (<em>str</em><em>, </em><em>optional</em>) – The model with which to fit the data. Accepted models are “Lorentz” and “DHO”, by default “Lorentz”</p></li>
+<li><p><strong>fit_S_and_AS</strong> (<em>bool</em><em>, </em><em>optional</em>) – Wether to fit both the Stokes and Anti-Stokes peak during the fit (and return corresponding averaged values and propagated errors), by default True</p></li>
+<li><p><strong>window_peak_find</strong> (<em>float</em><em>, </em><em>optional</em>) – The width in GHz where to find the peak, by default 1GHz</p></li>
+<li><p><strong>window_peak_fit</strong> (<em>float</em><em>, </em><em>optional</em>) – The width in GHz of the windo used to fit the peak, by default 3 GHz</p></li>
+<li><p><strong>correct_elastic</strong> (<em>bool</em><em>, </em><em>optional</em>) – Wether to correct for the presence of an elastic peak by setting adding a linear function to the model, by default False</p></li>
+<li><p><strong>wndw_IR</strong> (<em>2-tuple</em><em>, </em><em>optional</em>) – If the impulse response can be recovered from the spectrum, the corresponding window on the frequency axis where to recover the response. The window width of the impulse response should be shorter than the window used for the fit of peak, if not this raises an error.</p></li>
+<li><p><strong>freq_IR</strong> (<em>numpy array</em><em>, </em><em>optional</em>) – The frequency of the impulse response</p></li>
+<li><p><strong>data_IR</strong> (<em>numpy array</em><em>, </em><em>optional</em>) – The data of the impulse response</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>optimal_parameters</strong> (<em>tuple</em>) – The returned optimal parameters for the fit (offset, amplitude, center_frequency, linewidth) averaged if both the Stokes and anti-Stokes peaks are used</p></li>
+<li><p><strong>variance</strong> (<em>tuple</em>) – The returned variance on the fitted parameters (offset, amplitude, center_frequency, linewidth)</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HDF5_BLS.treat.Treat.normalize_data">
+<span class="sig-name descname"><span class="pre">normalize_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">peak_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/HDF5_BLS/treat.html#Treat.normalize_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.treat.Treat.normalize_data" title="Link to this definition"></a></dt>
+<dd><p>Normalizes a data array to an amplitude of 1 after removing the offset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy array</em>) – The data that we want to normalize</p></li>
+<li><p><strong>window</strong> (<em>int</em><em>, </em><em>optional</em>) – The window width around the position of the peak to refine its position and use its amplitude to normalize the signal. Default is 10</p></li>
+<li><p><strong>peak_pos</strong> (<em>int</em><em>, </em><em>optional</em>) – The position of the peak in the data array. Defaults to the maximal value of the spectrum</p></li>
+<li><p><strong>remove_offset</strong> (<em>bool</em><em>, </em><em>optional</em>) – Wether to remove the offset of the data or not before normalizing. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>data_treat</strong> – The data where the offset has been removed</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HDF5_BLS.treat.Treat.remove_offset">
+<span class="sig-name descname"><span class="pre">remove_offset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/HDF5_BLS/treat.html#Treat.remove_offset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.treat.Treat.remove_offset" title="Link to this definition"></a></dt>
+<dd><p>Automatically identifies the offset of the signal and removes it by identifying the regions of points that are closer to zero and removing their average.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>numpy array</em>) – The data that is going to be treated</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>data_treat</strong> – The data where the offset has been removed</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HDF5_BLS.treat.Treat.resample">
+<span class="sig-name descname"><span class="pre">resample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequency</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/HDF5_BLS/treat.html#Treat.resample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.treat.Treat.resample" title="Link to this definition"></a></dt>
+<dd><p>Resamples the frequency and data arrays by creating a new frequency array where samples are equidistant</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frequency</strong> (<em>numpy array</em>) – The frequency array used for resampling with samples of same widths</p></li>
+<li><p><strong>data</strong> (<em>numpy array</em>) – The data array that will be resampled following the resampling of the frequency axis. The resampling on the data is done by locally fitting a quadratic polynomial.</p></li>
+<li><p><strong>new_frequency</strong> (<em>numpy array</em><em>, </em><em>optional</em>) – A new frequency array to resample the data on.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>new_frequency</strong> (<em>numpy array</em>) – The resampled frequency array</p></li>
+<li><p><strong>new_data</strong> (<em>numpy array</em>) – The resampled data array</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HDF5_BLS.treat.Treat.wndw_data_from_freq">
+<span class="sig-name descname"><span class="pre">wndw_data_from_freq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/HDF5_BLS/treat.html#Treat.wndw_data_from_freq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.treat.Treat.wndw_data_from_freq" title="Link to this definition"></a></dt>
+<dd><p>Returns a window of the data and the frequency arrays corresponding to a given region of the frequency array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy array</em>) – The raw data array</p></li>
+<li><p><strong>freq</strong> (<em>numpy array</em>) – The frequency array</p></li>
+<li><p><strong>fmin</strong> (<em>float</em>) – The left side of the window. Note that if the window is symetric, fmax is not needed and -fmin will be taken as the right side of the window</p></li>
+<li><p><strong>fmax</strong> (<em>_type_</em><em>, </em><em>optional</em>) – The right side of the window. Optional when the window is symetric, hence fmax = -fmin, by default None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>numpy array</em> – The windowed frequency</p></li>
+<li><p><em>numpy array</em> – The windowed data</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="HDF5_BLS.treat.TreatmentError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HDF5_BLS.treat.</span></span><span class="sig-name descname"><span class="pre">TreatmentError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/HDF5_BLS/treat.html#TreatmentError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.treat.TreatmentError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+</section>
+<section id="module-HDF5_BLS.wrapper">
+<span id="hdf5-bls-wrapper-module"></span><h2>HDF5_BLS.wrapper module<a class="headerlink" href="#module-HDF5_BLS.wrapper" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="HDF5_BLS.wrapper.Wrapper">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HDF5_BLS.wrapper.</span></span><span class="sig-name descname"><span class="pre">Wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_attributes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/HDF5_BLS/wrapper.html#Wrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This object is used to store data and attributes in a unified structure.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HDF5_BLS.wrapper.Wrapper.attributes">
+<span class="sig-name descname"><span class="pre">attributes</span></span><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.attributes" title="Link to this definition"></a></dt>
+<dd><p>The attributes of the data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dic</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HDF5_BLS.wrapper.Wrapper.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.data" title="Link to this definition"></a></dt>
+<dd><p>The data arrays (raw data, treated data, abscissa, other measures)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dic</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HDF5_BLS.wrapper.Wrapper.data_attributes">
+<span class="sig-name descname"><span class="pre">data_attributes</span></span><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.data_attributes" title="Link to this definition"></a></dt>
+<dd><p>The attributes specific to an array</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dic</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HDF5_BLS.wrapper.Wrapper.add_data_group_to_wrapper">
+<span class="sig-name descname"><span class="pre">add_data_group_to_wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/HDF5_BLS/wrapper.html#Wrapper.add_data_group_to_wrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.add_data_group_to_wrapper" title="Link to this definition"></a></dt>
+<dd><p>Adds data to the wrapper by creating a new group.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>np.ndarray</em>) – The data to add to the wrapper.</p></li>
+<li><p><strong>parent_group</strong> (<em>str</em><em>, </em><em>optional</em>) – The parent group where to store the data of the HDF5 file, by default the parent group is the top group “Data”. The format of this group should be “Data.Data_0.Data_0” or “Data/Data_0/Data_0”.</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the data group, by default the name is the identifier of the group “Data_i”.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HDF5_BLS.wrapper.Wrapper.add_data_to_group">
+<span class="sig-name descname"><span class="pre">add_data_to_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/HDF5_BLS/wrapper.html#Wrapper.add_data_to_group"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.add_data_to_group" title="Link to this definition"></a></dt>
+<dd><p>Adds an array to an existing data group.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>np.ndarray</em>) – The data to add to the wrapper.</p></li>
+<li><p><strong>group</strong> (<em>str</em>) – The group where to store the data.</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the data group, by default the name is the identifier of the group “Data_i”.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HDF5_BLS.wrapper.Wrapper.add_hdf5_to_wrapper">
+<span class="sig-name descname"><span class="pre">add_hdf5_to_wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/HDF5_BLS/wrapper.html#Wrapper.add_hdf5_to_wrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.add_hdf5_to_wrapper" title="Link to this definition"></a></dt>
+<dd><p>Adds an hdf5 file to the wrapper by specifying in which group the data have to be stored. Default is the “Data” group. When adding the data, the attributes of the HDF5 file are only added to the created group if they are different from the parent’s attribute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> (<em>str</em>) – The filepath of the hdf5 file to add.</p></li>
+<li><p><strong>parent_group</strong> (<em>str</em><em>, </em><em>optional</em>) – The parent group where to store the data of the HDF5 file, by default the parent group is the top group “Data”. The format of this group should be “Data.Data_0.Data_0_0”</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HDF5_BLS.wrapper.Wrapper.assign_name_all_abscissa">
+<span class="sig-name descname"><span class="pre">assign_name_all_abscissa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">abscissa</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/HDF5_BLS/wrapper.html#Wrapper.assign_name_all_abscissa"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.assign_name_all_abscissa" title="Link to this definition"></a></dt>
+<dd><p>Adds as attributes of the abscissas and the raw data, the names of the abscissas</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>abscissa</strong> (<em>str</em>) – The names of the abscissas</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#HDF5_BLS.wrapper.WrapperError" title="HDF5_BLS.wrapper.WrapperError"><strong>WrapperError</strong></a> – If the length of the abscissa is different from the dimensionality of the data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HDF5_BLS.wrapper.Wrapper.assign_name_one_abscissa">
+<span class="sig-name descname"><span class="pre">assign_name_one_abscissa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">abscissa_nb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/HDF5_BLS/wrapper.html#Wrapper.assign_name_one_abscissa"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.assign_name_one_abscissa" title="Link to this definition"></a></dt>
+<dd><p>Adds as attributes of the abscissas and the raw data, the names of the abscissas</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>abscissa_nb</strong> (<em>str</em>) – The number of the abscissa to rename (“i” or “i-j”)</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – The new name of the abscissa to rename</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HDF5_BLS.wrapper.Wrapper.create_abscissa_1D_min_max">
+<span class="sig-name descname"><span class="pre">create_abscissa_1D_min_max</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dimension</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/HDF5_BLS/wrapper.html#Wrapper.create_abscissa_1D_min_max"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.create_abscissa_1D_min_max" title="Link to this definition"></a></dt>
+<dd><p>Creates an 1D abscissa array from a minimal and maximal value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dimension</strong> (<em>int</em>) – The dimension of the data that we are changing (first dimension is 0)</p></li>
+<li><p><strong>min</strong> (<em>float</em>) – The minimal value of the abscissa range (included)</p></li>
+<li><p><strong>max</strong> (<em>float</em>) – The maximal value of the abscissa range (included)</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the abscissa axis, by default None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#HDF5_BLS.wrapper.WrapperError" title="HDF5_BLS.wrapper.WrapperError"><strong>WrapperError</strong></a> – If the dimension given is higher than the dimension of the data</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HDF5_BLS.wrapper.Wrapper.import_abscissa_1D">
+<span class="sig-name descname"><span class="pre">import_abscissa_1D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dimension</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/HDF5_BLS/wrapper.html#Wrapper.import_abscissa_1D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.import_abscissa_1D" title="Link to this definition"></a></dt>
+<dd><p>Creates an abscissa from a minimal and maximal value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dimension</strong> (<em>int</em>) – The dimension of the data that we are changing (first dimension is 0)</p></li>
+<li><p><strong>filepath</strong> (<em>str</em>) – The filepath containing the values of the abscissa</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the abscissa axis, by default None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#HDF5_BLS.wrapper.WrapperError" title="HDF5_BLS.wrapper.WrapperError"><strong>WrapperError</strong></a> – If the dimension given is higher than the dimension of the data</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HDF5_BLS.wrapper.Wrapper.import_properties_data">
+<span class="sig-name descname"><span class="pre">import_properties_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/HDF5_BLS/wrapper.html#Wrapper.import_properties_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.import_properties_data" title="Link to this definition"></a></dt>
+<dd><p>Imports properties from a CSV file into a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath_csv</strong> (<em>str</em>) – The filepath to the csv storing the properties of the measure. This csv is meant to be made once to store all the properties of the spectrometer and then minimally adjusted to the sample being measured.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>self.attributes</strong> – The dictionnary containing all the attributes</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dic</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HDF5_BLS.wrapper.Wrapper.save_as_hdf5">
+<span class="sig-name descname"><span class="pre">save_as_hdf5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/HDF5_BLS/wrapper.html#Wrapper.save_as_hdf5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.save_as_hdf5" title="Link to this definition"></a></dt>
+<dd><p>Saves the data and attributes to an HDF5 file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>save_filepath</strong> (<em>str</em>) – The filepath where to save the hdf5 file</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#HDF5_BLS.wrapper.WrapperError" title="HDF5_BLS.wrapper.WrapperError"><strong>WrapperError</strong></a> – Raises an error if the file could not be saved</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="HDF5_BLS.wrapper.WrapperError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">HDF5_BLS.wrapper.</span></span><span class="sig-name descname"><span class="pre">WrapperError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/HDF5_BLS/wrapper.html#WrapperError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.WrapperError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HDF5_BLS.wrapper.add_data_to_wrapper">
+<span class="sig-prename descclassname"><span class="pre">HDF5_BLS.wrapper.</span></span><span class="sig-name descname"><span class="pre">add_data_to_wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wrapper</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_attributes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abscissa_from_attributes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/HDF5_BLS/wrapper.html#add_data_to_wrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.add_data_to_wrapper" title="Link to this definition"></a></dt>
+<dd><p>Add data from a file to a wrapper</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wrapper</strong> (<a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper" title="HDF5_BLS.wrapper.Wrapper"><em>Wrapper</em></a>) – The wrapper to add the data to</p></li>
+<li><p><strong>file_path</strong> (<em>str</em>) – The path to the file to add</p></li>
+<li><p><strong>data_attributes</strong> (<em>dict</em>) – The attributes of the data to add</p></li>
+<li><p><strong>abscissa_from_attributes</strong> (<em>list</em>) – The attributes to use as abscissa</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HDF5_BLS.wrapper.load_hdf5_file">
+<span class="sig-prename descclassname"><span class="pre">HDF5_BLS.wrapper.</span></span><span class="sig-name descname"><span class="pre">load_hdf5_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/HDF5_BLS/wrapper.html#load_hdf5_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.load_hdf5_file" title="Link to this definition"></a></dt>
+<dd><p>Loads HDF5 files</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – The filepath to the HDF5 file</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>wrp</strong> – The wrapper associated to the HDF5 file</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper" title="HDF5_BLS.wrapper.Wrapper">Wrapper</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HDF5_BLS.wrapper.merge_wrappers">
+<span class="sig-prename descclassname"><span class="pre">HDF5_BLS.wrapper.</span></span><span class="sig-name descname"><span class="pre">merge_wrappers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_wrappers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abscissa_from_attributes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/HDF5_BLS/wrapper.html#merge_wrappers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.merge_wrappers" title="Link to this definition"></a></dt>
+<dd><p>Merges a list of wrappers into a single wrapper, combining their common attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>list_wrappers</strong> (<em>list</em><em> of </em><em>Wrapper objects</em>) – The list of Wrapper objects to merge into a single Wrapper object.</p></li>
+<li><p><strong>name</strong> (<em>None</em><em> or </em><em>str</em><em>, </em><em>optional</em>) – The name given to the file resulting of the merging of the wrappers</p></li>
+<li><p><strong>abscissa_from_attributes</strong> (<em>None</em><em> or </em><em>list</em><em> of </em><em>str</em><em>, </em><em>optional</em>) – The name of the attributes from which to extract values to create an abscissa</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>attributes</strong> (<em>dic</em>) – The attributes of the merged wrapper</p></li>
+<li><p><strong>data</strong> (<em>dic</em>) – The data of the merged wrapper</p></li>
+<li><p><strong>data_attributes</strong> (<em>dic</em>) – The attributes of the data of the merged wrapper</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Pierre Bouvet.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
