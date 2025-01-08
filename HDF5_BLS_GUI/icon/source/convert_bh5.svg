@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="80mm"
+   height="80mm"
+   viewBox="0 0 80 80"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25)"
+   sodipodi:docname="convert_bh5.svg"
+   inkscape:export-filename="../convert_bh5.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="1.3487948"
+     inkscape:cx="135.30598"
+     inkscape:cy="169.78121"
+     inkscape:window-width="1512"
+     inkscape:window-height="945"
+     inkscape:window-x="0"
+     inkscape:window-y="37"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1">
+    <linearGradient
+       id="linearGradient4"
+       inkscape:collect="always">
+      <stop
+         style="stop-color:#ff0000;stop-opacity:1;"
+         offset="0"
+         id="stop4" />
+      <stop
+         style="stop-color:#002eff;stop-opacity:1;"
+         offset="1"
+         id="stop5" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient2"
+       inkscape:collect="always">
+      <stop
+         style="stop-color:#ff0000;stop-opacity:1;"
+         offset="0"
+         id="stop2" />
+      <stop
+         style="stop-color:#002eff;stop-opacity:1;"
+         offset="0.63615561"
+         id="stop3" />
+    </linearGradient>
+    <marker
+       style="overflow:visible"
+       id="ArrowTriangleStylized"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Stylized triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.5)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="m 6,0 c -3,1 -7,3 -9,5 0,0 0,-4 2,-5 -2,-1 -2,-5 -2,-5 2,2 6,4 9,5 z"
+         id="path4" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="ArrowTriangleStylized-8"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Stylized triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.5)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="m 6,0 c -3,1 -7,3 -9,5 0,0 0,-4 2,-5 -2,-1 -2,-5 -2,-5 2,2 6,4 9,5 z"
+         id="path4-0" />
+    </marker>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient2"
+       id="linearGradient3"
+       x1="18.571574"
+       y1="61.283489"
+       x2="50.380036"
+       y2="61.283489"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-2.1166667)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4"
+       id="linearGradient5"
+       x1="-91.959287"
+       y1="-62.870994"
+       x2="-60.150825"
+       y2="-62.870994"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-1.5875)" />
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-14.859154,-23.939749)">
+    <rect
+       style="fill:#ffffff;stroke-width:1"
+       id="rect1"
+       width="80"
+       height="80"
+       x="14.859154"
+       y="23.939749" />
+    <path
+       style="fill:none;fill-opacity:1;stroke:url(#linearGradient3);stroke-width:2.8;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#ArrowTriangleStylized)"
+       id="path1"
+       sodipodi:type="arc"
+       sodipodi:cx="47.85709"
+       sodipodi:cy="63.14864"
+       sodipodi:rx="30"
+       sodipodi:ry="30"
+       sodipodi:start="1.5707963"
+       sodipodi:end="4.3633231"
+       sodipodi:arc-type="arc"
+       d="M 47.85709,93.14864 A 30,30 0 0 1 18.312858,68.358086 30,30 0 0 1 37.596485,34.957861"
+       sodipodi:open="true" />
+    <path
+       style="fill:none;fill-opacity:1;stroke:url(#linearGradient5);stroke-width:2.8;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#ArrowTriangleStylized-8)"
+       id="path1-6"
+       sodipodi:type="arc"
+       sodipodi:cx="-62.144604"
+       sodipodi:cy="-61.005844"
+       sodipodi:rx="30"
+       sodipodi:ry="30"
+       sodipodi:start="1.5707963"
+       sodipodi:end="4.3633231"
+       sodipodi:arc-type="arc"
+       d="m -62.144604,-31.005844 a 30,30 0 0 1 -29.544232,-24.790554 30,30 0 0 1 19.283627,-33.400224"
+       sodipodi:open="true"
+       transform="scale(-1)" />
+    <text
+       xml:space="preserve"
+       style="font-size:31.75px;font-family:Arial;-inkscape-font-specification:Arial;text-align:center;letter-spacing:0.865187px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.9;stroke-dasharray:none;stroke-opacity:1"
+       x="54.332054"
+       y="75.109612"
+       id="text1"><tspan
+         sodipodi:role="line"
+         id="tspan1"
+         style="font-size:31.75px;letter-spacing:0.865188px;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.9;stroke-dasharray:none;stroke-opacity:1"
+         x="54.764648"
+         y="75.109612">BH5</tspan></text>
+  </g>
+</svg>

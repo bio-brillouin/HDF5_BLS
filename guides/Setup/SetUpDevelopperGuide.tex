@@ -1,0 +1,122 @@
+\documentclass[a4paper,12pt]{article}
+
+% Packages
+\usepackage[utf8]{inputenc} % Encoding
+\usepackage[T1]{fontenc}  % Font encoding
+\usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue,citecolor=blue]{hyperref}     % Hyperlinks
+\usepackage{geometry}     % Page layout
+\usepackage{listings}     % Code listings
+\usepackage{xcolor}       % Colors for code
+
+% Page layout
+\geometry{margin=1in}
+
+% Code formatting
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!70!black},
+    stringstyle=\color{red},
+    showstringspaces=false,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=5pt,
+}
+
+% Metadata
+\title{Developer Guide for Project \texttt{HDF5\_BLS}}
+\author{Pierre Bouvet}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{Introduction}
+This document serves as the developer guide for the \texttt{HDF5\_BLS} project. It provides details about the project structure, coding conventions, and instructions for development and contribution.
+
+\section{Project Structure}
+The project has the following structure:
+\begin{verbatim}
+HDF5_BLS/
+|-- .github/
+|-- docs/
+|-- guides/
+|-- HDF5_BLS/
+|-- HDF5_BLS_GUI/
+|-- spreadsheets/
+|-- tests/
+|-- .gitignore
+|-- CONTRIBUTING.md
+|-- LICENSE.md
+|-- pyproject.toml
+|-- README.md
+|-- requirements.txt
+|-- setup.py
+\end{verbatim}
+
+\subsection{Key Components}
+\begin{itemize}
+    \item \textbf{.github/}: GitHub configuration files.
+    \item \textbf{docs/}: Documentation files for the project.
+    \item \textbf{guides/}: The repository to find guides and extra documentation.
+    \item \textbf{HDF5\_BLS/}: Contains the source code for the project.
+    \item \textbf{HDF5\_BLS\_GUI/}: Contains the source code for the GUI.
+    \item \textbf{spreadsheets/}: Contains example and reference spreadsheets for the parameters of the instrument and measures.
+    \item \textbf{tests/}: Contains unit tests for the project.
+    \item \textbf{.gitignore}: Specifies files and directories to be ignored by Git.
+    \item \textbf{CONTRIBUTING.md}: Guidelines for contributing to the project.
+    \item \textbf{LICENSE.md}: License for the project.
+    \item \textbf{pyproject.toml}: Configuration file for the Python project.
+    \item \textbf{README.md}: Overview of the project.
+    \item \textbf{requirements.txt}: Specifies the Python dependencies.
+    \item \textbf{setup.py}: Defines the package and installation requirements.
+\end{itemize}
+
+\section{Installation}
+To set up the project locally:
+\begin{enumerate}
+    \item Clone the repository:
+    \begin{lstlisting}[language=bash]
+    git clone https://github.com/PierreBouvet/HDF5_BLS_v1
+    cd HDF5_BLS_v1
+    \end{lstlisting}
+    \item Install the required dependencies:
+    \begin{lstlisting}[language=bash]
+    pip install -r requirements.txt
+    \end{lstlisting}
+\end{enumerate}
+
+\section{Running the Tests}
+To ensure the code is working as expected, run the tests using the following command:
+\begin{lstlisting}[language=bash]
+pytest
+\end{lstlisting}
+
+\section{Development Workflow}
+\subsection{Branching Strategy}
+Use the following Git branching strategy:
+\begin{itemize}
+    \item \textbf{main}: Stable code ready for production.
+    \item \textbf{feature/\{name\}}: New features under development.
+    \item \textbf{bugfix/\{name\}}: Bug fixes.
+\end{itemize}
+
+\section{Contribution Guidelines}
+\begin{itemize}
+    \item Fork the repository and create a new branch for your changes.
+    \item Ensure all tests pass before submitting a pull request.
+    \item Write clear and concise commit messages.
+    \item Provide detailed descriptions in pull requests.
+    \item Add tests for new features or bug fixes in the \texttt{tests/} directory.
+\end{itemize}
+
+\section{Contact}
+For questions or suggestions, please contact the maintainer at \href{mailto:pierre.bouvet@meduniwien.ac.at}{pierre.bouvet@meduniwien.ac.at}.
+
+\end{document}

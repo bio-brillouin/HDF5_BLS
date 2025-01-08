@@ -1,0 +1,19 @@
+<RCC>
+  <qresource prefix="Buttons">
+    <file>icon/add_spectra.png</file>
+    <file>icon/convert_bh5.png</file>
+    <file>icon/delete_spectra.png</file>
+    <file>icon/display_raw_spectra.png</file>
+    <file>icon/display_treat_spectra.png</file>
+    <file>icon/exit.png</file>
+    <file>icon/export_code.png</file>
+    <file>icon/new_db.png</file>
+    <file>icon/open_config.png</file>
+    <file>icon/open_db.png</file>
+    <file>icon/properties_to_csv.png</file>
+    <file>icon/remove_spectra.png</file>
+    <file>icon/save_as.png</file>
+    <file>icon/save.png</file>
+    <file>icon/treat_spectra.png</file>
+  </qresource>
+</RCC>

@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>w_Main</class>
+ <widget class="QMainWindow" name="w_Main">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>868</width>
+    <height>582</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>HDF5 BLS GUI</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="1" column="0">
+     <widget class="QGroupBox" name="gb_viewers">
+      <property name="title">
+       <string/>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="0" column="0">
+        <widget class="QTreeView" name="treeView"/>
+       </item>
+       <item row="0" column="1">
+        <widget class="QTabWidget" name="tabWidget">
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <widget class="QWidget" name="tab_Measure">
+          <attribute name="title">
+           <string>Tab 1</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_5">
+           <item row="1" column="1">
+            <widget class="QPushButton" name="b_AddPropertyMeasure">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="../../Icons.qrc">
+               <normaloff>:/Buttons/icon/add_spectra.png</normaloff>:/Buttons/icon/add_spectra.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>20</width>
+               <height>20</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QPushButton" name="b_RemovePropertyMeasure">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="../../Icons.qrc">
+               <normaloff>:/Buttons/icon/remove_spectra.png</normaloff>:/Buttons/icon/remove_spectra.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>20</width>
+               <height>20</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QPushButton" name="b_LoadPropertiesMeasure">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="../../Icons.qrc">
+               <normaloff>:/Buttons/icon/open_config.png</normaloff>:/Buttons/icon/open_config.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>20</width>
+               <height>20</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0" colspan="3">
+            <widget class="QTableView" name="tableView_Measure"/>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="tab_Spectrometer">
+          <attribute name="title">
+           <string>Tab 2</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_4">
+           <item row="1" column="1">
+            <widget class="QPushButton" name="b_AddPropertySpectrometer">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="../../Icons.qrc">
+               <normaloff>:/Buttons/icon/add_spectra.png</normaloff>:/Buttons/icon/add_spectra.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>20</width>
+               <height>20</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QPushButton" name="b_RemovePropertySpectrometer">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="../../Icons.qrc">
+               <normaloff>:/Buttons/icon/remove_spectra.png</normaloff>:/Buttons/icon/remove_spectra.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>20</width>
+               <height>20</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QPushButton" name="b_LoadPropertiesSpectrometer">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="../../Icons.qrc">
+               <normaloff>:/Buttons/icon/open_config.png</normaloff>:/Buttons/icon/open_config.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>20</width>
+               <height>20</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0" colspan="3">
+            <widget class="QTableView" name="tableView_Spectrometer"/>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QGroupBox" name="gb_buttons">
+      <property name="title">
+       <string/>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="6">
+        <widget class="QPushButton" name="b_ConvertCSV">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="../../Icons.qrc">
+           <normaloff>:/Buttons/icon/properties_to_csv.png</normaloff>:/Buttons/icon/properties_to_csv.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>35</width>
+           <height>35</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QPushButton" name="b_Save">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="../../Icons.qrc">
+           <normaloff>:/Buttons/icon/save.png</normaloff>:/Buttons/icon/save.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>35</width>
+           <height>35</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QPushButton" name="b_AddData">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="../../Icons.qrc">
+           <normaloff>:/Buttons/icon/add_spectra.png</normaloff>:/Buttons/icon/add_spectra.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>35</width>
+           <height>35</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QPushButton" name="b_NewHDF5">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="../../Icons.qrc">
+           <normaloff>:/Buttons/icon/new_db.png</normaloff>:/Buttons/icon/new_db.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>35</width>
+           <height>35</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="4">
+        <widget class="QPushButton" name="b_RemoveData">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="../../Icons.qrc">
+           <normaloff>:/Buttons/icon/remove_spectra.png</normaloff>:/Buttons/icon/remove_spectra.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>35</width>
+           <height>35</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="8">
+        <widget class="QPushButton" name="b_Close">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="../../Icons.qrc">
+           <normaloff>:/Buttons/icon/exit.png</normaloff>:/Buttons/icon/exit.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>35</width>
+           <height>35</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="7">
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="0" column="1">
+        <widget class="QPushButton" name="b_OpenHDF5">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="../../Icons.qrc">
+           <normaloff>:/Buttons/icon/open_db.png</normaloff>:/Buttons/icon/open_db.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>35</width>
+           <height>35</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="5">
+        <widget class="QPushButton" name="pushButton">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="../../Icons.qrc">
+           <normaloff>:/Buttons/icon/export_code.png</normaloff>:/Buttons/icon/export_code.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>35</width>
+           <height>35</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>868</width>
+     <height>37</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="a_NewHDF5"/>
+    <addaction name="a_OpenHDF5"/>
+    <addaction name="separator"/>
+    <addaction name="a_Save"/>
+    <addaction name="separator"/>
+    <addaction name="a_AddData"/>
+    <addaction name="separator"/>
+    <addaction name="a_ImportCSV"/>
+    <addaction name="a_ConvertCSV"/>
+    <addaction name="separator"/>
+    <addaction name="a_Close"/>
+   </widget>
+   <addaction name="menuFile"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="a_OpenHDF5">
+   <property name="text">
+    <string>Open HDF5 file</string>
+   </property>
+  </action>
+  <action name="a_Save">
+   <property name="text">
+    <string>Save file</string>
+   </property>
+  </action>
+  <action name="a_ImportCSV">
+   <property name="text">
+    <string>Import Properties from CSV</string>
+   </property>
+  </action>
+  <action name="a_NewHDF5">
+   <property name="text">
+    <string>New HDF5 file</string>
+   </property>
+  </action>
+  <action name="a_AddData">
+   <property name="text">
+    <string>Add Raw file</string>
+   </property>
+  </action>
+  <action name="a_ConvertCSV">
+   <property name="text">
+    <string>Export Properties to CSV</string>
+   </property>
+  </action>
+  <action name="a_Close">
+   <property name="text">
+    <string>Close</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="../../Icons.qrc"/>
+ </resources>
+ <connections/>
+</ui>
