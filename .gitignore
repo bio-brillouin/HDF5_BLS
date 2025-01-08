@@ -3,7 +3,6 @@
 .pytest_cache/
 .DS_Store
 **/.DS_Store
-build/
 dist/
 tests/example_creator.py
 guides/Module/ModuleDevelopperGuide.aux
