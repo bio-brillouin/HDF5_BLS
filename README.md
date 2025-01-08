@@ -21,7 +21,7 @@ A full documentation is accessible at [this link](https://hdf5-bls.readthedocs.i
 
 ## Contributing
 
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change. For more information, please refer to [CONTRIBUTING.md](https://github.com/PierreBouvet/HDF5_BLS_v1/blob/main/CONTRIBUTING.md).
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change. For more information, please refer to [CONTRIBUTING.md](https://github.com/bio-brillouin/HDF5_BLS/blob/main/CONTRIBUTING.md).
 
 ## License
 
