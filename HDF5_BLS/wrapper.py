@@ -97,6 +97,44 @@ class Wrapper:
                                    data_attributes = {})
         for j, e in enumerate(data.shape): par[f"Data_{i}"].data[f"Abscissa_{j}"] = np.arange(e)
     
+    def add_data_group_to_wrapper_from_filepath(self, filepath, parent_group = None):
+        """Adds data to the wrapper by creating a new group, using the filepath of the data.
+
+        Parameters
+        ----------
+        data : np.ndarray
+            The data to add to the wrapper.
+        parent_group : str, optional
+            The parent group where to store the data of the HDF5 file, by default the parent group is the top group "Data". The format of this group should be "Data.Data_0.Data_0" or "Data/Data_0/Data_0".
+        name : str, optional
+            The name of the data group, by default the name is the identifier of the group "Data_i".
+        """
+        # Find the position where to add the spectrum
+        par = self.data 
+        if parent_group is not None:
+            loc = parent_group.split(".")
+            while len(loc)>0:
+                temp = loc[0]
+                if not temp in par.keys():
+                    par[temp] = Wrapper()
+                par = par[temp].data
+                loc.pop(0)
+        
+        # Getting the i number of Data_i where to store the data
+        i = 0
+        while f"Data_{i}" in par.keys(): i+=1
+
+        # Adding the data and the abscissa to the wrapper
+        data, attributes = load_general(filepath)
+        name = os.path.basename(filepath).split(".")[0]
+        attributes.update({"ID": f"Data_{i}", "Name":name})
+        par[f"Data_{i}"] = Wrapper(attributes = attributes,
+                                   data = {"Raw_data": data},
+                                   data_attributes = {"Raw_data": {"Name": "Raw_data"}})
+        for j, e in enumerate(data.shape): 
+            par[f"Data_{i}"].data[f"Abscissa_{j}"] = np.arange(e)
+            par[f"Data_{i}"].data_attributes[f"Abscissa_{j}"] = {"Name": f"Abscissa_{j}"}
+    
     def add_data_to_group(self, data, group, name = None): # Test made
         """Adds an array to an existing data group.
 
