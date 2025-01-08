@@ -39,8 +39,11 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"></div>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">HDF5_BLS</a></li>
+</ul>
+
         </div>
       </div>
     </nav>
@@ -307,6 +310,130 @@
         <span class="k">if</span> <span class="n">fmin</span><span class="o">&gt;</span><span class="n">fmax</span><span class="p">:</span> <span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span> <span class="o">=</span> <span class="n">fmax</span><span class="p">,</span> <span class="n">fmin</span>
         <span class="n">wndw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">freq</span><span class="o">&gt;</span><span class="n">fmin</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">freq</span><span class="o">&lt;</span><span class="n">fmax</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">freq</span><span class="p">[</span><span class="n">wndw</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="n">wndw</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="Treat.model_lorentzian">
+<a class="viewcode-back" href="../../HDF5_BLS.html#HDF5_BLS.treat.Treat.model_lorentzian">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">model_lorentzian</span><span class="p">(</span><span class="n">nu</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">nu0</span><span class="p">,</span> <span class="n">gamma</span><span class="p">,</span> <span class="n">IR</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Model of a simple lorentzian lineshape</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        nu : array</span>
+<span class="sd">            The frequency array</span>
+<span class="sd">        b : float</span>
+<span class="sd">            The constant offset of the data</span>
+<span class="sd">        a : float</span>
+<span class="sd">            The amplitude of the peak</span>
+<span class="sd">        nu0 : float</span>
+<span class="sd">            The center position of the function</span>
+<span class="sd">        gamma : float</span>
+<span class="sd">            The linewidth of the function</span>
+<span class="sd">        IR : array, optional</span>
+<span class="sd">            The impulse response of the instrument, by default None</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        function</span>
+<span class="sd">            The function associated to the given parameters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="n">b</span> <span class="o">+</span> <span class="n">a</span><span class="o">*</span><span class="p">(</span><span class="n">gamma</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">((</span><span class="n">nu</span><span class="o">-</span><span class="n">nu0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="p">(</span><span class="n">gamma</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">IR</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">IR</span><span class="p">,</span> <span class="s2">&quot;same&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">func</span></div>
+
+    
+<div class="viewcode-block" id="Treat.model_lorentzian_elastic">
+<a class="viewcode-back" href="../../HDF5_BLS.html#HDF5_BLS.treat.Treat.model_lorentzian_elastic">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">model_lorentzian_elastic</span><span class="p">(</span><span class="n">nu</span><span class="p">,</span> <span class="n">ae</span><span class="p">,</span> <span class="n">be</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">nu0</span><span class="p">,</span> <span class="n">gamma</span><span class="p">,</span> <span class="n">IR</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Model of a simple lorentzian lineshape</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        nu : array</span>
+<span class="sd">            The frequency array</span>
+<span class="sd">        ae : float</span>
+<span class="sd">            The slope of the first order Taylor expansion of the elastic peak at the position of the peak fitted</span>
+<span class="sd">        be : float</span>
+<span class="sd">            The constant offset of the data</span>
+<span class="sd">        a : float</span>
+<span class="sd">            The amplitude of the peak</span>
+<span class="sd">        nu0 : float</span>
+<span class="sd">            The center position of the function</span>
+<span class="sd">        gamma : float</span>
+<span class="sd">            The linewidth of the function</span>
+<span class="sd">        IR : array, optional</span>
+<span class="sd">            The impulse response of the instrument, by default None</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        function</span>
+<span class="sd">            The function associated to the given parameters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">func</span> <span class="o">=</span>  <span class="n">be</span> <span class="o">+</span> <span class="n">ae</span><span class="o">*</span><span class="n">nu</span> <span class="o">+</span> <span class="n">a</span><span class="o">*</span><span class="p">(</span><span class="n">gamma</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">((</span><span class="n">nu</span><span class="o">-</span><span class="n">nu0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="p">(</span><span class="n">gamma</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">IR</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">IR</span><span class="p">,</span> <span class="s2">&quot;same&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">func</span></div>
+
+    
+<div class="viewcode-block" id="Treat.model_DHO">
+<a class="viewcode-back" href="../../HDF5_BLS.html#HDF5_BLS.treat.Treat.model_DHO">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">model_DHO</span><span class="p">(</span><span class="n">nu</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">nu0</span><span class="p">,</span> <span class="n">gamma</span><span class="p">,</span> <span class="n">IR</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Model of a simple lorentzian lineshape</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        nu : array</span>
+<span class="sd">            The frequency array</span>
+<span class="sd">        b : float</span>
+<span class="sd">            The constant offset of the data</span>
+<span class="sd">        a : float</span>
+<span class="sd">            The amplitude of the peak</span>
+<span class="sd">        nu0 : float</span>
+<span class="sd">            The center position of the function</span>
+<span class="sd">        gamma : float</span>
+<span class="sd">            The linewidth of the function</span>
+<span class="sd">        IR : array, optional</span>
+<span class="sd">            The impulse response of the instrument, by default None</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        function</span>
+<span class="sd">            The function associated to the given parameters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="n">b</span> <span class="o">+</span> <span class="n">a</span><span class="o">*</span><span class="p">(</span><span class="n">gamma</span><span class="o">*</span><span class="n">nu0</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">((</span><span class="n">nu</span><span class="o">**</span><span class="mi">2</span><span class="o">-</span><span class="n">nu0</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">gamma</span><span class="o">*</span><span class="n">nu0</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">IR</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">IR</span><span class="p">,</span> <span class="s2">&quot;same&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">func</span></div>
+
+    
+<div class="viewcode-block" id="Treat.model_DHO_elastic">
+<a class="viewcode-back" href="../../HDF5_BLS.html#HDF5_BLS.treat.Treat.model_DHO_elastic">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">model_DHO_elastic</span><span class="p">(</span><span class="n">nu</span><span class="p">,</span> <span class="n">ae</span><span class="p">,</span> <span class="n">be</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">nu0</span><span class="p">,</span> <span class="n">gamma</span><span class="p">,</span> <span class="n">IR</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Model of a simple lorentzian lineshape</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        nu : array</span>
+<span class="sd">            The frequency array</span>
+<span class="sd">        ae : float</span>
+<span class="sd">            The slope of the first order Taylor expansion of the elastic peak at the position of the peak fitted</span>
+<span class="sd">        be : float</span>
+<span class="sd">            The constant offset of the data</span>
+<span class="sd">        a : float</span>
+<span class="sd">            The amplitude of the peak</span>
+<span class="sd">        nu0 : float</span>
+<span class="sd">            The center position of the function</span>
+<span class="sd">        gamma : float</span>
+<span class="sd">            The linewidth of the function</span>
+<span class="sd">        IR : array, optional</span>
+<span class="sd">            The impulse response of the instrument, by default None</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        function</span>
+<span class="sd">            The function associated to the given parameters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="n">be</span> <span class="o">+</span> <span class="n">ae</span><span class="o">*</span><span class="n">nu</span> <span class="o">+</span> <span class="n">a</span><span class="o">*</span><span class="p">(</span><span class="n">gamma</span><span class="o">*</span><span class="n">nu0</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">((</span><span class="n">nu</span><span class="o">**</span><span class="mi">2</span><span class="o">-</span><span class="n">nu0</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">gamma</span><span class="o">*</span><span class="n">nu0</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">IR</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">IR</span><span class="p">,</span> <span class="s2">&quot;same&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">func</span></div>
 
 
 <div class="viewcode-block" id="Treat.normalize_data">
