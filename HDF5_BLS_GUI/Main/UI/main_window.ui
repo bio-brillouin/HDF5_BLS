@@ -344,6 +344,16 @@
       </layout>
      </widget>
     </item>
+    <item row="2" column="0">
+     <widget class="QTextBrowser" name="textBrowser_Log">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>100</height>
+       </size>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">

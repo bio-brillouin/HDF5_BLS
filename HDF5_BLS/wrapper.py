@@ -105,14 +105,15 @@ class Wrapper:
         data : np.ndarray
             The data to add to the wrapper.
         parent_group : str, optional
-            The parent group where to store the data of the HDF5 file, by default the parent group is the top group "Data". The format of this group should be "Data.Data_0.Data_0" or "Data/Data_0/Data_0".
+            The parent group where to store the data of the HDF5 file, by default the parent group is the top group "Data". The format of this group should be "Data/Data_0/Data_0".
         name : str, optional
             The name of the data group, by default the name is the identifier of the group "Data_i".
         """
         # Find the position where to add the spectrum
         par = self.data 
         if parent_group is not None:
-            loc = parent_group.split(".")
+            loc = parent_group.split("/")
+            loc.pop(0)
             while len(loc)>0:
                 temp = loc[0]
                 if not temp in par.keys():
@@ -363,6 +364,32 @@ class Wrapper:
                         dg.attrs[k] = v
         # except:
         #     raise WrapperError("The wrapper could not be saved as a HDF5 file")
+
+    def type_path(self, key):
+        """Returns the path of the data type
+        
+        Parameters
+        ----------
+        key : str
+            The key of the data type
+            
+        Returns
+        -------
+        str
+            The type of the element
+        """
+        try:
+            keys = key.split("/")
+        except: 
+            return type(self)
+        keys.pop(0)
+        element = self.data
+        for e in keys:
+            try:
+                element = element[e]
+            except TypeError:
+                element = element.data[e]
+        return type(element)
 
 def load_hdf5_file(filepath): # Test in add_hdf5_to_wrapper
     """Loads HDF5 files

@@ -19,7 +19,7 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
 from PySide6.QtWidgets import (QApplication, QGridLayout, QGroupBox, QHeaderView,
     QMainWindow, QMenu, QMenuBar, QPushButton,
     QSizePolicy, QSpacerItem, QStatusBar, QTabWidget,
-    QTableView, QTreeView, QWidget)
+    QTableView, QTextBrowser, QTreeView, QWidget)
 import Icons_rc
 
 class Ui_w_Main(object):
@@ -218,6 +218,12 @@ class Ui_w_Main(object):
 
 
         self.gridLayout.addWidget(self.gb_buttons, 0, 0, 1, 1)
+
+        self.textBrowser_Log = QTextBrowser(self.centralwidget)
+        self.textBrowser_Log.setObjectName(u"textBrowser_Log")
+        self.textBrowser_Log.setMaximumSize(QSize(16777215, 100))
+
+        self.gridLayout.addWidget(self.textBrowser_Log, 2, 0, 1, 1)
 
         w_Main.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(w_Main)

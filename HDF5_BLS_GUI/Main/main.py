@@ -33,6 +33,9 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         # Initiates the table view
         self.initialize_table_view()
 
+        # Initiates the log
+        self.textBrowser_Log.setText("Welcome to a new HDF5_BLS GUI session")
+
         # Initiates the tree view properties
         self.treeView.setAcceptDrops(True)
         self.treeView.setDragEnabled(False)  # Optional: Prevent dragging from TreeView
@@ -56,15 +59,70 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         if parent_path == "Root":
             parent_path = None
             self.wrapper = wrapper.Wrapper()
-        self.wrapper.add_data_group_to_wrapper_from_filepath(filepath, parent_path)
-        print(self.wrapper.data.keys())
+        
+        if self.wrapper.type_path(parent_path) == wrapper.Wrapper:
+            self.wrapper.add_data_group_to_wrapper_from_filepath(filepath, parent_path)
+        else:
+            parent_path = "/".join(parent_path.split("/")[:-1])
+            self.wrapper.add_data_group_to_wrapper_from_filepath(filepath, parent_path)
+        
         self.update_treeview()
-        # qtw.QMessageBox.information( self,
-        #     "To Do",
-        #     "To do",
-        #     buttons=qtw.QMessageBox.Ok,
-        #     defaultButton=qtw.QMessageBox.Ok,
-        # )
+
+        self.expand_treeview_path(parent_path)
+
+        # Logging the added data
+        path_names = []
+        if not parent_path is None:
+            temp = self.wrapper
+            for e in parent_path.split("/")[1:]:
+                temp = temp.data[e]
+                if "FILEPROP.Name" in temp.attributes:
+                    path_names.append(temp.attributes["FILEPROP.Name"])
+                elif "Name" in temp.data_attributes:
+                    path_names.append(temp.data_attributes["Name"])
+                else:
+                    path_names.append(e)
+        else:
+            path_names.append("Root")
+        path_names = "/".join(path_names)
+        self.textBrowser_Log.append(f"<i>{filepath}</i> added to <b>{path_names}</b>")
+        
+    def expand_treeview_path(self, path):
+        """
+        Expand the tree view to show the given path.
+        :param path: The hierarchical path (e.g., "Root/Group1/Group2").
+        """
+        # Start from the root item
+        root_index = self.treeView.model().index(0, 0)  # Assuming the first row is the root
+        current_index = root_index
+
+        # Expand the root item
+        self.treeView.setExpanded(root_index, True)
+
+        # Traverse the path and expand
+        print(path)
+        if path is None:
+            pass
+        else:
+            path_parts = path.split("/")
+            data_temp = self.wrapper
+
+            for part in path_parts[1:]:  # Skip the root part
+                found = False
+                data_temp = data_temp.data[part]
+                try: 
+                    name = data_temp.attributes["FILEPROP.Name"]
+                    for row in range(self.treeView.model().rowCount(current_index)):
+                        child_index = self.treeView.model().index(row, 0, current_index)
+                        if child_index.data() == name:
+                            current_index = child_index
+                            self.treeView.setExpanded(current_index, True)  # Expand the parent
+                            found = True
+                            break
+                    if not found:
+                        break  # Path not found; stop further expansion
+                except:
+                    break  # Path not found; stop further expansion
 
     def convert_csv(self):
         filepath = qtw.QFileDialog.getSaveFileName(self, "Open File", "", "CSV Files (*.csv)")[0]
@@ -162,7 +220,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         # Set the model to the TreeView
         self.treeView.setModel(self.model)
 
-        # Expand all items for visibility
+        # Collapse all items for visibility
         self.treeView.collapseAll()
 
         # Optional: Adjust column widths
@@ -285,8 +343,11 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
 
     @qtc.Slot()
     def treeview_handle_drop(self, file_path, parent_path):
-        if parent_path == "Root":
-            if file_path.endswith(".h5"):
+        if parent_path == "Root" and file_path.endswith(".h5"):
                 self.open_hdf5(file_path)
-            else:
-                self.add_data(filepath = file_path, parent_path = parent_path)
+        elif file_path.endswith(".h5"):
+                self.wrapper.add_hdf5_to_wrapper(file_path, parent_path)
+                self.textBrowser_Log.append(f"Data added from {file_path} to {parent_path}")
+                self.update_treeview()
+        else:
+            self.add_data(filepath = file_path, parent_path = parent_path)
