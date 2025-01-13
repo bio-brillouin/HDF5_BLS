@@ -207,14 +207,15 @@ class Ui_w_Main(object):
 
         self.gridLayout_2.addWidget(self.b_OpenHDF5, 0, 1, 1, 1)
 
-        self.pushButton = QPushButton(self.gb_buttons)
-        self.pushButton.setObjectName(u"pushButton")
+        self.b_ExportCodeLine = QPushButton(self.gb_buttons)
+        self.b_ExportCodeLine.setObjectName(u"b_ExportCodeLine")
+        self.b_ExportCodeLine.setEnabled(False)
         icon8 = QIcon()
         icon8.addFile(u":/Buttons/icon/export_code.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.pushButton.setIcon(icon8)
-        self.pushButton.setIconSize(QSize(35, 35))
+        self.b_ExportCodeLine.setIcon(icon8)
+        self.b_ExportCodeLine.setIconSize(QSize(35, 35))
 
-        self.gridLayout_2.addWidget(self.pushButton, 0, 5, 1, 1)
+        self.gridLayout_2.addWidget(self.b_ExportCodeLine, 0, 5, 1, 1)
 
 
         self.gridLayout.addWidget(self.gb_buttons, 0, 0, 1, 1)
@@ -283,7 +284,7 @@ class Ui_w_Main(object):
         self.b_RemoveData.setText("")
         self.b_Close.setText("")
         self.b_OpenHDF5.setText("")
-        self.pushButton.setText("")
+        self.b_ExportCodeLine.setText("")
         self.menuFile.setTitle(QCoreApplication.translate("w_Main", u"File", None))
     # retranslateUi
 

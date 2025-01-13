@@ -56,10 +56,10 @@ def load_dat_file(filepath, creator = "GHOST"): # Test made for GHOST
         attributes['SPECTROMETER.Illumination_Type'] = "CW"
         attributes['SPECTROMETER.Detector_Type'] = "Photon Counter"
         attributes['SPECTROMETER.Filtering_Module'] = "None"
-        attributes['SPECTROMETER.Wavelength_nm'] = metadata["Wavelength"]
-        attributes['SPECTROMETER.Scan_Amplitude'] = metadata["Scan amplitude"]
+        attributes['SPECTROMETER.Wavelength_(nm)'] = metadata["Wavelength"]
+        attributes['SPECTROMETER.Scan_Amplitude_(GHz)'] = metadata["Scan amplitude"]
         spectral_resolution = float(float(metadata["Scan amplitude"])/data.shape[-1])
-        attributes['SPECTROMETER.Spectral_Resolution'] = str(spectral_resolution)
+        attributes['SPECTROMETER.Spectral_Resolution_(GHz)'] = str(spectral_resolution)
         return data, attributes
 
 def load_tiff_file(filepath): # Test made
