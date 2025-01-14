@@ -1,0 +1,29 @@
+List of changes:
+
+0. Made sys paths relative to current directory in the test_*.py run scripts
+
+1. wraper -> wrapper everywhere possible (I think Pierre already fixed this)
+
+2. in wrapper.py: added 'self' as the first input to the call of 'load_general()'. This let's the wrp class pass through to lower level functions
+
+3. in wrapper.py method import_abscissa_1D(): when scraping info from a .csv file there didn't seem to be a way to
+   neatly group the info into the correct category of MEASURE, SPECTROMETER, etc, so I made it so that the first
+   column of he csv file should be either MEASURE., SPECTROMETER., TIMEDOMAIN., or any other category for attributes.
+   the csv reader in this function should then scrape the category from the first column and tag it onto the
+   front of the attribute. e.g., wrp.attributes["TIMEDOMAIN.ac_gain"]
+
+4. in load_data.py: added the function 'load_dat_timedomain()' and a bunch of time domain signal processing
+   functions that are held in the TimeDomain() class in time_domain.py.
+
+5. created the TimeDomain class in time_domain.py: these define the primary time signal processing pipeline and
+   outputs a frequency spectrum + wrp.attributes. Also can output an abscissa from here, but this needs unifying
+   with Pierre's abscissa-management-strategy.
+	- Created an interactive plotting window
+	- Currently the .dat files for time domain can contain an arbitrary number of dimensions for the scan data
+          I have currently setup TimeDomain() to perform all processing across 1-2 dimensions (counts and x/y scans).
+          Therefore the output spectrum/data is a X, Y, F dimensioned array where F is the length of the frequency
+          spectrum. If the measurement is a set of counts, then e.g., the output will be 1, N, F where N is the
+          number of counts in the measurement.
+		- should add an option for averaging for the counts?
+		- for time domain one abscissa will apply to all counts/xy measurements! This hasn't been unified
+                  with rest of abscissa management
