@@ -7,6 +7,7 @@ sif_parser>=0.3
 datetime>=5
 setuptools
 wheel
+pyperclip
 
 # Development dependencies
 pytest

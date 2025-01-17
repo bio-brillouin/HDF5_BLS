@@ -15,6 +15,20 @@ You can install **HDF5_BLS** directly from PyPI:
 pip install HDF5_BLS
 ```
 
+## GUI 
+
+To run the GUI, we recommend you create a virtual environment and install the dependencies. After having downloaded the repository, open a terminal and navigate to the folder containing the "requirements.txt" file (at the root of the repository). Then, run the following command:
+
+```bash
+pip install requirements.txt
+```
+
+Then, run the following command to start the GUI:
+
+```bash
+python HDF5_BLS_GUI/main.py
+```
+
 ## Documentation
 
 A full documentation is accessible at [this link](https://hdf5-bls.readthedocs.io/en/latest/).

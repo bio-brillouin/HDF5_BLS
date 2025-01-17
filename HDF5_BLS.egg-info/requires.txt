@@ -4,8 +4,11 @@ Pillow>=10.0.1
 scipy>=1.10
 sif_parser>=0.3
 datetime>=5
-pytest
 setuptools
 wheel
+pyperclip
+pytest
 sphinx
 sphinx-rtd-theme
+PySide6
+configparser

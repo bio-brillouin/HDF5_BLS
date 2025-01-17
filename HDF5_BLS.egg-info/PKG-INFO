@@ -17,11 +17,14 @@ Requires-Dist: Pillow>=10.0.1
 Requires-Dist: scipy>=1.10
 Requires-Dist: sif_parser>=0.3
 Requires-Dist: datetime>=5
-Requires-Dist: pytest
 Requires-Dist: setuptools
 Requires-Dist: wheel
+Requires-Dist: pyperclip
+Requires-Dist: pytest
 Requires-Dist: sphinx
 Requires-Dist: sphinx-rtd-theme
+Requires-Dist: PySide6
+Requires-Dist: configparser
 
 # HDF5_BLS
 

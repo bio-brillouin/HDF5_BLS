@@ -376,6 +376,7 @@
     <addaction name="a_OpenHDF5"/>
     <addaction name="separator"/>
     <addaction name="a_Save"/>
+    <addaction name="a_SaveFileAs"/>
     <addaction name="separator"/>
     <addaction name="a_AddData"/>
     <addaction name="separator"/>
@@ -420,6 +421,11 @@
   <action name="a_Close">
    <property name="text">
     <string>Close</string>
+   </property>
+  </action>
+  <action name="a_SaveFileAs">
+   <property name="text">
+    <string>Save file as</string>
    </property>
   </action>
  </widget>
