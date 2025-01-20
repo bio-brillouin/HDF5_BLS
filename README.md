@@ -29,6 +29,8 @@ Then, run the following command to start the GUI:
 python HDF5_BLS_GUI/main.py
 ```
 
+Alternatively on MacOS, you can double click on the "macOS.command" file to start the GUI.
+
 ## Documentation
 
 A full documentation is accessible at [this link](https://hdf5-bls.readthedocs.io/en/latest/).

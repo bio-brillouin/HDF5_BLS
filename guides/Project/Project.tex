@@ -7,7 +7,7 @@
 \tikzstyle{file} = [rectangle, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=gray!30]
 \tikzstyle{arrow} = [thick,->,>=stealth]    
 
-\title{Pipeline presentation}
+\title{Project presentation}
 \author{Pierre Bouvet}
 \date{\today}
 
@@ -22,7 +22,7 @@ This document is made as to present the vision of the HDF\_BLS library and the s
 \section{HDF5 file structure}
 
     \subsection{Multiple measures of same nature}
-        The vision of the project is to unify all BLS data into a single HDF5 file. This file will be used to store all the data and metadata of the BLS. The data will be stored in a hierarchical structure, with the root of the file being the "Data" group. This group will contain all the data. These data can either be arranged in groups, whose identifiers will be "Data\_i" or directly as numerical arrays. We propose to only allow one measure per group or file, and to call the array corresponding to the raw data recovered from the spectrometer "Raw\_data". For multiple measures, we propose to create multiple groups, following this structure:
+        The vision of the project is to unify all BLS data into a single HDF5 file. This file will be used to store all the data and metadata of the BLS. The data will be stored in a hierarchical structure, all the data related to BLS being stored the "Data" group. This choice allows results from other techinques to be stored in the same file, only in other, independent groups, to minimize the risk of nomenclature competition between techinques. The "Data" group will contain all the data. These data can either be arranged in groups, whose identifiers will be "Data\_i" or directly as numerical arrays. We propose to only allow one measure per group or file, and to call the array corresponding to the raw data recovered from the spectrometer "Raw\_data". For multiple measures, we propose to create multiple groups, following this structure:
 
         \begin{verbatim}
             file.h5
@@ -132,12 +132,12 @@ This document is made as to present the vision of the HDF\_BLS library and the s
     
         \subsubsection{Conversion of the data to a Power Spectrum Density}
 
-            This is arguably the most important and controversial step of the pipeline. The goal of this step is to obtain the Power Spectrum Density of the data. Many different techniques can be used to do so, most of which will vary from laboratory to laboratory, and relying either on theoretical knowledge of the instrument or data calibration. As it is still unclear how to best convert the data to a PSD, we let the user choose the method they want to use. We propose to store the technique used in the "SPECTROMETER.PSD\_Method" attribute, following the following nomenclature: "Laboratory_Method_version". For example, the following attributes could be used:
+            This is arguably the most important and controversial step of the pipeline. The goal of this step is to obtain the Power Spectrum Density of the data. Many different techniques can be used to do so, most of which will vary from laboratory to laboratory, and relying either on theoretical knowledge of the instrument or data calibration. As it is still unclear how to best convert the data to a PSD, we let the user choose the method they want to use. We propose to store the technique used in the "SPECTROMETER.PSD\_Method" attribute, following the following nomenclature: "Laboratory\_Method\_version". For example, the following attributes could be used:
 
             \begin{verbatim}
                 SPECTROMETER.PSD_Method = "MedUniWien_1VIPA_1.0"
                 SPECTROMETER.PSD_Method = "EMBL_2VIPA_0.5"
-                SPECTROMETER.PSD_Method = "CellSense_Confidential_2.5"
+                SPECTROMETER.PSD_Method = "CellSense_CS363_2.5"
             \end{verbatim}
 
             Note that this conversion can be performed using an independent and even confidential pipeline, allowing firms to use this format without compromising their proprietary data. In the future, it might however be interesting to have a unified pipeline for all the techniques, which could automatically be adjusted to the "SPECTROMETER.Type" attribute. The end goal of this step is to obtain two arrays: 
@@ -158,35 +158,85 @@ This document is made as to present the vision of the HDF\_BLS library and the s
                 |   +-- ...
             \end{verbatim}
 
-            Alternatively, if different treatments are to be compared, indices might be added to the "PSD" and "Channel\_frequencies" arrays, such as "PSD\_i" and "Channel\_frequencies\_i". In this case, the "SPECTROMETER.PSD_Method" attribute would be attributed to the "PSD\_i" array, and not to the "Data\_i" group. The resulting file would then take the following form:
+            Alternatively, if different treatments are to be compared, we recommend creating different groups. The resulting file would then take the following form:
 
             \begin{verbatim}
                 file.h5
                 +-- Data
                 |   +-- Data_1
-                |   |   +-- PSD_1
-                |   |   +-- Channel_frequencies_1
-                |   |   +-- PSD_2
-                |   |   +-- Channel_frequencies_2
+                |   |   +-- Raw_data (optional)
+                |   |   +-- Abscissa_1 (optional)
+                |   |   +-- Data_1
+                |   |   |   +-- PSD
+                |   |   |   +-- Channel_frequencies
+                |   |   +-- Data_2
+                |   |   |   +-- PSD
+                |   |   |   +-- Channel_frequencies
                 |   |   +-- ...
                 |   +-- ...
             \end{verbatim}
 
         \subsection{Fitting of the PSD}
 
-          
+            The fit of the Power Spectrum Density (PSD) can be unified in a single function that can accept parameters to precise the fit. We encourage you to refer to the dedicated notebook: \textbf{Treatment\_pipeline} found in the \textbf{guides} folder of the directory.
+
+            The treatment should result in a new group "Treat\_i" composed of at least four arrays:
+            \begin{itemize}
+                \item The "Shift" array, containing the values of the fitted frequency shifts
+                \item The "Linewidth" array, containing the values of the fitted linewidths
+                \item The "Shift\_var" arrays, containing the variance of the fitted frequency shifts, used to auqntify the uncertainty of the fitted values
+                \item The "Linewidth\_var" arrays, containing the variance of the fitted linewidths, used to auqntify the uncertainty of the fitted values
+            \end{itemize}
+
+            Additionnaly, other arrays can be added to the "Treat\_i" group, such as the "SNR" and "Amplitude" arrays, or any other relevant information extracted from the PSD.
+
+            This treated group should in any case have as attributes all the parameters used in the treatment as well as the different steps followed for the treatment. 
+
+            The returned structure should therefore be of the form:
+            \begin{verbatim}
+                file.h5
+                +-- Data
+                |   +-- Data_1
+                |   |   +-- PSD
+                |   |   +-- Channel_frequencies
+                |   |   +-- Treat_1
+                |   |   |   +-- Shift
+                |   |   |   +-- Linewidth
+                |   |   |   +-- Shift_var
+                |   |   |   +-- Linewidth_var
+                |   |   |   +-- ...
+                |   +-- ...
+            \end{verbatim}
+
+            Other treatments on the same PSD can with this architecture be stored in the same file, by changing the index of the "Treat\_i" group. For example, if two peaks are to be fitted independently, the resulting file would take the following form:
+
+            \begin{verbatim}
+                file.h5
+                +-- Data
+                |   +-- Data_1
+                |   |   +-- PSD
+                |   |   +-- Channel_frequencies
+                |   |   +-- Treat_1
+                |   |   |   +-- Shift
+                |   |   |   +-- Linewidth
+                |   |   |   +-- Shift_var
+                |   |   |   +-- Linewidth_var
+                |   |   |   +-- ...
+                |   |   +-- Treat_2
+                |   |   |   +-- Shift
+                |   |   |   +-- Linewidth
+                |   |   |   +-- Shift_var
+                |   |   |   +-- Linewidth_var
+                |   |   |   +-- ...
+                |   +-- ...
+            \end{verbatim}
+
+\section{Library implementation}
+
+    \section{Package structure}
+            
+        The easiest way to implement the described structure is to create a package that is both easy to use and reliable. This package is to be seen as the back-end of the project: where the handling of data is described and implemented.
 
 
-\section{Results}
-Your results here.
-
-\section{Discussion}
-Your discussion here.
-
-\section{Conclusion}
-Your conclusion here.
-
-\bibliographystyle{plain}
-\bibliography{references}
 
 \end{document}

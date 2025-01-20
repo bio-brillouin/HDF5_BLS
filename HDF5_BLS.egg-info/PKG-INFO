@@ -1,4 +1,4 @@
-Metadata-Version: 2.1
+Metadata-Version: 2.2
 Name: HDF5_BLS
 Version: 0.1.0
 Summary: A package to convert Brillouin spectra to a HDF5 file and use them
@@ -25,6 +25,15 @@ Requires-Dist: sphinx
 Requires-Dist: sphinx-rtd-theme
 Requires-Dist: PySide6
 Requires-Dist: configparser
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
 
 # HDF5_BLS
 
@@ -42,6 +51,22 @@ You can install **HDF5_BLS** directly from PyPI:
 ```bash
 pip install HDF5_BLS
 ```
+
+## GUI 
+
+To run the GUI, we recommend you create a virtual environment and install the dependencies. After having downloaded the repository, open a terminal and navigate to the folder containing the "requirements.txt" file (at the root of the repository). Then, run the following command:
+
+```bash
+pip install requirements.txt
+```
+
+Then, run the following command to start the GUI:
+
+```bash
+python HDF5_BLS_GUI/main.py
+```
+
+Alternatively on MacOS, you can double click on the "macOS.command" file to start the GUI.
 
 ## Documentation
 

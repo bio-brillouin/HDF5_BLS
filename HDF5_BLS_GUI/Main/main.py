@@ -596,57 +596,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         measure_params = self.read_table_view(self.tableView_Measure)
         spectrometer_params = self.read_table_view(self.tableView_Spectrometer)
 
-        params = {}
-
-        for k, v in measure_params.items():
-            if k!="Name":
-                new_key = "MEASURE."+"_".join(k.split(" "))
-                if v[1] != "" or new_key == "MEASURE.Sampling_Matrix_Size_(Nx,Ny,Nz)":
-                    new_key = new_key + f"_({v[1]})"
-                params[new_key] = v[0]
-            else:
-                params["FILEPROP.Name"] = v[0]
-        
-        for k, v in spectrometer_params.items():
-            new_key = "SPECTROMETER."+"_".join(k.split(" "))
-            if v[1] != "":
-                    new_key = new_key + f"_({v[1]})"
-            params[new_key] = v[0]
-        
-        # Select only the attributes that have been changed for the data
-        elt = self.wrapper
-        attr = {}
-        attr.update(elt.attributes)
-        data_attr = False
-
-        if self.treeview_selected != "Data": # Start by retrieving the parameters of the data before modification
-            path = self.treeview_selected.split("/")[1:]
-            for e in path:
-                if isinstance(elt.data[e], h5py._hl.group.Group) or isinstance(elt.data[e], wrapper.Wrapper):
-                    elt = elt.data[e]
-                    attr.update(elt.attributes)
-                else:
-                    if e in elt.data_attributes:
-                        attr.update(elt.data_attributes[e])
-                        data_attr = True
-
-        params_update = {}
-        for k, v in attr.items():
-            if not "FILEPROP" in k or "Name" in k:
-                if k != "ID":
-                    try:
-                        if params[k] != v:
-                            params_update[k] = v
-                    except KeyError:
-                        print("Error with key", k)
-        
-        # print(params_update)
-        
-        # # Update the attributes of the data
-        # if data_attr:
-        #     elt.update_property_data(e, params_update)
-        # else:
-        #     elt.update_property(params_update)
+        self.update_wrapper_attributes(measure_params, spectrometer_params)
 
     @qtc.Slot()
     def update_treeview(self):     
@@ -745,6 +695,82 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         self.tableView_Spectrometer.dragMoveEvent = self.table_view_dragMoveEvent
         self.tableView_Spectrometer.dropEvent = self.table_view_dropEvent
 
+    def update_wrapper_attributes(self, measure_params, spectrometer_params):
+        """
+        Update the attributes of the wrapper based on the table view parameters.
+
+        Parameters
+        ----------
+        measure_params : dict
+            The measure parameters from the table view.
+        spectrometer_params : dict
+            The spectrometer parameters from the table view.
+
+        Returns
+        -------
+        None
+        """
+        params = {}
+        for k, v in measure_params.items():
+            if k == "Name":
+                new_key = "FILEPROP.Name"
+            elif ")" in k:
+                new_key = "MEASURE." + "_".join(k.split(" ")) + "_()"
+            else:
+                new_key = "MEASURE." + "_".join(k.split(" "))
+
+            if v[1] != "":
+                if new_key.endswith("_()"):
+                    new_key = new_key[:-2] + f"({v[1]})"
+                else:
+                    new_key = new_key + f"_({v[1]})"
+            params[new_key] = v[0]
+
+        for k, v in spectrometer_params.items():
+            new_key = "SPECTROMETER." + "_".join(k.split(" "))
+            if v[1] != "":
+                new_key = new_key + f"_({v[1]})"
+            params[new_key] = v[0]
+
+        # Select only the attributes that have been changed for the data
+        attr = {}
+        attr.update(self.wrapper.attributes)
+        data_attr = False
+
+        if self.treeview_selected != "Data":  # Start by retrieving the parameters of the data before modification
+            path = self.treeview_selected.split("/")[1:]
+            for e in path:
+                if isinstance(elt.data[e], h5py._hl.group.Group) or isinstance(elt.data[e], wrapper.Wrapper):
+                    elt = elt.data[e]
+                    attr.update(elt.attributes)
+                else:
+                    if e in elt.data_attributes:
+                        attr.update(elt.data_attributes[e])
+                        data_attr = True
+                        break
+        
+        
+
+        # params_update = {}
+        # for k, v in attr.items():
+        #     if not "FILEPROP" in k or "Name" in k:
+        #         if k != "ID":
+        #             if not k in params.keys():
+        #                 print("Error with key", k)
+        #                 for k, v in params.items():
+        #                     print("\t",k, v) 
+        #                 print("\n\n\n")
+        #             else:
+        #                 params_update[k] = v
+
+        # # Update the attributes of the data
+        # if data_attr:
+        #     elt.update_property_data(e, params_update)
+        # else:
+        #     elt.update_property(params_update)
+
+        # # self.textBrowser_Log.append(f"Parameters {"' ".join(params_update.keys())} of <b>{self.treeview_selected}</b> have been updated")
+
     @qtc.Slot()
     def initialize_table_view(self):
         """
@@ -765,6 +791,12 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         self.model_table_Spectrometer.setHorizontalHeaderLabels(["Parameter", "Value"])
         self.tableView_Measure.setModel(self.model_table_Measure)    
         self.tableView_Spectrometer.setModel(self.model_table_Spectrometer)
+
+        # Connect signals to the slot
+        self.tableView_Measure.selectionModel().selectionChanged.connect(self.update_parameters_from_table_view)
+        self.tableView_Spectrometer.selectionModel().selectionChanged.connect(self.update_parameters_from_table_view)
+        self.model_table_Measure.itemChanged.connect(self.update_parameters_from_table_view)
+        self.model_table_Spectrometer.itemChanged.connect(self.update_parameters_from_table_view)
 
     @qtc.Slot()
     def table_view_dragEnterEvent(self, event: qtg.QDragEnterEvent):

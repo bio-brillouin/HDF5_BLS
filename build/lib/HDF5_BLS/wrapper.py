@@ -219,6 +219,21 @@ class Wrapper:
                 abscissa.append(self.data_attributes[f"Abscissa_{k}"]["Name"])
         self.attributes["MEASURE.Abscissa_Names"] = ','.join(abscissa)
 
+    def clear(self):
+        """Clears the wrapper
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+        self.data.clear()
+        self.data_attributes.clear()
+        self.attributes.clear()
+
     def create_abscissa_1D_min_max(self, dimension, min, max, name = None): # Test made
         """Creates an 1D abscissa array from a minimal and maximal value
 
@@ -410,16 +425,13 @@ class Wrapper:
             for key in self.data.keys():
                 if isinstance(self.data[key], np.ndarray):
                     dg = data_group.create_dataset(key, data=self.data[key])
+                    if key in self.data_attributes.keys():
+                        for k, v in self.data_attributes[key].items():
+                            dg.attrs[k] = v
                 elif isinstance(self.data[key], Wrapper):
                     save_group(data_group, self.data[key], key)
                 else:
                     raise WrapperError("Cannot add the selected type to HDF5 file")
-                
-                if key in self.data_attributes.keys():
-                    for k, v in self.data_attributes[key].items():
-                        dg.attrs[k] = v
-        # except:
-        #     raise WrapperError("The wrapper could not be saved as a HDF5 file")
 
     def type_path(self, key):
         """Returns the path of the data type
@@ -446,6 +458,32 @@ class Wrapper:
             except TypeError:
                 element = element.data[e]
         return type(element)
+
+    def update_property(self, properties):
+        """Updates the properties of the wrapper given the dictionnary properties
+
+        Parameters
+        ----------
+        properties : dic
+            The dictionnary containing the new properties to update
+        """
+        for k, v in properties.items():
+            self.attributes[k] = v   
+
+    def update_property_data(self, key, properties):
+        """Updates the properties of the data given the dictionnary properties
+
+        Parameters
+        ----------
+        properties : dic
+            The dictionnary containing the new properties to update
+        """
+        if key in self.data_attributes.keys():
+            for k, v in properties.items():
+                self.data_attributes[key][k] = v
+        else:
+            self.data_attributes[key] = properties
+
 
 def load_hdf5_file(filepath): # Test in add_hdf5_to_wrapper
     """Loads HDF5 files
