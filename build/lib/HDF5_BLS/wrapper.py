@@ -299,6 +299,35 @@ class Wrapper:
             for k, v in SPECTROMETER.items():
                 csv_writer.writerow([k, v])
 
+    def get_attributes_path(self, path):
+        """Returns the attributes of a path
+
+        Parameters
+        ----------
+        path : str
+            The path to the data
+
+        Returns
+        -------
+        attr : dict
+            The attributes of the data
+        """
+        attr = {}
+        attr.update(self.attributes)
+        elt = self
+
+        if path != "Data":  # Start by retrieving the parameters of the data before modification
+            path = path.split("/")[1:]
+            for e in path:
+                if isinstance(elt.data[e], h5py._hl.group.Group) or isinstance(elt.data[e], Wrapper):
+                    elt = elt.data[e]
+                    attr.update(elt.attributes)
+                else:
+                    if e in elt.data_attributes:
+                        attr.update(elt.data_attributes[e])
+                        break
+        return attr
+        
     def import_abscissa_1D(self, dimension, filepath, name = None): # Test made
         """Creates an abscissa from a minimal and maximal value
 

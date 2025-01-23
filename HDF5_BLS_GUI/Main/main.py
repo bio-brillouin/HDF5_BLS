@@ -27,121 +27,106 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             Path of the currently selected item in the tree view.
         filepath : str or None
             Path to the currently opened HDF5 file.
-
-    Methods
-        activate_buttons()
-            Method to activate buttons based on the current state of the application.
-        add_data(event=None, filepath=None, parent_path=None)
-            Method to add data to the current HDF5 file.
-        convert_csv()  
-            Method to convert a CSV file to the HDF5 format.
-        expand_on_hover()
-            Method to expand tree view items when hovered over.
-        expand_treeview_path(path)
-            Method to expand the tree view to a specific path.
-        export_code_line()
-            Method to export the selected code line.
-        new_hdf5()
-            Method to create a new HDF5 file.
-        open_hdf5(filepath=None)
-            Method to open an HDF5 file and update the tree view and parameters.
-        remove_data()
-            Method to remove data from the current HDF5 file.
-        save_hdf5(saveas=False)
-            Method to save the current data to an HDF5 file.
-        set_buttons()
-            Method to connect buttons to their respective functions.
-        set_menu()
-            Method to set up the menu for the application.
-        treeview_element_selected(event)
-            Method to handle the event when a tree view element is selected.
-        update_parameters(filepath=None)
-            Method to update the parameters based on the selected tree view element.
-        update_treeview()
-            Method to update the tree view with the current data.
-        initialize_table_view()
-            Method to initialize the table view with the necessary settings.
-        table_view_dragEnterEvent(event)
-            Method to handle the drag enter event for the table view.
-        table_view_dragMoveEvent(event)
-            Method to handle the drag move event for the table view.
-        table_view_dropEvent(event)
-            Method to handle the drop event for the table view.
-        table_view_handle_drop(file_path)
-            Method to handle the drop action for the table view.
-        treeView_dragEnterEvent(event)
-            Method to handle the drag enter event for the tree view.
-        treeView_dragMoveEvent(event)
-            Method to handle the drag move event for the tree view.
-        treeView_dropEvent(event)
-            Method to handle the drop event for the tree view.
-        treeview_handle_drop(filepath, parent_path)
-            Method to handle the drop action for the tree view.
+        file_changed : bool
+            Whether the wrapper has had changes or not since last save.
     """
 
     wrapper = None
+    current_hover_index = None
+    treeview_selected = None
+    filepath = None
+    file_changed = False
 
     def __init__(self):
+        def initialize_buttons(self):
+            self.b_NewHDF5.clicked.connect(self.new_hdf5)
+            self.b_OpenHDF5.clicked.connect(self.open_hdf5)
+            self.b_Save.clicked.connect(self.save_hdf5)
+            self.b_AddData.clicked.connect(self.add_data)
+            self.b_RemoveData.clicked.connect(self.remove_data)
+            self.b_ExportCodeLine.clicked.connect(self.export_code_line)
+            self.b_ConvertCSV.clicked.connect(self.convert_csv)
+            self.b_Close.clicked.connect(self.close_plus)
+
+        def initialize_menu(self):
+            self.a_NewHDF5.triggered.connect(self.new_hdf5)
+            self.a_OpenHDF5.triggered.connect(self.open_hdf5)
+            self.a_Save.triggered.connect(self.save_hdf5)
+            self.a_SaveFileAs.triggered.connect(lambda: self.save_hdf5(saveas=True))
+            self.a_AddData.triggered.connect(self.add_data)
+            self.a_ConvertCSV.triggered.connect(self.convert_csv)
+
+        def initialize_timer(self):
+            self.hover_timer = qtc.QTimer(self) 
+            self.hover_timer.setSingleShot(True)
+            self.hover_timer.timeout.connect(self.expand_on_hover)  # Connect to the expand function
+
+        def initialize_tableview(self):
+            # Changes the names of the frames of the tab widget
+            self.tabWidget.setTabText(0, "Measure")
+            self.tabWidget.setTabText(1, "Spectrometer")   
+
+            # Creates a model with 3 columns and sets it to the tableview.
+            self.model_table_Measure = qtg.QStandardItemModel()
+            self.model_table_Measure.setHorizontalHeaderLabels(["Parameter", "Value"])
+            self.model_table_Spectrometer = qtg.QStandardItemModel()
+            self.model_table_Spectrometer.setHorizontalHeaderLabels(["Parameter", "Value"])
+            self.tableView_Measure.setModel(self.model_table_Measure)    
+            self.tableView_Spectrometer.setModel(self.model_table_Spectrometer)
+
+            # Connect signals to the slot
+            # self.tableView_Measure.selectionModel().selectionChanged.connect(self.update_parameters_from_table_view)
+            # self.tableView_Spectrometer.selectionModel().selectionChanged.connect(self.update_parameters_from_table_view)
+            self.model_table_Measure.itemChanged.connect(self.update_parameters_from_table_view)
+            self.model_table_Spectrometer.itemChanged.connect(self.update_parameters_from_table_view)
+            
+            # Sets the selection mode of the table views
+            self.tableView_Measure.setSelectionBehavior(qtw.QAbstractItemView.SelectRows)
+            self.tableView_Measure.setSelectionMode(qtw.QAbstractItemView.SingleSelection)
+            self.tableView_Spectrometer.setSelectionBehavior(qtw.QAbstractItemView.SelectRows)
+            self.tableView_Spectrometer.setSelectionMode(qtw.QAbstractItemView.SingleSelection)
+
+        def initialize_treeview(self):
+            self.treeView.setAcceptDrops(True)
+            self.treeView.setDragEnabled(False)  # Optional: Prevent dragging from TreeView
+            self.treeView.setDragDropMode(qtw.QAbstractItemView.DropOnly)
+
+            # Sets the selection mode of the tree view
+            self.treeView.setSelectionBehavior(qtw.QAbstractItemView.SelectRows)
+            self.treeView.setSelectionMode(qtw.QAbstractItemView.SingleSelection)
+            self.treeView.setStyleSheet("""
+                QTreeView::item:selected {
+                    background-color: lightblue;
+                    color: black;
+                }
+            """)
+
+            # Sets the events of the treeview
+            self.treeView.dragEnterEvent = self.treeView_dragEnterEvent
+            self.treeView.dragMoveEvent = self.treeView_dragMoveEvent
+            self.treeView.dropEvent = self.treeView_dropEvent
+
+        
         super().__init__()
         self.setupUi(self)
     
         # Set the buttons to functions
-        self.set_buttons()
+        initialize_buttons(self)
 
         # Set the menu to functions
-        self.set_menu()
+        initialize_menu(self)
 
-        # Set up the timer to measure the time spent when dragging an item into the table
-        self.hover_timer = qtc.QTimer(self) 
-        self.hover_timer.setSingleShot(True)
-        self.hover_timer.timeout.connect(self.expand_on_hover)  # Connect to the expand function
-        self.current_hover_index = None  # Track the current item being hovered over
+        # Set up the timer (used to develop elements in the treeview when dragging items into it)
+        initialize_timer(self)
 
-        # Initiates the table view
-        self.initialize_table_view()
+        # Initiates the tree view properties
+        initialize_treeview(self)
+
+        # Initiates the table view where the properties of the measure and spectrometer are displayed
+        initialize_tableview(self)
 
         # Initiates the log
         self.textBrowser_Log.setText("Welcome to a new HDF5_BLS GUI session")
-
-        # Initiates the tree view properties
-        self.treeView.setAcceptDrops(True)
-        self.treeView.setDragEnabled(False)  # Optional: Prevent dragging from TreeView
-        self.treeView.setDragDropMode(qtw.QAbstractItemView.DropOnly)
-        self.treeView.dragEnterEvent = self.treeView_dragEnterEvent
-        self.treeView.dragMoveEvent = self.treeView_dragMoveEvent
-        self.treeView.dropEvent = self.treeView_dropEvent
-
-        # Sets the selection mode of the tree view
-        self.treeView.setSelectionBehavior(qtw.QAbstractItemView.SelectRows)
-        self.treeView.setSelectionMode(qtw.QAbstractItemView.SingleSelection)
-        self.treeView.setStyleSheet("""
-            QTreeView::item:selected {
-                background-color: lightblue;
-                color: black;
-            }
-        """)
-
-        # Sets the selection mode of the table views
-        self.tableView_Measure.setSelectionBehavior(qtw.QAbstractItemView.SelectRows)
-        self.tableView_Measure.setSelectionMode(qtw.QAbstractItemView.SingleSelection)
-        self.tableView_Spectrometer.setSelectionBehavior(qtw.QAbstractItemView.SelectRows)
-        self.tableView_Spectrometer.setSelectionMode(qtw.QAbstractItemView.SingleSelection)
-
-        # Ensure models are set before connecting signals
-        self.model_table_Measure = qtg.QStandardItemModel()
-        self.model_table_Spectrometer = qtg.QStandardItemModel()
-        self.tableView_Measure.setModel(self.model_table_Measure)
-        self.tableView_Spectrometer.setModel(self.model_table_Spectrometer)
-
-        # Connect signals to the slot
-        self.tableView_Measure.selectionModel().selectionChanged.connect(self.update_parameters_from_table_view)
-        self.tableView_Spectrometer.selectionModel().selectionChanged.connect(self.update_parameters_from_table_view)
-        self.model_table_Measure.itemChanged.connect(self.update_parameters_from_table_view)
-        self.model_table_Spectrometer.itemChanged.connect(self.update_parameters_from_table_view)
-
-        self.treeview_selected = None
-        self.filepath = None
-        self.file_changed = False
 
     @qtc.Slot()
     def activate_buttons(self):
@@ -234,7 +219,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
 
     def convert_csv(self):
         """
-        Convert a CSV file to the HDF5 format.
+        Exports the properties of the wrapper to a CSV file.
 
         Returns
         -------
@@ -270,42 +255,29 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         Parameters
         ----------
         path : str
-            The path to expand in the tree view.
+            The path to expand in the tree view, in the form of "Data/Data_i/Data_j".
 
         Returns
         -------
         None
         """
-        # Start from the root item
-        root_index = self.treeView.model().index(0, 0)  # Assuming the first row is the root
-        current_index = root_index
-
-        # Expand the root item
-        self.treeView.setExpanded(root_index, True)
+        # Start from the root item and expand it
+        current_index = self.treeView.model().index(0, 0)  # Assuming the first row is the root
+        self.treeView.setExpanded(current_index, True)
 
         # Traverse the path and expand
-        if path is None:
-            pass
-        else:
+        if not path is None:
             path_parts = path.split("/")
-            data_temp = self.wrapper
+            elt = self.wrapper
 
             for part in path_parts[1:]:  # Skip the root part
-                found = False
-                data_temp = data_temp.data[part]
-                try: 
-                    name = data_temp.attributes["FILEPROP.Name"]
-                    for row in range(self.treeView.model().rowCount(current_index)):
-                        child_index = self.treeView.model().index(row, 0, current_index)
-                        if child_index.data() == name:
-                            current_index = child_index
-                            self.treeView.setExpanded(current_index, True)  # Expand the parent
-                            found = True
-                            break
-                    if not found:
-                        break  # Path not found; stop further expansion
-                except:
-                    break  # Path not found; stop further expansion
+                elt = elt.data[part]
+                name = elt.attributes["FILEPROP.Name"] if "FILEPROP.Name" in elt.attributes else part
+                for row in range(self.treeView.model().rowCount(current_index)):
+                    child_index = self.treeView.model().index(row, 0, current_index)
+                    if child_index.data() == name:
+                        current_index = child_index
+                        self.treeView.setExpanded(current_index, True)  # Expand the parent
     
     def export_code_line(self):
         """
@@ -315,7 +287,6 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         -------
         None
         """
-        self.textBrowser_Log.append(f"Path to file: <b>{self.treeview_selected}</b>")
         text = "from HDF5_BLS import wrapper\n"
         text += "import h5py as h5\n\n"
         path = self.treeview_selected.split('/')[1:]
@@ -338,6 +309,8 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
 
         qtw.QMessageBox.information(self, "Copied to clipboard", f"Code to access the data copied to clipboard")
 
+        self.textBrowser_Log.append(f"Python code to access the data of <b>{self.treeview_selected}</b> has been copied to the clipboard")
+
     def new_hdf5(self):
         """
         Create a new HDF5 file.
@@ -348,8 +321,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         """
         if self.file_changed:
             reply = qtw.QMessageBox.question(self, "Unsaved changes", "Do you want to save the changes?", qtw.QMessageBox.Yes | qtw.QMessageBox.No)
-            if reply == qtw.QMessageBox.Yes:
-                self.save_hdf5()
+            if reply == qtw.QMessageBox.Yes: self.save_hdf5()
             
         self.wrapper.clear()
         self.filepath = None
@@ -357,6 +329,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
 
         # Update treeview
         self.update_treeview()
+        self.textBrowser_Log.append("New HDF5 file created")
     
     def open_hdf5(self, filepath=None):
         """
@@ -373,14 +346,10 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         """
         if self.file_changed:
             reply = qtw.QMessageBox.question(self, "Unsaved changes", "Do you want to save the changes?", qtw.QMessageBox.Yes | qtw.QMessageBox.No)
-            if reply == qtw.QMessageBox.Yes:
-                self.save_hdf5()
+            if reply == qtw.QMessageBox.Yes: self.save_hdf5()
             
-            
-        if filepath is None:
-            self.filepath = qtw.QFileDialog.getOpenFileName(self, "Open File", "", "HDF5 Files (*.h5)")[0]
-        else:
-            self.filepath = filepath
+        
+        self.filepath = filepath if filepath is not None else qtw.QFileDialog.getOpenFileName(self, "Open File", "", "HDF5 Files (*.h5)")[0]
         self.wrapper = wrapper.load_hdf5_file(self.filepath)
         
         # Update treeview
@@ -446,40 +415,6 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         self.textBrowser_Log.append(f"<i>{self.filepath}</i> has been saved")
 
     @qtc.Slot()
-    def set_buttons(self):
-        """
-        Connect buttons to their respective functions.
-
-        Returns
-        -------
-        None
-        """
-        self.b_NewHDF5.clicked.connect(self.new_hdf5)
-        self.b_OpenHDF5.clicked.connect(self.open_hdf5)
-        self.b_Save.clicked.connect(self.save_hdf5)
-        self.b_AddData.clicked.connect(self.add_data)
-        self.b_RemoveData.clicked.connect(self.remove_data)
-        self.b_ExportCodeLine.clicked.connect(self.export_code_line)
-        self.b_ConvertCSV.clicked.connect(self.convert_csv)
-        self.b_Close.clicked.connect(self.close_plus)
-    
-    @qtc.Slot()
-    def set_menu(self):
-        """
-        Set up the menu for the application.
-
-        Returns
-        -------
-        None
-        """
-        self.a_NewHDF5.triggered.connect(self.new_hdf5)
-        self.a_OpenHDF5.triggered.connect(self.open_hdf5)
-        self.a_Save.triggered.connect(self.save_hdf5)
-        self.a_SaveFileAs.triggered.connect(lambda: self.save_hdf5(saveas=True))
-        self.a_AddData.triggered.connect(self.add_data)
-        self.a_ConvertCSV.triggered.connect(self.convert_csv)
-
-    @qtc.Slot()
     def treeview_element_selected(self, event: qtc.QItemSelection):
         """
         Handle the event when a tree view element is selected.
@@ -488,13 +423,14 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         -------
         None
         """
+
         self.b_ExportCodeLine.setEnabled(True)
         selected_indexes = self.treeView.selectionModel().selectedIndexes()
+
         if selected_indexes:
             # Get the first selected index (assuming single selection)
             selected_index = selected_indexes[0]
             path = selected_index.data(qtc.Qt.UserRole)
-            self.textBrowser_Log.append(f"Selected item: <b>{path}</b>")
             self.treeview_selected = path
             self.update_parameters()
             
@@ -503,54 +439,35 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         """
         Update the parameters based on the selected tree view element.
 
+        Parameters
+        ----------
+        filepath : str, optional                         
+            The path to the CSV file containing the properties to update. If None, the properties of the selected element are updated based on the reference CSV parameter file.
+
         Returns
         -------
         None
         """
         # Update the wrapper attributes to have all the attributes of the specified version
-        if filepath is None: 
-            self.wrapper.import_properties_data(f'spreadsheets/attributes_v{wrapper.BLS_HDF5_Version}.csv', update = False)
+        if filepath is None: self.wrapper.import_properties_data(f'spreadsheets/attributes_v{wrapper.BLS_HDF5_Version}.csv', update = False)
         else:
             elt = self.wrapper
             if self.treeview_selected != "Data":
                 path = self.treeview_selected.split("/")[1:]
-                for e in path[:-1]: 
-                    elt = elt.data[e]
+                for e in path[:-1]:  elt = elt.data[e]
                 update = qtw.QMessageBox.question(self, "Update properties", "Do you want to update the properties of the wrapper with the properties stored in the file?")
-                if update == qtw.QMessageBox.Yes:
-                    if isinstance(elt.data[path[-1]], h5py._hl.group.Group) or isinstance(elt.data[path[-1]], wrapper.Wrapper): 
-                        elt.data[path[-1]].import_properties_data(filepath, update = True)
-                    else:
-                        elt.import_properties_data_attributes(path[-1], filepath, update = True)
+                update = True if update == qtw.QMessageBox.Yes else False
+                if isinstance(elt.data[path[-1]], (h5py._hl.group.Group, wrapper.Wrapper)): 
+                    elt.data[path[-1]].import_properties_data(filepath, update = update)
                 else:
-                    if isinstance(elt.data[path[-1]], h5py._hl.group.Group) or isinstance(elt.data[path[-1]], wrapper.Wrapper): 
-                        elt.data[path[-1]].import_properties_data(filepath, update = False)
-                    else:
-                        elt.import_properties_data_attributes(path[-1], filepath, update = False)
+                    elt.import_properties_data_attributes(path[-1], filepath, update = update)
             else: 
                 update = qtw.QMessageBox.question(self, "Update properties", "Do you want to update the properties of the wrapper with the properties stored in the file?")
-                if update == qtw.QMessageBox.Yes:
-                    self.wrapper.import_properties_data(filepath, update = True)
-                else:
-                    self.wrapper.import_properties_data(filepath, update = False)
-            self.file_changed = True
+                update = True if update == qtw.QMessageBox.Yes else False
+                self.wrapper.import_properties_data(filepath, update = update)
 
         # Extract the attributes of the element selected
-        elt = self.wrapper
-        attr = {}
-        attr.update(elt.attributes)
-
-        if self.treeview_selected != "Data":
-            path = self.treeview_selected.split("/")[1:]
-            for e in path:
-                if isinstance(elt.data[e], h5py._hl.group.Group) or isinstance(elt.data[e], wrapper.Wrapper):
-                    elt = elt.data[e]
-                    attr.update(elt.attributes)
-                else:
-                    if e in elt.data_attributes:
-                        attr.update(elt.data_attributes[e])
-                        break
-                
+        attr = self.wrapper.get_attributes_path(self.treeview_selected)
 
         # Update the tables associated to the measure and spectrometer
         self.model_table_Measure.clear()
@@ -570,10 +487,8 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             try:
                 cat, name = k.split(".")
                 name = name.split("_")
-                if name[-1][0] == "(" and name[-1][-1] == ")":
-                    unit = name.pop(-1)[1:-1]
-                else:
-                    unit = ""
+                if name[-1][0] == "(" and name[-1][-1] == ")": unit = name.pop(-1)[1:-1]
+                else: unit = ""
                 if cat == "MEASURE":
                     self.model_table_Measure.appendRow([qtg.QStandardItem(" ".join(name)), qtg.QStandardItem(v), qtg.QStandardItem(unit)])
                 elif cat == "SPECTROMETER":
@@ -584,6 +499,10 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         self.tableView_Measure.setModel(self.model_table_Measure)    
         self.tableView_Spectrometer.setModel(self.model_table_Spectrometer)
 
+        self.file_changed = True
+
+        self.textBrowser_Log.append(f"Parameters of <b>{self.treeview_selected}</b> have been updated")
+
     @qtc.Slot()
     def update_parameters_from_table_view(self):
         """
@@ -593,15 +512,61 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         -------
         None
         """
-        measure_params = self.read_table_view(self.tableView_Measure)
-        spectrometer_params = self.read_table_view(self.tableView_Spectrometer)
+        def compare_dictionnaries(dict1, dict2):
+            attr = {}
+            for k, v in dict1.items():
+                if k in dict2.keys():
+                    if dict2[k] != v:
+                        attr[k] = v
+            return attr
 
-        self.update_wrapper_attributes(measure_params, spectrometer_params)
+        def create_parameter_dictionnary_from_table_view(self):
+            measure_params = self.read_table_view(self.tableView_Measure)
+            spectrometer_params = self.read_table_view(self.tableView_Spectrometer)
+
+            attr = {}
+            for k, v in measure_params.items():
+                if k == "Name": new_key = "FILEPROP.Name"
+                elif ")" in k: new_key = "MEASURE." + "_".join(k.split(" ")) + "_()"
+                else: new_key = "MEASURE." + "_".join(k.split(" "))
+
+                if v[1] != "":
+                    if new_key.endswith("_()"):  new_key = new_key[:-2] + f"({v[1]})"
+                    else: new_key = new_key + f"_({v[1]})"
+                attr[new_key] = v[0]
+
+            for k, v in spectrometer_params.items():
+                new_key = "SPECTROMETER." + "_".join(k.split(" "))
+                if v[1] != "": new_key = new_key + f"_({v[1]})"
+                attr[new_key] = v[0]
+            
+            return attr
+
+        # Get the parameters of the table view and of the wrapper
+        attr_table = create_parameter_dictionnary_from_table_view(self)
+        attr_wrapper = self.wrapper.get_attributes_path(self.treeview_selected)
+
+        # Compare the two dictionaries
+        attr_changed = compare_dictionnaries(attr_table, attr_wrapper)
+
+        # Update the wrapper attributes to have all the attributes of the specified version
+        if attr_changed:
+            elt = self.wrapper
+            for e in self.treeview_selected.split("/")[1:]: elt = elt.data[e]
+            if not isinstance(elt, (h5py._hl.group.Group, wrapper.Wrapper)): 
+                for e in self.treeview_selected.split("/")[1:-1]: elt = elt.data[e]
+            elt.update_property(attr_changed)
+        
+        self.update_parameters()
+        self.update_treeview()
+        self.expand_treeview_path("/".join(self.treeview_selected.split("/")[:-1]))
+
+        self.textBrowser_Log.append(f"Parameters of <b>{self.treeview_selected}</b> have been updated")
 
     @qtc.Slot()
     def update_treeview(self):     
         """
-        Update the tree view with the current data.
+        Update the tree view with the current wrapper.
 
         Returns
         -------
@@ -609,7 +574,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         """
         def add_child(wrp, element, parent, path):
             item_path = f"{path}/{element}".replace("//", "/")
-            if isinstance(wrp.data[element], np.ndarray) or isinstance(wrp.data[element], h5py._hl.dataset.Dataset):
+            if isinstance(wrp.data[element], (np.ndarray, h5py._hl.dataset.Dataset)):
                 name, date, sample = element, '', ''
                 if element in wrp.data_attributes.keys():
                     if "Name" in wrp.data_attributes[element].keys(): name = wrp.data_attributes[element]["Name"]
@@ -695,109 +660,6 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         self.tableView_Spectrometer.dragMoveEvent = self.table_view_dragMoveEvent
         self.tableView_Spectrometer.dropEvent = self.table_view_dropEvent
 
-    def update_wrapper_attributes(self, measure_params, spectrometer_params):
-        """
-        Update the attributes of the wrapper based on the table view parameters.
-
-        Parameters
-        ----------
-        measure_params : dict
-            The measure parameters from the table view.
-        spectrometer_params : dict
-            The spectrometer parameters from the table view.
-
-        Returns
-        -------
-        None
-        """
-        params = {}
-        for k, v in measure_params.items():
-            if k == "Name":
-                new_key = "FILEPROP.Name"
-            elif ")" in k:
-                new_key = "MEASURE." + "_".join(k.split(" ")) + "_()"
-            else:
-                new_key = "MEASURE." + "_".join(k.split(" "))
-
-            if v[1] != "":
-                if new_key.endswith("_()"):
-                    new_key = new_key[:-2] + f"({v[1]})"
-                else:
-                    new_key = new_key + f"_({v[1]})"
-            params[new_key] = v[0]
-
-        for k, v in spectrometer_params.items():
-            new_key = "SPECTROMETER." + "_".join(k.split(" "))
-            if v[1] != "":
-                new_key = new_key + f"_({v[1]})"
-            params[new_key] = v[0]
-
-        # Select only the attributes that have been changed for the data
-        attr = {}
-        attr.update(self.wrapper.attributes)
-        data_attr = False
-
-        if self.treeview_selected != "Data":  # Start by retrieving the parameters of the data before modification
-            path = self.treeview_selected.split("/")[1:]
-            for e in path:
-                if isinstance(elt.data[e], h5py._hl.group.Group) or isinstance(elt.data[e], wrapper.Wrapper):
-                    elt = elt.data[e]
-                    attr.update(elt.attributes)
-                else:
-                    if e in elt.data_attributes:
-                        attr.update(elt.data_attributes[e])
-                        data_attr = True
-                        break
-        
-        
-
-        # params_update = {}
-        # for k, v in attr.items():
-        #     if not "FILEPROP" in k or "Name" in k:
-        #         if k != "ID":
-        #             if not k in params.keys():
-        #                 print("Error with key", k)
-        #                 for k, v in params.items():
-        #                     print("\t",k, v) 
-        #                 print("\n\n\n")
-        #             else:
-        #                 params_update[k] = v
-
-        # # Update the attributes of the data
-        # if data_attr:
-        #     elt.update_property_data(e, params_update)
-        # else:
-        #     elt.update_property(params_update)
-
-        # # self.textBrowser_Log.append(f"Parameters {"' ".join(params_update.keys())} of <b>{self.treeview_selected}</b> have been updated")
-
-    @qtc.Slot()
-    def initialize_table_view(self):
-        """
-        Initialize the table view with the necessary settings.
-
-        Returns
-        -------
-        None
-        """
-        # Changes the names of the frames of the tab widget
-        self.tabWidget.setTabText(0, "Measure")
-        self.tabWidget.setTabText(1, "Spectrometer")   
-
-        # Creates a model with 3 columns and sets it to the tableview.
-        self.model_table_Measure = qtg.QStandardItemModel()
-        self.model_table_Measure.setHorizontalHeaderLabels(["Parameter", "Value"])
-        self.model_table_Spectrometer = qtg.QStandardItemModel()
-        self.model_table_Spectrometer.setHorizontalHeaderLabels(["Parameter", "Value"])
-        self.tableView_Measure.setModel(self.model_table_Measure)    
-        self.tableView_Spectrometer.setModel(self.model_table_Spectrometer)
-
-        # Connect signals to the slot
-        self.tableView_Measure.selectionModel().selectionChanged.connect(self.update_parameters_from_table_view)
-        self.tableView_Spectrometer.selectionModel().selectionChanged.connect(self.update_parameters_from_table_view)
-        self.model_table_Measure.itemChanged.connect(self.update_parameters_from_table_view)
-        self.model_table_Spectrometer.itemChanged.connect(self.update_parameters_from_table_view)
-
     @qtc.Slot()
     def table_view_dragEnterEvent(self, event: qtg.QDragEnterEvent):
         """
@@ -839,7 +701,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
     @qtc.Slot()
     def table_view_dropEvent(self, event: qtg.QDropEvent):
         """
-        Handle the drop event for the table view.
+        Updates the parameters of the selected element when a .csv file is dropped on the table view.
 
         Parameters
         ----------
@@ -852,35 +714,13 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         """
         if event.mimeData().hasUrls():
             urls = [url.toLocalFile() for url in event.mimeData().urls()]
-            if len(urls) == 1:
+            if len(urls) > 1: qtw.QMessageBox.warning(self, "Warning", "Only one property file can be dropped at a time")
+            elif len(urls) == 1:
                 url = urls[0]
-                extension = os.path.splitext(url)[1]
-                if extension == ".csv":
-                    self.table_view_handle_drop(url)
-                else:    
-                    qtw.QMessageBox.warning(self, "Warning", "Only .csv property files can be used")
-            else:
-                qtw.QMessageBox.warning(self, "Warning", "Only one property file can be dropped at a time")
+                if os.path.splitext(url)[1] == ".csv": self.update_parameters(url) # Verify that the file is a .csv file
+                else: qtw.QMessageBox.warning(self, "Warning", "Only .csv property files can be used")
             event.accept()
-        else:
-            event.ignore()
-
-    @qtc.Slot()
-    def table_view_handle_drop(self, file_path):
-        """
-        Handle the drop action for the table view.
-
-        Parameters
-        ----------
-        event : QDropEvent
-            The drop event.
-
-        Returns
-        -------
-        None
-        """
-        self.update_parameters(file_path)
-        self.textBrowser_Log.append(f"Properties of <b>{self.treeview_selected}</b> have been updated")
+        else: event.ignore()
 
     @qtc.Slot()
     def treeView_dragEnterEvent(self, event: qtg.QDragEnterEvent):

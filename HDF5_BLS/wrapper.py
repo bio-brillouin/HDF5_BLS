@@ -279,6 +279,7 @@ class Wrapper:
         """
         FILEPROP, MEASURE, SPECTROMETER = {}, {}, {}
         for k, v in self.attributes.items():
+            k.replace("¬", "")
             if k.split(".")[0] == "FILEPROP":
                 FILEPROP[k] = v
             elif k.split(".")[0] == "MEASURE":
@@ -289,12 +290,15 @@ class Wrapper:
         with open(filepath, mode='w') as csv_file:
             csv_writer = csv.writer(csv_file)
             csv_writer.writerow(["Export"])
+            csv_writer.writerow(["",""])  
             csv_writer.writerow(["FILEPROP"])    
             for k, v in FILEPROP.items():
                 csv_writer.writerow([k, v])
+            csv_writer.writerow(["",""])  
             csv_writer.writerow(["MEASURE"])    
             for k, v in MEASURE.items():
                 csv_writer.writerow([k, v])
+            csv_writer.writerow(["",""])  
             csv_writer.writerow(["SPECTROMETER"])    
             for k, v in SPECTROMETER.items():
                 csv_writer.writerow([k, v])
@@ -313,7 +317,8 @@ class Wrapper:
             The attributes of the data
         """
         attr = {}
-        attr.update(self.wrapper.attributes)
+        attr.update(self.attributes)
+        elt = self
 
         if path != "Data":  # Start by retrieving the parameters of the data before modification
             path = path.split("/")[1:]
@@ -324,10 +329,9 @@ class Wrapper:
                 else:
                     if e in elt.data_attributes:
                         attr.update(elt.data_attributes[e])
-                        data_attr = True
                         break
+        return attr
         
-
     def import_abscissa_1D(self, dimension, filepath, name = None): # Test made
         """Creates an abscissa from a minimal and maximal value
 
@@ -513,7 +517,6 @@ class Wrapper:
         else:
             self.data_attributes[key] = properties
 
-
 def load_hdf5_file(filepath): # Test in add_hdf5_to_wrapper
     """Loads HDF5 files
 
@@ -626,57 +629,3 @@ def merge_wrappers(list_wrappers, name = None, abscissa_from_attributes = None):
         attributes["Name"] = name
 
         return attributes, data, data_attributes
-
-# def add_data_to_wrapper(wrapper, file_path, data_attributes, abscissa_from_attributes):
-#     """
-#     Add data from a file to a wrapper
-    
-#     Parameters
-#     ----------
-#     wrapper : Wrapper
-#         The wrapper to add the data to
-#     file_path : str
-#         The path to the file to add
-#     data_attributes : dict
-#         The attributes of the data to add
-#     abscissa_from_attributes : list
-#         The attributes to use as abscissa
-    
-#     Returns
-#     -------
-#     None
-#     """
-#     # Opening the file
-#     wrp = Wrapper()
-#     wrp.open_data(file_path)
-    
-#     # Adding the attributes
-#     for k,v in data_attributes.items():
-#         if k not in wrapper.data_attributes.keys():
-#             wrapper.data_attributes[k] = v
-#         else:
-#             print(f"Attribute {k} already exists in the wrapper")
-            
-#     # Adding the data
-#     for k,v in wrp.data.items():
-#         if k not in wrapper.data.keys():
-#             wrapper.data[k] = v
-#         else:
-#             print(f"Data {k} already exists in the wrapper")
-            
-#     # Adding the abscissa
-#     for k,v in wrp.data_attributes.items():
-#         if k not in wrapper.data_attributes.keys():
-#             wrapper.data_attributes[k] = v
-#         else:
-#             print(f"Attribute {k} already exists in the wrapper")
-            
-#     # Adding the abscissa
-#     for k,v in wrp.data_attributes.items():
-#         if k not in wrapper.data_attributes.keys():
-#             wrapper.data_attributes[k] = v
-#         else:    
-#             print(f"Attribute {k} already exists in the wrapper")    
-            
-#     return wrapper       
-
