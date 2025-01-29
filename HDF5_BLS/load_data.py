@@ -135,10 +135,7 @@ def load_sif_file(filepath):
     attributes['MEASURE.Exposure_(s)'] = str(info["ExposureTime"])
     attributes['SPECTROMETER.Detector_Model'] = info["DetectorType"]
     attributes['MEASURE.Date_of_measure'] = datetime.fromtimestamp(info["ExperimentTime"]).isoformat()
-
-    if data.shape[0] == 1:
-        data = data[0]
-
+    
     return data, attributes
 
 def load_general(filepath): # Test made 

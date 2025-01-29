@@ -39,7 +39,7 @@ def test_load_sif_file():
 
     data, attributes = load_sif_file(filepath)
     
-    assert data.shape == (512, 512), "FAIL - test_load_sif_file - data shape is not correct"
+    assert data.shape == (1, 512, 512), "FAIL - test_load_sif_file - data shape is not correct"
     assert attributes['SPECTROMETER.Detector_Model'] == "DU897_BV", "FAIL - test_load_sif_file - Detector attribute is not correct"
     assert attributes['MEASURE.Exposure_s'] == "0.00251", "FAIL - test_load_sif_file - Exposure attribute is not correct"
 
@@ -53,3 +53,6 @@ def test_load_general():
             _, attributes = load_general(os.path.join(os.path.dirname(__file__), "test_data",fp))
             name = ".".join(os.path.basename(fp).split(".")[:-1])
             assert attributes['FILEPROP.Name'] == name
+
+
+    

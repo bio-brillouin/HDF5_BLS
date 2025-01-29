@@ -8,6 +8,7 @@ datetime>=5
 setuptools
 wheel
 pyperclip
+re
 
 # Development dependencies
 pytest
