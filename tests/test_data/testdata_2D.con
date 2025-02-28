@@ -1,0 +1,27 @@
+action apt_stage
+axis 0
+scan -15.4636 -15.4476 0.0002
+restore
+
+action apt_stage
+axis 1
+scan 5.1559 5.1719 0.0002
+restore
+save
+
+action scope
+channels F1
+ip 192.168.74.14
+end
+
+action a2d
+channel 0
+range 1
+sample_rate 10000
+n_samples 1000
+end
+
+end
+end
+
+

@@ -1,0 +1,24 @@
+action script
+  script laserson
+end
+
+action count
+  count 200
+      save
+    
+        action scope
+            channels F1
+            ip 192.168.74.14
+        end
+
+        action a2d
+            channel 0
+            range 1
+            sample_rate 10000
+            n_samples 500
+        end
+end
+
+action script 
+ script lasersoff
+end
