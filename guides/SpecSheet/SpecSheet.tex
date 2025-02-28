@@ -1,0 +1,38 @@
+\documentclass{article}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{longtable}
+
+\geometry{a4paper, margin=1in}
+
+\title{HDF5\_BLS Specification Sheet}
+\author{BioBrillouin}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section*{Project Objectives}
+\begin{enumerate}
+    \item Unify the format of data files to HDF5
+    \item Allow structured storage of data in HDF5
+    \item Provide a Python access to data inside HDF5 files
+    \item Build a GUI to make the creation of HDF5 files easier
+    \item Give users the possibility to convert their raw files to Power Spectrum Densities (PSDs) inside the GUI
+    \item Allow users to treat the PSDs inside the GUI
+    \item Allow the user to visualize their data as well as the results of the analysis.
+\end{enumerate}
+
+\section*{Project Deliverables}
+\begin{longtable}{|>{\raggedright}p{4cm}|p{10cm}|}
+    \hline
+    \textbf{Deliverable} & \textbf{Description} \\ \hline
+    Deliverable 1 & Agree on a file structure. \\ \hline
+    Deliverable 2 & Have a stable version of the HDF5\_BLS to create the files and to read them.  \\ \hline
+    Deliverable 3 & Have a first GUI to use the HDF5\_BLS library to add data, organize its structure and save attributes. \\ \hline
+\end{longtable}
+
+
+\end{document}

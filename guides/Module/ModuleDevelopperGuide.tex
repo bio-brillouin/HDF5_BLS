@@ -67,13 +67,21 @@ This document serves as the developer guide for the modules of the\texttt{HDF5\_
 The project has the following structure:
 \begin{verbatim}
 HDF5_BLS.
+|-- conversion_PSD_modules.
+    |-- ar_BLS_VIPA
+|-- conversion_PSD
 |-- load_data
 |-- wrapper
 |-- treat
 \end{verbatim}
 
-\subsection{Key Components}
+\subsection{Description of the structure}
 \begin{itemize}
+    \item \textbf{conversion\_PSD\_modules.}: The sub-package that contains all the modules for the conversion of arrays to Power Spectrum Density.
+        \begin{itemize}
+            \item \textbf{ar\_BLS\_VIPA}: A module for angle-resolved VIPA spectrometer data.
+        \end{itemize}
+    \item \textbf{conversion\_PSD}: The module that contains the logic specific to each technique to ensure the data can be treated.
     \item \textbf{load\_data}: Allows the import of data from different formats.
     \item \textbf{wrapper}: Contains the Wrapper object that allows the manipulation of the data and its attributes.
     \item \textbf{treat}: Contains the treatment functions.
@@ -99,6 +107,99 @@ Additionnaly, it is possible to add new attributes to the data. To do so, you ne
     attributes['CATEGORY.Attribute'] = # Value of the new attribute
 \end{verbatim}
 where \texttt{CATEGORY} is either \texttt{SPECTROMETER} (if its spectrometer related), \texttt{MEASURE} (if its measure related) or \texttt{FILEPROP} (if its file related), and \texttt{Attribute} is the name of the attribute. It is recommended to use the same name as the key in the spreadsheet, and update the spreadsheet with the new attribute. Additionnaly, we recommend to send a pull request to the repository to update the spreadsheet so as to normalize the naming convention in the community.
+
+\section{Adding a new algorithm to convert raw data in Power Spectrum Density}
+
+This project has made it easy(ish) for users to add their own algorithms to convert their data arrays in PSD arrays. This is done by imposing a certain nomenclature  that will be defined hereafter.
+
+\subsection{Where to add the function}
+
+The project is made so that all modules inherent to the extraction of a PSD from an array are located in the "conversion\_PSD\_module" folder of the HDF5\_BLS project folder. Each module is defined by the type of data it is meant to treat. For example, the module "ar\_BLS\_VIPA.py" is meant to treat data obtained with an angle-resolved VIPA spectrometer. 
+
+If the type of technique you use is not already defined, you can create a new module with the name of your technique. Note that this name should be the same as the one used for the "SPECTROMETER.Type" attribute in the HDF5 file.
+
+If the type of technique you use is defined but you still want your own treatment to be accssible, you just need to add your function to the module, following the rules we will define in the following section.
+
+\subsection{Nomenclature of the arguments }
+
+The nomenclature is as follows:
+\begin{itemize}
+    \item Arguments starting with "n\_" are arguments that are not meant to adjust a treatment on the data array (for example the array itself).
+    \item Arguments starting with "g\_" are arguments that refer to a position on the data array (a particular pixel for example).
+    \item Other arguments are arguments that can be adjusted by the user.
+\end{itemize}
+
+\subsection{Definition of the function}
+
+Additionnaly, all the types of the arguments need to be defined in the funciton, as well as the return type. This is done the following way:
+
+\begin{verbatim}
+def function_name(n_array: np.ndarray, g_p: int, c0: float) -> tuple:
+\end{verbatim}
+
+\subsection{Doctype}
+
+As for the rest of the project, the docstrings are written in the numpydoc format. This is done the following way:
+
+\begin{verbatim}
+def function_name(n_array: np.ndarray, g_p: int, c0: float) -> tuple:
+    """
+    This function does something.
+
+    Parameters
+    ----------
+    n_array : np.ndarray
+        The array of the data.
+    g_p : int
+        The position on the array.
+    c0 : float
+        The constant.
+
+    Returns
+    -------
+    tuple
+        The tuple of the PSD array.
+    """ 
+\end{verbatim}
+
+\section{Modifying the GUI}
+
+Once the functions are accessible in the library, it is interesting to allow them to be used inside the GUI of the project. The way the GUI has been developped, the functions you have added to the library are automatically integrated into the GUI. However, because the behavior of the GUI with your function might depend on the way you have implemented it, you need to add your own modifications to the GUI in order to use them properly. This section will detail how to do this.
+
+\subsection{Spirit of the GUI}
+
+Once your data are added to the GUI and the type of spectrometer has been specified in the data attributes, you can use the GUI to compute the PSD. This can be done by left clicking on one curve or group, and then clicking on \texttt{Get Power Spectrum Density}. A verification on the parameters is then performed to know wether the conversion to a PSD is possible or not. If it is, the PSD is computed and directly added to the GUI. If not, then a custom algorithm is run. 
+
+Your job here is:
+\begin{enumerate}
+    \item To define the conditions that will allow the conversion to a PSD.
+    \item To implement the functions that are needed to get the previously mentionned conditions.
+    \item To implement the functions to perform the PSD computation.
+\end{enumerate}
+
+\subsection{Defining the conditions}
+
+Let say that you need a parameter \texttt{c0} to be able to compute the PSD. Then you will check wether this parameter is or not associated to the data in its attributes. This verification is coded in the "conversion\_PSD.py" file of the HDF5\_BLS project. 
+
+The nomenclature of your function will depend on the type you have given your data ("SPECTROMETER.Type" attributes), and will follow the following pattern:
+\begin{verbatim}
+def check_conversion_{type}(wrapper, path):
+\end{verbatim}
+
+Three things are important here:
+\begin{enumerate}
+    \item The name of the function should be \texttt{check\_conversion\_\{type\}}. where \texttt{\{type\}} is the type of the data as written in the "SPECTROMETER.Type" attribute. All the spaces and dashes are automatically replaced by underscores. Therefore if your type is "2-stage VIPA", your function will be \texttt{check\_conversion\_2\_stage\_vipa}.
+    \item This function takes two arguments: \texttt{wrapper} and \texttt{path}. The \texttt{wrapper} argument is the wrapper of the data that you want to treat, and the \texttt{path} argument is the path of the data in the wrapper. As the properties of the data are hierarchical, it is always a good practice to use the wrapper associated to the whole file and the path that from the whole file, leads to your data.
+    \item This function should return a boolean. If the conversion is possible, then the function should return \texttt{True}. If not, it should return \texttt{False}.
+\end{enumerate}
+
+Should your function return \texttt{False}, then the GUI will automatically run the function \texttt{conversion\_\{type\}} from the \texttt{conversion\_ui.py} file, located in the HDF5\_BLS\_GUI folder.  
+
+\subsection{The conversion user interface}
+
+This is where your implementation will really start. If you need calibration curves for defining the PSD, then it is where you will implement the function that will allow the user to select them. Same goes for any other parameter that you might need to define the PSD.
+
+
 
 \section{Contact}
 For questions or suggestions, please contact the maintainer at \href{mailto:pierre.bouvet@meduniwien.ac.at}{pierre.bouvet@meduniwien.ac.at}.

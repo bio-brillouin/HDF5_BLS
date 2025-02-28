@@ -8,7 +8,7 @@ datetime>=5
 setuptools
 wheel
 pyperclip
-re
+# re
 
 # Development dependencies
 pytest
@@ -20,3 +20,4 @@ sphinx-rtd-theme
 # GUI dependencies
 PySide6
 configparser
+matplotlib

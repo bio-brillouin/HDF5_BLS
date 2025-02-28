@@ -7,11 +7,21 @@ import numpy as np
 import h5py
 import pyperclip
 import re
+from inspect import getmembers, isfunction
 
 from Main.UI.main_window_ui import Ui_w_Main
 from DataStructure.main import DataStructure
+from ComboboxChoose.main import ComboboxChoose
+from ParameterWindow.main import ParameterWindow
 
-from HDF5_BLS import wrapper, load_data
+current_dir = os.path.abspath(os.path.dirname(__file__))
+relative_path_libs = os.path.join(current_dir, "..", "..", "..")
+absolute_path_libs = os.path.abspath(relative_path_libs)
+sys.path.append(absolute_path_libs)
+
+from HDF5_BLS.load_formats.errors import LoadError_creator, LoadError_parameters
+from HDF5_BLS import wrapper, load_data, conversion_PSD
+import conversion_ui, treat_ui
 
 class MainWindow(qtw.QMainWindow, Ui_w_Main):
     """Main window class for the HDF5_BLS GUI application.
@@ -77,8 +87,6 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             self.tableView_Spectrometer.setModel(self.model_table_Spectrometer)
 
             # Connect signals to the slot
-            # self.tableView_Measure.selectionModel().selectionChanged.connect(self.update_parameters_from_table_view)
-            # self.tableView_Spectrometer.selectionModel().selectionChanged.connect(self.update_parameters_from_table_view)
             self.model_table_Measure.itemChanged.connect(self.update_parameters_from_table_view)
             self.model_table_Spectrometer.itemChanged.connect(self.update_parameters_from_table_view)
             
@@ -185,7 +193,8 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                     dic["Data_"+str(i)] = create_group_data(group_dim[1:], data[i], n_dim+1)
                 return wrapper.Wrapper(data = dic,
                                       attributes = {"FILEPROP.Name": "Dimension_"+str(n_dim)})
-                    
+
+        # Get filepath            
         if filepath is None: filepath = qtw.QFileDialog.getOpenFileName(self, "Open File", "", "All Files (*)")[0]
         if filepath is None: return
 
@@ -193,38 +202,72 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         if parent_path in ["Root", "Data"]:
             parent_path = None
             self.wrapper = wrapper.Wrapper()
-        
-        # Add the data to the wrapper making sure to add it to a group, even if it is dragged under a dataset
+
+        # Makes sure to add the data to a group, even if it is dragged under a dataset
         if not self.wrapper.type_path(parent_path) == wrapper.Wrapper:
             parent_path = "/".join(parent_path.split("/")[:-1])
 
-        data, _ = load_data.load_general(filepath)
-        
-        while data.shape[0] == 1: data = data[0]
 
-        if len(data.shape) == 1:
-            self.wrapper.add_data_group_to_wrapper_from_filepath(filepath, parent_path)   
-        else:
-            dialog = DataStructure(self, data.shape)
+        # Creating the dictionnary with the data and the attributes and ...
+        try: # First we try adding the data based on the file extension
+            dic = load_data.load_general(filepath)
+        except ValueError: # If it does not work, it might be that the file extension is not supported, in that case display a warning window
+            qtw.QMessageBox.warning(self, "Warning", "The file extension is not supported.")
+            return
+        except LoadError_creator as e: # It can also be that there are different ways to load the data, in that case display a dialog box to choose the type of structure to load
+            creator_list = e.creators 
+            dialog = ComboboxChoose(text = "Choose the type of structure to load", list_choices = creator_list, parent = self)
             if dialog.exec_() == qtw.QDialog.Accepted:
-                selected_structure = dialog.get_selected_structure()
-                dialog.close()
+                temp =dialog.get_selected_structure()
+                try:# After choosing the type of structure, we try to load the data again by precising the structure
+                    dic = load_data.load_general(filepath, creator = temp)
+                except LoadError_parameters as e: # If it does not work, this means that the user needs to indicate the parameters to load the data, so we load a window to do so
+                    parameters = e.parameters
+                    dialog = ParameterWindow(text = f"Please indicate the value of the following parameters to load the data:",
+                                             list_parameters = parameters, 
+                                             parent = self,
+                                             root_path=os.path.dirname(filepath))
+                    if dialog.exec_() == qtw.QDialog.Accepted:
+                        parameters = dialog.get_selected_structure()
+                        dialog.close()
+                    dic = load_data.load_general(filepath, temp, parameters)
+                    # try:
+                    #     dic = load_data.load_general(filepath, temp, parameters)
+                    # except Exception as e:
+                    #     qtw.QMessageBox.warning(self, "Error while loading the data", str(e))
+                except Exception as e:
+                    qtw.QMessageBox.warning(self, "Error other than parameter and creator", str(e))
+            else: return # If the user cancels the dialog box, we return
+        except Exception as e:
+            qtw.QMessageBox.warning(self, "Error other than creator", str(e))
 
-                # Extract dimensions of the group and the arrays and split them into lists
-                group_match = re.search(r"\(([\d+x]+)\) groups", selected_structure)
-                group_dim = list(map(int, group_match.group(1).split('x'))) if group_match else []
-                
-                parent = self.wrapper
-                if not parent_path is None:
-                    for e in parent_path.split("/")[1:]:
-                        if isinstance(parent.data[e], wrapper.Wrapper): parent = parent.data[e]
-                
-                i0 = 0
-                while f"Data_{i0}" in parent.data.keys(): i0 += 1
+        # Adding the data to the wrapper
+        self.wrapper.add_data_dictionnary(dic, parent_group = parent_path, name = os.path.basename(filepath).split(".")[0])
 
-                parent.data[f"Data_{i0}"] = create_group_data(group_dim[1:], data, 1)
-                name = os.path.basename(filepath).split(".")[0]
-                parent.data[f"Data_{i0}"].attributes = {"ID": f"Data_{i0}", "FILEPROP.Name":name}
+        # if len(dic["Data"].shape) == 1: 
+        #     self.wrapper.add_data_group_to_wrapper_from_filepath(filepath, parent_path)   
+        # else:# If the dimensionality of the data is larger than 1, we ask the user how to store it 
+        #     dialog = DataStructure(self, dic["Data"].shape)
+        #     if dialog.exec_() == qtw.QDialog.Accepted:
+        #         selected_structure = dialog.get_selected_structure()
+        #         dialog.close()
+
+        #         # Extract dimensions of the group and the arrays and split them into lists
+        #         group_match = re.search(r"\(([\d+x]+)\) groups", selected_structure)
+        #         group_dim = list(map(int, group_match.group(1).split('x'))) if group_match else []
+                
+        #         parent = self.wrapper
+        #         if not parent_path is None:
+        #             for e in parent_path.split("/")[1:]:
+        #                 if isinstance(parent.data[e], wrapper.Wrapper): 
+        #                     parent = parent.data[e]
+                
+        #         i0 = 0
+        #         while f"Data_{i0}" in parent.data.keys(): i0 += 1
+
+        #         parent.data[f"Data_{i0}"] = create_group_data(group_dim = group_dim[1:], data = data, n_dim = 1)
+        #         name = os.path.basename(filepath).split(".")[0]
+        #         parent.data[f"Data_{i0}"].attributes = {"ID": f"Data_{i0}", "FILEPROP.Name":name}
         
         self.treeview_selected = "Data"
 
@@ -263,7 +306,8 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             ks = []
             for e in elt.data.keys(): 
                 if "Data" in e: ks.append(e)
-            elt.data["Data_" + str(len(ks))] = wrapper.Wrapper(attributes={"FILEPROP.Name": "New group"})
+            elt.data["Data_" + str(len(ks))] = wrapper.Wrapper(data = {},
+                                                               attributes={"FILEPROP.Name": "New group"})
         else:
             ks = []
             for e in self.wrapper.data.keys(): 
@@ -298,14 +342,15 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         """
         if not self.treeview_selected is None:
             filepath = qtw.QFileDialog.getSaveFileName(self, "Open File", "", "CSV Files (*.csv)")[0]
-            path = self.treeview_selected.split('/')[1:]
-            elt = self.wrapper
-            attributes = self.wrapper.attributes
-            for e in path: 
-                elt = elt.data[e]
-                attributes.update(elt.attributes)
-            wrp_temp = wrapper.Wrapper(attributes)
-            wrp_temp.export_properties_csv(filepath)
+            if filepath:
+                path = self.treeview_selected.split('/')[1:]
+                elt = self.wrapper
+                attributes = self.wrapper.attributes
+                for e in path: 
+                    elt = elt.data[e]
+                    attributes.update(elt.attributes)
+                wrp_temp = wrapper.Wrapper(attributes)
+                wrp_temp.export_properties_csv(filepath)
 
     @qtc.Slot()
     def expand_on_hover(self):
@@ -361,7 +406,8 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         text = "from HDF5_BLS import wrapper\n"
         text += "import h5py as h5\n\n"
         path = self.treeview_selected.split('/')[1:]
-        text += f"path = ['{"','".join(path)}']\n"
+        joined_path = "', '".join(path)
+        text += f"path = ['{joined_path}']\n" 
         if self.filepath is None:
             text += f"wrp = wrapper.load_hdf5_file('your_filepath.h5') # Please indicate here the filepath of the h5 file\n"
         else:
@@ -381,6 +427,52 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         qtw.QMessageBox.information(self, "Copied to clipboard", f"Code to access the data copied to clipboard")
 
         self.textBrowser_Log.append(f"Python code to access the data of <b>{self.treeview_selected}</b> has been copied to the clipboard")
+
+    def get_PSD(self):
+        """
+        Get the Power Spectrum Density of the selected data.
+
+        Returns
+        -------
+        None
+        """
+        elt = self.wrapper
+        for e in self.treeview_selected.split("/")[1:]: elt = elt.data[e]
+        type = self.wrapper.get_attributes_path(self.treeview_selected)['SPECTROMETER.Type']
+        type = type.replace(" ", "_")
+        type = type.replace("-", "_")
+            
+        # Check if the conversion can be performed
+        function_name = f"check_conversion_{type}"
+        functions = [func for func in getmembers(conversion_PSD, isfunction)]
+        not_found = True
+        for (name, func) in functions:
+            if name == function_name:
+                if func(self.wrapper, self.treeview_selected):
+                    conversion = True
+                    not_found = False
+                else:
+                    conversion = False
+                    not_found = False
+        
+        if not_found:
+            qtw.QMessageBox.warning(self, "Warning", "The type of spectrometer is not recognized")
+            return
+            
+        # If conversion can be performed, perform it
+        if conversion:
+            qtw.QMessageBox.information(self, "Not implemented", "Conversion can be performed")
+        # If not, then execute the function from conversion_ui associated with the type of the data
+        else:
+            function_name = f"conversion_{type}"
+            functions = [func for func in getmembers(conversion_ui, isfunction)]
+            for (name, func) in functions:
+                if name == function_name:
+                    func(self, self.wrapper, self.treeview_selected)
+        
+        self.file_changed = True
+        self.update_treeview()
+        self.expand_treeview_path(self.treeview_selected)
 
     def new_hdf5(self):
         """
@@ -434,6 +526,30 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         self.filepath = self.filepath
         self.file_changed = False
     
+    def perform_treatment(self):
+        """
+        Treats all the PSD of the selected data.
+        """
+        elt = self.wrapper
+        for e in self.treeview_selected.split("/")[1:]: elt = elt.data[e]
+        type = self.wrapper.get_attributes_path(self.treeview_selected)['SPECTROMETER.Type']
+        type = type.replace(" ", "_")
+        type = type.replace("-", "_")
+            
+        # Runs the dedicated treatment function from the treat_ui module
+        function_name = f"treat_{type}"
+        functions = [func for func in getmembers(treat_ui, isfunction)]
+        
+        for (name, func) in functions:
+            if name == function_name:
+                func(self, self.wrapper, self.treeview_selected)
+
+                self.update_treeview()
+                self.expand_treeview_path(self.treeview_selected)
+                return
+
+        qtw.QMessageBox.warning(self, "Warning", "The type of spectrometer is not recognized")
+
     def read_table_view(self, table_view):
         """
         Read the values from the given table view.
@@ -506,7 +622,12 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             menu.addSeparator()
             add_group_action = menu.addAction("Add Group")
             menu.addSeparator()
-            convert_action = menu.addAction("Convert to CSV")
+            get_PSD = menu.addAction("Get Power Spectrum Density")
+            perform_treatment = menu.addAction("Treat all Power Spectrum Density")
+            menu.addSeparator()
+            copy_code = menu.addAction("Copy Python code to access data")
+            menu.addSeparator()
+            convert_action = menu.addAction("Convert attribtues to CSV")
 
             action = menu.exec_(self.treeView.viewport().mapToGlobal(position))
 
@@ -516,6 +637,12 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                 self.remove_data()
             elif action == add_group_action:
                 self.add_group()
+            elif action == get_PSD:
+                self.get_PSD()
+            elif action == perform_treatment:
+                self.perform_treatment()
+            elif action == copy_code:
+                self.export_code_line()
             elif action == convert_action:
                 self.convert_csv()
 
@@ -540,7 +667,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             self.update_parameters()
             
     @qtc.Slot()
-    def update_parameters(self, filepath=None):
+    def update_parameters(self, filepath=None, file_changed = False):
         """
         Update the parameters based on the selected tree view element.
 
@@ -604,7 +731,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         self.tableView_Measure.setModel(self.model_table_Measure)    
         self.tableView_Spectrometer.setModel(self.model_table_Spectrometer)
 
-        self.file_changed = True
+        self.file_changed = file_changed
 
         self.textBrowser_Log.append(f"Parameters of <b>{self.treeview_selected}</b> have been updated")
 
@@ -662,7 +789,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                 for e in self.treeview_selected.split("/")[1:-1]: elt = elt.data[e]
             elt.update_property(attr_changed)
         
-        self.update_parameters()
+        self.update_parameters(file_changed=True)
         self.update_treeview()
         self.expand_treeview_path("/".join(self.treeview_selected.split("/")[:-1]))
 
@@ -711,13 +838,13 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         # Create a model with 3 columns
         self.model = qtg.QStandardItemModel()
         self.model.setHorizontalHeaderLabels(["Name", "Sample", "Date"])
-        
+
         # Add first item
         name, date, sample = "Root", "", ""
         if self.filepath is not None: name = os.path.basename(self.filepath)
         if "MEASURE.Sample" in self.wrapper.attributes.keys(): sample = self.wrapper.attributes["MEASURE.Sample"]
         if "MEASURE.Date" in self.wrapper.attributes.keys(): date = self.wrapper.attributes["MEASURE.Date"]
-        
+
         root = qtg.QStandardItem(name)
         root.setData("Data", qtc.Qt.UserRole)
         for e in self.wrapper.data.keys(): 
@@ -823,7 +950,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             if len(urls) > 1: qtw.QMessageBox.warning(self, "Warning", "Only one property file can be dropped at a time")
             elif len(urls) == 1:
                 url = urls[0]
-                if os.path.splitext(url)[1] == ".csv": self.update_parameters(url) # Verify that the file is a .csv file
+                if os.path.splitext(url)[1] == ".csv": self.update_parameters(filepath = url, file_changed = True) # Verify that the file is a .csv file
                 else: qtw.QMessageBox.warning(self, "Warning", "Only .csv property files can be used")
             event.accept()
         else: event.ignore()
@@ -900,57 +1027,12 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                 file_path = url.toLocalFile()  # Convert URL to file path
                 filepaths.append(file_path)
 
-            # if len(filepaths)==1:
-            #     parent_path = parent_item.data(qtc.Qt.UserRole) if parent_item else "Root"
-            #     self.treeview_handle_drop(file_path, parent_path)
-            # elif len(filepaths)>1:
             parent_path = parent_item.data(qtc.Qt.UserRole) if parent_item else "Root"
             self.treeview_handle_drops(filepaths, parent_path)
 
             event.accept()
         else:
             event.ignore()
-
-    @qtc.Slot()
-    def treeview_handle_drop(self, filepath, parent_path):
-        """
-        Handle the drop action for the tree view.
-
-        Parameters
-        ----------
-        event : QDropEvent
-            The drop event.
-
-        Returns
-        -------
-        None
-        """
-        if parent_path == "Root" and filepath.endswith(".h5"):
-                self.open_hdf5(filepath)
-        elif filepath.endswith(".h5"):
-                self.wrapper.add_hdf5_to_wrapper(filepath, parent_path)
-
-                self.update_treeview()
-
-                 # Logging the added data
-                path_names = []
-                if not parent_path is None:
-                    temp = self.wrapper
-                    for e in parent_path.split("/")[1:]:
-                        temp = temp.data[e]
-                        if "FILEPROP.Name" in temp.attributes:
-                            path_names.append(temp.attributes["FILEPROP.Name"])
-                        elif "Name" in temp.data_attributes:
-                            path_names.append(temp.data_attributes["Name"])
-                        else:
-                            path_names.append(e)
-                else:
-                    path_names.append("Root")
-                path_names = "/".join(path_names)
-
-                self.textBrowser_Log.append(f"<i>{filepath}</i> added to <b>{path_names}</b> ({parent_path})")
-        else:
-            self.add_data(filepath = filepath, parent_path = parent_path)
         
     @qtc.Slot()
     def treeview_handle_drops(self, filepaths, parent_path):
@@ -977,30 +1059,16 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
 
         if len(extensions) == 1:
             extension = extensions[0]
-            if extension == ".hdf5":
-                for filepath in filepaths:
-                    self.wrapper.add_hdf5_to_wrapper(filepath, parent_path)
+            if extension in [".hdf5", ".h5"]:
+                if parent_path == "Root" and len(filepaths) == 1:
+                    self.open_hdf5(filepaths[0])
+                else:
+                    self.open_hdf5(filepaths[0])
+                    for filepath in filepaths[1:]:
+                        self.wrapper.add_hdf5_to_wrapper(filepath, parent_path)
             else:
                 for filepath in filepaths:
                     self.add_data(filepath = filepath, parent_path = parent_path)
-
-            self.update_treeview()
-            self.expand_treeview_path(parent_path)
-
-            path_names = []
-            if not parent_path is None:
-                temp = self.wrapper
-                for e in parent_path.split("/")[1:]:
-                    temp = temp.data[e]
-                    if "FILEPROP.Name" in temp.attributes:
-                        path_names.append(temp.attributes["FILEPROP.Name"])
-                    else:
-                        path_names.append(e)
-            else:
-                path_names.append("Root")
-            path_names = "/".join(path_names)
-
-            self.textBrowser_Log.append(f"<i>{paths}</i> added to <b>{path_names}</b> ({parent_path})")
         
         else:
             qtw.QMessageBox.info(self, "Not implemented", "The GUI only supports addition of multiple files of the same type.")

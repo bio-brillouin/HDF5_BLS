@@ -63,6 +63,48 @@ class Wrapper:
         wrp.attributes["ID"] = f"Data_{i}"
         par[f"Data_{i}"] = wrp
 
+    def add_data_dictionnary(self, dic, parent_group = None, name = None):
+        """Adds a data dictionnary to the wrapper. This is the preferred way to add data using the GUI.
+
+        Parameters
+        ----------
+        dic : dict
+            The data dictionnary. Support for the following keys:
+            - "Data": the data
+            - "Attributes": the attributes of the file
+            - "Abscissa_...": An abscissa array for the measures where the name is written after the underscore.
+        parent_group : str, optional
+            The path to the parent path, by default None
+        """
+        # Find the position where to add the spectrum
+        par = self.data 
+        if parent_group is not None:
+            loc = parent_group.split("/")
+            if loc[0] == "Data": loc.pop(0) 
+            while len(loc)>0:
+                temp = loc[0]
+                if not temp in par.keys():
+                    par[temp] = Wrapper()
+                par = par[temp].data
+                loc.pop(0)
+
+        # Getting the i number of Data_i where to store the data
+        i = 0
+        while f"Data_{i}" in par.keys(): i+=1
+
+        # Adding the data and the abscissa to the wrapper
+        if name is None: name = f"Data_{i}"
+        data = {"Raw_data": np.array(dic["Data"])}
+        for e in dic.keys():
+            if "Abscissa" in e: 
+                data[e] = np.array(dic[e])
+        attributes = dic["Attributes"]
+        attributes["ID"] = f"Data_{i}"
+        attributes["Name"] = name
+        par[f"Data_{i}"] = Wrapper(attributes = {"ID": f"Data_{i}", "Name":name},
+                                data = data,
+                                data_attributes = {})
+
     def add_data_group_to_wrapper(self, data, parent_group = None, name = None): # Test made
         """Adds data to the wrapper by creating a new group.
 
@@ -78,7 +120,8 @@ class Wrapper:
         # Find the position where to add the spectrum
         par = self.data 
         if parent_group is not None:
-            loc = parent_group.split(".")
+            loc = parent_group.split("/")
+            loc.pop(0)
             while len(loc)>0:
                 temp = loc[0]
                 if not temp in par.keys():
@@ -95,7 +138,6 @@ class Wrapper:
         par[f"Data_{i}"] = Wrapper(attributes = {"ID": f"Data_{i}", "Name":name},
                                    data = {"Raw_data": data},
                                    data_attributes = {})
-        for j, e in enumerate(data.shape): par[f"Data_{i}"].data[f"Abscissa_{j}"] = np.arange(e)
     
     def add_data_group_to_wrapper_from_filepath(self, filepath, parent_group = None):
         """Adds data to the wrapper by creating a new group, using the filepath of the data.
@@ -132,9 +174,6 @@ class Wrapper:
         par[f"Data_{i}"] = Wrapper(attributes = attributes,
                                    data = {"Raw_data": data},
                                    data_attributes = {"Raw_data": {"Name": "Raw_data"}})
-        for j, e in enumerate(data.shape): 
-            par[f"Data_{i}"].data[f"Abscissa_{j}"] = np.arange(e)
-            par[f"Data_{i}"].data_attributes[f"Abscissa_{j}"] = {"Name": f"Abscissa_{j}"}
     
     def add_data_to_group(self, data, group, name = None): # Test made
         """Adds an array to an existing data group.
@@ -415,7 +454,7 @@ class Wrapper:
                             self.data_attributes[data_key] = {}
                         self.data_attributes[data_key][key] = value
                         
-    def save_as_hdf5(self,filepath): # Test made
+    def save_as_hdf5(self,filepath=None): # Test made
         """Saves the data and attributes to an HDF5 file.
     
         Parameters
@@ -446,6 +485,7 @@ class Wrapper:
                 
 
         # try:
+        if filepath is None: return
         with h5py.File(filepath, 'w') as hdf5_file:
             # Save attributes
             for key, value in self.attributes.items():
