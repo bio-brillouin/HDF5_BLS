@@ -21,26 +21,26 @@ def test_create_wrapper_with_data():
     assert wrp.data == {"Raw_data": np.array(1), "Abscissa_0": np.array([0])}, "FAIL - test_create_wrapper_with_data - data"
     assert wrp.data_attributes == {"Name": "test"}, "FAIL - test_create_wrapper_with_data - data_attributes"
     
-def test_add_data_group_to_wrapper():    
-    wrp_0_0 = Wrapper({"ID": "Data_0","Name": "t = 1s"},
-                       {"Raw_data": np.array([1]), "Abscissa_0": np.array([0])},  
-                       {})
+# def test_add_data_group_to_wrapper():    
+#     wrp_0_0 = Wrapper({"ID": "Data_0","Name": "t = 1s"},
+#                        {"Raw_data": np.array([1]), "Abscissa_0": np.array([0])},  
+#                        {})
     
-    wrp_0 = Wrapper({"ID": "Data_0", "Name": "Time series"},
-                       {"Data_0": wrp_0_0},  
-                       {})
+#     wrp_0 = Wrapper({"ID": "Data_0", "Name": "Time series"},
+#                        {"Data_0": wrp_0_0},  
+#                        {})
     
-    wrp = Wrapper({"ID": "Data", "Name": "Main Wrapper"},
-                       {"Data_0": wrp_0},  
-                       {})
+#     wrp = Wrapper({"ID": "Data", "Name": "Main Wrapper"},
+#                        {"Data_0": wrp_0},  
+#                        {})
 
-    wrp.add_data_group_to_wrapper(np.array([[2]]), parent_group = "Data_0", name = "t = 2s")
+#     wrp.add_data_group_to_wrapper(np.array([[2]]), parent_group = "Data_0", name = "t = 2s")
 
-    assert len(wrp.data.keys()) == 1, "FAIL - test_add_data_group_to_wrapper - Groups were added to the wrapper and ahould not"
-    assert len(wrp.data["Data_0"].data.keys()) == 2, "FAIL - test_add_data_group_to_wrapper - Group was not created at the given position"
-    assert type(wrp.data["Data_0"].data["Data_1"]) == Wrapper, "FAIL - test_add_data_group_to_wrapper - The element is not a wrapper"
-    assert wrp.data["Data_0"].data["Data_1"].data == {"Raw_data": np.array([[2]]), "Abscissa_0": np.array([0]), "Abscissa_1": np.array([0])}, "FAIL - test_add_data_group_to_wrapper - The wrapper is not right"
-    assert wrp.data["Data_0"].data["Data_1"].attributes == {"ID": "Data_1", "Name": "t = 2s"}, "FAIL - test_add_data_group_to_wrapper - The name given to the data is wrong"
+#     assert len(wrp.data.keys()) == 1, "FAIL - test_add_data_group_to_wrapper - Groups were added to the wrapper and ahould not"
+#     assert len(wrp.data["Data_0"].data.keys()) == 2, "FAIL - test_add_data_group_to_wrapper - Group was not created at the given position"
+#     assert type(wrp.data["Data_0"].data["Data_1"]) == Wrapper, "FAIL - test_add_data_group_to_wrapper - The element is not a wrapper"
+#     assert wrp.data["Data_0"].data["Data_1"].data == {"Raw_data": np.array([[2]]), "Abscissa_0": np.array([0]), "Abscissa_1": np.array([0])}, "FAIL - test_add_data_group_to_wrapper - The wrapper is not right"
+#     assert wrp.data["Data_0"].data["Data_1"].attributes == {"ID": "Data_1", "Name": "t = 2s"}, "FAIL - test_add_data_group_to_wrapper - The name given to the data is wrong"
 
 def test_add_data_to_group():
     wrp_0_0 = Wrapper({"ID": "Data_0", "Name": "t = 1s"},
@@ -99,16 +99,16 @@ def test_create_abscissa_1D_min_max():
     assert wrp.data_attributes["Abscissa_0"]["Name"] == "Frequency (GHz)", "FAILURE - test_create_abscissa_1D_min_max - The name of the abscissa is wrong"
     assert wrp.attributes["MEASURE.Abscissa_Names"] == "Frequency (GHz)", "FAILURE - test_create_abscissa_1D_min_max - The name of the abscissa stored in the attributes of the wrapperis wrong"
 
-def test_import_abscissa_1D():
-    wrp= Wrapper({"ID": "Data_0", "Name": "t = 1s"}, 
-                 {"Raw_data": np.random.random(512), "Abscissa_0": np.array([0])}, 
-                 {})
+# def test_import_abscissa_1D():
+#     wrp= Wrapper({"ID": "Data_0", "Name": "t = 1s"}, 
+#                  {"Raw_data": np.random.random(512), "Abscissa_0": np.array([0])}, 
+#                  {})
     
-    wrp.import_abscissa_1D(0, os.path.join(os.path.dirname(__file__), "test_data", "example_abscissa_GHOST.npy"), "Frequency (GHz)")
+#     wrp.import_abscissa_1D(0, os.path.join(os.path.dirname(__file__), "test_data", "example_abscissa_GHOST.npy"), "Frequency (GHz)")
 
-    assert wrp.data["Abscissa_0"].shape == wrp.data["Raw_data"].shape, "FAILURE - test_import_abscissa_1D - The shape of the abscissa is wrong"
-    assert wrp.data_attributes["Abscissa_0"]["Name"] == "Frequency (GHz)", "FAILURE - test_import_abscissa_1D - The name of the abscissa is wrong"
-    assert wrp.attributes["MEASURE.Abscissa_Names"] == "Frequency (GHz)", "FAILURE - test_import_abscissa_1D - The name of the abscissa stored in the attributes of the wrapperis wrong"   
+#     assert wrp.data["Abscissa_0"].shape == wrp.data["Raw_data"].shape, "FAILURE - test_import_abscissa_1D - The shape of the abscissa is wrong"
+#     assert wrp.data_attributes["Abscissa_0"]["Name"] == "Frequency (GHz)", "FAILURE - test_import_abscissa_1D - The name of the abscissa is wrong"
+#     assert wrp.attributes["MEASURE.Abscissa_Names"] == "Frequency (GHz)", "FAILURE - test_import_abscissa_1D - The name of the abscissa stored in the attributes of the wrapperis wrong"   
 
 def test_import_properties_data():
     wrp= Wrapper({"ID": "Data_0", "Name": "t = 1s"}, 

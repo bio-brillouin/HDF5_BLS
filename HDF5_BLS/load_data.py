@@ -1,66 +1,48 @@
-
-import numpy as np
 import os
-from PIL import Image
-import h5py
-import sif_parser
-from datetime import datetime
 
-def load_dat_file(filepath, creator = "GHOST"): # Test made for GHOST
+from HDF5_BLS.load_formats.errors import LoadError_creator
+
+###############################################################################
+# GENERAL GUIDELINES
+    # This file is meant to dispatch the loading of the data to the sub-module load_formats. 
+    # This sub-module is classified in types of files and for each file, one or more functions are defined, depending on the user's needs.
+    # All the functions return a dictionnary with two minimal keys: "Data" and "Attributes". 
+    # The "Data" key contains the data and the "Attributes" key contains the attributes of the file.
+    # The attributes are stored in a dictionnary and their names can be found in the "spreadsheet" folder of the repository
+    # Additionally, other keys can be found in the returned dictionnary, depending on the technique used.
+
+# GUIDELINES FOR GUI COMPATIBILITY:
+    # If you need to load your files with a specific process, please add the parameter "creator" to the function set to None by default. Then if the function is called without any creator, have the function raise a LoadError_creator exception with the list of creators that can be used to load the data (an example is given in load_dat_file).
+    # If the data has to be loaded with parameters, define the function with an additional parameter "parameters" set to None by default. Then if the function is called without any parameters, have the function raise a LoadError_parameters exception with the list of parameters that can be used to load the data (an example is found in load_formats/load_dat.py in function load_dat_TimeDomain).
+###############################################################################
+
+
+def load_dat_file(filepath, creator = None, parameters = None): # Test made for GHOST
     """Loads DAT files. The DAT files that can be read are obtained from the following configurations:
     - GHOST software
-    - local exports with header
+    - Time Domain measures
 
     Parameters
     ----------
     filepath : str                           
         The filepath to the GHOST file
+    creator : str, optional
+        The way this dat file has to be loaded. If None, an error is raised. Possible values are:
+        - "GHOST": the file is assumed to be a GHOST file
+        - "TimeDomain": the file is assumed to be a TimeDomain file
     
     Returns
     -------
-    data : np.array
-        The data stored in the file
-    attributes : dic
-        A dictionnary with all the properties that could be recovered from the file
+    dict
+        The dictionnary with the data and the attributes of the file stored respectively in the keys "Data" and "Attributes". For time domain files, the dictionnary also contains the time vector in the key "Abscissa_dt".
     """
-    metadata = {}
-    data = []
-    name, _ = os.path.splitext(filepath)
-    attributes = {}
-    
-    if creator == "GHOST":
-        with open(filepath, 'r') as file:
-            lines = file.readlines()
-            # Extract metadata
-            for line in lines:
-                if line.strip() == '':
-                    continue  # Skip empty lines
-                if any(char.isdigit() for char in line.split()[0]):
-                    break  # Stop at the first number
-                else:
-                    # Split metadata into key-value pairs
-                    if ':' in line:
-                        key, value = line.split(':', 1)
-                        metadata[key.strip()] = value.strip()
-            # Extract numerical data
-            for line in lines:
-                if line.strip().isdigit():
-                    data.append(int(line.strip()))
+    from HDF5_BLS.load_formats.load_dat import load_dat_GHOST, load_dat_TimeDomain
 
-        data = np.array(data)
-        attributes['FILEPROP.Name'] = name.split("/")[-1]
-        attributes['MEASURE.Sample'] = metadata["Sample"]
-        attributes['MEASURE.Date'] = ""
-        attributes['SPECTROMETER.Scanning_Strategy'] = "point_scanning"
-        attributes['SPECTROMETER.Type'] = "TFP"
-        attributes['SPECTROMETER.Illumination_Type'] = "CW"
-        attributes['SPECTROMETER.Detector_Type'] = "Photon Counter"
-        attributes['SPECTROMETER.Filtering_Module'] = "None"
-        attributes['SPECTROMETER.Wavelength_nm'] = metadata["Wavelength"]
-        attributes['SPECTROMETER.Scan_Amplitude'] = metadata["Scan amplitude"]
-        spectral_resolution = float(float(metadata["Scan amplitude"])/data.shape[-1])
-        attributes['SPECTROMETER.Spectral_Resolution'] = str(spectral_resolution)
-        return data, attributes
+    if creator == "GHOST": return load_dat_GHOST(filepath)
+    elif creator == "TimeDomain": return load_dat_TimeDomain(filepath, parameters)
+    else:
+        creator_list = ["GHOST", "TimeDomain"]
+        raise LoadError_creator(f"Unsupported creator {creator}, accepted values are: {', '.join(creator_list)}", creator_list)
 
 def load_tiff_file(filepath): # Test made
     """Loads files obtained with the GHOST software
@@ -72,22 +54,11 @@ def load_tiff_file(filepath): # Test made
     
     Returns
     -------
-    data : np.array
-        The data stored in the file
-    attributes : dic
-        A dictionnary with all the properties that could be recovered from the file
+    dict
+        The dictionnary with the data and the attributes of the file stored respectively in the keys "Data" and "Attributes"
     """
-    data = []
-    name, _ = os.path.splitext(filepath)
-    attributes = {}
-
-    im = Image.open(filepath)
-    data = np.array(im)
-
-    name = ".".join(os.path.basename(filepath).split(".")[:-1])
-    attributes['FILEPROP.Name'] = name
-
-    return data, attributes
+    from HDF5_BLS.load_formats.load_tiff import load_tiff_base
+    return load_tiff_base(filepath)
 
 def load_npy_file(filepath): # Test made
     """Loads npy files
@@ -99,16 +70,11 @@ def load_npy_file(filepath): # Test made
     
     Returns
     -------
-    data : np.array
-        The data stored in the file
-    attributes : dic
-        A dictionnary with all the properties that could be recovered from the file
+    dict
+        The dictionnary with the data and the attributes of the file stored respectively in the keys "Data" and "Attributes"
     """
-    data = np.load(filepath)
-    attributes = {}
-    name = ".".join(os.path.basename(filepath).split(".")[:-1])
-    attributes['FILEPROP.Name'] = name
-    return data, attributes
+    from HDF5_BLS.load_formats.load_npy import load_npy_base
+    return load_npy_base(filepath)
 
 def load_sif_file(filepath): 
     """Loads npy files
@@ -120,28 +86,13 @@ def load_sif_file(filepath):
     
     Returns
     -------
-    data : np.array
-        The data stored in the file
-    attributes : dic
-        A dictionnary with all the properties that could be recovered from the file
+    dict
+        The dictionnary with the data and the attributes of the file stored respectively in the keys "Data" and "Attributes"
     """
-    metadata = {}
-    name, _ = os.path.splitext(filepath)
-    attributes = {}
+    from HDF5_BLS.load_formats.load_sif import load_sif_base
+    return load_sif_base(filepath)
 
-    data, info = sif_parser.np_open(filepath)
-
-
-    attributes['MEASURE.Exposure_s'] = str(info["ExposureTime"])
-    attributes['SPECTROMETER.Detector_Model'] = info["DetectorType"]
-    attributes['MEASURE.Date_of_measure'] = datetime.fromtimestamp(info["ExperimentTime"]).isoformat()
-
-    if data.shape[0] == 1:
-        data = data[0]
-
-    return data, attributes
-
-def load_general(filepath): # Test made 
+def load_general(filepath, creator = None, parameters = None): # Test made 
     """Loads files based on their extensions
 
     Parameters
@@ -151,16 +102,14 @@ def load_general(filepath): # Test made
     
     Returns
     -------
-    data : np.array
-        The data stored in the file
-    attributes : dic
-        A dictionnary with all the properties that could be recovered from the file
+    dict
+        The dictionnary created with the given filepath and eventually parameters.
     """
     _, file_extension = os.path.splitext(filepath)
     
     if file_extension.lower() == ".dat":
         # Load .DAT file format data
-        return load_dat_file(filepath)
+        return load_dat_file(filepath, creator = creator, parameters = parameters)
     elif file_extension.lower() == ".tif":
         # Load .TIFF file format data
         return load_tiff_file(filepath)

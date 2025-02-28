@@ -1,8 +1,8 @@
-PWD /Users/pierrebouvet/Documents/Code/HDF5_BLS_v1/guides/ModuleDevelopperGuide
+PWD /Users/pierrebouvet/Documents/Code/HDF5_BLS/guides/Module
 INPUT /usr/local/texlive/2024/texmf.cnf
 INPUT /usr/local/texlive/2024/texmf-dist/web2c/texmf.cnf
 INPUT /usr/local/texlive/2024/texmf-var/web2c/pdftex/pdflatex.fmt
-INPUT /Users/pierrebouvet/Documents/Code/HDF5_BLS_v1/guides/ModuleDevelopperGuide/ModuleDevelopperGuide.tex
+INPUT /Users/pierrebouvet/Documents/Code/HDF5_BLS/guides/Module/ModuleDevelopperGuide.tex
 OUTPUT ModuleDevelopperGuide.log
 INPUT /usr/local/texlive/2024/texmf-dist/tex/latex/base/article.cls
 INPUT /usr/local/texlive/2024/texmf-dist/tex/latex/base/article.cls
@@ -237,10 +237,10 @@ INPUT /usr/local/texlive/2024/texmf-dist/fonts/tfm/public/cm/cmsy8.tfm
 INPUT /usr/local/texlive/2024/texmf-dist/fonts/tfm/public/cm/cmsy6.tfm
 OUTPUT ModuleDevelopperGuide.toc
 INPUT /usr/local/texlive/2024/texmf-dist/fonts/tfm/jknappen/ec/ectt1200.tfm
-INPUT /usr/local/texlive/2024/texmf-dist/fonts/tfm/jknappen/ec/ecbx1440.tfm
-INPUT /usr/local/texlive/2024/texmf-dist/fonts/tfm/jknappen/ec/tcrm1200.tfm
 INPUT /usr/local/texlive/2024/texmf-var/fonts/map/pdftex/updmap/pdftex.map
 INPUT /usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc
+INPUT /usr/local/texlive/2024/texmf-dist/fonts/tfm/jknappen/ec/ecbx1440.tfm
+INPUT /usr/local/texlive/2024/texmf-dist/fonts/tfm/jknappen/ec/tcrm1200.tfm
 INPUT /usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc
 INPUT ModuleDevelopperGuide.aux
 INPUT ./ModuleDevelopperGuide.out

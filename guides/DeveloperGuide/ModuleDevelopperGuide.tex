@@ -1,0 +1,169 @@
+\documentclass[a4paper,12pt]{article}
+
+% Packages
+\usepackage[utf8]{inputenc} % Encoding
+\usepackage[T1]{fontenc}  % Font encoding
+\usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue,citecolor=blue]{hyperref}     % Hyperlinks
+\usepackage{geometry}     % Page layout
+\usepackage{listings}     % Code listings
+\usepackage{xcolor}       % Colors for code
+\usepackage{tcolorbox} % Add this to your preamble
+
+% Page layout
+\geometry{margin=1in}
+
+% Functions
+\tcbset{
+    attentionbox/.style={
+        colback=red!5, % Background color
+        colframe=red!75!black, % Border color
+        coltitle=black, % Title color
+        boxrule=0.8mm, % Thickness of the border
+        left=2mm, % Left padding
+        before skip=5mm, % Space before the box
+        after skip=5mm, % Space after the box
+        sharp corners, % Sharp corners for the box
+        fonttitle=\bfseries, % Bold title font
+        attach boxed title to top left={yshift=-2mm,xshift=2mm}, % Title position
+        boxed title style={
+            size=small,
+            colback=red!50,
+            colframe=red!75!black,
+            sharp corners,
+        },
+    }
+}
+
+% % Code formatting
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\fontsize{9}{10}\selectfont,
+    breaklines=true,
+    frame=single,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!70!black},
+    stringstyle=\color{red},
+    showstringspaces=false,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=10pt,
+    xleftmargin=5mm,
+}
+
+% Metadata
+\title{Developer Guide for Project \texttt{HDF5\_BLS}}
+\author{Pierre Bouvet}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+
+\begin{tcolorbox}[title=Why are you here?]
+    \begin{itemize}
+        \item \hyperref[sec:load_data]{I want to import my data to the HDF5 file format}
+    \end{itemize}
+\end{tcolorbox}
+
+\section{Load data} \label{sec:load_data}
+
+    \begin{tcolorbox}
+        Are you using a format that is already supported by the \texttt{HDF5\_BLS} package?
+        \begin{itemize}
+            \item \hyperref[subsec:load_data.user_specific]{Yes but it doesn't work with my data.}
+            \item \hyperref[subsec:load_data.improvement]{Yes but I would like to improve the code.}
+            \item \hyperref[subsec:load_data.new_format]{No, I would like to add support for my data.}
+        \end{itemize}
+    \end{tcolorbox}
+
+    \subsection{Adding a user-specific function to an already supported format} \label{subsec:load_data.user_specific}
+
+        \begin{tcolorbox}
+            You are in the situation where you are using a format that is already supported by the \texttt{HDF5\_BLS} package (for example ".dat") but that doesn't work with your data.
+        \end{tcolorbox}
+
+        Here are the steps to follow:
+        \begin{enumerate}
+            \item Locate the python file that handles your data format in the \texttt{load\_formats} folder of the \texttt{HDF5\_BLS} package. The name of the file should correspond to the name of the format you are using (for example "load\_dat.py" if you are using ".dat" files).
+            \item Add the function that will load your data to the file. The function should have the following signature:
+\begin{lstlisting}
+def load_dat_Wien(filepath, parameters = None):
+\end{lstlisting}
+            In the case where you don't need to load the data with parameters, the function should have the following signature:
+\begin{lstlisting}
+def load_dat_Wien(filepath):
+\end{lstlisting}
+            \item Write the code that will load your data. Your function should retunr a dictionnary with at least two keys: "Data" and "Attributes". The "Data" key should contain the data you are loading and the "Attributes" key should contain the attributes of the file. You can also add abscissa to your data if you want to, in that case, add the key "Abscissa\_\textsl{name}" where \textsl{name} is the name you want to give to the abscissa (for example "Abscissa\_Time").
+            \item Go to the \texttt{load\_data.py} file in the \texttt{HDF5\_BLS} package and locate the function dedicated to the format you are using (for example "load\_dat\_file" if you are using ".dat" files)
+            \item Make sure that you are importing the function you just created:
+\begin{lstlisting}
+from HDF5_BLS.load_formats.load_dat import load_dat_Wien
+\end{lstlisting}
+            \item Then, define an identifier for your function (for example "Wien") and either create or add your identifier to the if-else statement. Don't forget to add your identifier to the "creator\_list" list in the "else" statement:
+\begin{lstlisting}
+if creator == "GHOST": return load_dat_GHOST(filepath)
+...
+elif creator == "Wien": return load_dat_Wien(filepath)
+else:
+    creator_list = ["GHOST", "TimeDomain", "Wien"]
+    raise LoadError_creator(f"Unsupported creator {creator}, accepted values are: {', '.join(creator_list)}", creator_list)
+\end{lstlisting}
+            \item Add a test to the function in the "tests/load\_data\_test.py" file with a test file placed in the "tests/test\_data" folder. This test is important as they are run automatically when the package is pushed to GitHub (ie: it makes my life easier ^^). 
+            \item You can now use your data format with the \texttt{HDF5\_BLS} package, and in particular, the GUI. You are invited to push your code to GitHub and create a pull request to the main repository :)
+        \end{enumerate}
+
+    \subsection{Improving an already supported function} \label{subsec:load_data.improvement}
+        \begin{tcolorbox}
+            You are in the situation where you want to improve a load function of the \texttt{HDF5\_BLS} package (for example ".dat").
+        \end{tcolorbox}
+
+        Here are the steps to follow:
+        \begin{enumerate}
+            \item Locate the python file that handles your data format in the \texttt{load\_formats} folder of the \texttt{HDF5\_BLS} package. The name of the file should correspond to the name of the format you are using (for example "load\_dat.py" if you are using ".dat" files).
+            \item Locate the function that loads your data. The function should have a name similar to (might not have parameters):
+\begin{lstlisting}
+def load_dat_Wien(filepath, parameters = None):
+\end{lstlisting}
+            \item Update the code. One good measure is to duplicate the function and comment one of the two versions. Then, write your code and run the tests. If the tests fail, you can always go back to the previous version. Note that if the test fails, the code cannot be pushed to GitHub.
+            \item If everything is sound, you can now use your new function with the \texttt{HDF5\_BLS} package. You are invited to push your code to GitHub and create a pull request to the main repository :)
+            \item Note: If you want to improve the loading of the data to the hdf5 file (chunking for example), please contact the maintainer directly.
+        \end{enumerate}
+
+    \subsection{Adding a user-specific function to an already supported format} \label{subsec:load_data.new_format}
+
+        \begin{tcolorbox}
+            You are in the situation where you are using a new format that is not supported by the \texttt{HDF5\_BLS} package.
+        \end{tcolorbox}
+
+        Here are the steps to follow:
+        \begin{enumerate}
+            \item Navigate to the \texttt{load\_formats} folder of the \texttt{HDF5\_BLS} package. 
+            \item Create a new python file with the name of the format you are using (for example "load\_unicorn.py" if you are using ".unicorn" files).
+            \item Add the function that will load your data to the file. The function should have the following signature:
+\begin{lstlisting}
+def load_unicorn_Wien(filepath, parameters = None):
+\end{lstlisting}
+            In the case where you don't need to load the data with parameters, the function should have the following signature:
+\begin{lstlisting}
+def load_dat_Wien(filepath):
+\end{lstlisting}
+            \item Write the code that will load your data. Your function should retunr a dictionnary with at least two keys: "Data" and "Attributes". The "Data" key should contain the data you are loading and the "Attributes" key should contain the attributes of the file. You can also add abscissa to your data if you want to, in that case, add the key "Abscissa\_\textsl{name}" where \textsl{name} is the name you want to give to the abscissa (for example "Abscissa\_Time").
+            \item Go to the \texttt{load\_data.py} file in the \texttt{HDF5\_BLS} package and create the function dedicated to the format you are using (for example "load\_unicorn\_file" if you are using ".unicorn" files)
+            \item Make sure that you are importing the function you just created:
+\begin{lstlisting}
+from HDF5_BLS.load_formats.load_unicorn import load_unicorn_Wien
+\end{lstlisting}
+            \item Add a test to the function in the "tests/load\_data\_test.py" file with a test file placed in the "tests/test\_data" folder. This test is important as they are run automatically when the package is pushed to GitHub (ie: it makes my life easier ^^). 
+            \item You can now use your data format with the \texttt{HDF5\_BLS} package, and in particular, the GUI. You are invited to push your code to GitHub and create a pull request to the main repository :)
+        \end{enumerate}
+
+\section*{Contact}
+For questions or suggestions, please contact the maintainer at:
+
+\begin{center}
+    \href{mailto:pierre.bouvet@meduniwien.ac.at}{pierre.bouvet@meduniwien.ac.at}.
+\end{center}
+
+\end{document}

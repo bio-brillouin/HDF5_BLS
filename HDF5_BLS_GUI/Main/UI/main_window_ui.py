@@ -19,7 +19,7 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
 from PySide6.QtWidgets import (QApplication, QGridLayout, QGroupBox, QHeaderView,
     QMainWindow, QMenu, QMenuBar, QPushButton,
     QSizePolicy, QSpacerItem, QStatusBar, QTabWidget,
-    QTableView, QTreeView, QWidget)
+    QTableView, QTextBrowser, QTreeView, QWidget)
 import Icons_rc
 
 class Ui_w_Main(object):
@@ -41,6 +41,8 @@ class Ui_w_Main(object):
         self.a_ConvertCSV.setObjectName(u"a_ConvertCSV")
         self.a_Close = QAction(w_Main)
         self.a_Close.setObjectName(u"a_Close")
+        self.a_SaveFileAs = QAction(w_Main)
+        self.a_SaveFileAs.setObjectName(u"a_SaveFileAs")
         self.centralwidget = QWidget(w_Main)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
@@ -207,17 +209,24 @@ class Ui_w_Main(object):
 
         self.gridLayout_2.addWidget(self.b_OpenHDF5, 0, 1, 1, 1)
 
-        self.pushButton = QPushButton(self.gb_buttons)
-        self.pushButton.setObjectName(u"pushButton")
+        self.b_ExportCodeLine = QPushButton(self.gb_buttons)
+        self.b_ExportCodeLine.setObjectName(u"b_ExportCodeLine")
+        self.b_ExportCodeLine.setEnabled(False)
         icon8 = QIcon()
         icon8.addFile(u":/Buttons/icon/export_code.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.pushButton.setIcon(icon8)
-        self.pushButton.setIconSize(QSize(35, 35))
+        self.b_ExportCodeLine.setIcon(icon8)
+        self.b_ExportCodeLine.setIconSize(QSize(35, 35))
 
-        self.gridLayout_2.addWidget(self.pushButton, 0, 5, 1, 1)
+        self.gridLayout_2.addWidget(self.b_ExportCodeLine, 0, 5, 1, 1)
 
 
         self.gridLayout.addWidget(self.gb_buttons, 0, 0, 1, 1)
+
+        self.textBrowser_Log = QTextBrowser(self.centralwidget)
+        self.textBrowser_Log.setObjectName(u"textBrowser_Log")
+        self.textBrowser_Log.setMaximumSize(QSize(16777215, 100))
+
+        self.gridLayout.addWidget(self.textBrowser_Log, 2, 0, 1, 1)
 
         w_Main.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(w_Main)
@@ -235,6 +244,7 @@ class Ui_w_Main(object):
         self.menuFile.addAction(self.a_OpenHDF5)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.a_Save)
+        self.menuFile.addAction(self.a_SaveFileAs)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.a_AddData)
         self.menuFile.addSeparator()
@@ -260,6 +270,7 @@ class Ui_w_Main(object):
         self.a_AddData.setText(QCoreApplication.translate("w_Main", u"Add Raw file", None))
         self.a_ConvertCSV.setText(QCoreApplication.translate("w_Main", u"Export Properties to CSV", None))
         self.a_Close.setText(QCoreApplication.translate("w_Main", u"Close", None))
+        self.a_SaveFileAs.setText(QCoreApplication.translate("w_Main", u"Save file as", None))
         self.gb_viewers.setTitle("")
         self.b_AddPropertyMeasure.setText("")
         self.b_RemovePropertyMeasure.setText("")
@@ -277,7 +288,7 @@ class Ui_w_Main(object):
         self.b_RemoveData.setText("")
         self.b_Close.setText("")
         self.b_OpenHDF5.setText("")
-        self.pushButton.setText("")
+        self.b_ExportCodeLine.setText("")
         self.menuFile.setTitle(QCoreApplication.translate("w_Main", u"File", None))
     # retranslateUi
 
