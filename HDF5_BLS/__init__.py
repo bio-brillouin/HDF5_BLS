@@ -1,3 +1,5 @@
-from HDF5_BLS.load_data import *
-from HDF5_BLS.treat import Treat
-from HDF5_BLS.wrapper import Wrapper
+from . import load_data
+from . import conversion_PSD
+from . import wrapper
+from . import treat
+
