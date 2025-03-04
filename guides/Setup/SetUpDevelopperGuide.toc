@@ -1,9 +1,0 @@
-\contentsline {section}{\numberline {1}Introduction}{1}{section.1}%
-\contentsline {section}{\numberline {2}Project Structure}{1}{section.2}%
-\contentsline {subsection}{\numberline {2.1}Key Components}{2}{subsection.2.1}%
-\contentsline {section}{\numberline {3}Installation}{2}{section.3}%
-\contentsline {section}{\numberline {4}Running the Tests}{3}{section.4}%
-\contentsline {section}{\numberline {5}Development Workflow}{3}{section.5}%
-\contentsline {subsection}{\numberline {5.1}Branching Strategy}{3}{subsection.5.1}%
-\contentsline {section}{\numberline {6}Contribution Guidelines}{3}{section.6}%
-\contentsline {section}{\numberline {7}Contact}{3}{section.7}%
