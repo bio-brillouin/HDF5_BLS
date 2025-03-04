@@ -36,4 +36,9 @@ guides/Project/Project.fdb_latexmk
 guides/Project/Project.fls
 guides/Project/Project.log
 guides/Project/Project.synctex.gz
+guides/SpecSheet/SpecSheet.synctex.gz 
+guides/SpecSheet/SpecSheet.log 
+guides/SpecSheet/SpecSheet.fls 
+guides/SpecSheet/SpecSheet.fdb_latexmk 
+guides/SpecSheet/SpecSheet.aux
 HDF5_BLS.code-workspace
