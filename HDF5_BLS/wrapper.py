@@ -101,7 +101,7 @@ class Wrapper:
         attributes = dic["Attributes"]
         attributes["ID"] = f"Data_{i}"
         attributes["Name"] = name
-        par[f"Data_{i}"] = Wrapper(attributes = {"ID": f"Data_{i}", "Name":name},
+        par[f"Data_{i}"] = Wrapper(attributes = {"ID": f"Data_{i}", "FILEPROP.Name":name},
                                 data = data,
                                 data_attributes = {})
 

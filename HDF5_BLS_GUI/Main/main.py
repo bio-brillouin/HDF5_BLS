@@ -231,10 +231,6 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                         parameters = dialog.get_selected_structure()
                         dialog.close()
                     dic = load_data.load_general(filepath, temp, parameters)
-                    # try:
-                    #     dic = load_data.load_general(filepath, temp, parameters)
-                    # except Exception as e:
-                    #     qtw.QMessageBox.warning(self, "Error while loading the data", str(e))
                 except Exception as e:
                     qtw.QMessageBox.warning(self, "Error other than parameter and creator", str(e))
             else: return # If the user cancels the dialog box, we return
@@ -242,39 +238,13 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             qtw.QMessageBox.warning(self, "Error other than creator", str(e))
 
         # Adding the data to the wrapper
-        print(dic)
         self.wrapper.add_data_dictionnary(dic, parent_group = parent_path, name = os.path.basename(filepath).split(".")[0])
 
-        # if len(dic["Data"].shape) == 1: 
-        #     self.wrapper.add_data_group_to_wrapper_from_filepath(filepath, parent_path)   
-        # else:# If the dimensionality of the data is larger than 1, we ask the user how to store it 
-        #     dialog = DataStructure(self, dic["Data"].shape)
-        #     if dialog.exec_() == qtw.QDialog.Accepted:
-        #         selected_structure = dialog.get_selected_structure()
-        #         dialog.close()
-
-        #         # Extract dimensions of the group and the arrays and split them into lists
-        #         group_match = re.search(r"\(([\d+x]+)\) groups", selected_structure)
-        #         group_dim = list(map(int, group_match.group(1).split('x'))) if group_match else []
-                
-        #         parent = self.wrapper
-        #         if not parent_path is None:
-        #             for e in parent_path.split("/")[1:]:
-        #                 if isinstance(parent.data[e], wrapper.Wrapper): 
-        #                     parent = parent.data[e]
-                
-        #         i0 = 0
-        #         while f"Data_{i0}" in parent.data.keys(): i0 += 1
-
-        #         parent.data[f"Data_{i0}"] = create_group_data(group_dim = group_dim[1:], data = data, n_dim = 1)
-        #         name = os.path.basename(filepath).split(".")[0]
-        #         parent.data[f"Data_{i0}"].attributes = {"ID": f"Data_{i0}", "FILEPROP.Name":name}
-        
-        self.treeview_selected = "Data"
-
+        # Updating the treeview
         self.update_treeview()
         self.update_parameters()
         self.expand_treeview_path(parent_path)
+        self.treeview_selected = "Data"
 
         # Logging the added data
         path_names = []
