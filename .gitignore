@@ -40,4 +40,11 @@ guides/SpecSheet/SpecSheet.log
 guides/SpecSheet/SpecSheet.fls 
 guides/SpecSheet/SpecSheet.fdb_latexmk 
 guides/SpecSheet/SpecSheet.aux
+guides/Tutorial/Tutorial.toc
+guides/Tutorial/Tutorial.synctex.gz
+guides/Tutorial/Tutorial.out
+guides/Tutorial/Tutorial.log
+guides/Tutorial/Tutorial.fls
+guides/Tutorial/Tutorial.fdb_latexmk
+guides/Tutorial/Tutorial.aux
 HDF5_BLS.code-workspace

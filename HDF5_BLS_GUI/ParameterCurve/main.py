@@ -625,7 +625,7 @@ class TFP_treat(ParameterCurve):
             try:
                 dic["center_frequency"] = float(self.parameters["center_frequency"]["line_edit"].text())
                 dic["linewidth"] = float(self.parameters["linewidth"]["line_edit"].text())
-                dic["normalize"] = bool(self.parameters["normalize"]["checkbox"].text())
+                dic["normalize"] = bool(self.parameters["normalize"]["checkbox"].checkState())
                 dic["c_model"] = str(self.parameters["c_model"]["combobox"].currentText())
                 dic["fit_S_and_AS"] = bool(self.parameters["fit_S_and_AS"]["checkbox"].checkState())
                 dic["window_peak_find"] = float(self.parameters["window_peak_find"]["line_edit"].text()) 

@@ -616,7 +616,8 @@ def load_hdf5_file(filepath): # Test in add_hdf5_to_wrapper
         attributes, data_attributes, data = {}, {}, {}
 
         for k, v in group.items(): # Iterate over the group's items
-            if isinstance(v, h5py._hl.dataset.Dataset): data[k] = v[:] # If the item is a dataset, add it to the data dictionary
+            if isinstance(v, h5py._hl.dataset.Dataset): 
+                data[k] = np.array(v) # If the item is a dataset, add it to the data dictionary
             elif isinstance(v, h5py._hl.group.Group):  data[k] = load_group(v) # If the item is a group, add it to the data dictionary
             else: raise WrapperError("Trying to add an object that is neither a group nor a dataset")
 

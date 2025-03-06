@@ -388,25 +388,15 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         -------
         None
         """
-        text = "from HDF5_BLS import wrapper\n"
-        text += "import h5py as h5\n\n"
-        path = self.treeview_selected.split('/')[1:]
-        joined_path = "', '".join(path)
-        text += f"path = ['{joined_path}']\n" 
-        if self.filepath is None:
-            text += f"wrp = wrapper.load_hdf5_file('your_filepath.h5') # Please indicate here the filepath of the h5 file\n"
-        else:
-            text += f"wrp = wrapper.load_hdf5_file('{self.filepath}')\n"
-        text += "for e in path: wrp = wrp.data[e]\n"
+        if not self.wrapper.type_path(self.treeview_selected) is np.ndarray:
+            qtw.QMessageBox.warning(self, "Warning", "The selected path is not a dataset. Please select a dataset.")
+            return
 
-        elt = self.wrapper 
-        for e in path:
-            elt = elt.data[e]
-        if isinstance(elt, np.ndarray):
-            text += f"data = wrp[:] # This is the data of the selected element"
-        else:
-            text += f"group = wrp # This is the selected element"
-
+        text = "import h5py as h5\nimport numpy as np\n\n"
+        if self.filepath is None: text += "with h5.File('your_filepath.h5', 'r') as f:\n"
+        else: text += "with h5.File('"+self.filepath+"', 'r') as f:\n"
+        text += "\tdata = np.array(f['"+self.treeview_selected+"'])\n"
+        
         pyperclip.copy(text)
 
         qtw.QMessageBox.information(self, "Copied to clipboard", f"Code to access the data copied to clipboard")

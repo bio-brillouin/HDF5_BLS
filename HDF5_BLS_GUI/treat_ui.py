@@ -111,6 +111,7 @@ def treat_TFP(parent, wrp, path):
             func = result["Function"]
             parameters = result["Parameters"]
             dialog.close()
+        nb_errors = 0
         for c,f in zip(childs, frequency):
             frequency = wrp.get_child(path+"/"+f)[:]
             data = wrp.get_child(path+"/"+c)[:]
@@ -133,6 +134,8 @@ def treat_TFP(parent, wrp, path):
                 parent.textBrowser_Log.append(f"Treatment of {path}/{c} with {func.__name__} succesful, returning the following parameters:\n Shift = {popt[-2]:.2f}±{std[-2]:.2f} GHz\n Linewidth = {popt[-1]:.3f}±{std[-1]:.3f} GHz")
             except Exception as e:
                 parent.textBrowser_Log.append(f"Treatment of {path}/{c} with {func.__name__} unsuccesful: {e}")
+                nb_errors += 1
+        parent.textBrowser_Log.append(f"<b>Treatment of {path} with {func.__name__} ended with {nb_errors} errors</b>")
         
     # If not, go through each spectrum and ask the user to give the treatment parameters
     elif ret == qtw.QMessageBox.No:
@@ -147,6 +150,18 @@ def treat_TFP(parent, wrp, path):
                 popt, std, steps = func(n_frequency = frequency, 
                                         n_data = data, 
                                         **parameters)
-                parent.textBrowser_Log.append(f"Treatment of {path}/{c} with {func.__name__} succesful, returning the following parameters:\n Shift = {popt[-2]}\n Linewidth = {popt[-1]}")
+                path_group = path+"/"+"/".join(c.split("/")[:-1])
+                wrp_loc = wrp.get_child(path_group)
+                i = 0
+                for e in wrp_loc.data.keys():
+                    if "Treat" in e: i+=1
+                wrp_loc.data[f"Treat_{i}"] = wrapper.Wrapper(data = {"Shift" : np.array(popt[-2]),
+                                                                     "Linewidth" : np.array(popt[-1]),
+                                                                     "Shift_std" : np.array(std[-2]),
+                                                                     "Linewidth_std" : np.array(std[-1])},
+                                                             data_attributes = {},
+                                                             attributes = {"FILEPROP.Name": f"Treat_{i}",
+                                                                           "TREAT.Process": steps})
+                parent.textBrowser_Log.append(f"Treatment of {path}/{c} with {func.__name__} succesful, returning the following parameters:\n Shift = {popt[-2]:.2f}±{std[-2]:.2f} GHz\n Linewidth = {popt[-1]:.3f}±{std[-1]:.3f} GHz")
             except Exception as e:
                 parent.textBrowser_Log.append(f"Treatment of {path}/{c} with {func.__name__} unsuccesful: {e}")

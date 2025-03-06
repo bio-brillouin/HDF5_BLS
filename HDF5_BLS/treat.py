@@ -134,7 +134,7 @@ class Models():
         return func
  
 
-def fit_model_v0(n_frequency: np.ndarray, n_data: np.ndarray, center_frequency: float, linewidth: float, normalize: bool = True, c_model: str = "Lorentzian", fit_S_and_AS: bool = True, window_peak_find: float = 1, window_peak_fit: float = 3, correct_elastic: bool = False, IR_wndw: tuple = None, n_freq_IR: np.ndarray = None, n_data_IR: np.ndarray = None):
+def fit_model_v0(n_frequency: np.ndarray, n_data: np.ndarray, center_frequency: float, linewidth: float, normalize: bool = False, c_model: str = "Lorentzian", fit_S_and_AS: bool = False, window_peak_find: float = 1, window_peak_fit: float = 3, correct_elastic: bool = False, IR_wndw: tuple = None, n_freq_IR: np.ndarray = None, n_data_IR: np.ndarray = None):
     """
     Fitting function to extract the information from the given data.
 
@@ -344,8 +344,11 @@ def fit_model_v0(n_frequency: np.ndarray, n_data: np.ndarray, center_frequency: 
             raise TreatmentError("The size of the impulse response is larger than the window of fit. Please increase the fit window or decrease the IR window.")
         
         # Perform the fit
-        popt_S, pcov_S = optimize.curve_fit(function, n_frequency[window_S], n_data[window_S], p0_S)
-        popt_AS, pcov_AS = optimize.curve_fit(function, n_frequency[window_AS], n_data[window_AS], p0_AS)
+        try:
+            popt_S, pcov_S = optimize.curve_fit(function, n_frequency[window_S], n_data[window_S], p0_S)
+            popt_AS, pcov_AS = optimize.curve_fit(function, n_frequency[window_AS], n_data[window_AS], p0_AS)
+        except: 
+            raise TreatmentError("The fit failed. Please check the parameters.")
         
         # Extract the errors in the form of standard deviations
         std_S = np.sqrt(np.diag(pcov_S))
@@ -365,7 +368,10 @@ def fit_model_v0(n_frequency: np.ndarray, n_data: np.ndarray, center_frequency: 
             raise TreatmentError("The size of the impulse response is larger than the window of fit. Please increase the fit window or decrease the IR window.")
         
         # Perform the fit
-        popt, pcov = optimize.curve_fit(function, n_frequency[window], n_data[window], p0)
+        try:
+            popt, pcov = optimize.curve_fit(function, n_frequency[window], n_data[window], p0)
+        except:
+            raise TreatmentError("The fit failed. Please check the parameters.")
         
         # Extract the errors in the form of standard deviations
         std = np.sqrt(np.diag(pcov))
