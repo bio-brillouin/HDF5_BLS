@@ -207,45 +207,59 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         if not self.wrapper.type_path(parent_path) == wrapper.Wrapper:
             parent_path = "/".join(parent_path.split("/")[:-1])
 
-
-        # Creating the dictionnary with the data and the attributes and ...
+        # Creating the dictionnary with the data and the attributes starting with the addition of a single file
+        if type(filepath) == str : filepath = [filepath]
+        file = filepath.pop(0)
+        load_case = 0 # 0: nothing, 1: needs creator, 2: needs creator and parameters
         try: # First we try adding the data based on the file extension
-            dic = load_data.load_general(filepath)
+            dic = load_data.load_general(file)
         except ValueError: # If it does not work, it might be that the file extension is not supported, in that case display a warning window
             qtw.QMessageBox.warning(self, "Warning", "The file extension is not supported.")
             return
         except LoadError_creator as e: # It can also be that there are different ways to load the data, in that case display a dialog box to choose the type of structure to load
+            load_case = 1
             creator_list = e.creators 
             dialog = ComboboxChoose(text = "Choose the type of structure to load", list_choices = creator_list, parent = self)
             if dialog.exec_() == qtw.QDialog.Accepted:
-                temp =dialog.get_selected_structure()
+                creator_selected = dialog.get_selected_structure()
                 try:# After choosing the type of structure, we try to load the data again by precising the structure
-                    dic = load_data.load_general(filepath, creator = temp)
+                    dic = load_data.load_general(file, creator = creator_selected)
                 except LoadError_parameters as e: # If it does not work, this means that the user needs to indicate the parameters to load the data, so we load a window to do so
+                    load_case = 2
                     parameters = e.parameters
                     dialog = ParameterWindow(text = f"Please indicate the value of the following parameters to load the data:",
-                                             list_parameters = parameters, 
-                                             parent = self,
-                                             root_path=os.path.dirname(filepath))
+                                            list_parameters = parameters, 
+                                            parent = self,
+                                            root_path=os.path.dirname(file))
                     if dialog.exec_() == qtw.QDialog.Accepted:
                         parameters = dialog.get_selected_structure()
                         dialog.close()
-                    dic = load_data.load_general(filepath, temp, parameters)
+                    dic = load_data.load_general(file, creator_selected, parameters)
                 except Exception as e:
                     qtw.QMessageBox.warning(self, "Error other than parameter and creator", str(e))
             else: return # If the user cancels the dialog box, we return
         except Exception as e:
             qtw.QMessageBox.warning(self, "Error other than creator", str(e))
+        self.wrapper.add_data_dictionnary(dic, parent_group = parent_path, name = os.path.basename(file).split(".")[0])
 
-        # Adding the data to the wrapper
-        self.wrapper.add_data_dictionnary(dic, parent_group = parent_path, name = os.path.basename(filepath).split(".")[0])
+        if len(filepath): 
+            for file in filepath:
+                if load_case == 0:
+                    dic = load_data.load_general(file)
+                elif load_case == 1:
+                    dic = load_data.load_general(file, creator = creator_selected)
+                elif load_case == 2:
+                    dic = load_data.load_general(file, creator = creator_selected, parameters = parameters)
+                
+                self.wrapper.add_data_dictionnary(dic, parent_group = parent_path, name = os.path.basename(file).split(".")[0])
+
 
         # Updating the treeview
+        self.treeview_selected = "Data"
         self.update_treeview()
         self.update_parameters()
         self.expand_treeview_path(parent_path)
-        self.treeview_selected = "Data"
-
+        
         # Logging the added data
         path_names = []
         if not parent_path is None:
@@ -519,7 +533,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                 self.expand_treeview_path(self.treeview_selected)
                 return
 
-        qtw.QMessageBox.warning(self, "Warning", "The type of spectrometer is not recognized")
+        qtw.QMessageBox.warning(self, "Warning", "The type of spectrometer is not recognized. Please make sure that the 'SPECTROMETER.Type' attribute is correctly defined.")
 
     def read_table_view(self, table_view):
         """
@@ -826,6 +840,9 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         # Set the model to the TreeView
         self.treeView.setModel(self.model)
 
+        # When a data is changed in the treeview, the function treeview_element_changed is called
+        self.model.dataChanged.connect(self.treeview_element_changed)
+
         # Collapse all items for visibility
         self.treeView.collapseAll()
 
@@ -1004,7 +1021,21 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             event.accept()
         else:
             event.ignore()
-        
+    
+    @qtc.Slot()
+    def treeview_element_changed(self, topLeft, bottomRight, roles):
+        """
+        Handle the event when a tree view element is changed.
+
+        Returns
+        -------
+        None
+        """
+        # Ensure we're detecting edits, not just selection changes
+        if qtc.Qt.EditRole in roles:
+            new_name = topLeft.data(qtc.Qt.EditRole)
+            print(new_name)
+
     @qtc.Slot()
     def treeview_handle_drops(self, filepaths, parent_path):
         """
@@ -1038,8 +1069,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                     for filepath in filepaths[1:]:
                         self.wrapper.add_hdf5_to_wrapper(filepath, parent_path)
             else:
-                for filepath in filepaths:
-                    self.add_data(filepath = filepath, parent_path = parent_path)
+                self.add_data(filepath = filepaths, parent_path = parent_path)
         
         else:
             qtw.QMessageBox.info(self, "Not implemented", "The GUI only supports addition of multiple files of the same type.")

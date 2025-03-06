@@ -140,44 +140,4 @@ def conversion_ar_BLS_VIPA(parent, wrp, path):
 
     
 
-    # # Create the frequency array by first computing the distance to the average center of the point of the fringes located at the same y
-    # # then computing a and b optimizing a(x2^2 - x1^2) + b(x2-x1) = FSR. Then considering the middle fringe as the 0, create the
-    # # frequency array and place it in the wraper.
-    # radii = []
-    # for c_f in centers: 
-    #     for c in c_f: 
-    #         radii.append(np.sqrt(c[2]**2 - (np.average(c_y)-c[1])**2)+c[0]-c_x)
-    # radii  = np.array(radii).reshape((centers.shape[0],-1))
-
-    # diff_rad = np.zeros((radii.shape[0], radii.shape[1]-1))
-    # diff_rad_quad = np.zeros((radii.shape[0], radii.shape[1]-1))
-    # for i in range(radii.shape[1]-1): 
-    #     diff_rad[:,i] = abs(radii[:,i+1] - radii[:,i])
-    #     diff_rad_quad[:,i] = abs((radii[:,i+1])**2 - (radii[:,i])**2)
-    # cost = lambda c: np.sum((c[0]*diff_rad_quad+c[1]*diff_rad-float(wrp.get_attributes_path(path)["SPECTROMETER.VIPA_FSR_(GHz)"]))**2)
-
-    # res = minimize(cost, x0 = [0,1], method = 'Nelder-Mead')
-
-    # R_center = np.average(radii, axis=0)[radii.shape[1]//2]
-    # f = lambda R: res.x[0]*(R**2-R_center**2) + res.x[1]*(R-R_center)
-
-    # R_array = np.zeros(result["data shape"])
-    # for i in range(R_array.shape[0]):
-    #     for j in range(R_array.shape[1]):
-    #         R_array[j,i] = np.sqrt((i-c_x)**2 + (j-c_y)**2)
-    
-    # freq = f(R_array)
-
-    # # Store the treated data in the wrapper
-    # wrp.data["Frequency"] = freq
-    # wrp.data_attributes["Frequency"] = {"Name": "Frequency"}
-    # wrp.attributes["TREATMENT.Center"] = f"{c_x}, {c_y}"
-    # wrp.attributes["TREATMENT.PSD_algorithm"] = result["treatment"]
-    # wrp.attributes["TREATMENT.PSD_error_radius"] = extent
-
-    # # Change the names of the raw data to "Power Spectral Density"
-    # for e in wrp.data.keys():
-    #     if type(wrp.data[e]) == wrapper.Wrapper:
-    #         change_names_of_all_arrays(wrp.data[e], "Power Spectral Density")
-
     

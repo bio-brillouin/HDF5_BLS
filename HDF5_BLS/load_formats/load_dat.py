@@ -41,9 +41,7 @@ def load_dat_GHOST(filepath):
                 data.append(int(line.strip()))
 
     data = np.array(data)
-    attributes['FILEPROP.Name'] = name.split("/")[-1]
     attributes['MEASURE.Sample'] = metadata["Sample"]
-    attributes['MEASURE.Date'] = ""
     attributes['SPECTROMETER.Scanning_Strategy'] = "point_scanning"
     attributes['SPECTROMETER.Type'] = "TFP"
     attributes['SPECTROMETER.Illumination_Type'] = "CW"
@@ -54,7 +52,9 @@ def load_dat_GHOST(filepath):
     spectral_resolution = float(float(metadata["Scan amplitude"])/data.shape[-1])
     attributes['SPECTROMETER.Spectral_Resolution_(GHz)'] = str(spectral_resolution)
 
-    dic = {"Data": data, "Attributes": attributes}
+    frequency = np.linspace(-float(metadata["Scan amplitude"])/2, float(metadata["Scan amplitude"])/2, data.shape[-1])
+
+    dic = {"Power Spectral Density": data, "Frequency": frequency, "Attributes": attributes}
     return dic
 
 def load_dat_TimeDomain(filepath, parameters = None):
@@ -280,6 +280,8 @@ def load_dat_TimeDomain(filepath, parameters = None):
     data_t, dt, process = make_time(attributes, process)
 
     attributes["MEASURE.Process"] = ";".join(process)
+    attributes['SPECTROMETER.Type'] = "TimeDomain"
+    attributes['SPECTROMETER.Filtering_Module'] = "None"
 
     return {"Data": data_t, "Abscissa_Time": dt, "Attributes": attributes}
 

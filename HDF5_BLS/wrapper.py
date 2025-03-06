@@ -5,8 +5,7 @@ import os
 from PIL import Image
 import copy
 
-from HDF5_BLS.load_data import load_general, load_dat_file, load_tiff_file
-from HDF5_BLS.treat import Treat
+from HDF5_BLS.load_data import load_general
     
 BLS_HDF5_Version = "0.0"
 
@@ -94,14 +93,22 @@ class Wrapper:
 
         # Adding the data and the abscissa to the wrapper
         if name is None: name = f"Data_{i}"
-        data = {"Raw_data": np.array(dic["Data"])}
+        if "Data" in dic.keys(): 
+            data = {"Raw_data": np.array(dic["Data"])}
+            if "Power Spectral Density" in dic.keys():
+                data["Power Spectral Density"] = np.array(dic["Power Spectral Density"])
+            if "Frequency" in dic.keys(): 
+                data["Frequency"] = np.array(dic["Frequency"])
+        elif "Power Spectral Density" in dic.keys() and "Frequency" in dic.keys(): 
+            data = {"Power Spectral Density": np.array(dic["Power Spectral Density"]), 
+                    "Frequency": np.array(dic["Frequency"])}
         for e in dic.keys():
             if "Abscissa" in e: 
                 data[e] = np.array(dic[e])
         attributes = dic["Attributes"]
         attributes["ID"] = f"Data_{i}"
-        attributes["Name"] = name
-        par[f"Data_{i}"] = Wrapper(attributes = {"ID": f"Data_{i}", "FILEPROP.Name":name},
+        attributes["FILEPROP.Name"] = name
+        par[f"Data_{i}"] = Wrapper(attributes = attributes,
                                 data = data,
                                 data_attributes = {})
 
@@ -371,6 +378,24 @@ class Wrapper:
                         break
         return attr
         
+    def get_child(self, path):
+        """Returns the wrapper corresponding to the path
+
+        Parameters
+        ----------
+        path : str
+            The path to the data
+
+        Returns
+        -------
+        Wrapper
+            The wrapper corresponding to the path
+        """
+        elt = self
+        for e in path.split("/")[1:]:
+            elt = elt.data[e]
+        return elt
+
     def import_abscissa_1D(self, dimension, filepath, name = None): # Test made
         """Creates an abscissa from a minimal and maximal value
 

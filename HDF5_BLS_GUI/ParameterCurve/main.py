@@ -98,6 +98,7 @@ class ParameterCurve(qtw.QDialog, Ui_Dialog):
         def get_structure_wrapper(wrp, l = {}):
             for e in wrp.data.keys():
                 if isinstance(wrp.data[e], wrapper.Wrapper):
+                    if "Treat" in e: continue
                     name = wrp.data[e].attributes["FILEPROP.Name"]
                     l[name] = {}
                     get_structure_wrapper(wrp.data[e],l[name])
@@ -423,7 +424,6 @@ class ar_BLS_VIPA_treat(ParameterCurve):
     def apply_function(self):
         def apply_on_wrapper(func, wrp, center_frequency, linewidth, normalize, c_model, fit_S_and_AS, window_peak_find, window_peak_fit, correct_elastic, IR_wndw):
             for e in wrp.data.keys():
-                print(e)
                 if isinstance(wrp.data[e], wrapper.Wrapper):
                     return {e:apply_on_wrapper(func, wrp.data[e], center_frequency, linewidth, normalize, c_model, fit_S_and_AS, window_peak_find, window_peak_fit, correct_elastic, IR_wndw)}
                 else:
@@ -431,16 +431,16 @@ class ar_BLS_VIPA_treat(ParameterCurve):
                     for f, d in zip(self.frequency, wrp.data[e]):
                         try:
                             popt, std, treat_steps = func(n_frequency = f, 
-                                                n_data = d, 
-                                                center_frequency = center_frequency, 
-                                                linewidth = linewidth, 
-                                                normalize = normalize, 
-                                                c_model = c_model, 
-                                                fit_S_and_AS = fit_S_and_AS, 
-                                                window_peak_find = window_peak_find, 
-                                                window_peak_fit = window_peak_fit, 
-                                                correct_elastic = correct_elastic, 
-                                                IR_wndw = IR_wndw)
+                                                          n_data = d, 
+                                                          center_frequency = center_frequency, 
+                                                          linewidth = linewidth, 
+                                                          normalize = normalize, 
+                                                          c_model = c_model, 
+                                                          fit_S_and_AS = fit_S_and_AS, 
+                                                          window_peak_find = window_peak_find, 
+                                                          window_peak_fit = window_peak_fit, 
+                                                          correct_elastic = correct_elastic, 
+                                                          IR_wndw = IR_wndw)
                             n = popt.size
                         except:
                             popt, std, treat_steps = None, None,[ "Error"]
@@ -515,7 +515,6 @@ class ar_BLS_VIPA_treat(ParameterCurve):
             self.graph_canvas.axes.cla()
 
             _, y = np.meshgrid(np.arange(self.data.shape[1]), np.arange(self.data.shape[0]))
-            print(self.data.shape, y.shape, self.frequency.shape)
             self.graph_canvas.axes.pcolormesh(self.frequency, y, self.data, shading='auto', cmap='viridis')
             self.graph_canvas.axes.set_xlabel("Frequency Shift (GHz)")
             self.graph_canvas.axes.set_ylabel("Pixel")
@@ -594,6 +593,162 @@ class ar_BLS_VIPA_treat(ParameterCurve):
         button_treat.clicked.connect(self.apply_function)
 
         layout.addWidget(button_treat, 0, 0, 1, 1)
-    
-        
+  
+class TFP_treat(ParameterCurve):
+    def __init__(self, parent=None, wrp_base = None, path_base = None, path_curves = None, path_frequency = None, frequency = None):
+        super().__init__(parent, wrp_base.get_child(path_base))
 
+        if frequency is None:
+            self.path_curves = path_curves
+            self.path_frequency = path_frequency
+            self.path_frequency_unique = None
+        else:
+            self.path_curves = None
+            self.path_frequency = None
+            self.path_frequency_unique = frequency
+
+        # Initializes the graph
+        self.cb_curves.currentIndexChanged.connect(self.handle_data)
+        self.handle_data()
+
+        self.setup_button_apply()
+    
+    def apply_function(self):
+        """
+        Extracts the parameters from the GUI and pplies the treatment to the data.
+        """
+        func = self.functions[self.function_names.index(self.function_name)]
+
+        if self.function_name == "fit_model_v0":
+            # Extract the parameters of the function
+            dic = {}
+            try:
+                dic["center_frequency"] = float(self.parameters["center_frequency"]["line_edit"].text())
+                dic["linewidth"] = float(self.parameters["linewidth"]["line_edit"].text())
+                dic["normalize"] = bool(self.parameters["normalize"]["checkbox"].text())
+                dic["c_model"] = str(self.parameters["c_model"]["combobox"].currentText())
+                dic["fit_S_and_AS"] = bool(self.parameters["fit_S_and_AS"]["checkbox"].checkState())
+                dic["window_peak_find"] = float(self.parameters["window_peak_find"]["line_edit"].text()) 
+                dic["window_peak_fit"] = float(self.parameters["window_peak_fit"]["line_edit"].text())
+                dic["correct_elastic"] = bool(self.parameters["correct_elastic"]["checkbox"].checkState())
+                IR_wndw = self.parameters["IR_wndw"]["line_edit"].text()
+                if IR_wndw == "None": 
+                    dic["IR_wndw"] = None
+                else:
+                    dic["IR_wndw"] = IR_wndw.replace("(","").replace(")","").replace(" ","")
+                    dic["IR_wndw"] = tuple(map(float, dic["IR_wndw"].split(",")))
+
+                self.parameter_return["Parameters"] = dic
+                self.parameter_return["Function"] = func
+
+                qtw.QMessageBox.information(self, "Treatment parameters stored", "The parameters for the treatment have been stored. You can now close the window to apply the treatment.")
+            
+            except:
+                qtw.QMessageBox.warning(self, "Error while retrieving parameters", "An error happened while retrieving the parameters")
+            
+    def handle_data(self):
+        """
+        Plots the curve that is currently selected in the combobox. This function also defines self.data and updates the parameters.
+        """
+        # Extract the raw data from the wrapper corresponding to the selected curve in the combobox
+        wrp = self.wrapper
+        
+        if len(self.combobox_curve_codes) > 1:
+            path = self.combobox_curve_codes[self.combobox_curve_names.index(self.cb_curves.currentText())]
+            path = path[5:]
+
+            if type(path) == list:
+                for e in path:
+                    wrp = wrp.data[e]
+            else:
+                wrp = wrp.data[path]
+            
+            self.data = wrp.data["Power Spectral Density"]
+            if self.path_frequency is None:
+                self.frequency = wrp.get_child(self.path_frequency_unique)[:]
+            else:
+                self.frequency = wrp.get_child(self.path_frequency[self.path_curves.index(path+"/Power Spectral Density")])[:]
+            
+            # Plot the data
+            self.graph_canvas.axes.cla()
+
+            self.graph_canvas.axes.plot(self.frequency, self.data)
+            self.graph_canvas.axes.set_xlabel("Frequency Shift (GHz)")
+            self.graph_canvas.axes.set_ylabel("Intensity (AU)")
+            self.graph_canvas.draw()
+            self.update_parameters()
+
+    def update_parameters(self):
+        def initialize_parameters(self, module):
+            functions = [func for func in getmembers(module, isfunction)]
+            function_names = [func[0] for func in functions]
+            functions = [func[1] for func in functions]
+
+            self.cb_functions.clear()
+            self.cb_functions.addItems(function_names)
+            self.cb_functions.setCurrentIndex(0)
+            self.cb_functions.currentIndexChanged.connect(lambda: self.show_parameters_function(functions, function_names))
+
+            return functions, function_names
+
+        def setup_button_help_function(self, functions, function_names):
+            def show_help_function():
+                docstring = functions[function_names.index(self.function_name)].__doc__ or ""
+                msgBox = HelpFunction(self, self.function_name, docstring)
+                msgBox.exec_()
+
+            self.b_helpFunction.clicked.connect(show_help_function)
+
+        def onclick_x0(event = None):
+            if event.inaxes:
+                x = float(event.xdata) * 1e6//1
+                x = x/1e6
+                self.parameters["center_frequency"]["line_edit"].setText(str(x))
+        
+        def onclick_linewidth(event = None):
+            if event.inaxes:
+                self.temp_linewidth = float(event.xdata)
+                self.graph_canvas.mpl_connect('motion_notify_event', on_drag)
+
+        def on_drag(event):
+            if event.inaxes and event.button == 1:
+                x1 = float(event.xdata)
+                linewidth = abs(x1 - self.temp_linewidth) * 1e6//1
+                linewidth = linewidth/1e6
+                self.parameters["linewidth"]["line_edit"].setText(str(linewidth))
+
+        # Define the module to be used 
+        import HDF5_BLS.treat as module 
+
+        # Extracts the functions and the function names from the module
+        self.functions, self.function_names = initialize_parameters(self, module)
+
+        # Sets the combobox with the functions
+        self.show_parameters_function(self.functions, self.function_names)
+
+        # Adds the models in the dedicated combobox.
+        Models = module.Models()
+        self.parameters["c_model"]["combobox"].addItems(Models.models.keys())
+
+        # Connects the QLineEdit widget to the onclick_x0 function
+        self.parameters["center_frequency"]["line_edit"].mousePressEvent = lambda event: self.graph_canvas.mpl_connect('button_press_event', onclick_x0)
+        
+        # Connects the QLineEdit widget to the onclick_linewidth function
+        self.parameters["linewidth"]["line_edit"].mousePressEvent = lambda event: self.graph_canvas.mpl_connect('button_press_event', onclick_linewidth)
+
+        # Sets the help button to display the function's docstring
+        setup_button_help_function(self, self.functions, self.function_names)
+    
+    def setup_button_apply(self):
+        """
+        Creates the layout for the buttons to apply the function.
+        """
+        layout = qtw.QGridLayout(self.frame_confirmParam)
+
+        button_treat = qtw.QPushButton()
+        button_treat.setText("Treat")
+        button_treat.clicked.connect(self.apply_function)
+
+        layout.addWidget(button_treat, 0, 0, 1, 1)
+
+    
