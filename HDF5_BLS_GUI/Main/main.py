@@ -656,7 +656,9 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         None
         """
         # Update the wrapper attributes to have all the attributes of the specified version
-        if filepath is None: self.wrapper.import_properties_data(f'spreadsheets/attributes_v{wrapper.BLS_HDF5_Version}.csv', update = False)
+        if filepath is None: 
+            filepath = "/".join(os.path.abspath(__file__).split("/")[:-3]) + f"/spreadsheets/attributes_v{wrapper.BLS_HDF5_Version}.csv"
+            self.wrapper.import_properties_data(filepath, update = False)
         else:
             elt = self.wrapper
             if self.treeview_selected != "Data":

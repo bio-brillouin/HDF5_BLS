@@ -10,8 +10,6 @@ relative_path_libs = os.path.join(current_dir,"HDF5_BLS", "..", "..")
 absolute_path_libs = os.path.abspath(relative_path_libs)
 sys.path.append(absolute_path_libs)
 
-# for e in sys.path:
-#     print(e)
 
 from Main import main
 
