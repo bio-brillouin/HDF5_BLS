@@ -9,9 +9,11 @@ The library is currently compatible with the following file formats:
 
 ## GUI
 
-The package comes with a graphical user interface (GUI) that allows users to easily open, edit, and save data. 
+The package comes with a graphical user interface (GUI) that allows users to easily open, edit, and save data. Please refer to the [tutorial](https://github.com/bio-brillouin/HDF5_BLS/blob/main/guides/Tutorial/Tutorial.pdf) for more information.
 
-## Installation
+## Library 
+
+### Library installation
 
 You can install **HDF5_BLS** directly from PyPI:
 
@@ -19,13 +21,15 @@ You can install **HDF5_BLS** directly from PyPI:
 pip install HDF5_BLS
 ```
 
-## Documentation
+### Documentation
 
-A full documentation is accessible at [this link](https://hdf5-bls.readthedocs.io/en/latest/).
+A full documentation for the library is accessible at [this link](https://hdf5-bls.readthedocs.io/en/latest/).
 
 ## Contributing
 
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change. For more information, please refer to [CONTRIBUTING.md](https://github.com/bio-brillouin/HDF5_BLS/blob/main/CONTRIBUTING.md).
+A Developper Guide is accessible at [this link](https://github.com/bio-brillouin/HDF5_BLS/blob/main/guides/DeveloperGuide/ModuleDevelopperGuide.pdf). This guide is meant to be used by researchers who want to expand the project to their own devices while keeping the compatibility with all the existing functionalities. 
+
+For changes that might affect the compatibility of the project with existing devices, please open an issue first to discuss what you would like to change. For more information, please refer to [CONTRIBUTING.md](https://github.com/bio-brillouin/HDF5_BLS/blob/main/CONTRIBUTING.md).
 
 ## License
 
