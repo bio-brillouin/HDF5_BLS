@@ -4,8 +4,10 @@ import csv
 import os
 from PIL import Image
 import copy
+import pandas as pd
 
 from HDF5_BLS.load_data import load_general
+import pandas as pd
     
 BLS_HDF5_Version = "0.0"
 
@@ -442,7 +444,7 @@ class Wrapper:
         self.attributes : dic
             The dictionnary containing all the attributes
         """
-        with open(filepath, mode='r') as csv_file:
+        with open(filepath, mode='r', encoding='latin1') as csv_file:
             csv_reader = csv.reader(csv_file)
             for row in csv_reader:
                 if len(row[0].split("."))>1 and row[0].split(".")[0] in ["FILEPROP", "SPECTROMETER", "MEASURE"]:

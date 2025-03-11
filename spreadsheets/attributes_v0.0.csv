@@ -7,8 +7,8 @@ MEASURE.Exposure_(s),,s,,0.1
 MEASURE.Dimensionnality_of_measure,,None,,2
 MEASURE.Abscissa_Names,,None,,"Position x,Position y,Position z,Time"
 "MEASURE.Sampling_Matrix_Size_(Nx,Ny,Nz)_()",,None,,"(100,100,1)"
-"MEASURE.Sampling_Step_Size_(dx,dy,dz)_(µm)",,µm,,"(10,10,0)"
-"MEASURE.Field_Of_View_(X,Y,Z)_(µm)",,µm,,"(1000,1000,0)"
+"MEASURE.Sampling_Step_Size_(dx,dy,dz)_(um)",,um,,"(10,10,0)"
+"MEASURE.Field_Of_View_(X,Y,Z)_(um)",,um,,"(1000,1000,0)"
 ,,,,
 SPECTROMETER,,,,
 SPECTROMETER.Type,,None,,Tandem Fabry-Perot
@@ -31,12 +31,12 @@ SPECTROMETER.Scan_Amplitude_(GHz),,GHz,Only for scanning spectrometers,20
 SPECTROMETER.Scanning_Strategy,,None,,Raster scan
 SPECTROMETER.Scattering_Angle_(deg),,degrees,The angle between the illumination and the detection,180
 SPECTROMETER.Spectral_Resolution_(MHz),,MHz,Largest easured value,150
-SPECTROMETER.x-Mechanical_Resolution_(µm),,µm,Estimated (phonon lifetime),0.5
-SPECTROMETER.x-Optical_Resolution_(µm),,µm,Measured,5
-SPECTROMETER.y-Mechanical_Resolution_(µm),,µm,Estimated (phonon lifetime),0.5
-SPECTROMETER.y-Optical_Resolution_(µm),,µm,Measured,5
-SPECTROMETER.z-Mechanical_Resolution_(µm),,µm,Estimated (phonon lifetime),0.5
-SPECTROMETER.z-Optical_Resolution_(µm),,µm,Measured,50
+SPECTROMETER.x-Mechanical_Resolution_(um),,um,Estimated (phonon lifetime),0.5
+SPECTROMETER.x-Optical_Resolution_(um),,um,Measured,5
+SPECTROMETER.y-Mechanical_Resolution_(um),,um,Estimated (phonon lifetime),0.5
+SPECTROMETER.y-Optical_Resolution_(um),,um,Measured,5
+SPECTROMETER.z-Mechanical_Resolution_(um),,um,Estimated (phonon lifetime),0.5
+SPECTROMETER.z-Optical_Resolution_(um),,um,Measured,50
 ,,,,
 FILEPROP,,,,
 FILEPROP.BLS_HDF5_Version,v0.1,None,Version of the spreadsheet - Don't change,0.1
