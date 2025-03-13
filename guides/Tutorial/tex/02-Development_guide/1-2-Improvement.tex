@@ -1,0 +1,15 @@
+\begin{tcolorbox}
+    You are in the situation where you want to improve a load function of the \texttt{HDF5\_BLS} package (for example ".dat").
+\end{tcolorbox}
+
+Here are the steps to follow:
+\begin{enumerate}
+    \item Locate the python file that handles your data format in the \texttt{load\_formats} folder of the \texttt{HDF5\_BLS} package. The name of the file should correspond to the name of the format you are using (for example "load\_dat.py" if you are using ".dat" files).
+    \item Locate the function that loads your data. The function should have a name similar to (might not have parameters):
+\begin{lstlisting}
+def load_dat_Wien(filepath, parameters = None):
+\end{lstlisting}
+    \item Update the code. One good measure is to duplicate the function and comment one of the two versions. Then, write your code and run the tests. If the tests fail, you can always go back to the previous version. Note that if the test fails, the code cannot be pushed to GitHub.
+    \item If everything is sound, you can now use your new function with the \texttt{HDF5\_BLS} package. You are invited to push your code to GitHub and create a pull request to the main repository :)
+    \item Note: If you want to improve the loading of the data to the hdf5 file (chunking for example), please contact the maintainer directly.
+\end{enumerate}

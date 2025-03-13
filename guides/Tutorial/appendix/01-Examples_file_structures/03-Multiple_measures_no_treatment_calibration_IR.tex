@@ -1,0 +1,22 @@
+In this third example, we want to store a series of two measures taken on two different samples: Water and Ethanol. We also want to store a calibration curve and an impulse response curve.
+
+The following structure represents the base structure of the file:
+\begin{verbatim}
+    file.h5
+    +-- Data (group) -> Name = "Measure"
+    |   +-- Data_0 (group) -> Name = "Impulse_Response"
+    |   |   +-- Raw_data (dataset)
+    |   +-- Data_1 (group) -> Name = "Calibration"
+    |   |   +-- Raw_data (dataset)
+    |   +-- Data_2 (group) -> Name = "Water"
+    |   |   +-- Data_0 (group) -> Name = "Water_01"
+    |   |   |   +-- Raw_data (dataset)
+    |   |   +-- Data_1 (group) -> Name = "Water_02"
+    |   |   |   +-- Raw_data (dataset)
+    |   +-- Data_3 (group) -> Name = "Ethanol"
+    |   |   +-- Data_0 (group) -> Name = "Ethanol_01"
+    |   |   |   +-- Raw_data (dataset)
+    |   |   +-- Data_1 (group) -> Name = "Ethanol_02"
+    |   |   |   +-- Raw_data (dataset)
+\end{verbatim}
+Note that we have here added arrows and an example of the value of the "Name" attributes.

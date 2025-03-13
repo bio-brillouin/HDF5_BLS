@@ -1,0 +1,18 @@
+The attributes will follow a hierarchical structure. The attributes that apply to all "Data\_i" will be stored in the "Data" group, while the parameters that apply to a specific "Data\_i" will be stored in the "Data\_i" group. All the attributes are stored as text. Attributes are then divided in four categories:
+\begin{itemize}
+    \item Attributes that are specific to the spectrometer used, such as the wavelength of the laser, the type of laser, the type of detector, etc. These attributes are recognized by the capital letter word "SPECTROMETER" in the name of the attribute.
+    \item Attributes that are specific to the sample, such as the date of the measurement, the name of the sample, etc. These attributes are recognized by the capital letter word "MEASURE" in the name of the attribute.
+    \item Attributes that are specific to the original file format, such as the name of the file, the date of the file, the version of the file, the precision used on the storage of the data, etc. These attributes are recognized by the capital letter word "FILEPROP" in the name of the attribute.
+    \item Attributes that are used inside the HDF5 file, such as the name of the group, the name of the dataset, etc. These attributes are the only ones without a prefix.
+\end{itemize}
+
+The name of the attribues contains the unit of the attribute if it has units, in the shape of an underscore followed by the unit in parenthesis. Some parameters that can be represented by a series of norms will also be defined in a given norm, such as the ISO8601 for the date. These norms are however not specified in the name of the attribute. Here are some examples of attributes:
+\begin{itemize}
+    \item "SPECTROMETER.Detector\_Type" is the type of the detector used.
+    \item "MEASURE.Sample" is the name of the sample.
+    \item "MEASURE.Exposure\_(s)" is the exposire of the sample given in seconds
+    \item "MEASURE.Date\_of\_measurement" is the date of the measurement. 
+    \item "FILEPROP.Name" is the name of the file.
+\end{itemize}
+
+To unify the name of attributes, a spreadsheet is accesible, containing all the attributes and their units. This spreadsheet will be updated as new attributes are added to the project and defined with a version number that will also be stored in the attribtutes of each data attributes (under FILEPROP.version). This spreadsheet is meant to be exported in a CSV file that can be used to update the attributes of the data.

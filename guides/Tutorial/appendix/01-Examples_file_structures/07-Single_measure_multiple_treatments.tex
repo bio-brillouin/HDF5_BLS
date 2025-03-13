@@ -1,0 +1,23 @@
+In this seventh example, we will store a single measure where two different treatments have been performed (for example a measure at an interface between two materials).
+
+The following structure represents the base structure of the file:
+\begin{verbatim}
+    file.h5
+    +-- Data (group) -> Name = "Measure"
+    |   +-- Data_0 (group) -> Name = "Water"
+    |   |   +-- Raw_data (dataset)
+    |   |   +-- PSD (dataset)
+    |   |   +-- Frequency (dataset)
+    |   |   +-- Treat_0 (group) -> Name = "Treat_5GHz"
+    |   |   |   +-- Shift (dataset)
+    |   |   |   +-- Shift_std (dataset)
+    |   |   |   +-- Linewidth (dataset)
+    |   |   |   +-- Linewidth_std (dataset)
+    |   |   +-- Treat_1 (group) -> Name = "Treat_10GHz"
+    |   |   |   +-- Shift (dataset)
+    |   |   |   +-- Shift_std (dataset)
+    |   |   |   +-- Linewidth (dataset)
+    |   |   |   +-- Linewidth_std (dataset)
+\end{verbatim}
+Note that we have here added arrows and an example of the value of the "Name" attributes.
+In this case, all the steps of the treatment around 5GHz are stored in the "Treat\_0" group and the ones around 10GHz in the "Treat\_1" group. The nomenclature of the attribute(s) used to store the parameters of the treatment is not specified.

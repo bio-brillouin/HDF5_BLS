@@ -1,0 +1,36 @@
+The file is intended to be used to store not only raw data but also treated data together with the parameters used for treatment. As such, we propose to complete the structure defined above with the following structure:
+
+\begin{verbatim}
+    file.h5
+    +-- Data (group)
+    |   +-- Data_0 (group)
+    |   |   +-- Raw_data (dataset)
+    |   |   +-- Abscissa_0 (dataset)
+    |   |   +-- Abscissa_1 (dataset)
+    |   |   +-- ...
+    |   |   +-- PSD (dataset)
+    |   |   +-- Frequency (dataset)
+    |   |   +-- Treat_0(group)
+    |   |   |   +-- Shift (dataset)
+    |   |   |   +-- Shift_std (dataset)
+    |   |   |   +-- Linewidth (dataset)
+    |   |   |   +-- Linewidth_std (dataset)
+    |   |   +-- Treat_1(group)
+    |   |   ...
+    |   +-- Data_1 (group)
+    |   ...
+\end{verbatim}
+
+The nomenclature is defined as follows:
+\begin{itemize}
+    \item \textbf{"Data\_i"} is the identifier of the group containing the i-th measure.
+    \item \textbf{"Raw\_data"} is the identifier of the dataset containing the raw data of the measure stored in the "Data\_i" group.
+    \item \textbf{"Abscissa\_i"} is the identifier of the dataset containing the i-th abscissa array of "Raw\_data" and "PSD". The dimension of this dataset is not forced to one.
+    \item \textbf{"PSD"} is the identifier of the dataset of the Power Spectrum Density of the measure, associated with the "Frequency" dataset. "Raw\_data" and "PSD" are arrays of same shape. We impose the last dimension(s) of "PSD" to be the same as the dimension(s) of "Frequency".
+    \item \textbf{"Frequency"} is the identifier of the dataset containing the frequency axis of the "PSD".
+    \item \textbf{"Treat\_i"} is the identifier of the group containing the treated data of the i-th measure.
+    \item \textbf{"Shift"} is the identifier of the dataset containing the values of the fitted frequency shifts.
+    \item \textbf{"Shift\_std"} is the identifier of the dataset containing the standard deviation of the fitted frequency shifts.
+    \item \textbf{"Linewidth"} is the identifier of the dataset containing the values of the fitted linewidths.
+    \item \textbf{"Linewidth\_std"} is the identifier of the dataset containing the standard deviation of the fitted linewidths.  
+\end{itemize}

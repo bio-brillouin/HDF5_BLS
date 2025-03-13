@@ -1,0 +1,23 @@
+To get started, you need to install the repository. Follow the instructions below:
+
+\begin{itemize}
+    \item Step 1: Make sure you have Python 3.10 or higher installed. You can download Python at \href{https://www.python.org/downloads/}{this link}.
+    \item Step 2: Clone the repository at \href{https://github.com/bio-brillouin/HDF5_BLS/tree/main}{this link}.    
+    \item Step 3: Create a virtual environment and install the requirements. To do so, open a terminal, navigate to the repository folder and install the requirements. For windows users, you can open the terminal into the cloned and extracted repository (shift+left click over the folder -> Open in terminal) and use the following command:
+\begin{lstlisting}
+python -m venv venv
+.\venv\Scripts\activate
+pip install -r requirements.txt
+\end{lstlisting}
+    For Mac users, you can navigate to the repository, make sure you can view the path bar at the bottom of Finder (if not, check View/Show Path Bar in the menu bar), then press control and left click on the folder and select "Open in Terminal". Then, use the following command:
+\begin{lstlisting}
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+\end{lstlisting}
+    For Linux users, you can navigate to the repository, open a terminal in the folder and use the same command as for Mac users.
+    \item Step 4: Run the \texttt{HDF5\_BLS\_GUI/main.py} file with
+\begin{lstlisting}
+python HDF5\_BLS\_GUI/main.py
+\end{lstlisting}
+\end{itemize}

@@ -1,0 +1,13 @@
+In this fourth example, we want to store a single measure of a water sample. This measure has been converted into a Power Spectrum Density.
+
+The following structure represents the base structure of the file:
+\begin{verbatim}
+    file.h5
+    +-- Data (group) -> Name = "Measure"
+    |   +-- Data_0 (group) -> Name = "Water"
+    |   |   +-- Raw_data (dataset)
+    |   |   +-- PSD (dataset)
+    |   |   +-- Frequency (dataset)
+\end{verbatim}
+Note that we have here added arrows and an example of the value of the "Name" attributes.
+In this case, all the steps of the conversion to PSD are stored in the "Data\_0" group. The nomenclature of the attribute(s) used to store the parameters of the treatment is not specified.

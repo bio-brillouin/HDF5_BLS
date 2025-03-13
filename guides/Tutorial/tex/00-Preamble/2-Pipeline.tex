@@ -1,0 +1,29 @@
+The goal of this software is to go from a storaged data file to a usable data set with a reproducible, stable and unified treatment protocol. To schematize this treatment protocol, we propose the following diagram:
+
+\begin{center}
+    \begin{tikzpicture}[node distance=2cm]
+
+        \node (start) [startstop] {Start};
+        \node (acquire) [process, below of=start] {Raw Data Acquisition};
+        \node (psd) [process, below of=acquire, align=center] {Obtaining the \\ Power Spectrum Density};
+        \node (fits) [process, below of=psd] {Fitting of the PSD};
+        \node (end) [startstop, below of=fits] {End};
+
+        \draw [arrow] (start) -- (acquire);
+        \draw [arrow] (acquire) -- (psd);
+        \draw [arrow] (psd) -- (fits);
+        \draw [arrow] (fits) -- (end);
+
+        \node (filestart) [file, right of=start, xshift=3cm] {Create HDF5 file};
+        \node (fileraw) [file, below of=filestart, align=center] {Add raw data \\ to the file};
+        \node (filepsd) [file, below of=fileraw, align=center] {Store the \\ Power Spectrum Density\\and the channel freauencies};
+        \node (filetreat) [file, below of=filepsd, align=center] {Store the \\ Treated data};
+        \node (fileend) [file, below of=filetreat] {Save file};
+
+        \draw [arrow] (filestart) -- (fileraw);
+        \draw [arrow] (fileraw) -- (filepsd);
+        \draw [arrow] (filepsd) -- (filetreat);
+        \draw [arrow] (filetreat) -- (fileend);
+
+    \end{tikzpicture}
+\end{center}

@@ -1,0 +1,27 @@
+In this ninth example, we are in the situation where multiple mappings of same dimension have been obtained with a spectrometer that returns an array of points for all the points mapped. In this case, the hierrarchy of the file can be used to reduce the number of datasets, by considering that all the PSD share the same frequency axis and the same field of view.
+
+The following structure represents the base structure of the file:
+\begin{verbatim}
+    file.h5
+    +-- Data (group) -> Name = "Measure"
+    |   +-- Abscissa_0 (dataset) [X] -> Name = "x (mm)"
+    |   +-- Abscissa_1 (dataset) [Y] -> Name = "y (mm)"
+    |   +-- Frequency (dataset) [N]
+    |   +-- Data_0 (group) -> Name = "Day_1"
+    |   |   +-- Raw_data (dataset) [X, Y, M]
+    |   |   +-- PSD (dataset) [X, Y, N]
+    |   |   +-- Treat_1 (group) -> Name = "Treat"
+    |   |   |   +-- Shift (dataset) [X, Y]
+    |   |   |   +-- Shift_std (dataset) [X, Y]
+    |   |   |   +-- Linewidth (dataset) [X, Y]
+    |   |   |   +-- Linewidth_std (dataset) [X, Y]
+    |   +-- Data_1 (group) -> Name = "Day_2"
+    |   |   +-- Raw_data (dataset) [X, Y, M]
+    |   |   +-- PSD (dataset) [X, Y, N]
+    |   |   +-- Treat_1 (group) -> Name = "Treat"
+    |   |   |   +-- Shift (dataset) [X, Y]
+    |   |   |   +-- Shift_std (dataset) [X, Y]
+    |   |   |   +-- Linewidth (dataset) [X, Y]
+    |   |   |   +-- Linewidth_std (dataset) [X, Y]
+\end{verbatim}
+Note that we have here added arrows and an example of the value of the "Name" attributes.
