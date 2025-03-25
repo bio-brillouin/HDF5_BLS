@@ -53,15 +53,21 @@ These time points are not limited to conventional time-lapse imaging but can als
 
 |   ---- ---- /Timestamp\_ms [1D float] (optional)
 
-|   ---- ---- /Analysis_{m}
+|   ---- ---- /Analysis\_{m}
 
-|   ---- ---- ---- /Shift\_{i}\_GHz [1D (or more) float]
+|   ---- ---- ---- /Shift\_AS\_{i}\_GHz [1D (or more) float]
 
-|   ---- ---- ---- /Width\_{i}\_GHz [1D (or more) float]
+|   ---- ---- ---- /Shift\_S\_{i}\_GHz [1D (or more) float] (optional)
 
-|   ---- ---- ---- /Amplitude\_{i} [1D (or more) float]
+|   ---- ---- ---- /Width\_AS\_{i}\_GHz [1D (or more) float]
 
-|   ---- ---- ---- /Fit\_error\_{i} (optional)
+|   ---- ---- ---- /Width\_S\_{i}\_GHz [1D (or more) float] (optional)
+
+|   ---- ---- ---- /Amplitude\_AS\_{i} [1D (or more) float]
+
+|   ---- ---- ---- /Amplitude\_S\_{i} [1D (or more) float] (optional)
+
+|   ---- ---- ---- /Fit\_error\_AS\_{i} (optional) (same for Stokes)
 
 |   ---- ---- ---- ---- /R2 [1D (or more) float]
 
@@ -105,11 +111,11 @@ All the following groups are inside the ‘/Brillouin\_data’ group:
     - **‘Name’ [string]**: a 1D array with size n\_PSD-2 containing the names of the parameters including the unit (e.g. ‘Angle_deg’)
 - **‘/data_{n}/Calibration\_index’ [int]** (optional)**:** zero-based index (the idea being that, if multiple calibration spectra are acquired while imaging, we need to know which calibration data is used for the current spectrum)
 - **‘/data_{n}/Timestamp\_ms’ [float]** (optional): milliseconds from the beginning of the experiment, as defined in the ‘datetime’ attribute of the current ‘data_{n}’ group (if defined, or arbritary otherwise) when the current spectrum was acquired
-  - **‘/data_{n}/Analysis_{m}’** (group) contains the results of the analysis on the spectral data; the index 'm' allows for the case of multiple pipelines being performed on the same data (in that case a group for each of them must be created). It contains the following datasets. All datasets must be 1D with the same length. The datasets containing the parameters extracted from the spectra (i.e. Shift\_{i}\_GHz, etc.) can have more dimensions, in order to match the dimensions in the PSD dataset. Note that the word ‘dataset’ here is used in the way that it is defined by HDF5, not in an experimental sense; the way one should think about the PSD dataset and the datasets in 'Analysis{m}' is like a table containing a list of voxels acquired in the sample with their corresponding Brillouin shift, width, etc.
-  - **‘Shift\_{i}\_GHz’ [float]**: n=0,… if multiple peaks are fitted
-  - **‘Width\_{i}\_GHz’ [float]**: n=0,… if multiple peaks are fitted
-  - **‘Amplitude\_{i}’ [float]**: n=0,… if multiple peaks are fitted
-  - **‘Fit\_error\_{i}’** (optional group) containing the following datasets:
+- **‘/data_{n}/Analysis\_{m}’** (group) contains the results of the analysis on the spectral data; the index 'm' allows for the case of multiple pipelines being performed on the same data (in that case a group for each of them must be created). It contains the following datasets. All datasets must be 1D with the same length. The datasets containing the parameters extracted from the spectra (i.e. Shift\_AS\_{i}\_GHz, etc.) can have more dimensions, in order to match the dimensions in the PSD dataset. They can optionally have both the results for anti-Stokes and Stokes, in case both are present (The reccomandation is to use the average between the two, when displaying the image).  Note that the word ‘dataset’ here is used in the way that it is defined by HDF5, not in an experimental sense; the way one should think about the PSD dataset and the datasets in 'Analysis\_{m}' is like a table containing a list of voxels acquired in the sample with their corresponding Brillouin shift, width, etc.
+  - **‘Shift\_AS\_{i}\_GHz’ [float]**: n=0,… if multiple peaks are fitted
+  - **‘Width\_AS\_{i}\_GHz’ [float]**: n=0,… if multiple peaks are fitted
+  - **‘Amplitude\_AS\_{i}’ [float]**: n=0,… if multiple peaks are fitted
+  - **‘Fit\_error\_AS\_{i}’** (optional group) containing the following datasets:
     - **‘RMSE’ [float]** (optional)
     - **‘R2’ [float]** (optional)
     - **‘Cov_matrix’ [float]** (optional) (we need to discuss the number of dimensions)
