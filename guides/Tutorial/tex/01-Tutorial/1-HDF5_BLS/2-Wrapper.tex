@@ -1,0 +1,21 @@
+The \texttt{Wrapper} object is the main class of the package. Its role is to interface the HDF5 file and the code while ensuring a safe access to the data and a conservation of the structure of the file. This class is meant to do these four actions:
+\begin{itemize}
+    \item Create a structure that is universal to the BioBrillouin community in a seamless manner.
+    \item Allow the user to acces the data and attributes of the file.
+    \item Allow the user to add data to the file with attributes that are specific to the BioBrillouin community.
+    \item Allow the user to add or modify attributes of the file.
+\end{itemize}
+
+To use this object, the user must first import it from the HDF5\_BLS package:
+\begin{lstlisting}
+from HDF5_BLS.wrapper import Wrapper
+\end{lstlisting}
+
+\section{Initialization of the Wrapper object - creating or opening a HDF5 file}
+    \input{tex/01-Tutorial/1-HDF5_BLS/2-Wrapper/1-Initialization.tex}
+
+\section{Adding data to the HDF5 file using the Wrapper object}
+    \input{tex/01-Tutorial/1-HDF5_BLS/2-Wrapper/2-Adding_data.tex}
+
+\section{Merging or combining HDF5 files using the Wrapper object}
+    \input{tex/01-Tutorial/1-HDF5_BLS/2-Wrapper/3-Merge_combine.tex}

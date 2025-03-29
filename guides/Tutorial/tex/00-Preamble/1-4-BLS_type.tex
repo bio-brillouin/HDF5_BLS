@@ -1,0 +1,33 @@
+To improve user-friendliness of the format for the BioBrillouin community, we propose to add a new attribute: \textit{BLS\_type} to the groups and datasets of the file. This attribute will allow the user to quickly differentiate the content of the groups and datasets, and will also allow the automation of certain tasks.
+
+For groups, this attribute can have the following values:
+\begin{itemize}
+    \item "Calibration\_spectrum": the group contains a calibration spectrum.
+    \item "Impulse\_response": the group contains an impulse response function.
+    \item "Measure": the group contains a measure (value by default).
+    \item "Root": used to specify that the group is a structure group that contains other groups.
+    \item "Treatment": the group contains treated data derived from a PSD and frequency arrays located in its parent group.
+\end{itemize}
+
+For datasets, this attribute can have the following values:
+\begin{itemize}
+    \item "Abscissa\_...": An abscissa array for the measures where the name is written after the underscore.
+    \item "Frequency": a frequency array associated to the power spectral density
+    \item "Linewidth": the dataset contains the values of the fitted linewidths.
+    \item "Linewidth\_std": the dataset contains the standard deviation of the fitted linewidths. 
+    \item "PSD": a power spectral density array
+    \item "Raw\_data": the raw data
+    \item "Shift": the dataset contains the values of the fitted frequency shifts.
+    \item "Shift\_std": the dataset contains the standard deviation of the fitted frequency shifts.
+\end{itemize}
+
+
+\paragraph{Example of an abscissa dataset:}
+Let's consider a dataset consisting of 10x10 point mappings of cells in a grid of $10\mu m$ by $10\mu m$. We can store the abscissa in two ways:
+\begin{itemize}
+    \item We can store the abscissa as two 1D array of 10 elements each, for axis x and y for example. The array corresponding to the x axis will be stored in the dataset with the attribute "Brillouin\_type" set to "Abscissa\_0\_1". The array corresponding to the y axis will be stored in the dataset with the attribute "Brillouin\_type" set to "Abscissa\_1\_2".
+    \item We can store the abscissa as a 2D array of 10x10 elements. This array will be stored in the dataset with the attribute "Brillouin\_type" set to "Abscissa\_0\_2".
+\end{itemize}
+A dedicated function is meant to do this step without the user having to worry about the attribute names. Examples of HDF5 files with mappings can be found in the repository under the "guides/Tutorial/examples" folder.
+
+\textbf{Note:} The "Brillouin\_type" attribute is not mandatory, but it is highly recommended to use it to differentiate the content of the groups and datasets. If this parameter is not present, the library will assume that the group is a "Root" group if it contains groups and a "Measure" dataset if not.

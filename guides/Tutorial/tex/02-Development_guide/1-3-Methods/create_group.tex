@@ -1,0 +1,50 @@
+This method allows the user to create a new group inside the HDF5 file. This is done by verifying that no overwritting occurs and that the parent group exists.
+
+\begin{lstlisting}
+def create_group(self, name, parent_group = None):
+\end{lstlisting}
+
+\paragraph{Attributes:}
+
+\begin{itemize}
+    \item \textbf{name}: The name of the group to create.
+    \item \textbf{parent\_group} \textit{(optional, default None)}: The parent group where to store the data of the HDF5 file, by default the parent group is the top group "Brillouin". The format of this group should be "Brillouin/Measure/...". 
+    \item \textbf{brillouin\_type} \textit{(optional, default "Root")}: The type of the group that has been created. By default "Root". The possible values are listed in \hyperref[subsec:preamble.file_structure.complete_structure]{preamble}
+    \item \textbf{overwrite} \textit{(optional, default False)}: If True, if a group of the same name already exists in the selected parent group, all its elements will be deleted.
+\end{itemize}
+
+\paragraph{Returns:} Nothing
+
+\paragraph{Raises:}
+
+\begin{itemize}
+    \item \textbf{WrapperError\_Overwrite}: Raises an error if the group name already exists at the selected parent path.
+    \item \textbf{WrapperError\_StructureError}: Raises an error if the parent group does not exist in the HDF5 file.
+\end{itemize}
+
+\paragraph{Flowchart:}
+
+The function's logic is represented in the following flowchart:
+\begin{figure}[H]
+    \centering
+    \label{fig:wrapper.flowchart_create_group}
+    \small
+    \begin{tikzpicture}[node distance=1cm]
+        \node (start) [startstop, xshift=0cm, align=center] {Wrapper.create\_group(self, \\name, parent\_group)};
+        \node (setParent) [process, below of=start, yshift=-0.5cm, xshift=-4cm, align=center] {parent\_group = "Brillouin"};
+        \node (raiseError1) [startstop, right of=start, xshift=4.5cm, yshift=-1cm] {WrapperError\_StructureError};
+        \node (raiseError2) [startstop, below of=setParent, xshift=0cm, yshift=-2cm] {WrapperError\_Overwrite};
+        \node (createGroup) [process, below of=raiseError1, yshift=-0.5cm, xshift=0cm, align=center] {Create the new group\\ with the given name};
+        \node (end) [startstop, below of=createGroup, xshift=0cm, yshift=-1cm, align=center] {End};
+
+        \draw [arrow] (start) -| node[anchor=south, align=center, yshift=0cm, xshift=-1cm] {parent\_group is\\ None} (setParent);
+        \draw [arrow] (start) -| node[anchor=south, align=center, yshift=0cm, xshift=0cm] {parent\_group is not\\ in file} (raiseError1);
+        \draw [arrow] (setParent) -- node[anchor=east, align=center, yshift=-0.5cm, xshift=0cm] {An element with the\\ same name already exists} (raiseError2);
+        \draw [arrow] (start) |- node[anchor=west, align=center, yshift=0.5cm, xshift=0cm] {no element with\\ the same name exist} (createGroup);
+        \draw [arrow] ++(setParent.east) -| +(0.5cm, 0cm) |- (createGroup.west);
+        \draw [arrow] ++(start.south) |- +(0cm, -3cm) -| (raiseError2.north);
+        \draw [arrow] (createGroup) -- (end);
+
+    \end{tikzpicture}
+    \caption{Flowchart of the create\_group method}
+\end{figure}

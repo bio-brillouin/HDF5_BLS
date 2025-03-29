@@ -1,10 +1,14 @@
-The vision of the project is to unify all BLS data into a single HDF5 file. This file will be used to store all the data and metadata of the BLS. The data will be stored in a hierarchical structure, all the data related to BLS being stored the "Data" group. This choice allows results from other techinques to be stored in the same file, only in other, independent groups, to minimize the risk of nomenclature competition between techinques. The "Data" group will contain all the data. These data are arranged in groups, whose identifiers are "Data\_i". Each group can only contain one measure, in the form of an array, whose dimension is however not restricted. This measure will be called "Raw\_data". The attributes of the measure are stored in the group attributes.
+This project aims at defining a standard for storing Brillouin Light Scattering measures and associated treatment in a HDF5 file.
 
-The following structure represents the base structure of the file:
+HDF5 stands for "Hierarchical Data Format" and is a file format that allows the storage of data in a hierarchical structure. This structure allows to store data in a way that is both human and machine readable. The structure of the file is based on the following base structure, which corresponds to the structure of a file containing a single measure (\textit{Measure}) where no parameters have been stored:
 
 \begin{verbatim}
     file.h5
-    +-- Data (group)
-    |   +-- Data_1 (group)
-    |   |   +-- Raw_data (dataset)
+    +-- Brillouin (group)
+    |   +-- Measure (group)
+    |   |   +-- Measure (dataset)
 \end{verbatim}
+
+The dimensionality of the dataset is free, there are therefore by design virtually no restrictions on the data that can be stored in this format.
+
+In order to organize the measures, we impose a maximum of one measure per group. This condition will be implemented by the library as will be described later on.

@@ -9,6 +9,7 @@ setuptools
 wheel
 pyperclip
 pandas>=2.0.3
+json
 
 # Development dependencies
 pytest

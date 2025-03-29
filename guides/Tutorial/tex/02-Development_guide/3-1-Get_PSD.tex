@@ -1,0 +1,70 @@
+This is a call graph of the functions that are used when asking for a conversion to a PSD. The functions that we will develop have names in bold font. The functions have a fixed nomenclature that we will detail later on, based on the type of spectrometer being used. For this call graph, we will call our spectrometer: \textit{type}:
+
+\begin{center}
+    \begin{tikzpicture}[node distance=2cm]
+
+        \node (start) [startstop] {Ask for the conversion to PSD};
+        \node (getPSD) [process, below of=start] {HDF5\_BLS\_GUI.Main.main.py -> MainWindow.get\_PSD};
+        \node (conversionPSD) [process, below of=getPSD] {HDF5\_BLS.conversion\_PSD.py -> \textbf{check\_conversion\_\textit{type}}};
+        \node (if_PSD_possible) [condition, below of=conversionPSD, align = center, yshift=-1cm] {If conversion\\is possible};
+        \node (PSD_not_possible) [startstop, right of=if_PSD_possible, align = center, xshift=4cm] {Display an error message\\ (e.g.: scan amplitude not given for TFP)};
+        \node (conversionUI) [process, below of=if_PSD_possible, align=center, yshift=-1cm] {HDF5\_BLS\_GUI.conversion\_ui.py -> \textbf{conversion\_\textit{type}}};
+
+        \draw [arrow] (start) -- (getPSD);
+        \draw [arrow] (getPSD) -- (conversionPSD);
+        \draw [arrow] (conversionPSD) -- (if_PSD_possible);
+        \draw [arrow] (if_PSD_possible) -- node[anchor=east] {Yes} (conversionUI);
+        \draw [arrow] (if_PSD_possible) -- node[anchor=south] {No} (PSD_not_possible);
+
+    \end{tikzpicture}
+\end{center}
+
+To add a routine to convert raw data into a PSD, we'll therefore need to implement the two following functions:
+\begin{tcolorbox}
+    \paragraph{HDF5\_BLS.conversion\_PSD.check\_conversion\_\textit{type}}
+    \begin{itemize}
+        \item \textbf{Parameters}:
+        \begin{itemize}
+            \item wrp: the wrapper associated to the main h5 file. You should always use the parent file as some properties might be inherited.
+            \item path: the path to the data we want to treat in the form "Data/Data\_0/..."
+        \end{itemize} 
+        \item \textbf{Returns}:
+        \begin{itemize}
+            \item A boolean: True if the conversion is possible, False otherwise. \\
+            Depending on the type of spectrometer, the conditions for conversion might be different. In some cases, like for Time Domain experiments, the conversion to PSD will require the user to enter parameters by hand, in other cases, like for TFP, the conversion can only be performed if the scan amplitude is given. The goal of this function is to block any further processing if the conversion is not possible, if the conversion is possible with arguments that are meant to be entered afterwards, it should return True.
+        \end{itemize} 
+    \end{itemize}
+\end{tcolorbox}
+
+Here is an example of the function \texttt{check\_conversion\_ar\_BLS\_VIPA}:
+\begin{lstlisting}
+def check_conversion_ar_BLS_VIPA(wrapper, path):
+    attributes = wrapper.get_attributes_path(path)
+    if "TREAT.Center" in attributes.keys():
+        return True
+    else:
+        return False
+\end{lstlisting}
+
+
+\begin{tcolorbox}
+    \paragraph{HDF5\_BLS\_GUI.conversion\_ui.conversion\_\textit{type}}:
+    \begin{itemize}
+        \item \textbf{Parameters}:
+        \begin{itemize}
+            \item parent: the parent GUI window. This is usefull when you want to open other windows to ask the user for some parameters.
+            \item wrp: the wrapper associated to the main h5 file. You should always use the parent file as some properties might be inherited.
+            \item path: the path to the data we want to treat in the form "Data/Data\_0/..."
+        \end{itemize} 
+        \item \textbf{Returns}:
+        \begin{itemize}
+            \item A dictionnary with the following keys:
+            \begin{itemize}
+                \item "PSD": the PSD dataset
+                \item "Frequency": the frequency dataset
+                \item "Process": a text decribing the process of converting the raw data into a PSD. This text is meant to inform the user of the process of converting the data into a PSD.
+            \end{itemize}
+        \end{itemize} 
+    \end{itemize}
+\end{tcolorbox}
+

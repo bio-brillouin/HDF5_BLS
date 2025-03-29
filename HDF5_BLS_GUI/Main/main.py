@@ -315,6 +315,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             reply = qtw.QMessageBox.question(self, "Unsaved changes", "Do you want to save the changes?", qtw.QMessageBox.Yes | qtw.QMessageBox.No)
             if reply == qtw.QMessageBox.Yes:
                 self.save_hdf5()
+        self.wrapper.close()
         self.close()
 
     def convert_csv(self):

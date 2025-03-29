@@ -3,6 +3,8 @@
 % Packages
 \usepackage{amsmath}
 \usepackage{array}
+\usepackage{enumitem}
+\usepackage{float}
 \usepackage[T1]{fontenc}
 \usepackage{geometry}
 \usepackage{graphicx}
@@ -14,12 +16,15 @@
 \usepackage{tikz}
 \usepackage{xcolor}
 \usepackage[table]{xcolor}
+\usepackage{verbatim}
+
 
 % Define colors
 \definecolor{grayheavy}{gray}{0.7}
 \definecolor{graylight}{gray}{0.8}
 \definecolor{graysuperlight}{gray}{0.9}
 
+\usetikzlibrary{shapes.geometric}
 \usetikzlibrary{positioning}  
 
 % Page layout
@@ -27,8 +32,10 @@
 
 \tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=red!30]
 \tikzstyle{process} = [rectangle, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=blue!30]
+\tikzstyle{condition} = [diamond, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=white!100]
 \tikzstyle{file} = [rectangle, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=gray!30]
 \tikzstyle{arrow} = [thick,->,>=stealth]  
+\tikzstyle{line} = [thick,-,>=stealth]  
 
 % Functions
 \tcbset{
@@ -69,9 +76,11 @@
     xleftmargin=5mm,
 }
 
+\newcommand{\mypart}[1]{\setcounter{chapter}{0} \part{#1}}
+\renewcommand{\theHsection}{\thepart.section.\thesection}
 
-\title{The HDF5\_BLS file format and its user interface}
-\author{The International BioBrillouin Society}
+\title{The HDF5\_BLS package and its user interface}
+\author{Pierre Bouvet}
 \date{\today}
 
 \begin{document}
@@ -88,58 +97,88 @@
     \section*{HDF5 file structure}\addcontentsline{toc}{section}{HDF5 file structure}
         \subsection*{Basic file structure}\addcontentsline{toc}{subsection}{Basic file structure}
             \input{tex/00-Preamble/1-1-File_structure.tex}
-        \subsection*{Attributes}\addcontentsline{toc}{subsection}{Attributes}
-            \input{tex/00-Preamble/1-2-Attributes.tex}
         \subsection*{Meta-files}\addcontentsline{toc}{subsection}{Meta-files}
-            \input{tex/00-Preamble/1-3-Meta_Files.tex}
-        \subsection*{Complete structure definition}\addcontentsline{toc}{subsection}{Complete structure definition}
-            \input{tex/00-Preamble/1-4-Complete_structure.tex}
+            \input{tex/00-Preamble/1-2-Meta_Files.tex}
+        \subsection*{Attributes}\addcontentsline{toc}{subsection}{Attributes}
+            \input{tex/00-Preamble/1-3-Attributes.tex}
+        \subsection*{The BLS\_type attribute}\addcontentsline{toc}{subsection}{The BLS\_type attribute}\label{subsec:preamble.file_structure.complete_structure}
+            \input{tex/00-Preamble/1-4-BLS_type.tex}
+        \subsection*{A base example}\addcontentsline{toc}{subsection}{A base example}\label{subsec:preamble.file_structure.some_examples}
+            \input{tex/00-Preamble/1-5-Some_examples.tex}
 
-    \section*{Pipeline}\addcontentsline{toc}{section}{Pipeline}
+
+    \section*{A unified way to go from Measure to Results}\addcontentsline{toc}{section}{A unified way to go from Measure to Results}
         \input{tex/00-Preamble/2-Pipeline.tex}
 
 
-\chapter{Getting Started}
-    \section{GUI quick start guide}
-        \input{tex/01-Getting_Started/1-GUI_quick_start.tex}
+\mypart{HDF5\_BLS package tutorial}\label{chapter:tutorial}
+    \chapter{Installation}
+        \input{tex/01-Tutorial/1-HDF5_BLS/1-Installation.tex}
+        
+    \chapter{The Wrapper object}
+        \input{tex/01-Tutorial/1-HDF5_BLS/2-Wrapper.tex}
 
-    \section{First Steps}
-        \subsection{Creating a new file}
-            \input{tex/01-Getting_Started/2-1-Creating_new_file.tex}
+
+\mypart{HDF5\_BLS GUI tutorial}
+    \chapter{GUI quick start guide}
+        \input{tex/01-Tutorial/1-GUI_quick_start.tex}
+
+    \chapter{First Steps}
+        \section{Creating a new file}
+            \input{tex/01-Tutorial/2-1-Creating_new_file.tex}
 
 
-\chapter{Development Guide} \label{chapter:dev_guide}
-    \input{tex/02-Development_guide/0-Orientation.tex}
 
-    \section{Load data} \label{sec:load_data}
-        \input{tex/02-Development_guide/1-Orientation.tex}
-        \subsection{Adding a user-specific function to an already supported format} \label{subsec:load_data.user_specific}
-            \input{tex/02-Development_guide/1-1-User_specific_supported.tex}
-        \subsection{Improving an already supported function} \label{subsec:load_data.improvement}
-            \input{tex/02-Development_guide/1-2-Improvement.tex}
-        \subsection{Adding a function to a new format} \label{subsec:load_data.new_format}
-            \input{tex/02-Development_guide/1-3-User_specific_new.tex}
-            
-    \section{Treat data} \label{sec:treatment}
+\mypart{Development Guide} \label{chapter:dev_guide}
+    \chapter{Wrapper}\label{sec:wrapper}
+        \section{A little tour of the class}
+            \input{tex/02-Development_guide/1-1-Introduction.tex}
+        
+        \section{Dunder methods of the Wrapper class}
+            \input{tex/02-Development_guide/1-2-Dunders.tex}
+
+        \section{Principal methods of the Wrapper class}
+            \input{tex/02-Development_guide/1-3-Methods.tex}
+
+        \section{Derived methods of the Wrapper class}
+            \input{tex/02-Development_guide/1-4-Derived_Methods.tex}
+
+        \section{Console-specific methods of the Wrapper class}
+            \input{tex/02-Development_guide/1-5-Console_Methods.tex}
+
+        
+
+    \chapter{Load data} \label{sec:load_data}
         \input{tex/02-Development_guide/2-Orientation.tex}
+        \section{Adding a user-specific function to an already supported format} \label{subsec:load_data.user_specific}
+            \input{tex/02-Development_guide/2-1-User_specific_supported.tex}
 
-        \subsection{Treat data to obtain a Power Spectral Density and a frequency vector} \label{subsec:treatment.toPSD}
+        \section{Improving an already supported function} \label{subsec:load_data.improvement}
+            \input{tex/02-Development_guide/2-2-Improvement.tex}
+
+        \section{Adding a function to a new format} \label{subsec:load_data.new_format}
+            \input{tex/02-Development_guide/2-3-User_specific_new.tex}
+            
+    \chapter{Treat data} \label{sec:treatment}
+        \input{tex/02-Development_guide/3-Orientation.tex}
+
+        \section{Treat data to obtain a Power Spectral Density and a frequency vector} \label{subsec:treatment.toPSD}
+            \input{tex/02-Development_guide/3-1-Get_PSD.tex}
+
+        \section{Treat data to extract information from a Power Spectral Density} \label{subsec:treatment.toInfo}
+            \input{tex/02-Development_guide/3-2-Treatment_to_info.tex}
+
+        \section{Adding a new treatment function} \label{subsec:treatment.new}
             \begin{tcolorbox}
                 To do
             \end{tcolorbox}
-        \subsection{Treat data to extract information from a Power Spectral Density} \label{subsec:treatment.toInfo}
-            \input{tex/02-Development_guide/2-2-Treatment_to_info.tex}
-        \subsection{Adding a new treatment function} \label{subsec:treatment.new}
-            \begin{tcolorbox}
-                To do
-            \end{tcolorbox}
 
 
-\chapter*{Contact}\addcontentsline{toc}{chapter}{Contacts}
-    For questions or suggestions, please contact the maintainer at:
-    \begin{center}
-        \href{mailto:pierre.bouvet@meduniwien.ac.at}{pierre.bouvet@meduniwien.ac.at}.
-    \end{center}
+    \chapter*{Contact}\addcontentsline{toc}{chapter}{Contacts}
+        For questions or suggestions, please contact the maintainer at:
+        \begin{center}
+            \href{mailto:pierre.bouvet@meduniwien.ac.at}{pierre.bouvet@meduniwien.ac.at}.
+        \end{center}
 
 
 
@@ -148,7 +187,7 @@
 
 \part*{Appendix}\addcontentsline{toc}{part}{Appendix}
 
-\chapter{Examples of file structures}  
+\chapter{Examples of file structures} \label{chap:examples_file_structures}
     \section{A single measure with no treatment}
         \input{appendix/01-Examples_file_structures/01-Single_measure_no_treatment.tex}
     

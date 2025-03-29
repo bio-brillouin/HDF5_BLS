@@ -1,0 +1,25 @@
+The Hierarchical Data Format (HDF5) finds its interest in storage for our community, of different measures. These result in "meta-files" where data corresponding to different experiments can be found. The organization of such a file will follow a structure similar to this one:
+
+\begin{verbatim}
+    file.h5
+    +-- Brillouin (group)
+    |   +-- RWPE1 organoids (group)
+    |   |   +-- Morphogenesis day 1 (group)
+    |   |   |   +-- Sample 1 (group)
+    |   |   |   |   +-- Measure (dataset)
+    |   |   |   +-- Sample 2 (group)
+    |   |   |   +-- ...
+    |   |   +-- Morphogenesis day 2 (group)
+    |   |   +-- ...
+    |   +-- H6C7 organoids
+    |   ...
+\end{verbatim}
+
+Although no rules are imposed on the way to organize the file, we however propose to associate a hierarchical level to an hyperparameter that has been varied for the experiment. In the given example:
+\begin{itemize}
+    \item The first hierarchical level is associated to the cell strain that is observed
+    \item The second hierarchical level is associated to the day of the experiment
+    \item The third hierarchical level is associated to the sample that was measured
+\end{itemize}
+
+Note that the format does not impose any restriction on the names of the groups nor the measures. This choice allows you to create user-friendly files that can be opened with any software that can read HDF5 files (e.g. HDFView, HDFCompass, Fiji, H5Web, etc.).

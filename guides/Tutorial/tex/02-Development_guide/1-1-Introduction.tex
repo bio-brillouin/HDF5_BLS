@@ -1,0 +1,61 @@
+\begin{tcolorbox}
+    The "Wrapper" class is the main class of the package. Its role is to interface the file and the software while ensuring a user-friendly access to the data and a conservation of the structure of the file. This class is meant to do these four actions:
+    \begin{enumerate}
+        \item Creates a structure that is universal to the BioBrillouin community in a seamless manner.
+        \item Allow the user to acces the data and attributes of the file.
+        \item Allow the user to add data to the file with attributes that are specific to the BioBrillouin community.
+        \item Allow the user to add or modify attributes of the file.
+    \end{enumerate}
+\end{tcolorbox}
+
+\paragraph{Memory management:}
+HDF5 files are notorious for behing heavy. Storing a whole HDF5 file in flash memory is therefore generally a bad idea. As such, the "Wrapper" class works by accessing a file on the disk. By default this file is a temporary file stored in the project's directory. The class is however designed to work on existing HDF5 files stored in permanent locations.
+
+\paragraph{Private attributes:} 
+At initialization:
+\begin{itemize}
+    \item \textbf{self.filepath}: The path to the HDF5 file. By default, the path to the temporary file is used.
+    \item \textbf{self.save}: A boolean that indicates whether the file has been saved or is still in the temporary file.
+\end{itemize}
+
+\paragraph{Dunders:} 
+The "Wrapper" class has the following dunder methods that are described in the following sections:
+\begin{itemize}
+    \item \hyperref[subsec:wrapper.__init__]{Wrapper.\_\_init\_\_ -> Wrapper()}: The method that initializes the object
+    \item \hyperref[subsec:wrapper.__getitem__]{Wrapper.\_\_getitem\_\_ -> Wrapper[key]}: The preferred method to access an element located at a given path, it allows to access an element by placing its path in the brackets of the "Wrapper" object.
+    \item \hyperref[subsec:wrapper.__add__]{Wrapper.\_\_add\_\_ -> Wrapper + Wrapper}: A magic command to merge two wrappers together. It merges the contents of the "Brillouin" group.
+\end{itemize}
+
+\paragraph{Main Methods:} 
+The "Wrapper" class has a number of methods that will be described in the following sections. The construction of the object has been done with a bottleneck strategy, where the critical interactions with the file are done with these methods:
+\begin{itemize}
+    \item \hyperref[subsec:wrapper.add_hdf5]{add\_hdf5}: A method to populate the file from a HDF5 file.
+    \item \hyperref[subsec:wrapper.add_dictionnary]{add\_dictionnary}: A method to populate the file from a dictionnary.
+    \item \hyperref[subsec:wrapper.create_group]{create\_group}: A method to create a new group inside the HDF5 file.
+    \item \hyperref[subsec:wrapper.delete_element]{delete\_element}: A method to delete a dataset or group in the HDF5 file.
+    \item \hyperref[subsec:wrapper.get_attributes]{get\_attributes}: A method to extract the attributes of a group or dataset.
+    \item \hyperref[subsec:wrapper.get_structure]{get\_structure}: A method to extract the structure of the file.
+    \item \hyperref[subsec:wrapper.save_as_hdf5]{save\_as\_hdf5}: A method to save the file to a desired location.
+    \item \hyperref[subsec:wrapper.set_attributes_data]{set\_attributes\_data}: A method to set the attributes of a group or dataset.
+\end{itemize}
+
+\paragraph{Derived Methods:} 
+To simplify however the creation and use of the file, these other methods also exist:
+\begin{itemize}
+    \item \hyperref[subsec:wrapper.add_abscissa]{add\_abscissa}: A method to add an abscissa arrayto the file.
+    \item \hyperref[subsec:wrapper.add_frequency]{add\_frequency}: A method to add a frequency array to the file.
+    \item \hyperref[subsec:wrapper.add_psd]{add\_psd}: A method to add a PSD to the file.
+    \item \hyperref[subsec:wrapper.add_raw_data]{add\_raw\_data}: A method to add raw data to the file.
+    \item \hyperref[subsec:wrapper.add_treated_data]{add\_treated\_data}: A method to add a shift, linewidth and their respective standard deviations to the file.
+    \item \hyperref[subsec:wrapper.import_properties_data]{import\_properties\_data}: A method to import the attributes of a dataset or group from a spreadsheet.
+    \item \hyperref[subsec:wrapper.update_property]{update\_property}: A method to update the attributes of a dataset or group.
+\end{itemize}
+
+\paragraph{Console specific Methods:} 
+Additionnaly, the "Wrapper" class has a few methods specifically to interact with the file from a terminal:
+\begin{itemize}
+    \item \hyperref[subsec:wrapper.print_structure]{print\_structure}: A method to print a tree view of the file in the terminal.
+    \item \hyperref[subsec:wrapper.print_metadata]{print\_metadata}: A method to print all the attributes of a dataset or group at a given path in the terminal.
+\end{itemize}
+
+ 

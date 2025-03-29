@@ -1,8 +1,48 @@
 \begin{tcolorbox}
-    What is the format of your data?
+    Are you using a format that is already supported by the \texttt{HDF5\_BLS} package?
     \begin{itemize}
-        \item \hyperref[subsec:treatment.toPSD]{I just have raw data coming from the spectrometer}
-        \item \hyperref[subsec:treatment.toInfo]{I have a Spectral Power Density together with a frequnecy vector}
-        \item \hyperref[subsec:treatment.new]{I want to define a new treatment function}
+        \item \hyperref[subsec:load_data.user_specific]{Yes but it doesn't work with my data.}
+        \item \hyperref[subsec:load_data.improvement]{Yes but I would like to improve the code.}
+        \item \hyperref[subsec:load_data.new_format]{No, I would like to add support for my data.}
     \end{itemize}
 \end{tcolorbox}
+
+In any of these situations, the pipeline to load the data is fixed. Here we schematize this pipeline as a call graph:
+
+\begin{center}
+    \begin{tikzpicture}[node distance=1.5cm]
+
+        \node (start) [startstop] {The user wants to add data};
+        \node (add_data) [process, below of=start] {HDF5\_BLS\_GUI.Main.main.py -> MainWindow.add\_data};
+        \node (load_data) [process, below of=add_data] {HDF5\_BLS.load\_data.py -> \textbf{load\_general}};
+        \node (load_data_specific) [process, below of=load_data] {HDF5\_BLS.load\_data.py -> \textbf{load\_\textit{extension}\_file} (and other functions from there)};
+        \node (if_extension) [condition, below of=load_data_specific, align = center, yshift=-1.5cm] {The format \\type is supported};
+        \node (wrong_extension) [startstop, right of=if_extension, align = center, xshift=4cm] {Display an error message\\ (e.g.: wrong extension)};
+        \node (if_no_creator) [condition, below of=if_extension, align = center, yshift=-3.5cm] {The format \\ is unambiguous (no \\ need to specify how\\ to load it)};
+        \node (wrong_creator) [process, right of=if_no_creator, align = center, xshift=4cm] {Asks the user to choose\\ the way to load this file type};
+        \node (if_no_parameter) [condition, below of=if_no_creator, align = center, yshift=-4cm] {Loading the format \\ requires additional\\ parameters};
+        \node (wrong_parameters) [process, right of=if_no_parameter, align = center, xshift=4cm] {ParameterWindow.main.py \\-> ParameterWindow};
+        \node (add_dictionnary) [process, below of=if_no_parameter, align = center, yshift=-2cm] {HDF5\_BLS.wrapper.py -> Wrapper.add\_data\_dictionnary};
+
+        \draw [arrow] (start) -- (add_data);
+        \draw [arrow] (add_data) -- (load_data);
+        \draw [arrow] (load_data) -- (load_data_specific);
+        \draw [arrow] (load_data_specific) -- (if_extension);
+        \draw [arrow] (if_extension) -- node[anchor=south] {No} (wrong_extension);
+        \draw [arrow] (if_extension) -- node[anchor=east] {Yes} (if_no_creator);
+        \draw [arrow] (if_no_creator) -- node[anchor=south] {No} (wrong_creator);
+        \draw [arrow] (if_no_creator) -- node[anchor=east] {Yes} (if_no_parameter);
+        \draw [arrow] (wrong_creator) -- (if_no_parameter);
+        \draw [arrow] (if_no_parameter) -- node[anchor=south] {Yes} (wrong_parameters);
+        \draw [arrow] (if_no_parameter) -- node[anchor=east] {No} (add_dictionnary);
+        \draw [arrow] (wrong_creator) -- (if_no_parameter);
+        \draw [arrow] (wrong_parameters) |- (add_dictionnary);
+
+    \end{tikzpicture}
+\end{center}
+
+In order to allow other formats to be used or other techniques to be applied to load files from the same format, the two functions that will be modified are:
+\begin{itemize}
+    \item \textbf{load\_general}: This function acts as a switch to launch different functions depending on the extension of the file and the way the file is loaded.
+    \item \textbf{load\_\textit{extension}\_file}: This function is specific to a file extension and is called by \texttt{load\_general} to load the file. It itself act as a switch to lauch different functions from the \\ \textbf{HDF5\_BLS.load\_formats.load\_\textit{extension}.py}.
+\end{itemize}

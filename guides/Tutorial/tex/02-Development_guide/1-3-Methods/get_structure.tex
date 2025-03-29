@@ -1,0 +1,46 @@
+This method allows the user to extract the structure in the form of a dictionnary. This dictionnary is composed of all the elements of the file and their "Brillouin\_type" attribute, in the form of a JSON file or dictionnary similar to this one:
+\begin{verbatim}
+{'Brillouin': {'Brillouin_type': 'Root', 
+    'M1': {'Brillouin_type': 'Root', 
+        'Measure': {'Brillouin_type': 'Measure', 
+            'Raw_data': {'Brillouin_type': 'Raw_data'}
+            }
+        }
+    }
+}
+\end{verbatim}
+
+\begin{lstlisting}[language=Python]
+def get_structure(self, filepath = None):
+\end{lstlisting}
+
+\paragraph{Attributes:}
+
+\begin{itemize}
+    \item \textbf{filepath} \textit{(optional, default None)}: The filepath to a HDF5 file. If None, the file of the wrapper is used.
+\end{itemize}
+
+\paragraph{Returns:} A dictionnary representing the structure of the file as detailed \hyperref[subsec:preamble.file_structure.complete_structure]{before}
+
+\paragraph{Flowchart:}
+
+The function's logic is represented in the following flowchart:
+\begin{figure}[H]
+    \centering
+    \label{fig:wrapper.flowchart_get_structure}
+    \small
+    \begin{tikzpicture}[node distance=1.5cm]
+        \node (start) [startstop, align=center] {Wrapper.get\_structure(\\filepath, force\_read)};
+        \node (setPath) [process, below of=start, yshift=-0.5cm, xshift=0cm, align=center] {Use filepath attribute \\ of the wrapper};
+        \node (readFile) [process, right of=setPath, yshift=0cm, xshift=4cm, align=center] {Open and raead the file};
+        \node (iterativeStructure) [process, below of=readFile, yshift=0cm, xshift=0cm, align=center] {Get the structure of the file\\ iterating through the file};
+        \node (end) [startstop, below of=iterativeStructure, yshift=0cm, xshift=0cm, align=center] {Return dictionnary of the structure};
+
+        \draw [arrow] (start) -- node[anchor=east, align=center, yshift=0cm] {filepath \\is None} (setPath);
+        \draw [arrow] (setPath) -- (readFile);
+        \draw [arrow] (start) -| node[anchor=south, align=center, xshift=-1cm, yshift=-1cm] {filepath is\\not None} (readFile);
+        \draw [arrow] (readFile) -- (iterativeStructure);
+        \draw [arrow] ++(iterativeStructure.south) -- (end.north);
+    \end{tikzpicture}
+    \caption{Flowchart of the get\_structure method}
+\end{figure}

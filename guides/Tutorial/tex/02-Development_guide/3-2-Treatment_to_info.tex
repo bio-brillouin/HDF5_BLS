@@ -1,0 +1,37 @@
+This is a call graph of the functions that are used when asking treat a PSD and frequency. The functions that we will develop have names in bold font. The functions have a fixed nomenclature that we will detail later on, based on the type of spectrometer being used. For this call graph, we will call our spectrometer: \textit{unicorn}:
+
+\begin{center}
+    \begin{tikzpicture}[node distance=2cm]
+
+        \node (start) [startstop] {Ask for the extraction of information from the PSD};
+        \node (get_treatment) [process, below of=start] {HDF5\_BLS\_GUI.Main.main.py -> MainWindow.perform\_treatment};
+        \node (treat_UI) [process, below of=get_treatment, align=center] {HDF5\_BLS\_GUI.conversion\_ui.py -> \textbf{treat\_unicorn}};
+
+        \draw [arrow] (start) -- (get_treatment);
+        \draw [arrow] (get_treatment) -- (treat_UI);
+    \end{tikzpicture}
+\end{center}
+
+To add a routine to extract information from our PSD, we'll therefore need to implement the following functions:
+
+\begin{itemize}
+    \item \textit{HDF5\_BLS\_GUI.conversion\_ui.treat\_unicorn}: This function will be used to allow the user to perform a treatment on its data. This function will open a GUI window in the form of a dialog to allow the user to select the parameters of the treatment. Note that this function will not return anything.
+\end{itemize}
+
+
+For GUI compatibility, the function must be called \textit{treat\_type}, where "type" is the type of the spectrometer being used, and placed in the "HDF5\_BLS\_GUI/treat\_ui.py" file. For example if your spectrometer type is "Unicorn", add the following function:
+\begin{lstlisting}
+def treat_unicorn
+\end{lstlisting}
+
+This function must have the following parameters:
+    \begin{itemize}
+        \item parent: the parent GUI window
+        \item wrp: the wrapper associated to the main h5 file
+        \item path: the path to the data we want to treat in the form "Data/Data/..."
+    \end{itemize}
+\begin{lstlisting}
+def treat_unicorn(parent, wrp, path):
+\end{lstlisting}
+
+From there, there are no guidelines to define your function. The GUI comes however with a few windows that can be inherited from to make the development of custom treatment processes easier. You can find an example of how it was done for the "TFP" treatment in the \hyperref[subsec:example_treatment.TFP]{appendix}.

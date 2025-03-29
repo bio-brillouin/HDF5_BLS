@@ -1,0 +1,53 @@
+This magic command allows the user to add two wrappers together. This dunder method is called with the following syntax:
+\begin{lstlisting}
+    new_wrapper = wrp1 + wrp2
+\end{lstlisting}
+
+In this example, wrp1 and wrp2 are two wrappers that are added together. The resulting wrapper is stored in the variable new\_wrapper. The addition of the two wrappers is done by adding the elements stored in the "Brillouin" group of both wrappers. The addition is possible only if the two wrappers have the same "HDF5\_BLS\_version" attribute. If the two wrappers have different "HDF5\_BLS\_version" attributes, the addition is not possible and an error is raised.
+
+If you prefer to add a second wrapper to a dedicated group of the first wrapper, please use the \hyperref[subsec:wrapper.add_hdf5]{Wrapper.add\_hdf5} method.
+
+The addition of the two wrappers also affects the addition of attributes. Common attributes to all the groups will be set to the root group whereas attributes specific to each file will be set to their respective groups. Access to attributes is guaranteed by the \hyperref[subsec:wrapper.get_attributes]{Wrapper.get\_attributes} method.
+
+\paragraph{Attributes:}
+
+\begin{itemize}
+    \item \textbf{wrp2}: A wrapper to add to the current wrapper wrp1
+\end{itemize}
+
+\paragraph{Raises:}
+
+\begin{itemize}
+    \item \textbf{WrapperError\_FileNotFound}: If one of the two wrappers leads to a temporary file.
+    \item \textbf{WrapperError\_StructureError}: If the two wrappers don't have the same version.
+    \item \textbf{WrapperError\_Overwrite}: If the two wrappers share a group of same name.
+    \item \textbf{WrapperError}: If an error occured while adding the data.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \label{fig:wrapper.flowchart__add__}
+    \small
+    \begin{tikzpicture}[node distance=1cm]
+        \node (start) [startstop, align=center] {Wrapper.\_\_add\_\_(wrp2)};
+        \node (raiseError0) [startstop, right of=start, xshift=7cm] {WrapperError\_FileNotFound};
+        \node (raiseError1) [startstop, below of=raiseError0, yshift=-0.5cm] {WrapperError\_StructureError};
+        \node (raiseError2) [startstop, below of=raiseError1, yshift=-0.5cm] {WrapperError\_Overwrite};
+        \node (manageAttributes) [process, below of=start, yshift=-4cm, align=center] {Extract attributes of\\ the two wrappers\\ and differentiate common\\ attributes from specific ones};
+        \node (createFile) [process, right of=manageAttributes, xshift=5cm, align=center] {Create a new HDF5 file\\ with one "Brillouin" group\\ containing all the elements\\ of the two wrappers};
+        \node (addAttributes) [process, below of=createFile, yshift=-1.5cm, align=center] {Add the common attributes\\ to the "Brillouin" group\\ of the new file and the specific\\ attributes to the individual groups};
+        \node (raiseError3) [startstop, below of=manageAttributes, yshift=-0.5cm, align=center] {WrapperError};
+        \node (end) [startstop, below of=raiseError3, yshift=-1cm, align=center] {End};
+
+        \draw [arrow] (start) -- node[anchor=south, align=center] {one of the two wrappers\\ leads to a temporary\\file} (raiseError0);
+        \draw [arrow] (start) |- node[anchor=south, align=center, xshift=3cm] {the two wrappers don't\\ have the same version} (raiseError1);
+        \draw [arrow] (start) |- node[anchor=south, align=center, xshift=3cm] {the two wrappers share\\ a group of same name} (raiseError2);
+        \draw [arrow] (start) -- (manageAttributes);
+        \draw [arrow] (manageAttributes) -- (createFile);
+        \draw [arrow] (createFile) -- (addAttributes);
+        \draw [arrow] ++(addAttributes.west) -| +(-1.5cm, 0cm) |- node[anchor=west, align=center, yshift=-0.5cm] {if error} (raiseError3.east);
+        \draw [arrow] ++(addAttributes.west) -| +(-1.5cm, 0cm) |- node[anchor=west, align=center, yshift=0.5cm] {no errors} (end);
+        
+    \end{tikzpicture}
+    \caption{Flowchart of the \_\_add\_\_ method}
+\end{figure}

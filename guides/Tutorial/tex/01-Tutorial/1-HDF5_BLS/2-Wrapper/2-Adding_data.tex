@@ -1,0 +1,260 @@
+\begin{tcolorbox}
+\textit{IN A NUTSHELL:}
+\begin{itemize}
+    \item With the \hyperref[subsec:wrapper.add_dictionnary]{add\_dictionnary} method 
+\begin{lstlisting}
+wrp = Wrapper()
+dic = {"Raw_data": {"Name": "Wonderful measure 019", 
+                    "Data": np.random.random((100, 100))},
+       "PSD": {"Name": "PSD extracted blabla", 
+               "Data": np.random.random((100, 100))},
+       "Frequency": {"Name": "The Frequency",   
+                   "Data": np.random.random((100))},
+       "Abscissa_t": {"Name": "Time (s)", 
+                      "Data": np.random.random((100)),
+                      "Unit": "s",
+                      "Dim_start": "0",
+                      "Dim_end": "1"}}
+wrp.add_dictionnary(dic, 
+                    parent_group = "Brillouin", 
+                    name = "Data_0", 
+                    brillouin_type = "Measure",
+                    overwrite = False)
+\end{lstlisting}
+    \item With specific methods for each type of data:
+    \begin{itemize}
+        \item \hyperref[subsec:wrapper.add_raw_data]{add\_raw\_data}: To add raw data to a group
+\begin{lstlisting}
+wrp = Wrapper()
+data = np.random.random((10, 10, 512)) # The raw data that you want to add
+wrp.add_raw_data(data,
+                parent_group = "Brillouin/Data_0", 
+                name = "Raw_data")
+\end{lstlisting}
+        \item \hyperref[subsec:wrapper.add_psd]{add\_PSD}: To add a PSD to a group
+\begin{lstlisting}
+wrp = Wrapper()
+data = np.random.random((10, 10, 512)) # The PSD that you want to add
+wrp.add_PSD(data,
+            parent_group = "Brillouin/Data_0", 
+            name = "PSD")
+\end{lstlisting}
+        
+\end{itemize}
+\end{itemize}
+\end{tcolorbox}
+\begin{tcolorbox}
+\begin{itemize}
+    \item[] \begin{itemize}
+        \item \hyperref[subsec:wrapper.add_frequency]{add\_frequency}: To add a frequency axis to a group
+\begin{lstlisting}
+wrp = Wrapper()
+data = np.random.random((512)) # The frequency axis that you want to add
+wrp.add_frequency(data,
+                  parent_group = "Brillouin/Data_0", 
+                  name = "Frequency")
+\end{lstlisting}
+        \item \hyperref[subsec:wrapper.add_abscissa]{add\_abscissa}: To add an abscissa to a group
+\begin{lstlisting}
+wrp = Wrapper()
+data = np.random.random((10, 10)) # The abscissa that you want to add
+wrp.add_abscissa(data,
+                 parent_group = "Brillouin/Data_0", 
+                 name = "x and y",
+                 unit = "microns",
+                 dimension_PSD_start = 0,
+                 dimension_PSD_end = 1)
+\end{lstlisting}
+        \item \hyperref[subsec:wrapper.add_treated_data]{add\_treated\_data}: To add a shift, linewidth and their respective standard deviations to a dedicated "Treatment" group
+\begin{lstlisting}
+wrp = Wrapper()
+shift = np.random.random((10, 10)) # The shift array to add
+linewidth = np.random.random((10, 10)) # The linewidth array to add
+shift_std = np.random.random((10, 10)) # The shift standard deviation array to add
+linewidth_std = np.random.random((10, 10)) # The linewidth standard deviation array to add
+wrp.add_treated_data(shift = shift,
+                     linewidth = linewidth,
+                     shift_std = shift_std,
+                     linewidth_std = linewidth_std,
+                     parent_group = "Brillouin/Data_0", 
+                     name_group = "NnMF - 5GHz")
+\end{lstlisting}
+    \end{itemize}
+\end{itemize}
+\end{tcolorbox}
+
+Adding datasets to the HDF5 file through the HDF5\_BLS package is always handled by the \hyperref[subsec:wrapper.add_dictionnary]\texttt{Wrapper.add\_dictionnary} method. This method is complex and not user-friendly. There are therefore other derived methods that are meant to simplify the process of adding data to the HDF5 file, specific to each type of data.
+
+In this tutorial, we present only the derived methods that are specific to each type of data. To get a better understanding on how to use the add\_dictionnary method, please refer to the \hyperref[subsec:wrapper.add_dictionnary]{developper guide section}.
+
+To add a single dataset to a group, we first need to specify the type of dataset we want to add, following the ones presented in \hyperref[subsec:preamble.file_structure.complete_structure]{preamble}:
+\begin{itemize}
+    \item "Abscissa\_...": An abscissa array for the measures (time, position, ...)
+    \item "Frequency": A Frequency dataset associated to the PSD dataset
+    \item "PSD": A Power Spectral Density dataset
+    \item "Raw\_data": A dataset that is not yet a PSD (for example the measure coming out of a VIPA spectrometer)
+    \item "Shift": A shift array
+    \item "Shift\_std": The standard deviation of the shift array
+    \item "Linewidth": A linewidth array
+    \item "Linewidth\_std": The standard deviation of the linewidth array
+\end{itemize}
+
+From there, 5 functions are available to add the dataset to the HDF5 file:
+\begin{itemize}
+    \item \hyperref[subsec:wrapper.add_raw_data]{add\_raw\_data}: To add raw data to a group
+    \item \hyperref[subsec:wrapper.add_psd]{add\_PSD}: To add a PSD to a group
+    \item \hyperref[subsec:wrapper.add_frequency]{add\_frequency}: To add a frequency axis to a group
+    \item \hyperref[subsec:wrapper.add_abscissa]{add\_abscissa}: To add an abscissa to a group
+    \item \hyperref[subsec:wrapper.add_treated_data]{add\_treated\_data}: To add a shift, linewidth and their respective standard deviations to a dedicated "Treatment" group
+\end{itemize}
+
+We have decided to separate the addition of a PSD and a Frequency array as in some setups, the Frequency array can be common to a range of experiments, like when a TFP is used.
+
+All these functions have the same approach to the process of adding a dataset to a group:
+
+\begin{figure}[H]
+    \centering
+    \label{fig:wrapper.flowchart_add_functions}
+    \small
+    \begin{tikzpicture}[node distance=2cm]
+        \node (start) [startstop] {\textit{data} is a dataset to add};
+        \node (parentGroup) [startstop, right of=start, yshift=0cm, xshift=3cm, align=center] {\textit{parent\_group} is the parent group \\ where to store the \\data in the HDF5 file};
+        \node (name) [startstop, right of=parentGroup, yshift=0cm, xshift=3cm, align=center] {\textit{name} is the name of the \\dataset to add};
+        \node (function) [process, below of=parentGroup, yshift=0cm, xshift=0cm, align=center] {\textit{function}(data = \textit{data}, \\parent\_group = \textit{parent\_group}, \\name = \textit{name})};
+
+        \draw [arrow] (start) -- (function);
+        \draw [arrow] (parentGroup) -- (function);
+        \draw [arrow] (name) -- (function);
+    \end{tikzpicture}
+    \caption{Flowchart of the get\_attributes method}
+\end{figure}
+
+This approach totally explains the definition of \hyperref[subsec:wrapper.add_raw_data]{add\_raw\_data}, \hyperref[subsec:wrapper.add_psd]{add\_PSD} and \hyperref[subsec:wrapper.add_frequency]{add\_frequency} methods. We'll see later how this logic had to be modified to add abscissa and treated data.
+
+\begin{center}
+    \rule{15cm}{0.4pt}
+\end{center}
+
+\paragraph{Example}
+Let's consider the following example: we have just initialized a wrapper object and want to add a spectrum obtained from our spectrometer. We have already converted this spectrum to a numpy array, and named it \textit{data}. Now we want to add this data in a group called "Water spectrum" in the root group of the HDF5 file and call this raw data "Measure of the year". Then we will write:
+\begin{lstlisting}
+wrp.add_raw_data(data = data,
+                 parent_group = "Brillouin/Water spectrum", 
+                 name = "Measure of the year")
+\end{lstlisting}
+
+Now let's say that we have analyzed this spectrum and obtained a PSD (stored in the variable "psd") and frequency array (stored in the variable "freq"). We want to add these two arrays in the same group, and call them "PSD" and "Frequency" respectively. We will write:
+\begin{lstlisting}
+wrp.add_PSD(data = psd,
+            parent_group = "Brillouin/Water spectrum", 
+            name = "PSD")
+wrp.add_frequency(freq,
+                  parent_group = "Brillouin/Water spectrum", 
+                  name = "Frequency")
+\end{lstlisting}
+
+\begin{center}
+    \rule{15cm}{0.4pt}
+\end{center}
+
+
+Now for adding abscissa and treated data, we need to improve our approach. For abscissa, we need to be able to specify the dimension of the PSD and treated arrays to which the abscissa corresponds to and the unit of the axis. For treated data, we need to add more than just one dataset to the group. 
+
+Let's look at the flowchart describing how to use the \hyperref[subsec:wrapper.add_abscissa]{add\_abscissa} method:
+
+\begin{figure}[H]
+    \centering
+    \label{fig:wrapper.flowchart_add_abscissa}
+    \small
+    \begin{tikzpicture}[node distance=2cm]
+        \node (start) [startstop, align=center] {\textit{data} is the abscissa\\ to add};
+        \node (parentGroup) [startstop, right of=start, yshift=0cm, xshift=2.5cm, align=center] {\textit{parent\_group} is the parent group \\ where to store the \\data in the HDF5 file};
+        \node (name) [startstop, right of=parentGroup, yshift=0cm, xshift=3cm, align=center] {\textit{name} is the name of the \\abscissa to add};
+        \node (unit) [startstop, below of=start, yshift=0cm, xshift=2cm, align=center] {\textit{unit} is the unit of the \\axis};
+        \node (dimensionPSD) [startstop, right of=unit, yshift=0cm, xshift=3cm, align=center] {\textit{dimension\_PSD\_start} is the\\ first dimension of the \\PSD array to which\\ the abscissa corresponds};
+        \node (dimensionPSD_end) [startstop, right of=dimensionPSD, yshift=0cm, xshift=3cm, align=center] {\textit{dimension\_PSD\_end} is the\\ last dimension of the \\PSD array to which \\the abscissa corresponds};            
+        \node (function) [process, below of=dimensionPSD, yshift=-1cm, xshift=0cm, align=center] {\textit{add\_abscissa}(data = \textit{data}, \\parent\_group = \textit{parent\_group}, \\name = \textit{name}, \\unit = \textit{unit}, \\dimension\_PSD\_start = \textit{dimension\_PSD\_start}, \\dimension\_PSD\_end = \textit{dimension\_PSD\_end})};
+
+        \draw [arrow] (start) |- (function);
+        \draw [arrow] ++(parentGroup.south) |- +(0cm, -2.7cm) -| (function.north);
+        \draw [arrow] ++(name.south) |- +(0cm, -2.7cm) -| (function.north);            
+        \draw [arrow] (unit) |- (function);
+        \draw [arrow] (dimensionPSD) -- (function);
+        \draw [arrow] (dimensionPSD_end) |- (function);
+    \end{tikzpicture}   
+    \caption{Flowchart of the add\_abscissa method}
+\end{figure}
+
+\begin{center}
+    \rule{15cm}{0.4pt}
+\end{center}
+
+\paragraph{Example}
+Let's consider the following example: we have just initialized a wrapper object and want to add an abscissa axis corresponding to our measures that have been stored in the group "Brillouin/Temp". Say that this abscissa axis corresponds to temperature values, from 35 to 40 degrees and that there are 10 points in the axis. We will therefore call this abscissa axis "Temperature". We will write:
+\begin{lstlisting}
+wrp.add_abscissa(data = np.linspace(35, 40, 10),
+                 parent_group = "Brillouin/Temp", 
+                 name = "Temperature",
+                 unit = "C",
+                 dim_start = 0,
+                 dim_end = 1)
+\end{lstlisting}
+
+Of course if you want to import saved values for this axis, you can also specify them directly in the function call:
+\begin{lstlisting}
+wrp.add_abscissa(data = data,
+                 parent_group = "Brillouin/Temp", 
+                 name = "Temperature",
+                 unit = "C",
+                 dim_start = 0,
+                 dim_end = 1)
+\end{lstlisting}
+
+\begin{center}
+    \rule{15cm}{0.4pt}
+\end{center}
+
+Now, for adding treated data (that is the shift, linewidth and their standard deviations), the flowchart of the \hyperref[subsec:wrapper.add_treated_data]{add\_treated\_data} method becomes:
+
+\begin{figure}[H]
+    \centering
+    \label{fig:wrapper.flowchart_add_treat}
+    \small
+    \begin{tikzpicture}[node distance=2cm]
+        \node (start) [startstop, align=center] {\textit{shift} is the shift\\ array to add};
+        \node (parentGroup) [startstop, right of=start, yshift=0cm, xshift=2.5cm, align=center] {\textit{parent\_group} is the parent group \\ where to store the \\data in the HDF5 file};
+        \node (name) [startstop, right of=parentGroup, yshift=0cm, xshift=3cm, align=center] {\textit{name} is the name of the \\abscissa to add};
+        \node (linewidth) [startstop, below of=start, yshift=0cm, xshift=2cm, align=center] {\textit{linewidth} is thelinewidth\\ array to add};
+        \node (shiftSTD) [startstop, right of=linewidth, yshift=0cm, xshift=3cm, align=center] {\textit{shift\_std} is the\\ standard deviation of\\ the shift array};
+        \node (linewidthSTD) [startstop, right of=shiftSTD, yshift=0cm, xshift=3cm, align=center] {\textit{linewidth\_std} is the\\ standard deviation of\\ the linewidth array};            
+        \node (function) [process, below of=dimensionPSD, yshift=-1cm, xshift=0cm, align=center] {\textit{add\_treated\_data}(shift = \textit{shift}, \\ linewidth = \textit{linewidth}, \\shift\_std = \textit{shift\_std}, \\linewidth\_std = \textit{linewidth\_std},\\ parent\_group = \textit{parent\_group}, \\name = \textit{name})};
+
+        \draw [arrow] (start) |- (function);
+        \draw [arrow] ++(parentGroup.south) |- +(0cm, -2.7cm) -| (function.north);
+        \draw [arrow] ++(name.south) |- +(0cm, -2.7cm) -| (function.north);            
+        \draw [arrow] (linewidth) |- (function);
+        \draw [arrow] (shiftSTD) -- (function);
+        \draw [arrow] (linewidthSTD) |- (function);
+    \end{tikzpicture}   
+    \caption{Flowchart of the add\_abscissa method}
+\end{figure}
+
+
+\begin{center}
+    \rule{15cm}{0.4pt}
+\end{center}
+
+\paragraph{Example}
+Let's consider the following example: we have treated our data and have obtained a shift array (shift), a linewidth array (linewidth) and their standard deviations (shift\_std and linewidth\_std). We want to add these arrays in the same group as the PSD, that is the group "Test". The treated data are stored in a separate group nested in the "Test" group by the choices made while building the structure of the file. This is so the name of the treatment group can be chosen freely. Let's say that in this case, we have performed a non-negative matrix factorization (NnMF) on the data, and extracted the shift values closest to 5GHz. We will therefore call this treatment "NnMF - 5GHz". We will write:
+\begin{lstlisting}
+wrp.add_treated_data(shift = shift,
+                     linewidth = linewidth,
+                     shift_std = shift_std,
+                     linewidth_std = linewidth_std,
+                     parent_group = "Brillouin/Test", 
+                     name_group = "NnMF - 5GHz")
+\end{lstlisting}
+
+\begin{center}
+    \rule{15cm}{0.4pt}
+\end{center}

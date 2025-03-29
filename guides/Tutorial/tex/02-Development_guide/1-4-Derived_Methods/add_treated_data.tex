@@ -1,0 +1,23 @@
+This method allows the user to add the result of a treatment to the HDF5 file. It adds the data by calling the \hyperref[subsec:wrapper.add_dictionnary]{Wrapper.add\_dictionnary} method.
+
+\begin{lstlisting}[language=Python]
+def add_treated_data(self, shift, linewidth, shift_std, linewidth_std, parent_group, name_group = None, overwrite = False):
+\end{lstlisting}
+
+\paragraph{Attributes:}
+
+\begin{itemize}
+    \item \textbf{shift}: The shift array to add to the wrapper. 
+    \item \textbf{linewidth}: The linewidth array to add to the wrapper. 
+    \item \textbf{shift\_std}: The standard deviation of the shift array to add to the wrapper. 
+    \item \textbf{linewidth\_std}: The standard deviation of the linewidth array to add to the wrapper. 
+    \item \textbf{parent\_group}: The path to the group or dataset whose the raw data will be added in the form "Brillouin/Measure/...".
+    \item \textbf{name\_group} \textit{(optional, default None)}: The name that will be given to the group containing all the treated dataset. If None, the name is set to "Treat_i" where "i" is an integer that ensures that the name is unique.
+    \item \textbf{overwrite} \textit{(optional, default False)}: If True, the attributes of the selected group or dataset are overwritten if they exist in the file.
+\end{itemize}
+
+\paragraph{Raises:}
+\begin{itemize}
+    \item \textbf{WrapperError\_StructureError}: If the parent group does not exist in the HDF5 file.
+    \item All the errors of the \hyperref[subsec:wrapper.add_dictionnary]{Wrapper.add\_dictionnary} method.
+\end{itemize}

@@ -1,0 +1,37 @@
+This method allows the user to update one attribute of the wrapper. This method is based on the \hyperref[subsec:wrapper.set_attributes_data]{Wrapper.set\_attributes\_data} method.
+
+\begin{lstlisting}[language=Python]
+def update_property(self, name, value, path = None):
+\end{lstlisting}
+
+\paragraph{Attributes:}
+
+\begin{itemize}
+    \item \textbf{name}: The name of the attribute to update.
+    \item \textbf{value}: The new value of the attribute.
+    \item \textbf{path} \textit{(optional, default None)}: The path to the group or dataset whose metadata we want to update in the form: "Brillouin/Measure". If None, the metadata of the root group are updated.
+\end{itemize}
+
+\paragraph{Raises:}
+\begin{itemize}
+    \item All the errors of the \hyperref[subsec:wrapper.set_attributes_data]{Wrapper.set\_attributes\_data} method.
+\end{itemize}
+
+
+\paragraph{Flowchart:}
+
+The function's logic is represented in the following flowchart:
+\begin{figure}[H]
+    \centering
+    \label{fig:wrapper.flowchart_update_property}
+    \small
+    \begin{tikzpicture}[node distance=1.5cm]
+        \node (start) [startstop, xshift=0cm, align=center] {Wrapper.update\_property(name, \\value, path)};
+        \node (setProperty) [process, below of=start, align=center] {Wrapper.set\_properties\_data(properties={name: value},\\ path=path, overwrite=True)};
+        \node (end) [startstop, below of=setProperty, xshift=0cm, align=center] {End};
+
+        \draw [arrow] (start) -- (setProperty);
+        \draw [arrow] (setProperty) -- (end);
+    \end{tikzpicture}
+    \caption{Flowchart of the import\_properties\_data method}
+\end{figure}

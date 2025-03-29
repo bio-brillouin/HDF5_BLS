@@ -1,29 +1,33 @@
-The goal of this software is to go from a storaged data file to a usable data set with a reproducible, stable and unified treatment protocol. To schematize this treatment protocol, we propose the following diagram:
+This format is designed to unify the way to store data in the BioBrillouin Community. From there, we propose to unify the treatment and analysis of the data. The storage being independent from the analysis, we propose to create an intermediate step where a Power Spectral Density is obtained.
 
-\begin{center}
-    \begin{tikzpicture}[node distance=2cm]
+The treatment of any PSD being essentially the same: a fitting of one or several lineshapes that takes into account the response of the instrument to deconvolve its effect, we further propose to unify the analysis after obtaining the PSD. This results in the following pipeline for any BLS experiment
 
+\begin{figure}[H]
+    \centering
+    \small
+    \begin{tikzpicture}[node distance=1.5cm]
         \node (start) [startstop] {Start};
-        \node (acquire) [process, below of=start] {Raw Data Acquisition};
-        \node (psd) [process, below of=acquire, align=center] {Obtaining the \\ Power Spectrum Density};
-        \node (fits) [process, below of=psd] {Fitting of the PSD};
+        \node (acquire) [process, below of=start, align=center] {Measurement -> obtaining\\ raw data};
+        \node (storage) [process, below of=acquire, align=center] {Storing the measured data\\ in a HDF5 file};
+        \node (psd) [process, below of=storage, align=center] {Conversion of the raw data\\ into a PSD and Frequency\\ and storage in the HDF5 file};
+        \node (fits) [process, below of=psd, align=center] {Analysis of the PSD\\ with a unified treatment};
         \node (end) [startstop, below of=fits] {End};
 
         \draw [arrow] (start) -- (acquire);
-        \draw [arrow] (acquire) -- (psd);
+        \draw [arrow] (acquire) -- (storage);
+        \draw [arrow] (storage) -- (psd);
         \draw [arrow] (psd) -- (fits);
         \draw [arrow] (fits) -- (end);
 
-        \node (filestart) [file, right of=start, xshift=3cm] {Create HDF5 file};
-        \node (fileraw) [file, below of=filestart, align=center] {Add raw data \\ to the file};
-        \node (filepsd) [file, below of=fileraw, align=center] {Store the \\ Power Spectrum Density\\and the channel freauencies};
-        \node (filetreat) [file, below of=filepsd, align=center] {Store the \\ Treated data};
+        \node (filestart) [file, right of=storage, xshift=3cm, align=center] {Create HDF5 file with\\ the measured data};
+        \node (fileraw) [file, below of=filestart, align=center] {Convert the raw data\\ into a PSD and Frequency\\ and store in the HDF5 file};  
+        \node (filetreat) [file, below of=fileraw, align=center] {Analyse the PSD and\\ store the result in the HDF5 file};
         \node (fileend) [file, below of=filetreat] {Save file};
 
         \draw [arrow] (filestart) -- (fileraw);
-        \draw [arrow] (fileraw) -- (filepsd);
-        \draw [arrow] (filepsd) -- (filetreat);
+        \draw [arrow] (fileraw) -- (filetreat);
         \draw [arrow] (filetreat) -- (fileend);
-
     \end{tikzpicture}
-\end{center}
+    \caption{Flowchart of the pipeline}
+\end{figure}
+

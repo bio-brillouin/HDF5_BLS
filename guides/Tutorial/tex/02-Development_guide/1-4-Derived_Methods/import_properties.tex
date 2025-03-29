@@ -1,0 +1,40 @@
+This method allows the user to import data from a CSV, XLS or XLSX file to a dataset or group of the HDF5 file. It reads the data from the file and updates the metadata by calling the \hyperref[subsec:wrapper.set_attributes_data]{Wrapper.set\_attributes\_data} method.
+
+\begin{lstlisting}[language=Python]
+def import_properties_data(self, filepath, path = None, overwrite = False):
+\end{lstlisting}
+
+\paragraph{Attributes:}
+
+\begin{itemize}
+    \item \textbf{filepath}: The filepath to the file containing the updated properties.
+    \item \textbf{path} \textit{(optional, default None)}: The path to the group or dataset whose metadata we want to update in the form: "Brillouin/Measure". If None, the metadata of the root group are updated.
+    \item \textbf{overwrite} \textit{(optional, default False)}: If True, the attributes of the selected group or dataset are overwritten. If False, only new attributes are added to the existing ones.
+\end{itemize}
+
+\paragraph{Raises:}
+\begin{itemize}
+    \item \textbf{WrapperError\_FileNotFound}: If the file with the properties is not found or not valid.
+    \item All the errors of the \hyperref[subsec:wrapper.set_attributes_data]{Wrapper.set\_attributes\_data} method.
+\end{itemize}
+
+
+\paragraph{Flowchart:}
+
+The function's logic is represented in the following flowchart:
+\begin{figure}[H]
+    \centering
+    \label{fig:wrapper.flowchart_import_properties_data}
+    \small
+    \begin{tikzpicture}[node distance=2cm]
+        \node (start) [startstop, xshift=0cm, align=center] {Wrapper.import\_properties\_data(filepath, \\path, overwrite)};
+        \node (fileError) [startstop, right of=start, xshift=7cm, align=center] {WrapperError\_FileNotFound};
+        \node (readFile) [process, below of=start] {Read file and create dictionnary};
+        \node (setProperties) [startstop, right of=readFile, xshift=5cm, align=center] {Wrapper.set\_properties\_data(dictionnary, \\path, overwrite)};
+
+        \draw [arrow] (start) -- node[anchor=south, align=center, yshift=0cm, xshift=0cm] {If file extension is not\\ supported or that the \\file cannot be found} (fileError);
+        \draw [arrow] (start) -- node[anchor=east, align=center, yshift=0cm, xshift=0cm] {else} (readFile);
+        \draw [arrow] (readFile) -- (setProperties);
+    \end{tikzpicture}
+    \caption{Flowchart of the import\_properties\_data method}
+\end{figure}

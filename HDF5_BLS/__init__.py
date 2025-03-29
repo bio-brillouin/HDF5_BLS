@@ -1,5 +1,6 @@
-from . import load_data
-from . import conversion_PSD
-from . import wrapper
-from . import treat
+from .wrapper import *
+from .load_data import *
+from .conversion_PSD import *
+from .treat import *
+from .WrapperError import *
 
