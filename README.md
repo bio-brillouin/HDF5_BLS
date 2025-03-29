@@ -9,7 +9,7 @@ The library is currently compatible with the following file formats:
 
 ## GUI
 
-The package comes with a graphical user interface (GUI) that allows users to easily open, edit, and save data. Please refer to the [tutorial](https://github.com/bio-brillouin/HDF5_BLS/blob/main/guides/Tutorial/Tutorial.pdf) for more information.
+This V1.0.0 version of the library is not yet compatible with the GUI. However, the GUI is currently under development and will be released in the next version of the library.
 
 ## Library 
 
@@ -20,14 +20,16 @@ You can install **HDF5_BLS** directly from PyPI:
 ```bash
 pip install HDF5_BLS
 ```
+Please refer to [the tutorial](https://github.com/bio-brillouin/HDF5_BLS/blob/v-1.0.0/guides/Tutorial/Tutorial.pdf) for more information.
 
 ### Documentation
 
-A full documentation for the library is accessible at [this link](https://hdf5-bls.readthedocs.io/en/latest/).
+You can access the documentation of the project at [this link](https://github.com/bio-brillouin/HDF5_BLS/blob/v-1.0.0/guides/Tutorial/Tutorial.pdf).
+Additionnally, a ReadTheDocs documentation for the library is accessible at [this link](https://hdf5-bls.readthedocs.io/en/latest/).
 
 ## Contributing
 
-A Developper Guide is accessible at [this link](https://github.com/bio-brillouin/HDF5_BLS/blob/main/guides/DeveloperGuide/ModuleDevelopperGuide.pdf). This guide is meant to be used by researchers who want to expand the project to their own devices while keeping the compatibility with all the existing functionalities. 
+A Developper Guide is accessible at [this link](https://github.com/bio-brillouin/HDF5_BLS/blob/v-1.0.0/guides/Tutorial/Tutorial.pdf). This guide is meant to be used by researchers who want to expand the project to their own devices while keeping the compatibility with all the existing functionalities. 
 
 For changes that might affect the compatibility of the project with existing devices, please open an issue first to discuss what you would like to change. For more information, please refer to [CONTRIBUTING.md](https://github.com/bio-brillouin/HDF5_BLS/blob/main/CONTRIBUTING.md).
 
