@@ -3,8 +3,8 @@ from PIL import Image
 import numpy as np
 
 
-def load_tiff_base(filepath, parameters = None):
-    """Loads files obtained with the GHOST software
+def load_image_base(filepath, parameters = None):
+    """Loads image files with the Pillow library
 
     Parameters
     ----------
@@ -35,7 +35,8 @@ def load_tiff_base(filepath, parameters = None):
     attributes['FILEPROP.Name'] = name
 
     if parameters is not None:
-        if "Grayscale" in parameters.keys() and parameters["Grayscale"]: data = np.mean(data, axis = 2)
+        if "Grayscale" in parameters.keys() and parameters["Grayscale"]: 
+            data = np.mean(data, axis = 2)
 
     dic = {"Raw_data": {"Name": "Raw data", "Data": data}, 
            "Attributes": attributes}

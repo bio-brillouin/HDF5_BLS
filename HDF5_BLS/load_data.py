@@ -44,21 +44,21 @@ def load_dat_file(filepath, creator = None, parameters = None): # Test made for 
         creator_list = ["GHOST", "TimeDomain"]
         raise LoadError_creator(f"Unsupported creator {creator}, accepted values are: {', '.join(creator_list)}", creator_list)
 
-def load_tiff_file(filepath, parameters = None): # Test made
-    """Loads files obtained with the GHOST software
+def load_image_file(filepath, parameters = None): # Test made
+    """Loads image files using Pillow
 
     Parameters
     ----------
     filepath : str                           
-        The filepath to the tif image
+        The filepath to the image
     
     Returns
     -------
     dict
         The dictionnary with the data and the attributes of the file stored respectively in the keys "Data" and "Attributes"
     """
-    from HDF5_BLS.load_formats.load_tiff import load_tiff_base
-    return load_tiff_base(filepath, parameters = parameters)
+    from HDF5_BLS.load_formats.load_image import load_image_base
+    return load_image_base(filepath, parameters = parameters)
 
 def load_npy_file(filepath): # Test made
     """Loads npy files
@@ -75,22 +75,6 @@ def load_npy_file(filepath): # Test made
     """
     from HDF5_BLS.load_formats.load_npy import load_npy_base
     return load_npy_base(filepath)
-
-def load_png_file(filepath, parameters = None): # Test made
-    """Loads Portable Network Graphics files
-
-    Parameters
-    ----------
-    filepath : str                           
-        The filepath to the ppng image
-    
-    Returns
-    -------
-    dict
-        The dictionnary with the data and the attributes of the file stored respectively in the keys "Data" and "Attributes"
-    """
-    from HDF5_BLS.load_formats.load_png import load_png_base
-    return load_png_base(filepath, parameters = parameters)
 
 def load_sif_file(filepath, parameters = None): 
     """Loads npy files
@@ -126,9 +110,9 @@ def load_general(filepath, creator = None, parameters = None): # Test made
     if file_extension.lower() == ".dat":
         # Load .DAT file format data
         return load_dat_file(filepath, creator = creator, parameters = parameters)
-    elif file_extension.lower() == ".tif":
-        # Load .TIFF file format data
-        return load_tiff_file(filepath, parameters = parameters)
+    elif file_extension.lower() in ['.apng', '.blp', '.bmp', '.bw', '.cur', '.dcx', '.dds', '.dib', '.emf', '.eps', '.fit', '.fits', '.flc', '.fli', '.ftc', '.ftu', '.gbr', '.gif', '.hdf', '.icb', '.icns', '.ico', '.iim', '.im', '.j2c', '.j2k', '.jfif', '.jp2', '.jpc', '.jpe', '.jpeg', '.jpf', '.jpg', '.jpx', '.mpg', '.msp', '.pbm', '.pcd', '.pcx', '.pfm', '.pgm', '.png', '.pnm', '.ppm', '.ps', '.psd', '.pxr', '.qoi', '.ras', '.rgb', '.rgba', '.sgi', '.tga', '.tif', '.tiff', '.vda', '.vst', '.webp', '.wmf', '.xbm', '.xpm']:
+        # Load image files
+        return load_image_file(filepath, parameters = parameters)
     elif file_extension.lower() == ".npy":
         # Load .npy file format data
         return load_npy_file(filepath)
