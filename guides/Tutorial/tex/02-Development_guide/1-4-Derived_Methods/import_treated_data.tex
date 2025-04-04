@@ -1,0 +1,32 @@
+This method allows the user to import the arrays resulting from a treatment to the HDF5 file. It adds the data by calling the \hyperref[subsec:wrapper.add_psd]{Wrapper.add\_PSD} method.
+
+
+\begin{lstlisting}[language=Python]
+def import_treated_data(self, filepath_shift, filepath_linewidth, filepath_shift_std, filepath_linewidth_std, parent_group, creator = None, parameters = None, name = None, reshape = None, overwrite = False):
+\end{lstlisting}
+
+\paragraph{Attributes:}
+
+\begin{itemize}
+    \item \textbf{filepath\_shift}: The path to the file containing the shift array to import.
+    \item \textbf{filepath\_linewidth}: The path to the file containing the linewidth array to import.
+    \item \textbf{filepath\_shift\_std}: The path to the file containing the shift standard deviation array to import.
+    \item \textbf{filepath\_linewidth\_std}: The path to the file containing the linewidth standard deviation array to import.
+    \item \textbf{parent\_group}: The path to the group or dataset where the frequency will be added in the form "Brillouin/Measure/...".
+    \item \textbf{creator} \textit{(optional, default None)}: The structure of the files that have to be loaded. If None, a LoadError can be raised.
+    \item \textbf{parameters} \textit{(optional, default None)}: The parameters that are to be used to import the data correctly.  If None, a LoadError can be raised.
+    \item \textbf{name} \textit{(optional, default None)}: The name that will be given to the dataset. If None, the name is set to "PSD".
+    \item \textbf{reshape} \textit{(optional, default None)}: The new shape of the array. If None, the shape is not changed.
+    \item \textbf{overwrite} \textit{(optional, default False)}: If True, the attributes of the selected group or dataset are overwritten if they exist in the file.
+\end{itemize}
+
+
+\paragraph{Raises:}
+\begin{itemize}
+    \item \textbf{WrapperError\_FileNotFound}: If one of the files could not be found.
+    \item All the errors of the \hyperref[subsec:wrapper.add_treated_data]{Wrapper.add\_treated\_data} method.
+    \item All the LoadError errors of the load\_data module.
+\end{itemize}
+
+
+

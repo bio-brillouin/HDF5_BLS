@@ -54,7 +54,9 @@ def load_dat_GHOST(filepath):
 
     frequency = np.linspace(-float(metadata["Scan amplitude"])/2, float(metadata["Scan amplitude"])/2, data.shape[-1])
 
-    dic = {"Power Spectral Density": data, "Frequency": frequency, "Attributes": attributes}
+    dic = {"PSD": {"Name": "PSD","Data": data},
+           "Frequency": {"Name": "Frequency", "Data": frequency}, 
+           "Attributes": attributes}
     return dic
 
 def load_dat_TimeDomain(filepath, parameters = None):
@@ -283,5 +285,7 @@ def load_dat_TimeDomain(filepath, parameters = None):
     attributes['SPECTROMETER.Type'] = "TimeDomain"
     attributes['SPECTROMETER.Filtering_Module'] = "None"
 
-    return {"Data": data_t, "Abscissa_Time": dt, "Attributes": attributes}
+    return {"Raw_Data": {"Name": "Time measures", "Data": data_t}, 
+            "Abscissa_Time": {"Name": "Time axis", "Data": dt},
+            "Attributes": attributes}
 

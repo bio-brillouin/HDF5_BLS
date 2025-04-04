@@ -97,12 +97,16 @@
     \section*{HDF5 file structure}\addcontentsline{toc}{section}{HDF5 file structure}
         \subsection*{Basic file structure}\addcontentsline{toc}{subsection}{Basic file structure}
             \input{tex/00-Preamble/1-1-File_structure.tex}
+        
         \subsection*{Meta-files}\addcontentsline{toc}{subsection}{Meta-files}
             \input{tex/00-Preamble/1-2-Meta_Files.tex}
+        
         \subsection*{Attributes}\addcontentsline{toc}{subsection}{Attributes}
             \input{tex/00-Preamble/1-3-Attributes.tex}
+        
         \subsection*{The BLS\_type attribute}\addcontentsline{toc}{subsection}{The BLS\_type attribute}\label{subsec:preamble.file_structure.complete_structure}
             \input{tex/00-Preamble/1-4-BLS_type.tex}
+        
         \subsection*{A base example}\addcontentsline{toc}{subsection}{A base example}\label{subsec:preamble.file_structure.some_examples}
             \input{tex/00-Preamble/1-5-Some_examples.tex}
 
@@ -112,20 +116,20 @@
 
 
 \mypart{HDF5\_BLS package tutorial}\label{chapter:tutorial}
-    \chapter{Installation}
-        \input{tex/01-Tutorial/1-HDF5_BLS/1-Installation.tex}
+    \chapter*{Installation and presentation}\addcontentsline{toc}{chapter}{Installation and presentation}
+        \input{tex/01-Tutorial/1-HDF5_BLS/0-Installation.tex}
         
-    \chapter{The Wrapper object}
-        \input{tex/01-Tutorial/1-HDF5_BLS/2-Wrapper.tex}
+    \chapter{Initialization of the Wrapper object - creating or opening a HDF5 file}
+        \input{tex/01-Tutorial/1-HDF5_BLS/1-Initialization.tex}
 
-        \section{Initialization of the Wrapper object - creating or opening a HDF5 file}
-            \input{tex/01-Tutorial/1-HDF5_BLS/2-Wrapper/1-Initialization.tex}
+    \chapter{Adding arrays to the HDF5 file using the Wrapper object}
+        \input{tex/01-Tutorial/1-HDF5_BLS/2-Adding_data.tex}
 
-        \section{Adding data to the HDF5 file using the Wrapper object}
-            \input{tex/01-Tutorial/1-HDF5_BLS/2-Wrapper/2-Adding_data.tex}
+    \chapter{Importing data to the HDF5 file using the Wrapper object}
+        \input{tex/01-Tutorial/1-HDF5_BLS/3-Import_file.tex}
 
-        \section{Import or combinine HDF5 files using the Wrapper object}
-            \input{tex/01-Tutorial/1-HDF5_BLS/2-Wrapper/3-Merge_combine.tex}
+    \chapter{Import or combinine HDF5 files using the Wrapper object}
+        \input{tex/01-Tutorial/1-HDF5_BLS/4-Merge_combine.tex}
 
 
 \mypart{HDF5\_BLS GUI tutorial}
@@ -156,7 +160,7 @@
             \input{tex/02-Development_guide/1-5-Console_Methods.tex}
 
     
-    \chapter{Load data} \label{sec:load_data}
+    \chapter{Load data} \label{chap:load_data}
         \input{tex/02-Development_guide/2-Orientation.tex}
         \section{Adding a user-specific function to an already supported format} \label{subsec:load_data.user_specific}
             \input{tex/02-Development_guide/2-1-User_specific_supported.tex}

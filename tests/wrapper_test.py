@@ -3,7 +3,6 @@ import os
 import inspect
 import numpy as np
 import sys
-import numpy as np
 
 directory = os.path.dirname(os.path.realpath(__file__)).split("/")[:-1]
 directory = "/".join(directory)
@@ -147,13 +146,16 @@ def test_add_dictionnary():
                           "Data":np.linspace(0,10,50), 
                           "Unit":"um",
                           "Dim_start":0, 
-                          "Dim_end":1}}
+                          "Dim_end":1},
+           "Attributes": {"SPECTROMETER.Type": "TFP",
+                          "SAMPLE.Name": "Water"}}
     # Testing adding data without specifying anything
     w.add_dictionnary(dic)
     with h5py.File(directory+"/test_1.h5", 'r') as file:
         assert "Data_0" in list(file["Brillouin"].keys()), f"The group 'Data_0' does not exist in the file"
         assert file["Brillouin"]["Data_0"].attrs["Brillouin_type"] == "Measure", f"The group 'Data_0' does not have the right Brillouin_type"
         assert file["Brillouin"]["Data_0"]["Measure Water raw"].shape == (50,50,100), f"The dataset 'Raw_data' does not have the right shape"
+        assert file["Brillouin"]["Data_0"].attrs["SPECTROMETER.Type"] == "TFP", f"The dataset 'Raw_data' does not have the right SPECTROMETER.Type"
     # Testing adding data to a parent group that doesn't exist
     try: w.add_dictionnary(dic, parent_group="Wrong_group")
     except WrapperError_StructureError:pass
@@ -163,12 +165,14 @@ def test_add_dictionnary():
         assert "Data_1" in list(file["Brillouin"].keys()), f"The group 'Data_0' does not exist in the file"
         assert file["Brillouin"]["Data_1"].attrs["Brillouin_type"] == "Measure", f"The group 'Data_0' does not have the right Brillouin_type"
         assert file["Brillouin"]["Data_1"]["Measure Water raw"].shape == (50,50,100), f"The dataset 'Raw_data' does not have the right shape"
+        assert file["Brillouin"]["Data_1"].attrs["SPECTROMETER.Type"] == "TFP", f"The dataset 'Raw_data' does not have the right SPECTROMETER.Type"
     # Testing adding data by creating a new group and specifying its name
     w.add_dictionnary(dic, parent_group="Brillouin", name_group="Test")
     with h5py.File(directory+"/test_1.h5", 'r') as file:
         assert "Test" in list(file["Brillouin"].keys()), f"The group 'Test' does not exist in the file"
         assert file["Brillouin"]["Test"].attrs["Brillouin_type"] == "Measure", f"The group 'Test' does not have the right Brillouin_type"
         assert file["Brillouin"]["Test"]["Measure Water raw"].shape == (50,50,100), f"The dataset 'Raw_data' does not have the right shape"
+        assert file["Brillouin"]["Test"].attrs["SPECTROMETER.Type"] == "TFP", f"The dataset 'Raw_data' does not have the right SPECTROMETER.Type"
     # Testing adding data to a calibration group
     dic2 = {"PSD": {"Name": "Measure Water PSD",
                         "Data": np.random.random((50,50,100))},
@@ -344,6 +348,25 @@ def test_delete_element():
         assert len(file["Brillouin"]) == 0, f"The dataset 'Measure Water raw' still exists in the file"
     os.remove(directory+"/test_1.h5")
 
+def test_import_raw_data():
+    # Initialize the wrapper
+    directory = os.path.dirname(os.path.realpath(__file__))
+    w = Wrapper(filepath=directory+"/test_1.h5")
+    # Check that the function fails if the file to load doesn't exist
+    try: w.import_file(filepath="path/to/file.txt", parent_group="Brillouin/Test")
+    except WrapperError_FileNotFound: pass
+    # Import test data
+    # self, filepath, parent_group=None, creator = None, parameters = None, name=None, reshape = None, overwrite = False
+
+    w.import_file(filepath=f"{directory}/test_data/example_andor.sif", 
+                  parent_group="Brillouin/Test")
+    with h5py.File(directory+"/test_1.h5", 'r') as file:
+        assert "Test" in file["Brillouin"], f"The group 'Test' does not exist in the file"
+        assert "Raw data" in file["Brillouin"]["Test"], f"The dataset 'Raw_data' does not exist in the file"
+    # Delete the temporary file
+    # os.remove(directory+"/test_1.h5")
+    
+
 
 def test_get_attributes():
     # Initialize the wrapper
@@ -423,6 +446,7 @@ if __name__ == "__main__":
     test_add_treated_data()
     test_create_group()
     test_delete_element()
+    test_import_raw_data()
 
     # test_set_attributes()
     # test_get_attributes()

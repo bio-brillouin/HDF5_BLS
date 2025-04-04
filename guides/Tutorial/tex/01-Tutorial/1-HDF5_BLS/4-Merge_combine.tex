@@ -8,11 +8,6 @@
     wrp = Wrapper()
     wrp.add_hdf5(filepath = "path/to/file.h5", parent_group = "Brillouin")
 \end{lstlisting}
-    \end{itemize}
-\end{tcolorbox}
-
-\begin{tcolorbox}
-    \begin{itemize}
         \item \textbf{Combining:} We can also combine two HDF5 files into a single one. This means that we create a new HDF5 file where all the groups under the "Brillouin" group of the two files will be stored under the "Brillouin" group of the resulting file. This is done using the \hyperref[subsec:wrapper.__add__]{\_\_add\_\_} dunder method, or simply with the "+" operator:
 \begin{lstlisting}
     wrp1 = Wrapper()

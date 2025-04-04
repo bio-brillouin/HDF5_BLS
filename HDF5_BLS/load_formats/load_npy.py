@@ -19,5 +19,6 @@ def load_npy_base(filepath):
     name = ".".join(os.path.basename(filepath).split(".")[:-1])
     attributes['FILEPROP.Name'] = name
 
-    dic = {"Data": data, "Attributes": attributes}
+    dic = {"Raw_data":{"Name": "Raw_data", "Data": data}, 
+           "Attributes": attributes}
     return dic

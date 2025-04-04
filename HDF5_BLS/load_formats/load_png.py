@@ -3,7 +3,7 @@ from PIL import Image
 import numpy as np
 
 
-def load_tiff_base(filepath, parameters = None):
+def load_png_base(filepath, parameters = None):
     """Loads files obtained with the GHOST software
 
     Parameters

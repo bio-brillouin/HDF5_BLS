@@ -8,6 +8,7 @@ import pandas as pd
 
 # from HDF5_BLS.load_data import load_general
 from HDF5_BLS.WrapperError import *
+from HDF5_BLS.load_data import load_general
 HDF5_BLS_Version = "1.0"
 
 
@@ -290,6 +291,8 @@ class Wrapper:
             Raises an error if the group already exists in the parent group.
         WrapperError_ArgumentType
             Raises an error if arguments given to the function do not match the expected type.
+        WrapperError_AttributeError
+            Raises an error if the keys of the dictionnary do not match the expected keys.
         """
         # If the parent group is not specified, we set it to "Brillouin", which is the top group of the file for Brillouin spectra
         if parent_group is None: parent_group = "Brillouin"
@@ -321,11 +324,11 @@ class Wrapper:
                             for e in group[name_group]:
                                 if group[name_group][e].attrs["Brillouin_type"] == "Raw_data":
                                     if overwrite:
-                                        self.delete_element(path = f"{parent_group}/{name_group}/{e.name}")
+                                        self.delete_element(path = f"{parent_group}/{name_group}/{e}")
                                     else:
                                         raise WrapperError_Overwrite(f"A raw data is already in the group '{name_group}' located at '{parent_group}'.")
                                     break
-                        if dic[key]["Name"] in group[name_group].keys():
+                        if "Name" in dic[key].keys() and dic[key]["Name"] in group[name_group].keys():
                             if overwrite:
                                 self.delete_element(path = f"{parent_group}/{name_group}/{dic[key]['Name']}")
                             else:
@@ -337,9 +340,9 @@ class Wrapper:
         # Adding the data and the abscissa to the wrapper
         with h5py.File(self.filepath, 'a') as file:
             new_group = file[parent_group][name_group]
-            new_group.attrs["Brillouin_type"] = brillouin_type
+            new_group.attrs["Brillouin_type"] = brillouin_type # We add the brillouin_type here to ensure overwrite
             for key, value in dic.items():
-                if type(value) is dict and key in ["Raw_data", "PSD", "Frequency", "Shift", "Shift_std", "Linewidth", "Linewidth_std"]:
+                if type(value) is dict and key in ["Raw_data", "Other", "PSD", "Frequency", "Shift", "Shift_std", "Linewidth", "Linewidth_std"]:
                     name_dataset = value["Name"]
                     value = np.array(value["Data"])
                     dataset = new_group.create_dataset(name_dataset, data=np.array(value))
@@ -350,6 +353,15 @@ class Wrapper:
                     dataset = new_group.create_dataset(name_dataset, data=np.array(value["Data"]))
                     dataset.attrs["Brillouin_type"] = "Abscissa_" + str(value["Dim_start"]) + "_" + str(value["Dim_end"])
                     dataset.attrs["Unit"] = value["Unit"]
+                elif key == "Attributes":
+                    for k, v in value.items():
+                        if k in new_group.attrs.keys():
+                            if overwrite:
+                                new_group.attrs.modify(k, v)
+                            else:
+                                raise WrapperError_Overwrite(f"The attribute '{k}' already exists in the group '{name_group}'.")
+                        else:
+                            new_group.attrs.create(k, v)
                 else:
                     raise WrapperError_ArgumentType(f"The key '{key}' is not recognized.")
         
@@ -783,6 +795,95 @@ class Wrapper:
         self.create_group(name_group, parent_group=parent_group)
 
         self.add_dictionnary(dic, parent_group = parent_group, name_group = name_group, overwrite = overwrite)
+
+    def import_file(self, filepath, parent_group=None, creator = None, parameters = None, reshape = None, overwrite = False):
+        """Adds a raw data array to the wrapper from a file.
+        
+        Parameters
+        ----------
+        filepath : str
+            The filepath to the raw data file to import.
+        parent_group : str, optional
+            The parent group where to store the data of the HDF5 file. The format of this group should be "Brillouin/Measure".
+        creator : str, optional
+            The structure of the file that has to be loaded. If None, a LoadError can be raised.
+        parameters : dict, optional
+            The parameters that are to be used to import the data correctly.  If None, a LoadError can be raised.
+        reshape : tuple, optional
+            The new shape of the array, by default None means that the shape is not changed
+        overwrite : bool, optional 
+            A parameter to indicate whether the dataset should be overwritten if a dataset with same name already exist or not, by default False - not overwritten. 
+        """
+        if not os.path.isfile(filepath):
+            raise WrapperError_FileNotFound(f"The file '{filepath}' does not exist.")
+
+        dic = load_general(filepath,
+                            creator=creator,
+                            parameters=parameters)
+        
+        parent_group = parent_group.split("/")
+        name_group = parent_group.pop(-1)
+        parent_group = "/".join(parent_group)
+
+        if reshape is not None: 
+            dic["Raw_data"]["Data"] = np.reshape(dic["Raw_data"]["Data"], reshape)
+        self.add_dictionnary(dic=dic,
+                             parent_group=parent_group,
+                             name_group=name_group,
+                             brillouin_type="Measure",
+                             overwrite=overwrite)
+
+    def import_other(self, filepath, parent_group=None, name = None, creator = None, parameters = None, reshape = None, overwrite = False):
+        """Adds a raw data array to the wrapper from a file.
+        
+        Parameters
+        ----------
+        filepath : str
+            The filepath to the raw data file to import.
+        parent_group : str, optional
+            The parent group where to store the data of the HDF5 file. The format of this group should be "Brillouin/Measure".
+        name : str, optional
+            The name of the dataset, by default None.
+        creator : str, optional
+            The structure of the file that has to be loaded. If None, a LoadError can be raised.
+        parameters : dict, optional
+            The parameters that are to be used to import the data correctly.  If None, a LoadError can be raised.
+        reshape : tuple, optional
+            The new shape of the array, by default None means that the shape is not changed
+        overwrite : bool, optional 
+            A parameter to indicate whether the dataset should be overwritten if a dataset with same name already exist or not, by default False - not overwritten. 
+        """
+        if not os.path.isfile(filepath):
+            raise WrapperError_FileNotFound(f"The file '{filepath}' does not exist.")
+        
+        with h5py.File(self.filepath, 'r') as f:
+            if name in f[parent_group].keys():
+                i=0
+                while f"{name}_{i}" in f[parent_group].keys(): i+=1
+                name = f"{name}_{i}"
+                print(i)
+                i+=1
+                
+        dic = load_general(filepath,
+                            creator=creator,
+                            parameters=parameters)
+        
+        parent_group = parent_group.split("/")
+        name_group = parent_group.pop(-1)
+        parent_group = "/".join(parent_group)
+
+        if reshape is not None: 
+            dic["Raw_data"]["Data"] = np.reshape(dic["Raw_data"]["Data"], reshape)
+
+        dic["Raw_data"]["Name"] = name
+        dic_temp = {"Other": dic["Raw_data"]}
+        
+        self.add_dictionnary(dic=dic_temp,
+                             parent_group=parent_group,
+                             name_group=name_group,
+                             brillouin_type="Measure",
+                             overwrite=overwrite)
+
 
 
 

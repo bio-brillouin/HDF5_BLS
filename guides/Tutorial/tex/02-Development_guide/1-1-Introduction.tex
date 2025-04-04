@@ -47,6 +47,11 @@ To simplify however the creation and use of the file, these other methods also e
     \item \hyperref[subsec:wrapper.add_psd]{add\_psd}: A method to add a PSD to the file.
     \item \hyperref[subsec:wrapper.add_raw_data]{add\_raw\_data}: A method to add raw data to the file.
     \item \hyperref[subsec:wrapper.add_treated_data]{add\_treated\_data}: A method to add a shift, linewidth and their respective standard deviations to the file.
+    \item \hyperref[subsec:wrapper.import_abscissa]{import\_abscissa}: A method to import an abscissa array to the file.
+    \item \hyperref[subsec:wrapper.import_frequency]{import\_frequency}: A method to import a frequency array to the file.
+    \item \hyperref[subsec:wrapper.import_psd]{import\_psd}: A method to import a PSD array to the file.
+    \item \hyperref[subsec:wrapper.import_raw_data]{import\_raw\_data}: A method to import raw data to the file.
+    \item \hyperref[subsec:wrapper.import_treated_data]{import\_treated\_data}: A method to import the data arrays resulting from a treatment.
     \item \hyperref[subsec:wrapper.import_properties_data]{import\_properties\_data}: A method to import the attributes of a dataset or group from a spreadsheet.
     \item \hyperref[subsec:wrapper.update_property]{update\_property}: A method to update the attributes of a dataset or group.
 \end{itemize}
@@ -58,4 +63,12 @@ Additionnaly, the "Wrapper" class has a few methods specifically to interact wit
     \item \hyperref[subsec:wrapper.print_metadata]{print\_metadata}: A method to print all the attributes of a dataset or group at a given path in the terminal.
 \end{itemize}
 
+\paragraph{Wrapper Errors:}
+The "Wrapper" class has a number of errors that can be raised by its methods:
+\begin{itemize}
+    \item \textbf{WrapperError\_StructureError}: Raised when a problem occurs with the structure of the file.
+    \item \textbf{WrapperError\_FileNotFound}: Raised when a file stored in the disk is not found.
+    \item \textbf{WrapperError\_Overwrite}: Raised when a group or dataset already exists in the file.
+    \item \textbf{WrapperError\_ArgumentType}: Raised when the arguments given to the function are not of the expected type.
+\end{itemize}
  

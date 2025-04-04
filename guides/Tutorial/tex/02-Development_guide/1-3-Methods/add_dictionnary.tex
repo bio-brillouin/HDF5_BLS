@@ -10,7 +10,7 @@ def add_dictionnary(self, dic, parent_group = None, name_group = None, brillouin
     \item \textbf{dic}: The dictionnary to add to the wrapper. This dictionnary has a preferred nomenclature for its keys that will allow the addition of the data with specific attributes to our file format. These keys are identical to the Brillouin\_types for dataset defined in \hyperref[subsec:preamble.file_structure.complete_structure]{preamble}. Each element of the dictionnary is another dictionnary with the following keys:
     \begin{itemize}
         \item "Name": The name of the dataset that will be stored. This can be any name that the user wants and find useful.
-        \item "Data": The array that will be stored
+        \item "Data": The array that will be stored, or the dictionnary if we are adding attributes
         \item "Unit": \textit{Specific to "Abscissa\_..." keys}. The unit of the abscissa
         \item "Dim\_start": \textit{Specific to "Abscissa\_..." keys}. The first dimension to which the abscissa corresponds.
         \item "Dim\_end": \textit{Specific to "Abscissa\_..." keys}. The last dimension (excluded) to which the abscissa corresponds
@@ -55,7 +55,9 @@ dic_treated = {
         "Data": np.array([...]),
         "Unit": "microns",
         "Dim_start": 1,
-        "Dim_end": 2}
+        "Dim_end": 2},
+    "Attributes": {"MEASURE.Sample": "Water",
+                   "SPECTROMETER.Type": "TFP"}
 } # a dictionnary of measures analyzed by a custom treatment - for example if you have your own data and just want to send them following the library's format.
 \end{lstlisting}
 
@@ -89,9 +91,10 @@ The function's logic is represented in the following flowchart:
         \node (addData) [process, below of=checkExists, yshift=-5cm, xshift=0cm, align=center] {Add each dictionnary \\ element to file in a\\ new group with \\ name \textit{name\_group}};
         \node (iterateKeys) [process, below of=setParent, yshift=-1.5cm, align=center] {For element \textit{e} in dic};
         \node (nameOverwrite) [process, below of=iterateKeys, yshift=0cm, xshift=1.5cm, align=center] {Add/replace element\\to existing group};
-        \node (raiseError3) [startstop, below of=iterateKeys, yshift=-2cm, xshift=-1cm, align=center] {WrapperError\_Overwrite};
+        \node (raiseError3) [startstop, below of=iterateKeys, yshift=-2cm, xshift=-0.5cm, align=center] {WrapperError\_Overwrite};
         \node (addAbscissa) [process, below of=addData, yshift=-2cm, align=center] {Create abscissa dataset\\ if element is dictionnary\\ and keys are right. Raises\\ WrapperError\_ArgumentType \\if error};
-        \node (raiseError4) [startstop, left of=addAbscissa, xshift=-3cm, align=center] {WrapperError\_AttributeError};
+        \node (raiseError4) [startstop, left of=addAbscissa, xshift=-2.5cm, yshift=2cm, align=center] {WrapperError\_AttributeError};
+        \node (addAttributes) [process, left of=addAbscissa, xshift=-2cm, yshift=-1cm, align=center] {Add attributes to\\ the dataset};
         \node (addNormal) [process, right of=addAbscissa, xshift=2.5cm, align=center] {Create dataset\\associated to element};
         \node (end) [startstop, below of=addAbscissa, align=center] {End if everything went well\\ WrapperError if not};
 
@@ -102,18 +105,20 @@ The function's logic is represented in the following flowchart:
         \draw [arrow] (checkGroup) -| node[anchor=west] {is not group} (getGroup);
         \draw [arrow] (checkGroup) |- node[anchor=south, xshift=-1.3cm, align=center] {name\_group\\ in group}(iterateKeys);
         \draw [arrow] ++(iterateKeys.south) |- +(0cm,-0.5cm) -| node[anchor=west, yshift=-1.5cm, xshift=-3.5cm, align=center] {((e["Name"] in group)\\or (e="Raw\_data" \\ and another raw \\  data in group)) \\and overwrite=False} (raiseError3.north);
-        \draw [arrow] ++(iterateKeys.south) |- +(-1cm,-0.5cm) -| node[anchor=west, yshift=0cm, xshift=0cm, align=center] {else} (nameOverwrite.north);
+        \draw [arrow] ++(iterateKeys.south) |- +(0cm,-0.5cm) -| node[anchor=west, yshift=0cm, xshift=0cm, align=center] {else} (nameOverwrite.north);
         \draw [arrow] (raiseError2.south) -| (name0.north);
         \draw [arrow] ++(name0.east) -| +(0.5cm, 0cm)|- node[anchor=west, align=center, yshift=-0.5cm] {name\_group\\ already\\ in group} (raiseError2.east);
         \draw [arrow] (name0) |- node[anchor=west, align=center, xshift=0cm, yshift=0cm] {name\_group not\\ in group} (addData);
         \draw [arrow] ++(checkGroup.south) |- +(0cm, -2cm) -| node[anchor=west, align=center, yshift=-1.8cm] {name\_group not\\ in group} (addData.north);
         \draw [line] (setParent.south) |- (getGroup.west);
-        \draw [arrow] (addData) -- node[anchor=west, align=center, yshift=-0.5cm] {dictionary element is dict\\ with key "Abscissa\_..."} (addAbscissa);
-        \draw [arrow] ++(addData.south) |- +(0cm, -1cm) -| node[anchor=west, align=center, yshift=-1cm] {dictionary element\\ is other} (raiseError4.north);
+        \draw [arrow] (addData) -- node[anchor=west, align=center, yshift=-0.5cm] {element is dict\\ with key "Abscissa\_..."} (addAbscissa);
+        \draw [arrow] ++(addData) |- +(0cm,-2.6cm) -| node[anchor=east, align=center, yshift=-1cm] {element\\ is dict with\\ key "Attributes"} (addAttributes);
+        \draw [arrow] ++(addData.south) |- node[anchor=south, align=center, xshift=-1cm, yshift=-0.4cm] {element\\ is other} (raiseError4.east);
         \draw [arrow] ++(nameOverwrite.south)|- +(0cm, -2.3cm) -|  (addAbscissa.north);
-        \draw [arrow] ++(addData.south) |- +(0cm, -1cm) -| node[anchor=north, align=center, xshift=2.5cm, yshift=0cm] {dictionary element is dict\\ with key in "Raw\_data", "PSD",\\"Frequency", "Shift", "Shift\_std"\\ "Linewidth" or "Linewidth\_std"} (addNormal.north);
+        \draw [arrow] ++(addData.south) |- +(0cm, -1cm) -| node[anchor=north, align=center, xshift=2.5cm, yshift=0cm] {element is dict\\ with key in "Raw\_data", "PSD",\\"Frequency", "Shift", "Shift\_std"\\ "Linewidth", "Linewidth\_std" \\ or "Other"} (addNormal.north);
         \draw [arrow] (addAbscissa) -- (end);
         \draw [arrow] (addNormal) |- (end);
+        \draw [arrow] (addAttributes) |- (end);
     \end{tikzpicture}
     \caption{Flowchart of the add\_dictionnary method}
 \end{figure}

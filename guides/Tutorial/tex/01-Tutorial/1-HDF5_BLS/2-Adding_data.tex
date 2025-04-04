@@ -83,7 +83,9 @@ wrp.add_treated_data(shift = shift,
 \end{itemize}
 \end{tcolorbox}
 
-Adding datasets to the HDF5 file through the HDF5\_BLS package is always handled by the \hyperref[subsec:wrapper.add_dictionnary]\texttt{Wrapper.add\_dictionnary} method. This method is complex and not user-friendly. There are therefore other derived methods that are meant to simplify the process of adding data to the HDF5 file, specific to each type of data.
+\section{An overview}
+
+Adding datasets to the HDF5 file through the HDF5\_BLS package is always handled by the \hyperref[subsec:wrapper.add_dictionnary]{Wrapper.add\_ dictionnary} method. This method is complex and not user-friendly. There are therefore other derived methods that are meant to simplify the process of adding data to the HDF5 file, specific to each type of data.
 
 In this tutorial, we present only the derived methods that are specific to each type of data. To get a better understanding on how to use the add\_dictionnary method, please refer to the \hyperref[subsec:wrapper.add_dictionnary]{developper guide section}.
 
@@ -108,6 +110,7 @@ From there, 5 functions are available to add the dataset to the HDF5 file:
     \item \hyperref[subsec:wrapper.add_treated_data]{add\_treated\_data}: To add a shift, linewidth and their respective standard deviations to a dedicated "Treatment" group
 \end{itemize}
 
+\section{The logic behind the adding functions}
 We have decided to separate the addition of a PSD and a Frequency array as in some setups, the Frequency array can be common to a range of experiments, like when a TFP is used.
 
 All these functions have the same approach to the process of adding a dataset to a group:
@@ -157,7 +160,7 @@ wrp.add_frequency(freq,
     \rule{15cm}{0.4pt}
 \end{center}
 
-
+\section{Adding treated data or abscissa}
 Now for adding abscissa and treated data, we need to improve our approach. For abscissa, we need to be able to specify the dimension of the PSD and treated arrays to which the abscissa corresponds to and the unit of the axis. For treated data, we need to add more than just one dataset to the group. 
 
 Let's look at the flowchart describing how to use the \hyperref[subsec:wrapper.add_abscissa]{add\_abscissa} method:
