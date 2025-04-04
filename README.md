@@ -2,14 +2,16 @@
 
 **HDF5_BLS** is a Python library for handling Brillouin Light Scattering (BLS) data and converting it into a standardized HDF5 format. The library provides functions to open raw data files, define and import abscissa, add metadata, and save the organized data in HDF5 files.
 The library is currently compatible with the following file formats:
-- "*.dat" files: spectra returned by the GHOST software or obtained using Time Domain measurements
-- "*.npy" files: an arbitrary numpy array
-- "*.sif" files: image files obtained with Andor cameras
+- "*.dat" files: dat spectra obtained with:
+    - [GHOST](https://tablestable.com/en/downloads/) software 
+    - Time Domain measures (format defined by Sal La Cavera)
+- "*.npy" files: a numpy file
+- "*.sif" files: image files obtained with [Andor](https://andor.oxinst.com) cameras
 - All image files supported by the Pillow library (see [this link](https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html#write-only-formats))
 
 ## GUI
 
-This V1.0.0 version of the library is not yet compatible with the GUI. However, the GUI is currently under development and will be released in the next version of the library.
+The GUI is not yet compatible with v1.0.0.
 
 ## Library 
 
