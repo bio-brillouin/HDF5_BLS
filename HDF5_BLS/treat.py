@@ -102,7 +102,7 @@ class Models():
         """
         func = b + a*(gamma*nu0**2)/((nu**2-nu0**2)**2+gamma*nu0**2)
         if IR is not None: return np.convolve(func, IR, "same")
-        return func
+        return func 
     
     def model_DHO_elastic(self, nu, ae, be, a, nu0, gamma, IR = None):
         """Model of a simple lorentzian lineshape

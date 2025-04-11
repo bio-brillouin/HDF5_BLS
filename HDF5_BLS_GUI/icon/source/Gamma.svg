@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="81mm"
+   height="81mm"
+   viewBox="0 0 81 81"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25)"
+   sodipodi:docname="Gamma.svg"
+   inkscape:export-filename="../Gamma.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="0.27962663"
+     inkscape:cx="-284.30769"
+     inkscape:cy="-112.65022"
+     inkscape:window-width="1512"
+     inkscape:window-height="834"
+     inkscape:window-x="0"
+     inkscape:window-y="38"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1">
+    <marker
+       style="overflow:visible"
+       id="Triangle"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.5)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path135" />
+    </marker>
+    <linearGradient
+       id="linearGradient10"
+       inkscape:collect="always">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop10" />
+      <stop
+         style="stop-color:#000000;stop-opacity:0;"
+         offset="1"
+         id="stop11" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient8"
+       inkscape:collect="always">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop8" />
+      <stop
+         style="stop-color:#0005ff;stop-opacity:1;"
+         offset="1"
+         id="stop9" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient8"
+       id="linearGradient9"
+       x1="-45.171295"
+       y1="56.643158"
+       x2="9.0840864"
+       y2="56.643158"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(81.015211,-0.08223297)" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient10"
+       id="radialGradient11"
+       cx="89.294075"
+       cy="65.765121"
+       fx="89.294075"
+       fy="65.765121"
+       r="12.213426"
+       gradientTransform="matrix(2.2258233,0,0,7.4525056,-112.04103,-435.23831)"
+       gradientUnits="userSpaceOnUse" />
+    <marker
+       style="overflow:visible"
+       id="Triangle-2"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.5)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path135-4" />
+    </marker>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-22.471605,-16.060925)">
+    <rect
+       style="fill:#ffffff;stroke-width:1"
+       id="rect3"
+       width="81"
+       height="81"
+       x="22.471605"
+       y="16.060925" />
+    <rect
+       style="fill:none;stroke:#ffffff;stroke-width:1"
+       id="rect1"
+       width="80"
+       height="80"
+       x="22.971605"
+       y="16.560925" />
+    <path
+       id="path28"
+       d="M 87.310941,22.985265 H 35.843914 v 3.020693 h 2.32358 c 7.667881,0 7.900221,1.161537 7.900221,4.647131 v 51.81571 c 0,3.485334 -0.23221,4.647145 -7.900221,4.647145 h -2.32358 v 3.02064 c 3.48537,-0.348909 11.153182,-0.348909 14.987101,-0.348909 4.066138,0 13.011955,0 16.613507,0.348909 v -3.02064 h -3.253073 c -9.410446,0 -9.410446,-1.277693 -9.410446,-4.763317 v -52.39661 c 0,-3.252966 0.232209,-3.950059 4.879529,-3.950059 h 10.107459 c 14.173812,0 16.265093,5.808922 17.77539,19.169501 h 2.555916 z m 0,0"
+       style="fill:url(#linearGradient9);fill-rule:nonzero;stroke:none;stroke-width:9.91397" />
+    <path
+       id="path28-8"
+       d="M 74.438627,29.409609 H 22.971605 v 3.020693 h 2.32358 c 7.66788,0 7.90022,1.161537 7.90022,4.647131 v 51.81571 c 0,3.485335 -0.23221,4.647145 -7.90022,4.647145 h -2.32358 v 3.02064 c 3.48537,-0.34891 11.15318,-0.34891 14.9871,-0.34891 4.06613,0 13.01195,0 16.6135,0.34891 v -3.02064 h -3.25307 c -9.41045,0 -9.41045,-1.27769 -9.41045,-4.763317 v -52.39661 c 0,-3.252966 0.23221,-3.950059 4.87953,-3.950059 h 10.10746 c 14.173814,0 16.265095,5.808922 17.775392,19.169501 h 2.555916 z m 0,0"
+       style="opacity:0.2;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:9.91397" />
+    <path
+       style="fill:none;stroke:url(#radialGradient11);stroke-width:1.22199;stroke-opacity:1"
+       d="m 59.858051,96.824248 c 0.624121,-0.0096 1.25049,-0.01911 1.874611,-0.03184 0.62412,-0.01273 1.250467,-0.02229 1.874588,-0.03789 0.624121,-0.01273 1.25049,-0.02865 1.874611,-0.04808 0.624121,-0.0191 1.250467,-0.03885 1.874588,-0.06273 0.624121,-0.02229 1.248242,-0.05063 1.874611,-0.08278 0.624121,-0.03216 1.248241,-0.06941 1.874588,-0.113352 0.624121,-0.04457 1.248242,-0.09679 1.874611,-0.160792 0.624121,-0.06463 1.248241,-0.140731 1.874588,-0.238801 0.624121,-0.09806 1.248242,-0.216193 1.872363,-0.37517 0.626369,-0.158882 1.250489,-0.355781 1.87461,-0.637502 0.626347,-0.281148 1.250468,-0.640877 1.874589,-1.205814 0.626369,-0.565002 1.250489,-1.30818 1.87461,-2.667081 0.626344,-1.358807 1.250464,-3.211897 1.874584,-7.361412 0.62637,-4.149519 1.25049,-12.320397 1.87462,-22.326056 0.62412,-10.005658 1.25046,-10.002589 1.87458,0 0.62412,10.002589 1.25049,18.171462 1.87461,22.326056 0.62413,4.15461 1.25047,6.001205 1.87459,7.361412 0.62412,1.360238 1.25049,2.101665 1.87461,2.667081 0.62412,0.565383 1.24825,0.924126 1.87459,1.205814 0.62412,0.281785 1.24824,0.478651 1.87461,0.637502 0.62412,0.158881 1.24824,0.277008 1.87459,0.37517 0.62412,0.09807 1.248237,0.174166 1.874607,0.238801 0.62412,0.064 1.24824,0.116212 1.87459,0.160792 0.62412,0.04394 1.24824,0.08151 1.87236,0.113352 0.62637,0.03216 1.25049,0.05954 1.87461,0.08278 0.62635,0.02548 1.25047,0.04457 1.87459,0.06273 0.62637,0.0191 1.25049,0.03407 1.87461,0.04808 0.62635,0.01592 1.25047,0.02548 1.87459,0.03789 0.62413,0.01273 1.25049,0.02229 1.87462,0.03184"
+       title="t 1/(1+t**2)"
+       id="path9" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Triangle)"
+       d="m 71.13345,75.398015 h 9.413275"
+       id="path16" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Triangle-2)"
+       d="M 102.56421,75.398015 H 93.15094"
+       id="path16-2" />
+  </g>
+</svg>

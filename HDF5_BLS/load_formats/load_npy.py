@@ -1,13 +1,15 @@
 import os
 import numpy as np
 
-def load_npy_base(filepath):
+def load_npy_base(filepath, brillouin_type = "Raw_data"):
     """Loads npy files
 
     Parameters
     ----------
     filepath : str                           
         The filepath to the npy file
+    brillouin_type : str, optional
+        The brillouin type of the file. Default is "Raw_data"
     
     Returns
     -------
@@ -19,6 +21,6 @@ def load_npy_base(filepath):
     name = ".".join(os.path.basename(filepath).split(".")[:-1])
     attributes['FILEPROP.Name'] = name
 
-    dic = {"Raw_data":{"Name": "Raw_data", "Data": data}, 
+    dic = {brillouin_type:{"Name": "Raw_data", "Data": data}, 
            "Attributes": attributes}
     return dic

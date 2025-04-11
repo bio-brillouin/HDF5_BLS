@@ -31,22 +31,22 @@ def load_sif_base(filepath, parameters = None):
 
     data, info = sif_parser.np_open(filepath)
 
-
     attributes['MEASURE.Exposure_(s)'] = str(info["ExposureTime"])
     attributes['SPECTROMETER.Detector_Model'] = info["DetectorType"]
     attributes['MEASURE.Date_of_measure'] = datetime.fromtimestamp(info["ExperimentTime"]).isoformat()
     attributes['FILEPROP.Name'] = name
 
-    if "shape" in parameters.keys(): 
-        try: data = data.reshape(parameters["shape"])
-        except: raise LoadError(f"The shape {parameters['shape']} is not compatible with the data.")
-    if "raster" in parameters.keys() and parameters["raster"]: 
-        for ax in parameters["raster"]: 
-            for i in range(data.shape[ax]):
-                if i % 2 == 1:  # Invert every second line
-                    data = data.swapaxes(0, ax)
-                    data[i] = data[i, ::-1]
-                    data = data.swapaxes(0, ax)
+    if not parameters is None:
+        if "shape" in parameters.keys(): 
+            try: data = data.reshape(parameters["shape"])
+            except: raise LoadError(f"The shape {parameters['shape']} is not compatible with the data.")
+        if "raster" in parameters.keys() and parameters["raster"]: 
+            for ax in parameters["raster"]: 
+                for i in range(data.shape[ax]):
+                    if i % 2 == 1:  # Invert every second line
+                        data = data.swapaxes(0, ax)
+                        data[i] = data[i, ::-1]
+                        data = data.swapaxes(0, ax)
                 
     dic = {"Raw_data":{"Name": "Raw data", "Data": data}, 
            "Attributes": attributes}

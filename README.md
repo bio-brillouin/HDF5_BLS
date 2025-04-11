@@ -11,7 +11,7 @@ The library is currently compatible with the following file formats:
 
 ## GUI
 
-The GUI is not yet compatible with v1.0.0.
+The GUI can only be used to create new files following the structure of v1.0.0. 
 
 ## Library 
 

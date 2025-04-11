@@ -3,8 +3,8 @@ from PIL import Image
 import numpy as np
 
 
-def load_image_base(filepath, parameters = None):
-    """Loads image files with the Pillow library
+def load_image_base(filepath, parameters = None, brillouin_type = "Other"):
+    """Loads image files with the Pillow library. Note that by default the Brillouin type is "Other". Please specify the Brillouin type in the parameters if you want to change it.
 
     Parameters
     ----------
@@ -38,6 +38,6 @@ def load_image_base(filepath, parameters = None):
         if "Grayscale" in parameters.keys() and parameters["Grayscale"]: 
             data = np.mean(data, axis = 2)
 
-    dic = {"Raw_data": {"Name": "Raw data", "Data": data}, 
+    dic = {brillouin_type: {"Name": "Raw data", "Data": data}, 
            "Attributes": attributes}
     return dic

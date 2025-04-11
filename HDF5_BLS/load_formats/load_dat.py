@@ -1,5 +1,7 @@
 import os
 import numpy as np
+from scipy.signal import butter, filtfilt
+from numpy.polynomial import Chebyshev
 
 from HDF5_BLS.load_formats.errors import LoadError_parameters
 
@@ -44,7 +46,7 @@ def load_dat_GHOST(filepath):
     attributes['MEASURE.Sample'] = metadata["Sample"]
     attributes['SPECTROMETER.Scanning_Strategy'] = "point_scanning"
     attributes['SPECTROMETER.Type'] = "TFP"
-    attributes['SPECTROMETER.Illumination_Type'] = "CW"
+    attributes['SPECTROMETER.Illumination_Type'] = "CW Laser"
     attributes['SPECTROMETER.Detector_Type'] = "Photon Counter"
     attributes['SPECTROMETER.Filtering_Module'] = "None"
     attributes['SPECTROMETER.Wavelength_(nm)'] = metadata["Wavelength"]
@@ -134,8 +136,8 @@ def load_dat_TimeDomain(filepath, parameters = None):
             Ny_steps = Ny_steps - 1
 
         # NOTE: 
-        #     x_um = np.arange(attribute["TIMEDOMAIN.Nx_steps"]) * attribute["TIMEDOMAIN.dx_um"]
-        #     y_um = np.arange(attribute["TIMEDOMAIN.Ny_steps"]) * attribute["TIMEDOMAIN.dy_um"]
+        #     x_um = np.arange(attribute["MEASURE.Nx_steps"]) * attribute["MEASURE.dx_um"]
+        #     y_um = np.arange(attribute["MEASURE.Ny_steps"]) * attribute["MEASURE.dy_um"]
 
         attributes["MEASURE.Nx_steps"] = int(Nx_steps)
         attributes["MEASURE.Ny_steps"] = int(Ny_steps)
@@ -203,7 +205,7 @@ def load_dat_TimeDomain(filepath, parameters = None):
         # Find copeak and create signal of ROI
         signal_length = int(attributes["MEASURE.signal_length"])
         signal_window = np.arange(signal_length)
-        if "TIMEDOMAIN.forced_copeak" in attributes and attributes["MEASURE.forced_copeak"] == 'yes': # Forcing copeak location
+        if "MEASURE.forced_copeak" in attributes and attributes["MEASURE.forced_copeak"] == 'yes': # Forcing copeak location
             Nx_steps = int(attributes["MEASURE.Nx_steps"])
             Ny_steps = int(attributes["MEASURE.Ny_steps"])  
             copeak_val = attributes["MEASURE.copeak_start"]
@@ -248,6 +250,108 @@ def load_dat_TimeDomain(filepath, parameters = None):
 
         return data_t, dt, process
 
+    def LPfilter(attributes, data_in, dt):
+        # Sampling frequency (Hz) from the time vector
+        fs = 1 / dt
+        # Normalize the cutoff frequency by Nyquist frequency (fs / 2)
+        nyquist_freq = fs / 2
+        # Low pass filter
+        if "MEASURE.LPfilter" in attributes:
+            butter_order = attributes["MEASURE.butter_order"]
+            # Cutoff frequency for lowpass filter
+            LP = attributes["MEASURE.LPfilter"] * 1e9
+            # Normalize the cutoff frequency by Nyquist frequency (fs / 2)
+            normalized_cutoff = LP / nyquist_freq  
+            # Design a Butterworth lowpass filter
+            b, a = butter(butter_order, normalized_cutoff, btype='low')
+            for i in range(data_in.shape[0]):  
+                for j in range(data_in.shape[1]):  
+                    # Apply the filter using filtfilt (zero-phase filtering)
+                    data_in[i, j, :] = filtfilt(b, a, data_in[i, j, :])
+            return data_in   
+
+    # Butterworth-based high pass filter
+    def HPfilter(attributes, data_in, dt):
+        # Sampling frequency (Hz) from the time vector
+        fs = 1 / dt
+        # Normalize the cutoff frequency by Nyquist frequency (fs / 2)
+        nyquist_freq = fs / 2
+        # Low pass filter        
+        if "MEASURE.HPfilter" in attributes:
+            butter_order = attributes["MEASURE.butter_order"]
+            HP = attributes["MEASURE.HPfilter"] * 1e9
+            normalized_cutoff = HP / nyquist_freq  
+            b, a = butter(butter_order, normalized_cutoff, btype='high')
+            for i in range(data_in.shape[0]):  
+                for j in range(data_in.shape[1]):  
+                    data_in[i, j, :] = filtfilt(b, a, data_in[i, j, :]) 
+        return data_in 
+
+    # To remove the thermal background envelope, fit and subtract a polynomial (Chebyshev model currently)
+    def polyfit_removal(attributes, data_in):
+        # polynomial fit and removal
+        degree = attributes["polyfit_order"] 
+        # Create x values for fitting (scaled to the range [-1, 1])
+        xfit = np.linspace(-1, 1, data_in.shape[2])  
+        # Create a placeholder for fitted coefficients (for each fit along the third dimension)
+        coeffs = np.zeros((data_in.shape[0], data_in.shape[1], degree + 1))  
+        mod_poly = np.zeros((data_in.shape[0], data_in.shape[1], len(xfit)))  
+        # Fit a Chebyshev polynomial to each slice along the third dimension
+        for i in range(data_in.shape[0]):
+            for j in range(data_in.shape[1]):
+                # Fit a Chebyshev polynomial of degree `degree` to the data in the third dimension
+                cheb_fit = Chebyshev.fit(xfit, data_in[i, j, :], degree)
+                coeffs[i, j, :] = cheb_fit.coef  # Store the coefficients
+                # Create the Chebyshev object for the current coefficients
+                cheb_poly = Chebyshev(coeffs[i, j, :])        
+                # Evaluate the polynomial at the new points
+                mod_poly[i, j, :] = cheb_poly(xfit)# Initialize an array to store the evaluated values
+        # Subtract polynomial fit from signal          
+        data_pro = data_in - mod_poly
+        return data_pro, mod_poly      
+
+    # Use a Fast Fourier Transform to convert the time signal into the frequency domain.
+    # Zero padding is used to increase the sampling rate in the freq domain
+    def take_FFT(attributes, data_in, dt):
+        zp = attributes["MEASURE.zp"] # zero padding coefficient
+        fmin_search = attributes["MEASURE.fmin"] * 1e9
+        fmax_search = attributes["MEASURE.fmax"] * 1e9
+        fmin_plot = attributes["MEASURE.fmin_plot"] * 1e9
+        fmax_plot = attributes["MEASURE.fmax_plot"] * 1e9
+        Nx_steps = attributes["MEASURE.Nx_steps"]
+        Ny_steps = attributes["MEASURE.Ny_steps"]
+        fB_GHz = np.zeros((Nx_steps, Ny_steps))
+        for i in range(data_in.shape[0]):  
+            for j in range(data_in.shape[1]): 
+                signal_now = data_in[i, j, :]
+                fft_out = (2/len(signal_now))*abs(np.fft.fft(signal_now, zp)) # calculate zero-padded and amplitude normalised fft
+                fft_shifted= np.fft.fftshift(fft_out)
+                if i == 0 and j == 0:
+                    freqs = np.fft.fftfreq(len(fft_shifted), d=dt) # calculate the frequency axis information based on the time-step
+                    freqs_shifted = np.fft.fftshift(freqs)
+                    # Below separates frequency spectrum into two arrays:
+                    # - *roi* one with a narrow band where the fB will be searched
+                    # - *plot* one with a wider band that will be used for plotting and main output
+                    roi_idx = np.where((freqs_shifted >= fmin_search) & (freqs_shifted <= fmax_search)) # original spectrum spans +/- 1/dt centred on the rayleigh peak (f=0)
+                    plot_idx = np.where((freqs_shifted >= fmin_plot) & (freqs_shifted <= fmax_plot)) # original spectrum spans +/- 1/dt centred on the rayleigh peak (f=0)
+                    plot_fft = np.zeros((Nx_steps, Ny_steps, np.size(plot_idx)))
+                    freqs_plot_GHz = freqs_shifted[plot_idx] * 1e-9
+                    freqs_roi_GHz = freqs_shifted[roi_idx] * 1e-9
+                data_fft = fft_shifted[roi_idx]
+                plot_fft[i, j, :] = fft_shifted[plot_idx]
+                # below not strictly needed b/c they're calculated in treat() I think
+                max_idx = np.argmax(data_fft) # find frequency of peak with max amplitude
+                # store found Brillouin frequency measurements
+                fB_GHz[i, j] = freqs_roi_GHz[max_idx]
+
+                ## Sal, add timedomain specific fwhm measurements here?
+                #fft_norm = fft_pos/max(fft_pos) # normalise peak amplitude to one
+                #ifwhm = np.where(fft_norm >= 0.5) # rough definition for fwhm
+                #fpeak = freqs_GHz[ifwhm]
+                #fwhm = fpeak[-1] - fpeak[0]  
+
+        return plot_fft, freqs_plot_GHz, fB_GHz    
+
     if parameters is None:
         parameters_list = ["ac_gain", "bool_reverse_data", "signal_length", "copeak_start", "copeak_window", "start_offset", "rep_rate", "delay_rate", "file_con"]
         raise LoadError_parameters(f"The following parameters have to be provided: {"; ".join(parameters_list)}", parameters_list)
@@ -280,6 +384,18 @@ def load_dat_TimeDomain(filepath, parameters = None):
 
     # Build time vector
     data_t, dt, process = make_time(attributes, process)
+
+    # Low pass filter the signal
+    mod_shifted = LPfilter(attributes, mod_shifted, dt)
+
+    # Polynomial fit and removal
+    data_pro, polyfit = polyfit_removal(parameters, mod_shifted)
+
+    # High pass filter the signal
+    data_pro = HPfilter(attributes, data_pro, dt)
+
+    # Take FFT of the time signal
+    fft_out, freqs_out_GHz, fB_GHz = take_FFT(attributes, data_pro, dt)
 
     attributes["MEASURE.Process"] = ";".join(process)
     attributes['SPECTROMETER.Type'] = "TimeDomain"

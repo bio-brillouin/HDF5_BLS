@@ -22,3 +22,8 @@ class WrapperError_ArgumentType(Exception):
     def __init__(self, msg) -> None:
         self.message = msg
         super().__init__(self.message)
+
+class WrapperError_Save(Exception):
+    def __init__(self, msg) -> None:
+        self.message = msg
+        super().__init__(self.message)

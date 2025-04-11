@@ -22,9 +22,3 @@ if __name__ == "__main__":
     sys.exit(app.exec())
 
 
-import h5py as h5
-import numpy as np
-
-with h5.File('your_filepath.h5', 'r') as f:
-	data = np.array(f['Data/Data_5/Power Spectral Density'])
-
