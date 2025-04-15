@@ -154,7 +154,7 @@ class Ui_w_Main(object):
 
         self.b_Save = QPushButton(self.gb_buttons)
         self.b_Save.setObjectName(u"b_Save")
-        self.b_Save.setEnabled(False)
+        self.b_Save.setEnabled(True)
         icon4 = QIcon()
         icon4.addFile(u":/Buttons/icon/save.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.b_Save.setIcon(icon4)

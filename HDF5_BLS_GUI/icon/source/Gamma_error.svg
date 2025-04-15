@@ -29,11 +29,11 @@
      inkscape:document-units="mm"
      inkscape:zoom="0.50554287"
      inkscape:cx="-37.583361"
-     inkscape:cy="65.276363"
+     inkscape:cy="64.287327"
      inkscape:window-width="1512"
-     inkscape:window-height="917"
+     inkscape:window-height="834"
      inkscape:window-x="0"
-     inkscape:window-y="65"
+     inkscape:window-y="38"
      inkscape:window-maximized="0"
      inkscape:current-layer="layer1" />
   <defs
@@ -127,20 +127,6 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(-22.471605,-16.060925)">
-    <rect
-       style="fill:#ffffff;stroke-width:1"
-       id="rect3"
-       width="81"
-       height="81"
-       x="22.471605"
-       y="16.060925" />
-    <rect
-       style="fill:none;stroke:#ffffff;stroke-width:1"
-       id="rect1"
-       width="80"
-       height="80"
-       x="22.971605"
-       y="16.560925" />
     <path
        id="path28-8"
        d="M 74.438627,29.409609 H 22.971605 v 3.020693 h 2.32358 c 7.66788,0 7.90022,1.161537 7.90022,4.647131 v 51.81571 c 0,3.485335 -0.23221,4.647145 -7.90022,4.647145 h -2.32358 v 3.02064 c 3.48537,-0.34891 11.15318,-0.34891 14.9871,-0.34891 4.06613,0 13.01195,0 16.6135,0.34891 v -3.02064 h -3.25307 c -9.41045,0 -9.41045,-1.27769 -9.41045,-4.763317 v -52.39661 c 0,-3.252966 0.23221,-3.950059 4.87953,-3.950059 h 10.10746 c 14.173814,0 16.265095,5.808922 17.775392,19.169501 h 2.555916 z m 0,0"

@@ -54,7 +54,7 @@ def conversion_ar_BLS_VIPA(parent, wrp, path):
     # Create the combobox GUI to select the calibration data
     structure = get_structure_wrapper({}, wrp) # Extracts the structure of the wrapper
     l, code = list_from_structure(structure) # Transforms the structure into a list of strings and a list of codes
-    text = "Select the calibration curves from the list below. You can either choose single arrays or groups of arrays."
+    text = "Select the calibration curves from the list below. You can either choose single datasets or groups of datasets."
     dialog = ComboboxChoose(text, l, parent)
     if dialog.exec_() == qtw.QDialog.Accepted:
         selected_structure = dialog.get_selected_structure()
@@ -96,7 +96,6 @@ def conversion_ar_BLS_VIPA(parent, wrp, path):
 
 
     # Create the frequency array by first computing the distance to the average center of the point of the fringes located at the same y
-
     F = []
 
     for i, crv in enumerate(centers):
@@ -135,8 +134,52 @@ def conversion_ar_BLS_VIPA(parent, wrp, path):
         if type(wrp.data[e]) == wrapper.Wrapper:
             change_names_of_all_arrays(wrp.data[e], "Power Spectral Density")
 
+def conversion_VIPA(parent, wrp, path):
+    """This function allows the user to convert a raw spectrum  from aVIPA spectrometer to a PSD. It opens a dedicated GUI to perform the conversion
 
+    Parameters
+    ----------
+    parent : QtWidgets.QWidget
+        The parent widget of the function.
+    wrp : wrapper.Wrapper
+        The wrapper object leading to the data to be converted.
+    path : str
+        The path to the data to be converted.
+
+    Returns
+    -------
+    None
+    """
+    # Get the list of calibration curves from the file up to the element that has been selected
+    calibration_files = wrp.get_special_groups_hierarchy(path = parent.treeview_selected, brillouin_type="Calibration_spectrum") 
+
+    # Verify that the FSR can be found in the arguments. If not, the frequency axis ca
+    if not "SPECTROMETER.VIPA_FSR_(GHz)" in wrp.get_attributes(path).keys():
+        qtw.QMessageBox.warning(parent, "Warning", "PSD cannot be constructed because the FSR of the VIPA is not defined.")
+        return
+
+    # If there are calibration curves, asks the user wether to create the frequency axis from the datasets of the selected group or to use a calibration group
+    calibration = None
+    if len(calibration_files)>0:
+        response = qtw.QMessageBox.question(parent, "Frequency axis", "Do you want to create the frequency axis from the datasets of the selected group (Yes) or use a calibration group (No)?", qtw.QMessageBox.Yes | qtw.QMessageBox.No | qtw.QMessageBox.Cancel)
+        if response == qtw.QMessageBox.No:
+            # Create the combobox GUI to select the calibration data
+            text = "Select the calibration curves from the list below."
+            dialog = ComboboxChoose(text, calibration_files, parent)
+            if dialog.exec_() == qtw.QDialog.Accepted:
+                calibration = dialog.get_selected_structure()
+                dialog.close()
+            else:
+                dialog.close()
+                return
+        elif response == qtw.QMessageBox.Cancel:
+            return
     
+    # If there are no calibration curves or the user chose to not use them, open the GUI on the chosen dataset
+    if calibration is None:
+        print("OK")
+    else:
+        qtw.QMessageBox.information(parent, "To do", "Not implemented yet")
 
     
 

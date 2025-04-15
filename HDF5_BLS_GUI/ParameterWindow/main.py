@@ -8,6 +8,7 @@ class ParameterWindow(qtw.QDialog, Ui_Dialog):
     def __init__(self, text, list_parameters, root_path = None, parent=None):
         super().__init__(parent)
         self.setupUi(self)
+        self.setWindowModality(qtc.Qt.NonModal)
 
         self.root_path = root_path
 
@@ -20,7 +21,7 @@ class ParameterWindow(qtw.QDialog, Ui_Dialog):
     def create_parameter_frame(self, list_parameters):
         dic = {}
         for i, e in enumerate(list_parameters):
-            if "file" in e:
+            if "file_" in e:
                 term = e.split("_")[1]
                 label = qtw.QLabel(e)
                 line_edit = qtw.QLineEdit()
@@ -32,7 +33,7 @@ class ParameterWindow(qtw.QDialog, Ui_Dialog):
                 self.gridLayout_2.addWidget(button, i+1, 2, 1, 1)
 
                 dic[e] = line_edit
-            elif "bool" in e:
+            elif "bool_" in e:
                 label = qtw.QLabel(e)
                 checkbox = qtw.QCheckBox()
 
@@ -57,7 +58,8 @@ class ParameterWindow(qtw.QDialog, Ui_Dialog):
         file_dialog.setNameFilter(f"{term} file (*.{term})")
         if file_dialog.exec_():
             file_path = file_dialog.selectedFiles()[0]
-            line_edit.setText(file_path)
+            print("HERE - ", file_path)
+            self.parameters[f"file_{term}"].setText(file_path)
 
     def get_selected_structure(self):
         values = {}

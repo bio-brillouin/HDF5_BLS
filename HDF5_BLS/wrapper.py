@@ -4,6 +4,7 @@ import json
 import csv
 import os
 import pandas as pd
+import matplotlib.pyplot as plt
 # import copy
 
 # from HDF5_BLS.load_data import load_general
@@ -362,11 +363,14 @@ class Wrapper:
                     dataset.attrs["Unit"] = value["Unit"]
                 elif key == "Attributes":
                     for k, v in value.items():
-                        if k in new_group.attrs.keys():
-                            if overwrite:
-                                new_group.attrs.modify(k, str(v))
-                        else:
-                            new_group.attrs.create(k, v)
+                        try:
+                            if k in new_group.attrs.keys():
+                                if overwrite:
+                                    new_group.attrs.modify(k, str(v))
+                            else:
+                                new_group.attrs.create(k, v)
+                        except:
+                            print(f"Error while adding the attribute {k} with value {v}")
                 else:
                     raise WrapperError_ArgumentType(f"The key '{key}' is not recognized.")
         
@@ -482,7 +486,64 @@ class Wrapper:
                     del file[path]
                 except Exception as e:
                     raise WrapperError(f"An error occured while deleting the element '{path}'. Error message: {e}")
-        
+
+    def export_dataset(self, path, filepath):
+        """
+        Exports the dataset at the given path as a numpy array.
+
+        Parameters
+        ----------
+        path : str
+            The path to the dataset to export.
+        filepath : str
+            The path to the numpy array to export to.
+
+        Returns
+        -------
+        None
+        """
+        with h5py.File(self.filepath, 'r') as file:
+            np.save(filepath, file[path][()])
+
+    def export_group(self, path, filepath):
+        """
+        Exports the group at the given path as a HDF5 file.
+
+        Parameters
+        ----------
+        path : str
+            The path to the group to export.
+        filepath : str
+            The path to the HDF5 file to export to.
+
+        Returns
+        -------
+        None
+        """
+        with h5py.File(self.filepath, 'r') as file:
+            with h5py.File(filepath, 'w') as new_file:
+                new_file.copy(file[path], new_file)
+
+    def export_image(self, path, filepath):
+        """
+        Exports the dataset at the given path as an image.
+
+        Parameters
+        ----------
+        path : str
+            The path to the dataset to export.
+        filepath : str
+            The path to the image to export to.
+
+        Returns
+        -------
+        None
+        """
+        with h5py.File(self.filepath, 'r') as file:
+            data = file[path][()]
+            if len(data.shape) == 2:
+                plt.imsave(filepath, data)
+
     def get_attributes(self, path=None): # Test made
         """Returns the attributes of the file
 
@@ -536,7 +597,39 @@ class Wrapper:
         with h5py.File(self.filepath, 'r') as file:
             children = list(file[path].keys())
         return list(children)
-            
+
+    def get_special_groups_hierarchy(self, path = None, brillouin_type = None):
+        """Get all the groups with desired brillouin type that are hierarchically above a given path.
+
+        Parameters
+        ----------
+        path : str, optional
+            The path to the group, by default None which means the root group is used.
+        brillouin_type : str, optional
+            The type of the group, by default None which means "Root" is used
+
+        Returns
+        -------
+        list
+            The list of all the groups with desired brillouin type that are hierarchically above a given path.
+        """
+        if path is None: path = "Brillouin"
+        if brillouin_type is None: brillouin_type = "Root"
+
+        # Split the path into its components
+        path_split = path.split("/")
+        path_temp = ""
+        #Create a list of all the groups with desired brillouin type that are hierarchically above a given path
+        groups = []
+        while len(path_split) > 0:
+            if path_temp == "": path_temp = path_split.pop(0)
+            else: path_temp = f"{path_temp}/{path_split.pop(0)}"
+            childs = self.get_children_elements(path_temp)
+            for e in childs:
+                if self.get_type(path=f"{path_temp}/{e}", return_Brillouin_type=True) == brillouin_type:
+                    groups.append(f"{path_temp}/{e}")
+        return groups
+
     def get_structure(self, filepath=None): # Test made
         """Returns the structure of the file
 
@@ -603,6 +696,34 @@ class Wrapper:
                 return file[path].attrs["Brillouin_type"]
             else:
                 return type(file[path])
+
+    def move(self, path, new_path):
+        """
+        Moves an element from one path to another. If the new group does not exist, it is created.
+
+        Parameters
+        ----------
+        path : str
+            The path to the element to move.
+        new_path : str
+            The new path to move the element to.
+
+        Raises
+        ------
+        WrapperError_StructureError
+            If the path does not lead to an element.
+        """
+        with h5py.File(self.filepath, 'a') as file:
+            if path not in file:
+                raise WrapperError_StructureError(f"The path '{path}' does not exist in the file.")
+            if new_path not in file:
+                file.create_group(new_path)
+            group = file[new_path]
+            name_group = path.split("/")[-1]
+            group.create_group(name_group)
+            for key in file[path].keys():
+                file[new_path][name_group].copy(file[path][key], key)
+            del file[path]
 
     def save_as_hdf5(self, filepath=None, remove_old_file=True, overwrite = False): # Test made
         """Saves the data and attributes to an HDF5 file. In practice, moves the temporary hdf5 file to a new location and removes the old file if specified.
@@ -897,11 +1018,26 @@ class Wrapper:
                 "Linewidth_std": {"Name": "Linewidth_std",
                                   "Data": linewidth_std}}  
         
-        self.create_group(name_group, parent_group=parent_group)
+        self.create_group(name_group, parent_group=parent_group, overwrite=overwrite)
 
         self.add_dictionnary(dic, parent_group = parent_group, name_group = name_group, overwrite = overwrite)
 
-    
+    def clear_empty_attributes(self, path):
+        """Deletes all the attributes that are empty at the given path.
+
+        Parameters
+        ----------
+        path : str
+            The path to the element to delete the attributes from.
+        """
+        if self.get_type(path) == h5py._hl.group.Group:
+            with h5py.File(self.filepath, 'a') as file:
+                for e in list(file[path].attrs.keys()):
+                    if file[path].attrs[e] == "":
+                        file[path].attrs.pop(e, None)
+        else:
+            self.clear_empty_attributes(path = "/".join(path.split("/")[:-1]))
+
     def import_file(self, filepath, parent_group=None, creator = None, parameters = None, reshape = None, overwrite = False):
         """Adds a raw data array to the wrapper from a file.
         
@@ -989,10 +1125,7 @@ class Wrapper:
                              brillouin_type="Measure",
                              overwrite=overwrite)
 
-
-
-
-    def import_properties_data(self, filepath, path = None, overwrite = False): 
+    def import_properties_data(self, filepath, path = None, overwrite = False, delete_child_attributes = False): 
         """Imports properties from an excel or CSV file into a dictionary.
     
         Parameters
@@ -1003,7 +1136,18 @@ class Wrapper:
             The path to the data in the HDF5 file.
         overwrite : bool, optional
             A boolean that indicates whether the attributes should be overwritten if they already exist, by default False.
+        delete_child_attributes : bool, optional
+            If True, all the attributes of the children elements with same name as the ones to be updated are deleted. Default is False.
         """
+        def delete_attributes(path, attributes):
+            if self.get_type(path) == h5py._hl.group.Group:
+                with h5py.File(self.filepath, 'a') as file:
+                    for e in list(file[path].attrs.keys()):
+                        if e in attributes.keys():
+                            file[path].attrs.pop(e, None)
+                for e in self.get_children_elements(path):
+                    delete_attributes(f"{path}/{e}", attributes)
+
         # Check if the filepath leads to a valid csv file
         if not filepath.endswith(('.csv', '.xlsx', '.xls')):
             raise WrapperError_FileNotFound(f"The file '{filepath}' is not a valid CSV file.")
@@ -1020,19 +1164,21 @@ class Wrapper:
             with open(filepath, mode='r', encoding='latin1') as csv_file:
                 csv_reader = csv.reader(csv_file)
                 for row in csv_reader:
-                    if len(row[0].split(".")) > 1 and row[0].split(".")[0] in ["FILEPROP", "SPECTROMETER", "MEASURE"]:
-                        new_attributes[row[0]] = row[1]
+                    if len(row[0].split(".")) > 1 and row[0].split(".")[0] in ["FILEPROP", "SPECTROMETER", "MEASURE"] and row[1] != "":
+                        new_attributes[row[0]] = str(row[1])
         elif filepath.endswith('.xlsx') or filepath.endswith('.xls'):
             df = pd.read_excel(filepath, header=None)
             for index, row in df.iterrows():
                 if pd.notna(row[0]):
                     if len(row[0].split(".")) > 1 and row[0].split(".")[0] in ["FILEPROP", "SPECTROMETER", "MEASURE"]:
                         if pd.notna(row[1]):
-                            new_attributes[row[0]] = row[1]
-                        else:
-                            new_attributes[row[0]] = ""
+                            new_attributes[row[0]] = str(row[1])
         else:
             raise WrapperError_FileNotFound(f"The file '{filepath}' is not a valid CSV, XLSX or XLS file.")
+
+        # Delete the attributes of the children elements with same name as the ones to be updated
+        if delete_child_attributes:
+            delete_attributes(path, new_attributes)
 
         # Updating the attributes
         if path == "Brillouin": 
@@ -1042,12 +1188,11 @@ class Wrapper:
             parent_group = path.split("/")
             name_group = parent_group.pop(-1)
             parent_group = "/".join(parent_group)
-
         self.add_dictionnary({"Attributes": new_attributes},
                              parent_group=parent_group,
                              name_group=name_group,
                              overwrite=overwrite)
-
+        
     def update_property(self, name, value, path, apply_to_all = None):
         """Updates a property of the HDF5 file given a path to the dataset or group, the name of the property and its value.
         
@@ -1060,6 +1205,9 @@ class Wrapper:
         path : str
             The path of the property to update. Defaults to None sets the property at the root level.
         """
+        # If the path is not specified, we set it to the root of the file
+        if path is None: path = "Brillouin"
+
         if name!="Brillouin_type": 
             brillouin_type = self.get_attributes(path)["Brillouin_type"]
         else: 

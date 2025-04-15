@@ -24,6 +24,23 @@ from HDF5_BLS import wrapper, load_data, conversion_PSD
 from HDF5_BLS.WrapperError import WrapperError_Save, WrapperError_Overwrite, WrapperError_ArgumentType
 import conversion_ui, treat_ui
 
+class MyStandardItemModel(qtg.QStandardItemModel):
+    def mimeData(self, indexes):
+        mime_data = super().mimeData(indexes)
+        if indexes:
+            item = self.itemFromIndex(indexes[0])
+            if item:
+                path = self.get_item_path(item)
+                mime_data.setData("application/x-brillouin-path", path.encode("utf-8"))
+        return mime_data
+
+    def get_item_path(self, item):
+        path = [item.text()]
+        while item.parent():
+            item = item.parent()
+            path.insert(0, item.text())
+        return "/".join(path)
+
 class MainWindow(qtw.QMainWindow, Ui_w_Main):
     """Main window class for the HDF5_BLS GUI application.
     This class handles the main window of the application, including the setup of UI elements,
@@ -158,7 +175,6 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             self.b_AddData.setEnabled(True)
             if len(self.wrapper.get_children_elements()) > 0:
                 self.b_RemoveData.setEnabled(True)
-                self.b_Save.setEnabled(True)
                 self.b_ConvertCSV.setEnabled(True)
 
     def add_data(self, event=None, filepath=None, parent_path=None):
@@ -220,11 +236,14 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             except LoadError_creator as e: 
                 creator_list = e.creators 
                 dialog = ComboboxChoose(text = "Choose the type of structure to load", list_choices = creator_list, parent = self)
-                if dialog.exec_() == qtw.QDialog.Accepted:
+                if dialog.exec_() == qtw.QDialog.Rejected:
+                    return
+                elif dialog.exec_() == qtw.QDialog.Accepted:
                     creator = dialog.get_selected_structure()
                     # After choosing the type of structure, we try to load the data again by precising the structure
                     try:
                         dic = load_data.load_general(file, creator = creator)
+                    
                     # If it does not work, this means that the user needs to indicate the parameters to load the data, so we load a window to do so
                     except LoadError_parameters as e: 
                         parameters = e.parameters
@@ -235,7 +254,11 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                         if dialog.exec_() == qtw.QDialog.Accepted:
                             parameters = dialog.get_selected_structure()
                             dialog.close()
+                        elif dialog.exec_() == qtw.QDialog.Rejected:
+                            dialog.close()
+                            return
                         dic = load_data.load_general(file, creator, parameters)
+                    
                     # If it still doesn't work, then there was a mistake while opening the file so print an error
                     except Exception as e:
                         qtw.QMessageBox.warning(self, "Error while adding the file: ", str(e))
@@ -243,6 +266,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                 # If the user cancels the dialog box, we return
                 else: 
                     return 
+            
             # If it doesn't work, there was a mistake while opening the file so print an error
             except Exception as e:
                 qtw.QMessageBox.warning(self, "Error while adding the file: ", str(e))
@@ -396,6 +420,42 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
 
         self.textBrowser_Log.append(f"Python code to access the data of <b>{self.treeview_selected}</b> has been copied to the clipboard")
 
+    def export_HDF5_group(self):
+        """
+        Export the selected group as a HDF5 file.
+
+        Returns
+        -------
+        None
+        """
+        filepath = qtw.QFileDialog.getSaveFileName(self, "Open File", "", "HDF5 Files (*.h5)")[0]
+        if filepath:
+            self.wrapper.export_group(self.treeview_selected, filepath)
+
+    def export_image(self):
+        """
+        Export the selected dataset as an image.
+
+        Returns
+        -------
+        None
+        """
+        filepath = qtw.QFileDialog.getSaveFileName(self, "Open File", "", "Image (*.tiff)")[0]
+        if filepath:
+            self.wrapper.export_image(self.treeview_selected, filepath)
+
+    def export_numpy_array(self):
+        """
+        Export the selected dataset as a numpy array.
+
+        Returns
+        -------
+        None
+        """
+        filepath = qtw.QFileDialog.getSaveFileName(self, "Open File", "", "Numpy Array (*.npy)")[0]
+        if filepath:
+            self.wrapper.export_dataset(self.treeview_selected, filepath)
+
     def get_PSD(self):
         """
         Get the Power Spectrum Density of the selected data.
@@ -404,9 +464,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         -------
         None
         """
-        elt = self.wrapper
-        for e in self.treeview_selected.split("/")[1:]: elt = elt.data[e]
-        type = self.wrapper.get_attributes_path(self.treeview_selected)['SPECTROMETER.Type']
+        type = self.wrapper.get_attributes(self.treeview_selected)['SPECTROMETER.Type']
         type = type.replace(" ", "_")
         type = type.replace("-", "_")
             
@@ -438,7 +496,6 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                 if name == function_name:
                     func(self, self.wrapper, self.treeview_selected)
         
-        self.file_changed = True
         self.update_treeview()
         self.expand_treeview_path(self.treeview_selected)
 
@@ -669,9 +726,37 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                 shift_std = qtg.QAction("Shift Standard Deviation", self)
                 shift_std.triggered.connect(lambda: apply_change(value="Shift_std"))
                 actions.append(shift_std)
+            
             for action in actions:
                 edit_Brillouin_type.addAction(action)    
         
+        def sub_menu_export():
+            
+            export.clear()
+            actions = []
+
+            export_Python = qtg.QAction("Generate Python code to access data", self)
+            export_Python.triggered.connect(self.export_code_line)
+            actions.append(export_Python)
+            export_CSV = qtg.QAction("Export attributes to CSV", self)
+            export_CSV.triggered.connect(self.convert_csv)
+            actions.append(export_CSV)
+
+            if self.wrapper.get_type(path=self.treeview_selected) == h5py._hl.group.Group:
+                export_HDF5 = qtg.QAction("Export group as HDF5 file", self)
+                export_HDF5.triggered.connect(self.export_HDF5_group)
+                actions.append(export_HDF5)
+            if self.wrapper.get_type(path=self.treeview_selected) == h5py._hl.dataset.Dataset:
+                export_HDF5 = qtg.QAction("Export dataset as numpy array", self)
+                export_HDF5.triggered.connect(self.export_numpy_array)
+                actions.append(export_HDF5)
+                if len(self.wrapper[self.treeview_selected].shape) == 2:
+                    export_image = qtg.QAction("Export image", self)
+                    export_image.triggered.connect(self.export_image)
+                    actions.append(export_image)
+            
+            for action in actions:
+                export.addAction(action)   
 
         indexes = self.treeView.selectedIndexes()
         if indexes:
@@ -685,11 +770,10 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             get_PSD = menu.addAction("Get Power Spectrum Density")
             perform_treatment = menu.addAction("Treat all Power Spectrum Density")
             menu.addSeparator()
-            copy_code = menu.addAction("Copy Python code to access data")
-            menu.addSeparator()
-            convert_action = menu.addAction("Convert attribtues to CSV")
+            export = menu.addMenu("Export")
 
             edit_Brillouin_type.aboutToShow.connect(sub_menu_Brillouin_type)
+            export.aboutToShow.connect(sub_menu_export)
             action = menu.exec_(self.treeView.viewport().mapToGlobal(position))
 
             if action == add_action:
@@ -702,10 +786,6 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                 self.get_PSD()
             elif action == perform_treatment:
                 self.perform_treatment()
-            elif action == copy_code:
-                self.export_code_line()
-            elif action == convert_action:
-                self.convert_csv()
 
     @qtc.Slot()
     def table_view_dragEnterEvent(self, event: qtg.QDragEnterEvent):
@@ -761,12 +841,21 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         """
         if event.mimeData().hasUrls():
             urls = [url.toLocalFile() for url in event.mimeData().urls()]
-            if len(urls) > 1: qtw.QMessageBox.warning(self, "Warning", "Only one property file can be dropped at a time")
+            if len(urls) > 1: 
+                qtw.QMessageBox.warning(self, "Warning", "Only one property file can be dropped at a time")
             elif len(urls) == 1:
                 url = urls[0]
                 if os.path.splitext(url)[1] in [".csv", ".xlsx",".xls"]: 
-                    self.update_parameters(filepath = url) # Verify that the file is a .csv file
-                else: qtw.QMessageBox.warning(self, "Warning", "Only .csv, .xlsx or .xls property files can be used")
+                    if len(self.wrapper.get_children_elements(self.treeview_selected))>1:
+                        response = qtw.QMessageBox.information(self, "Warning", "Do you want to update the properties of each element of the selected group or dataset?", qtw.QMessageBox.Yes | qtw.QMessageBox.No | qtw.QMessageBox.Cancel)
+                        if response == qtw.QMessageBox.Yes:
+                            self.update_parameters(filepath = url, delete_child_attributes = True) # Verify that the file is a .csv file
+                        elif response == qtw.QMessageBox.Cancel:
+                            return
+                        else:
+                            self.update_parameters(filepath = url) # Verify that the file is a .csv file
+                else: 
+                    qtw.QMessageBox.warning(self, "Warning", "Only .csv, .xlsx or .xls property files can be used")
             event.accept()
         else: event.ignore()
 
@@ -786,6 +875,8 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         """
         if event.mimeData().hasUrls():
             event.accept()
+        elif event.mimeData().hasFormat("application/x-brillouin-path"):
+            event.accept()
         else:
             event.ignore()
 
@@ -803,7 +894,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         -------
         None
         """
-        if event.mimeData().hasUrls():
+        if event.mimeData().hasUrls() or event.mimeData().hasText():
             index = self.treeView.indexAt(event.pos())
             if index.isValid():
                 if self.current_hover_index != index:  # If a new item is hovered
@@ -813,6 +904,8 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                     if item.hasChildren():
                         self.hover_timer.start(500)  # Start a 0.5-second timer
             event.accept()
+        elif event.mimeData().hasFormat("application/x-brillouin-path"):
+            event.accept()
         else:
             event.ignore()
 
@@ -820,32 +913,31 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
     def treeView_dropEvent(self, event: qtg.QDropEvent):
         """
         Handle the drop event for the tree view.
-
-        Parameters
-        ----------
-        event : QDropEvent
-            The drop event.
-
-        Returns
-        -------
-        None
         """
-        self.hover_timer.stop()  # Stop the timer when the drop occurs
-        self.current_hover_index = None  # Reset the current hover index
+        self.hover_timer.stop()
+        self.current_hover_index = None
+
+        # Get the target item and path
+        index = self.treeView.indexAt(event.pos())
+        target_item = self.model.itemFromIndex(index) if index.isValid() else None
+        target_path = target_item.data(qtc.Qt.UserRole) if target_item else "Brillouin"
 
         if event.mimeData().hasUrls():
-            index = self.treeView.indexAt(event.pos())
-            parent_item = self.model.itemFromIndex(index) if index.isValid() else None
-            
-            filepaths = []
-            for url in event.mimeData().urls():
-                file_path = url.toLocalFile()  # Convert URL to file path
-                filepaths.append(file_path)
-
-            parent_path = parent_item.data(qtc.Qt.UserRole) if parent_item else "Brillouin"
-            self.treeview_handle_drops(filepaths, parent_path)
-
+            # External file drop
+            filepaths = [url.toLocalFile() for url in event.mimeData().urls()]
+            self.treeview_handle_drops_files(filepaths, target_path)
             event.accept()
+
+        elif event.mimeData().hasFormat("application/x-brillouin-path"):
+            # Internal tree drag-drop
+            dragged_path = str(event.mimeData().data("application/x-brillouin-path"), encoding='utf-8')
+            self.wrapper.move(path = dragged_path, new_path = target_path)
+            self.treeview_selected = target_path+"/"+dragged_path.split("/")[-1]
+            self.update_treeview()
+            self.update_parameters()
+            self.expand_treeview_path(self.treeview_selected)
+            event.accept()
+
         else:
             event.ignore()
     
@@ -897,14 +989,14 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                     elif apply_all == qtw.QMessageBox.Cancel:
                         return
                     else:
-                        self.wrapper.update_property(name = "MEASURE.Sample", value = new_value, path=self.treeview_selected, apply_to_all=False)
+                        self.wrapper.update_property(name = "MEASURE.Date_of_measure", value = new_value, path=self.treeview_selected, apply_to_all=False)
 
             self.update_treeview()
             self.expand_treeview_path(self.treeview_selected)
             self.update_parameters()
 
     @qtc.Slot()
-    def treeview_handle_drops(self, filepaths, parent_path):
+    def treeview_handle_drops_files(self, filepaths, parent_path):
         """
         Handle the drop action for the tree view.
 
@@ -947,7 +1039,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                         except WrapperError_Save:
                             if not self.handle_error_save(): 
                                 return # If the user decides to cancel his action at this point, the function ends
-                        self.wrapper = wrapper.Wrapper(filepath[0])
+                        self.wrapper = wrapper.Wrapper(filepaths[0])
                         self.treeview_selected = "Brillouin"
                     elif dialog == qtw.QMessageBox.Cancel:
                         return
@@ -980,7 +1072,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             self.update_parameters()
             
     @qtc.Slot()
-    def update_parameters(self, filepath=None):
+    def update_parameters(self, filepath=None, delete_child_attributes = False):
         """
         Update the parameters based on the selected tree view element.
 
@@ -988,6 +1080,8 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         ----------
         filepath : str, optional                         
             The path to the CSV file containing the properties to update. If None, the properties of the selected element are updated based on the reference CSV parameter file.
+        delete_child_attributes : bool, optional
+            If True, all the attributes of the children elements with same name as the ones to be updated are deleted. Default is False.
 
         Returns
         -------
@@ -999,7 +1093,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             overwrite = False
         # If the filepath is given, ask the user if they want to update the properties of the wrapper
         else:
-            overwrite = qtw.QMessageBox.question(self, "Update properties", "Do you want to update the properties of the wrapper with the properties stored in the file?")
+            overwrite = qtw.QMessageBox.question(self, "Update properties", "Do you want to overwrite the properties of the wrapper with the properties stored in the file?")
             overwrite = True if overwrite == qtw.QMessageBox.Yes else False
 
         # Update the attributes of the file with the properties from the file
@@ -1007,7 +1101,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             path = "/".join(self.treeview_selected.split("/")[:-1])
         else: 
             path = self.treeview_selected
-        self.wrapper.import_properties_data(filepath = filepath, path = path, overwrite = overwrite)
+        self.wrapper.import_properties_data(filepath = filepath, path = path, overwrite = overwrite, delete_child_attributes = delete_child_attributes)
 
         # Extract the attributes of the element selected
         attr = self.wrapper.get_attributes(self.treeview_selected)
@@ -1015,11 +1109,9 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         # Update the tables associated to the measure and spectrometer
         self.model_table_Measure.clear()
         self.model_table_Spectrometer.clear()
-
         self.model_table_Measure.setHorizontalHeaderLabels(["Parameter", "Value", "Units"])
         self.model_table_Spectrometer.setHorizontalHeaderLabels(["Parameter", "Value", "Units"])
 
-         
         for k, v in attr.items():
             try:
                 cat, name = k.split(".")
@@ -1104,10 +1196,6 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
     def update_treeview(self):     
         """
         Update the tree view with the current wrapper.
-
-        Returns
-        -------
-        None
         """
         def add_child(element, parent, path):
             item_path = f"{path}/{element}"
@@ -1124,7 +1212,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                 for e in self.wrapper.get_children_elements(path = item_path):
                     add_child(e, item, item_path)
             parent.appendRow([item, qtg.QStandardItem(sample), qtg.QStandardItem(date)])
-            
+
         def set_icon_brillouin_type(item, brillouin_type):
             directory = "/".join(current_dir.split("/")[:-1]) + "/icon"
             if "Abscissa" in brillouin_type: 
@@ -1154,17 +1242,23 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             elif brillouin_type == "Treatment": 
                 item.setIcon(qtg.QIcon(f"{directory}/Treatment.png"))  
         
+        # Retrieve the current column widths from the existing model
+        column_widths = []
+        if self.treeView.model() is not None:
+            for column in range(self.treeView.model().columnCount()):
+                column_widths.append(self.treeView.columnWidth(column))
+
         # Create a model with 3 columns
-        self.model = qtg.QStandardItemModel()
+        self.model = MyStandardItemModel()
         self.model.setHorizontalHeaderLabels(["Name", "Sample", "Date"])
 
         # Add first item
         name, date, sample = "Brillouin", "", ""
-        if self.filepath is not None: name = os.path.basename(self.filepath)
         if "MEASURE.Sample" in self.wrapper.get_attributes().keys(): sample = self.wrapper.get_attributes()["MEASURE.Sample"]
         if "MEASURE.Date_of_measure" in self.wrapper.get_attributes().keys(): date = self.wrapper.get_attributes()["MEASURE.Date_of_measure"]
         item = qtg.QStandardItem(name)
         item.setData("Brillouin", qtc.Qt.UserRole)
+    
         # Add all other elements recursively
         for e in self.wrapper.get_children_elements(): 
             add_child(e, item, "Brillouin") 
@@ -1172,8 +1266,13 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
 
         # Set the model to the TreeView
         self.treeView.setModel(self.model)
-        for column in range(self.treeView.model().columnCount()):
-            self.treeView.resizeColumnToContents(column)
+
+        # Adjust column widths to fit the largest size encountered
+        try:
+            for column in range(self.treeView.model().columnCount()):
+                self.treeView.setColumnWidth(column, column_widths[column])
+        except:
+            pass
 
         # When a data is changed in the treeview, the function treeview_element_changed is called
         self.model.dataChanged.connect(self.treeview_element_changed)
@@ -1190,8 +1289,8 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
 
         # Sets all dragged objects to the treeview to call self.add_data(filepath) where the filepath is the path of the dragged object
         self.treeView.setAcceptDrops(True)
-        self.treeView.setDragEnabled(False)  # Optional: Prevent dragging from TreeView
-        self.treeView.setDragDropMode(qtw.QAbstractItemView.DropOnly)
+        self.treeView.setDragEnabled(True)  # Optional: Allows dragging from TreeView
+        self.treeView.setDragDropMode(qtw.QAbstractItemView.DragDrop)
 
         # Bind drag-and-drop event handlers
         self.treeView.dragEnterEvent = self.treeView_dragEnterEvent

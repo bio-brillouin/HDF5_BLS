@@ -27,13 +27,13 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     inkscape:zoom="0.40770048"
-     inkscape:cx="-301.69206"
-     inkscape:cy="294.33372"
+     inkscape:zoom="0.95615812"
+     inkscape:cx="110.86033"
+     inkscape:cy="150.07978"
      inkscape:window-width="1512"
-     inkscape:window-height="917"
+     inkscape:window-height="834"
      inkscape:window-x="0"
-     inkscape:window-y="65"
+     inkscape:window-y="38"
      inkscape:window-maximized="0"
      inkscape:current-layer="layer1" />
   <defs
@@ -108,13 +108,6 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(-22.471605,-16.060925)">
-    <rect
-       style="fill:#ffffff;stroke-width:1"
-       id="rect3"
-       width="81"
-       height="81"
-       x="22.471605"
-       y="16.060925" />
     <rect
        style="fill:none;stroke:#ffffff;stroke-width:1"
        id="rect1"
