@@ -11,7 +11,14 @@ The library is currently compatible with the following file formats:
 
 ## GUI
 
-The GUI can only be used to create new files following the structure of v1.0.0. 
+The GUI is now capable of:
+- Creating new HDF5 files following the structure of v1.0.0:
+    - Structuring the file in a hierarchical way
+    - Importing measure data (drag and drop functionality implemented)
+    - Importing measure data from a CSV file (drag and drop functionality implemented)
+- Export sub-HDF5 files from meta files
+- Export Python code to access individual datasets
+- Analyze raw spectra obtained with a VIPA spectrometer
 
 ## Library 
 
