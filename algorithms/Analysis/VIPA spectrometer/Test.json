@@ -1,0 +1,95 @@
+{
+    "name": "MUW - VIPA spectrum analyzer",
+    "version": "v0",
+    "author": "Pierre Bouvet",
+    "description": "This algorithm allows the user to recover a frequency axis basing ourselves on a single Brillouin spectrum obtained with a VIPA spectrometer. Considering that only one Brillouin Stokes and anti-Stokes doublet is visible on the spectrum, the user can select the peaks he sees, and then perform a quadratic interpolation to obtain the frequency axis. This interpolation is obtained either by entering a value for the Brillouin shift of the material or by entering the value of the Free Spectral Range (FSR) of the spectrometer. The user can finally recenter the spectrum either using the average between a Stokes and an anti-Stokes peak or by choosing an elastic peak as zero frequency.",
+    "functions": [
+        {
+            "function": "add_point",
+            "parameters": {
+                "position_center_window": 196.07700127542932,
+                "window_width": 5,
+                "type_pnt": "Stokes"
+            },
+            "description": "Adds a single point to the list of points together with a window to the list of windows with its type. Each point is an intensity extremum obtained by fitting a quadratic polynomial to the windowed data.\nThe point is given as a value on the x axis (not a position).\nThe \"position_center_window\" parameter is the center of the window surrounding the peak. The \"window_width\" parameter is the width of the window surrounding the peak (full width). The \"type_pnt\" parameter is the type of the peak. It can be either \"Stokes\", \"Anti-Stokes\" or \"Elastic\"."
+        },
+        {
+            "function": "add_point",
+            "parameters": {
+                "position_center_window": 220.9966106058685,
+                "window_width": 5,
+                "type_pnt": "Elastic"
+            },
+            "description": "Adds a single point to the list of points together with a window to the list of windows with its type. Each point is an intensity extremum obtained by fitting a quadratic polynomial to the windowed data.\nThe point is given as a value on the x axis (not a position).\nThe \"position_center_window\" parameter is the center of the window surrounding the peak. The \"window_width\" parameter is the width of the window surrounding the peak (full width). The \"type_pnt\" parameter is the type of the peak. It can be either \"Stokes\", \"Anti-Stokes\" or \"Elastic\"."
+        },
+        {
+            "function": "add_point",
+            "parameters": {
+                "position_center_window": 243.2566522907043,
+                "window_width": 5,
+                "type_pnt": "Anti-Stokes"
+            },
+            "description": "Adds a single point to the list of points together with a window to the list of windows with its type. Each point is an intensity extremum obtained by fitting a quadratic polynomial to the windowed data.\nThe point is given as a value on the x axis (not a position).\nThe \"position_center_window\" parameter is the center of the window surrounding the peak. The \"window_width\" parameter is the width of the window surrounding the peak (full width). The \"type_pnt\" parameter is the type of the peak. It can be either \"Stokes\", \"Anti-Stokes\" or \"Elastic\"."
+        },
+        {
+            "function": "add_point",
+            "parameters": {
+                "position_center_window": 427.9583593861747,
+                "window_width": 5,
+                "type_pnt": "Stokes"
+            },
+            "description": "Adds a single point to the list of points together with a window to the list of windows with its type. Each point is an intensity extremum obtained by fitting a quadratic polynomial to the windowed data.\nThe point is given as a value on the x axis (not a position).\nThe \"position_center_window\" parameter is the center of the window surrounding the peak. The \"window_width\" parameter is the width of the window surrounding the peak (full width). The \"type_pnt\" parameter is the type of the peak. It can be either \"Stokes\", \"Anti-Stokes\" or \"Elastic\"."
+        },
+        {
+            "function": "add_point",
+            "parameters": {
+                "position_center_window": 450.3725802245398,
+                "window_width": 5,
+                "type_pnt": "Elastic"
+            },
+            "description": "Adds a single point to the list of points together with a window to the list of windows with its type. Each point is an intensity extremum obtained by fitting a quadratic polynomial to the windowed data.\nThe point is given as a value on the x axis (not a position).\nThe \"position_center_window\" parameter is the center of the window surrounding the peak. The \"window_width\" parameter is the width of the window surrounding the peak (full width). The \"type_pnt\" parameter is the type of the peak. It can be either \"Stokes\", \"Anti-Stokes\" or \"Elastic\"."
+        },
+        {
+            "function": "add_point",
+            "parameters": {
+                "position_center_window": 471.1420541022828,
+                "window_width": 5,
+                "type_pnt": "Anti-Stokes"
+            },
+            "description": "Adds a single point to the list of points together with a window to the list of windows with its type. Each point is an intensity extremum obtained by fitting a quadratic polynomial to the windowed data.\nThe point is given as a value on the x axis (not a position).\nThe \"position_center_window\" parameter is the center of the window surrounding the peak. The \"window_width\" parameter is the width of the window surrounding the peak (full width). The \"type_pnt\" parameter is the type of the peak. It can be either \"Stokes\", \"Anti-Stokes\" or \"Elastic\"."
+        },
+        {
+            "function": "interpolate_elastic_inelastic",
+            "parameters": {
+                "shift": null,
+                "FSR": 60
+            },
+            "description": "Uses the elastic peaks, and the positions of the Brillouin peaks on the different orders to obtain a frequency axis by interpolating the position of the peaks with a quadratic polynomial. The user can either enter a value for the shift or the FSR, or both. The shift value is used to calibrate the frequency axis using known values of shifts when using a calibration sample to obtain the frequency axis. The FSR value is used to calibrate the frequency axis using a known values of FSR for the VIPA."
+        },
+        {
+            "function": "add_point",
+            "parameters": {
+                "position_center_window": 47.35598781451303,
+                "window_width": 1,
+                "type_pnt": "Stokes"
+            },
+            "description": "Adds a single point to the list of points together with a window to the list of windows with its type. Each point is an intensity extremum obtained by fitting a quadratic polynomial to the windowed data.\nThe point is given as a value on the x axis (not a position).\nThe \"position_center_window\" parameter is the center of the window surrounding the peak. The \"window_width\" parameter is the width of the window surrounding the peak (full width). The \"type_pnt\" parameter is the type of the peak. It can be either \"Stokes\", \"Anti-Stokes\" or \"Elastic\"."
+        },
+        {
+            "function": "add_point",
+            "parameters": {
+                "position_center_window": 59.03118267120311,
+                "window_width": 1,
+                "type_pnt": "Anti-Stokes"
+            },
+            "description": "Adds a single point to the list of points together with a window to the list of windows with its type. Each point is an intensity extremum obtained by fitting a quadratic polynomial to the windowed data.\nThe point is given as a value on the x axis (not a position).\nThe \"position_center_window\" parameter is the center of the window surrounding the peak. The \"window_width\" parameter is the width of the window surrounding the peak (full width). The \"type_pnt\" parameter is the type of the peak. It can be either \"Stokes\", \"Anti-Stokes\" or \"Elastic\"."
+        },
+        {
+            "function": "center_x_axis",
+            "parameters": {
+                "center_type": "Inelastic"
+            },
+            "description": "Centers the x axis using the first points stored in the class. The parameter \"center_type\" is used to determine wether to center the axis using the first elastic peak (center_type = \"Elastic\") or the average of two Stokes and Anti-Stokes peaks (center_type = \"Inelastic\")."
+        }
+    ]
+}

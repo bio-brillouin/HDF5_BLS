@@ -1,0 +1,3 @@
+The \textit{x} and \textit{y} attributes are respectively the abscissa and the ordinate of the data on which the analysis is performed. They are both numpy arrays of the same length. The \textit{x} attribute is the abscissa of the data points, while the \textit{y} attribute is the data points themselves. These arrays are 1D as they are plotted on a 1D graph. 
+
+These arrays are subject to evolve during the analysis, for example if a normaliation occurs. To store their evolution and maximize the speed of the algorithm, whenever these arrays are changed, the \textit{history} attribute is updated. 

@@ -157,6 +157,6 @@ def load_general(filepath, creator = None, parameters = None, brillouin_type = N
             return load_sif_file(filepath, parameters = parameters)
         else:
             return load_sif_file(filepath, parameters = parameters, brillouin_type = brillouin_type)
-    
+
     else:
         raise ValueError(f"Unsupported file format: {file_extension}")

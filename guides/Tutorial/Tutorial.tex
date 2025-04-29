@@ -76,6 +76,35 @@
     xleftmargin=5mm,
 }
 
+\lstdefinelanguage{json}{
+    basicstyle=\ttfamily,
+    numbers=left,
+    numberstyle=\tiny,
+    stepnumber=1,
+    numbersep=5pt,
+    showstringspaces=false,
+    breaklines=true,
+    frame=single,
+    backgroundcolor=\color{white},
+    literate=
+     *{0}{{{\color{blue}0}}}{1}
+      {1}{{{\color{blue}1}}}{1}
+      {2}{{{\color{blue}2}}}{1}
+      {3}{{{\color{blue}3}}}{1}
+      {4}{{{\color{blue}4}}}{1}
+      {5}{{{\color{blue}5}}}{1}
+      {6}{{{\color{blue}6}}}{1}
+      {7}{{{\color{blue}7}}}{1}
+      {8}{{{\color{blue}8}}}{1}
+      {9}{{{\color{blue}9}}}{1}
+      {:}{{{\color{red}{:}}}}{1}
+      {,}{{{\color{red}{,}}}}{1}
+      {\{}{{{\color{yellow}{\{}}}}{1}
+      {\}}{{{\color{yellow}{\}}}}}{1}
+      {[}{{{\color{black}{[}}}}{1}
+      {]}{{{\color{black}{]}}}}{1},
+}
+
 \newcommand{\mypart}[1]{\setcounter{chapter}{0} \part{#1}}
 \renewcommand{\theHsection}{\thepart.section.\thesection}
 
@@ -171,15 +200,22 @@
         \section{Adding a function to a new format} \label{subsec:load_data.new_format}
             \input{tex/02-Development_guide/2-3-User_specific_new.tex}
             
+    \chapter{Analyze data} \label{chap:analysis}
+        \input{tex/02-Development_guide/3-Analysis.tex}
+        \section{The attributes of the classes of the \textit{analysis} moduel} \label{sec:analysis.attributes}
+            \input{tex/02-Development_guide/3-1-Attributes/0-Attributes.tex}
+        \section{The classes of the \textit{analysis} module and the implementation of algorithms} \label{sec:analysis.inheritance}
+            \input{tex/02-Development_guide/3-1-Attributes/0-Attributes.tex}
+
 
     \chapter{Treat data} \label{sec:treatment}
-        \input{tex/02-Development_guide/3-Orientation.tex}
+        \input{tex/02-Development_guide/4-Orientation.tex}
 
         \section{Treat data to obtain a Power Spectral Density and a frequency vector} \label{subsec:treatment.toPSD}
-            \input{tex/02-Development_guide/3-1-Get_PSD.tex}
+            \input{tex/02-Development_guide/4-1-Get_PSD.tex}
 
         \section{Treat data to extract information from a Power Spectral Density} \label{subsec:treatment.toInfo}
-            \input{tex/02-Development_guide/3-2-Treatment_to_info.tex}
+            \input{tex/02-Development_guide/4-2-Treatment_to_info.tex}
 
         \section{Adding a new treatment function} \label{subsec:treatment.new}
             \begin{tcolorbox}

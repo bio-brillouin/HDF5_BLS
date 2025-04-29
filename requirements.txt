@@ -10,7 +10,7 @@ wheel
 openpyxl
 pyperclip
 pandas>=2.0.3
-json
+logging
 
 # Development dependencies
 pytest

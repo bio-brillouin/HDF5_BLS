@@ -1,0 +1,26 @@
+All the classes of the analysis module are built following a Object-Oriented approach and rely on 5 core attributes:
+\begin{itemize}
+    \item \textit{\_algorithm}: A JSON file describing a particular sequence of functions to be applied for the analysis
+    \item \textit{x}: The abscissa of the data on which we perform the analysis
+    \item \textit{y}: The data points that are to be analyzed
+    \item \textit{points}: A dictionnary of points on which to base the analysis
+    \item \textit{windows}: A dictionnary of windows on which to base the analysis
+\end{itemize}
+
+Additionaly, a sixth attribute, \textit{\_history} is used to store the evolution of each attribute during the analysis. This is however a "silent" attribute that the developper should not consider as it is automatically updated as will be explained in the following sections.
+
+
+\subsection{The \_algorithm attribute} \label{subsec:analysis.attributes.algorithm}
+    \input{tex/02-Development_guide/3-1-Attributes/1-Algorithm.tex}
+
+\subsection{The x and y attributes} \label{subsec:analysis.attributes.x_and_y}
+    \input{tex/02-Development_guide/3-1-Attributes/2-x_and_y.tex}
+
+\subsection{Points} \label{subsec:analysis.attributes.points}
+    \input{tex/02-Development_guide/3-1-Attributes/3-Points.tex}
+
+\subsection{Windows} \label{subsec:analysis.attributes.windows}
+    \input{tex/02-Development_guide/3-1-Attributes/4-Windows.tex}
+
+\subsection{The \_history attribute} \label{subsec:analysis.attributes.history}
+    \input{tex/02-Development_guide/3-1-Attributes/5-History.tex}

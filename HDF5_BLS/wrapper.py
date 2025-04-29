@@ -57,6 +57,7 @@ class Wrapper:
                     group.attrs["HDF5_BLS_version"] = HDF5_BLS_Version
             self.filepath = filepath
             self.save = False
+        self.need_for_repack = False
 
     def __getitem__(self, key): # Test made, Dev guide made
         """Magic method to access the data of the wrapper
@@ -81,7 +82,10 @@ class Wrapper:
                 raise WrapperError_StructureError(f"The path '{key}' does not exist in the file.")
             item = file[key]
             if isinstance(item, h5py.Dataset):
-                return item[()]
+                data = item[()]
+                shape = self.get_attributes(path=key)["MEASURE.Sampling_Matrix_Size_(Nx,Ny,Nz)_()"]
+                shape = [int(i) for i in shape.split(",")] + [-1]
+                return data.reshape(shape)
             return item
         # It would be better to return a new wrapper with only the selected group. But in this case we need to make sure that we will not overwrite temp.h5 by mistake.
 
@@ -296,10 +300,14 @@ class Wrapper:
         WrapperError_AttributeError
             Raises an error if the keys of the dictionnary do not match the expected keys.
         """
+        only_parent = False
         # If the parent group is not specified, we set it to "Brillouin", which is the top group of the file for Brillouin spectra
         if parent_group is None: parent_group = "Brillouin"
         # If the parent group is specified, we perform checks to avoid overwriting the data
         else:
+            if parent_group == name_group:
+                only_parent = True
+
             with h5py.File(self.filepath, 'r') as file:
                 # Check if the parent group exists
                 if parent_group not in file:
@@ -309,7 +317,6 @@ class Wrapper:
                     parent_group = "/".join(parent_group.split("/")[:-1])
 
         # If the name is not specified, we set it by default to the "Data_i"
-        only_parent = False
         if name_group is None: 
             with h5py.File(self.filepath, 'a') as file:
                 group = file[parent_group]
@@ -317,9 +324,9 @@ class Wrapper:
                 while f"Data_{i}" in group.keys(): i+=1
                 name_group = f"Data_{i}"
                 group.create_group(name_group)
+        elif only_parent: 
+            pass
         # If the name is specified, we check if it already exists
-        elif name_group == parent_group:
-            only_parent = True
         else:
             with h5py.File(self.filepath, 'a') as file:
                 group = file[parent_group]
@@ -377,6 +384,44 @@ class Wrapper:
         if self.filepath == os.path.abspath(os.path.dirname(__file__)) + "/temp.h5":
             self.save = True
 
+    def change_brillouin_type(self, path, brillouin_type):
+        """Changes the brillouin type of an element in the HDF5 file.
+
+        Parameters
+        ----------
+        path : str
+            The path to the element to change the brillouin type of.
+        brillouin_type : str
+            The new brillouin type of the element.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        WrapperError_StructureError
+            If the path is not a valid path.
+        WrapperError_ArgumentType
+            If the type is not valid
+        """
+        # Check if the path is a valid path
+        with h5py.File(self.filepath, 'r') as file:
+            if path not in file:
+                raise WrapperError_StructureError(f"The path '{path}' does not exist in the file.")
+        
+        # Check if the type is valid
+        if self.get_type(path) == h5py._hl.group.Group:
+            if brillouin_type not in ["Root", "Measure", "Calibration_spectrum", "Impulse_response", "Treatment", "Metadata"]:
+                raise WrapperError_ArgumentType(f"The brillouin type '{brillouin_type}' is not valid.")
+        else:
+            if brillouin_type not in ["Abscissa", "Frequency", "Linewidth", "Linewidth_std", "Shift", "Shift_std", "Raw_data", "Other", "PSD", "PSD", "Treatment"]:
+                raise WrapperError_ArgumentType(f"The brillouin type '{brillouin_type}' is not valid.")
+        
+        # Change the brillouin type
+        with h5py.File(self.filepath, 'a') as file:
+            file[path].attrs["Brillouin_type"] = brillouin_type
+
     def change_name(self, path, name):
         """Changes the name of an element in the HDF5 file.
 
@@ -399,12 +444,18 @@ class Wrapper:
             file[new_path] = file[path]
             del file[path]
 
-    def close(self):
+    def close(self, delete_temp_file = False):
         """Closes the wrapper and deletes the temporary file if it exists
         """
-        if not self.save:
+        # If there is no need to save the wrapper, delete the temporary file (created by default when the wrapper is created)
+        if not self.save or delete_temp_file:
             if self.filepath == os.path.abspath(os.path.dirname(__file__)) + "/temp.h5":
-                os.remove(self.filepath)
+                if os.path.isfile(self.filepath):
+                    os.remove(self.filepath)
+            elif self.need_for_repack:
+                self.repack()
+
+        # If the wrapper has to be saved, raise an error to prevent the user from closing the wrapper without saving it
         else:
             raise WrapperError_Save(f"The wrapper has not been saved yet.")
 
@@ -486,6 +537,7 @@ class Wrapper:
                     del file[path]
                 except Exception as e:
                     raise WrapperError(f"An error occured while deleting the element '{path}'. Error message: {e}")
+        self.need_for_repack = True
 
     def export_dataset(self, path, filepath):
         """
@@ -522,7 +574,9 @@ class Wrapper:
         """
         with h5py.File(self.filepath, 'r') as file:
             with h5py.File(filepath, 'w') as new_file:
-                new_file.copy(file[path], new_file)
+                new_file.copy(file[path], "Brillouin")
+                group = new_file["Brillouin"]
+                group.attrs["Brillouin_type"] = "Root"
 
     def export_image(self, path, filepath):
         """
@@ -595,7 +649,10 @@ class Wrapper:
         if path is None: path = "Brillouin"
 
         with h5py.File(self.filepath, 'r') as file:
-            children = list(file[path].keys())
+            if isinstance(file[path], h5py._hl.group.Group):
+                children = list(file[path].keys())
+            else:
+                children = []
         return list(children)
 
     def get_special_groups_hierarchy(self, path = None, brillouin_type = None):
@@ -724,6 +781,59 @@ class Wrapper:
             for key in file[path].keys():
                 file[new_path][name_group].copy(file[path][key], key)
             del file[path]
+
+    def repack(self, force_repack = False):
+        """Repacks the wrapper to minimize its size.
+        """
+        def copy_group(file, group, new_file, new_group):
+            """Copies a group from one file to another.
+
+            Parameters
+            ----------
+            file : h5py.File
+                The file to copy the group from.
+            group : str
+                The name of the group to copy.
+            new_file : h5py.File
+                The file to copy the group to.
+            new_group : str
+                The name of the group to copy to.
+            """
+            # Create the new group
+            new_file.create_group(new_group)
+
+            # Copy the attributes
+            for key in file[group].attrs.keys():
+                new_file[new_group].attrs[key] = file[group].attrs[key]
+
+            # Copy the data
+            for key in file[group].keys():
+                if isinstance(file[group][key], h5py.Group):
+                    copy_group(file, group+"/"+key, new_file, new_group+"/"+key)
+                else:
+                    dataset = new_file[new_group].create_dataset(key, data=file[group][key])
+                    dataset.attrs["Brillouin_type"] = file[group][key].attrs["Brillouin_type"]
+        
+        if self.need_for_repack or force_repack:
+            # Create a blank HDF5 file to store the data
+            temporary_file = self.filepath.replace(".h5", "_temp.h5")
+
+            # Create a new file to store the data
+            with h5py.File(self.filepath, 'r') as file_old:
+                # Create a new file to store the data
+                with h5py.File(temporary_file, 'w') as new_file:
+                    # Copy the data and attributes from the wrapper to the new file
+                    for key in file_old.keys():
+                        copy_group(file_old, key, new_file, key)
+        
+            # Delete the old file
+            os.remove(self.filepath)
+
+            # Rename the new file to the old file
+            os.rename(temporary_file, self.filepath)
+
+            # Set the need_for_repack flag to False
+            self.need_for_repack = False
 
     def save_as_hdf5(self, filepath=None, remove_old_file=True, overwrite = False): # Test made
         """Saves the data and attributes to an HDF5 file. In practice, moves the temporary hdf5 file to a new location and removes the old file if specified.

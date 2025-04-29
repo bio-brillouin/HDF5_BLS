@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>868</width>
-    <height>582</height>
+    <width>850</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -364,7 +364,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>868</width>
+     <width>850</width>
      <height>37</height>
     </rect>
    </property>
@@ -380,12 +380,34 @@
     <addaction name="separator"/>
     <addaction name="a_AddData"/>
     <addaction name="separator"/>
+    <addaction name="a_Close"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Actions</string>
+    </property>
+    <widget class="QMenu" name="menuExport_code">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="title">
+      <string>Export code</string>
+     </property>
+     <addaction name="a_ExportPython"/>
+    </widget>
+    <addaction name="a_RepackHDF5"/>
+    <addaction name="separator"/>
     <addaction name="a_ImportCSV"/>
     <addaction name="a_ConvertCSV"/>
     <addaction name="separator"/>
-    <addaction name="a_Close"/>
+    <addaction name="a_RenameElement"/>
+    <addaction name="menuExport_code"/>
+    <addaction name="separator"/>
+    <addaction name="actionGet_PSD"/>
+    <addaction name="actionApply_Treatment"/>
    </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="a_OpenHDF5">
@@ -414,6 +436,9 @@
    </property>
   </action>
   <action name="a_ConvertCSV">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Export Properties to CSV</string>
    </property>
@@ -426,6 +451,37 @@
   <action name="a_SaveFileAs">
    <property name="text">
     <string>Save file as</string>
+   </property>
+  </action>
+  <action name="a_RepackHDF5">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Repack HDF5</string>
+   </property>
+  </action>
+  <action name="a_RenameElement">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Rename element</string>
+   </property>
+  </action>
+  <action name="a_ExportPython">
+   <property name="text">
+    <string>Python</string>
+   </property>
+  </action>
+  <action name="actionGet_PSD">
+   <property name="text">
+    <string>Get PSD</string>
+   </property>
+  </action>
+  <action name="actionApply_Treatment">
+   <property name="text">
+    <string>Apply Treatment</string>
    </property>
   </action>
  </widget>

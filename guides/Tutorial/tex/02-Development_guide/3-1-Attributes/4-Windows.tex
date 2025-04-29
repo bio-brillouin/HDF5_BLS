@@ -1,0 +1,21 @@
+The \textit{windows} attributes is a dictionnary of tuple stored as values in the \textit{self.x} array. The keys of the dictionnary have a nomenclature constrained by the type of points. This nomenclature is of the following form:
+\begin{center}
+    prefix\_number
+\end{center}
+where \textit{prefix} is a string describing the type of point and \textit{number} is an integer describing the position of the point in the list of points of this type. The \textit{prefix} can be one of the following:
+\begin{itemize}
+    \item \textit{anti-stokes}: A point corresponding to an anti-stokes peak
+    \item \textit{stokes}: A point corresponding to a stokes peak
+    \item \textit{elastic}: A point corresponding to an elastic peak
+    \item \textit{peak}: A point corresponding to an other peak
+\end{itemize}
+
+Example:
+\begin{lstlisting}
+self.windows ={
+    "anti-stokes\_1" = (3.0, 8.0)
+    "stokes\_1" = (-8.0, -3.0)
+}
+\end{lstlisting}
+
+Note that all the position are stored as float. Note also that the keys of the \textit{points} attribute are excatly the same as the keys of the \textit{points} attribute.

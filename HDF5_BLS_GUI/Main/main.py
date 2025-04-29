@@ -7,12 +7,13 @@ import numpy as np
 import h5py
 import pyperclip
 import re
+import json
 from inspect import getmembers, isfunction
 
 from Main.UI.main_window_ui import Ui_w_Main
-from DataStructure.main import DataStructure
 from ComboboxChoose.main import ComboboxChoose
 from ParameterWindow.main import ParameterWindow
+from ProgressBar.main import ProgressBar
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 relative_path_libs = os.path.join(current_dir, "..", "..", "..")
@@ -79,12 +80,18 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             self.b_Close.clicked.connect(self.closeEvent)
 
         def initialize_menu(self):
+            # File menu
             self.a_NewHDF5.triggered.connect(self.new_hdf5)
             self.a_OpenHDF5.triggered.connect(self.open_hdf5)
             self.a_Save.triggered.connect(self.save_hdf5)
             self.a_SaveFileAs.triggered.connect(lambda: self.save_hdf5(saveas=True))
             self.a_AddData.triggered.connect(self.add_data)
             self.a_ConvertCSV.triggered.connect(self.convert_csv)
+
+            # Edit menu
+            self.a_RenameElement.triggered.connect(self.rename_element) 
+            self.a_RepackHDF5.triggered.connect(self.repack)
+            self.a_ExportPython.triggered.connect(self.export_code_line)
 
         def initialize_timer(self):
             self.hover_timer = qtc.QTimer(self) 
@@ -156,7 +163,8 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         # Initiates the table view where the properties of the measure and spectrometer are displayed
         initialize_tableview(self)
 
-        self.wrapper = wrapper.Wrapper()
+        self.wrapper = wrapper.Wrapper(filepath = None)
+        self.filepath = self.wrapper.filepath
         self.update_treeview()
 
         # Initiates the log
@@ -177,6 +185,21 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                 self.b_RemoveData.setEnabled(True)
                 self.b_ConvertCSV.setEnabled(True)
 
+    def activate_menu(self):
+        """
+        Activate menu items based on the current state of the application.
+
+        Returns
+        -------
+        None
+        """
+        if len(self.wrapper.get_children_elements()) > 0:
+            self.a_RepackHDF5.setEnabled(True)
+            self.a_RenameElement.setEnabled(True)
+            self.a_ExportPython.setEnabled(True)
+            self.actionGet_PSD.setEnabled(True)
+            self.actionApply_Treatment.setEnabled(True) 
+
     def add_data(self, event=None, filepath=None, parent_path=None):
         """
         Add data to the current HDF5 file.
@@ -185,8 +208,8 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         ----------
         event : qtc.QEvent, optional
             The event that triggered the function call. Default is None.
-        filepath : str, optional
-            The path to the file to add. If None, a file dialog will open to select a file. Default is None.
+        filepath : str or list, optional
+            The path to the file to add or the list of paths of the files to add. If None, a file dialog will open to select a file. Default is None.
         parent_path : str, optional
             The parent path of the added data. If None, the data will be added to the root of the HDF5 file. Default is None.
         
@@ -194,6 +217,18 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         -------
         None
         """
+        def add_to_root():
+            dialog = qtw.QMessageBox.question(self, "Precisions", "Do you want to add the data to the opened file (Yes) or create a new one (No)?", qtw.QMessageBox.Yes | qtw.QMessageBox.No | qtw.QMessageBox.Cancel)
+            if dialog == qtw.QMessageBox.No: # The user wants to create a new file
+                try: # If the file hasn't been saved, an error is raised
+                    self.wrapper.close()
+                    self.wrapper = wrapper.Wrapper()
+                except WrapperError_Save:
+                    if not self.handle_error_save(): return # If the user decides to cancel his action at this point, the function ends
+                self.wrapper = wrapper.Wrapper()
+            elif dialog == qtw.QMessageBox.Cancel:
+                return
+
         def create_group_data(group_dim, data, n_dim):
             if len(group_dim) == 0:
                 return wrapper.Wrapper(data={"Raw_data": data},
@@ -211,17 +246,13 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                 return wrapper.Wrapper(data = dic,
                                       attributes = {"FILEPROP.Name": "Dimension_"+str(n_dim)})
 
-        def add_to_root():
-            dialog = qtw.QMessageBox.question(self, "Precisions", "Do you want to add the data to the opened file (Yes) or create a new one (No)?", qtw.QMessageBox.Yes | qtw.QMessageBox.No | qtw.QMessageBox.Cancel)
-            if dialog == qtw.QMessageBox.No: # The user wants to create a new file
-                try: # If the file hasn't been saved, an error is raised
-                    self.wrapper.close()
-                    self.wrapper = wrapper.Wrapper()
-                except WrapperError_Save:
-                    if not self.handle_error_save(): return # If the user decides to cancel his action at this point, the function ends
-                self.wrapper = wrapper.Wrapper()
-            elif dialog == qtw.QMessageBox.Cancel:
-                return
+        def create_structure(dic, parent_path):
+            for key in dic.keys():
+                if "." in key:
+                    pass
+                else:
+                    self.wrapper.create_group(key, parent_group=parent_path)
+                    create_structure(dic[key], f"{parent_path}/{key}")
 
         def get_dictionnary(file, creator = None, parameters = None):
             # First we try adding the data based on the file extension
@@ -236,9 +267,10 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             except LoadError_creator as e: 
                 creator_list = e.creators 
                 dialog = ComboboxChoose(text = "Choose the type of structure to load", list_choices = creator_list, parent = self)
+                # If the user cancels the dialog box, we return
                 if dialog.exec_() == qtw.QDialog.Rejected:
                     return
-                elif dialog.exec_() == qtw.QDialog.Accepted:
+                else:
                     creator = dialog.get_selected_structure()
                     # After choosing the type of structure, we try to load the data again by precising the structure
                     try:
@@ -254,7 +286,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                         if dialog.exec_() == qtw.QDialog.Accepted:
                             parameters = dialog.get_selected_structure()
                             dialog.close()
-                        elif dialog.exec_() == qtw.QDialog.Rejected:
+                        else:
                             dialog.close()
                             return
                         dic = load_data.load_general(file, creator, parameters)
@@ -263,26 +295,77 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                     except Exception as e:
                         qtw.QMessageBox.warning(self, "Error while adding the file: ", str(e))
                         return
-                # If the user cancels the dialog box, we return
-                else: 
-                    return 
             
             # If it doesn't work, there was a mistake while opening the file so print an error
             except Exception as e:
                 qtw.QMessageBox.warning(self, "Error while adding the file: ", str(e))
                 return
-            
-            self.wrapper.add_dictionnary(dic, 
-                                         parent_group = parent_path, 
-                                         name_group = os.path.basename(file).split(".")[0])
-            return creator, parameters
+            return creator, parameters, dic
+
+        def get_extensions(filepath, extensions = []):
+            for f in filepath:
+                ext = os.path.splitext(f)[1]
+                if ext == "":
+                    files = os.listdir(f)
+                    if ".DS_Store" in files: files.remove(".DS_Store")
+                    get_extensions([f"{f}/{file}" for file in files], extensions)
+                else:
+                    if ext not in extensions:
+                        extensions.append(ext)
+            return extensions
+
+        def get_children_files_by_extension(filepath, extension, file = [], path_from_parent = [], parent = ""):
+            files = os.listdir(filepath)
+            if ".DS_Store" in files: files.remove(".DS_Store")
+            for f in files:
+                ext = os.path.splitext(f)[1]
+                if ext == extension:
+                    file.append(os.path.join(filepath, f))
+                    path_from_parent.append(parent)
+                elif ext == "":
+                    if ".DS_Store" in files: files.remove(".DS_Store")
+                    if parent != "":
+                        file, path_from_parent = get_children_files_by_extension(os.path.join(filepath, f), 
+                                                                                extension, 
+                                                                                file = file, 
+                                                                                path_from_parent= path_from_parent,
+                                                                                parent = f"{parent}/{f}")
+                    else:
+                        file, path_from_parent = get_children_files_by_extension(os.path.join(filepath, f), 
+                                                                                extension, 
+                                                                                file = file, 
+                                                                                path_from_parent= path_from_parent,
+                                                                                parent = f)
+            return file, path_from_parent
+
+        def update_progress():
+            nonlocal i
+            if i < len(filepath):
+                file, path_parent = filepath[i], path_from_parent[i]
+                dic = load_data.load_general(file, creator=creator, parameters=parameters)
+                name_group = os.path.basename(file).split(".")[0]
+                name_group = name_group.replace("  ", " ")
+                if path_parent == "":
+                    self.wrapper.add_dictionnary(dic, 
+                                                 parent_group=parent_path, 
+                                                 name_group=name_group)
+                else:
+                    self.wrapper.add_dictionnary(dic, 
+                                                 parent_group=f"{parent_path}/{path_parent}",
+                                                 name_group = name_group)
+                self.textBrowser_Log.append(f"<i>{file}</i> added to <b>{parent_path}</b>")
+                i += 1
+                progress.update_progress(i / len(filepath) * 100, f"Adding {file} to {path_parent}")
+            else:
+                timer.stop()
+                progress.close()
 
         # Get filepath            
         if filepath is None: 
             filepath = qtw.QFileDialog.getOpenFileNames(self, "Open File", "", "All Files (*)")[0]
             if filepath is None: return
-
-        self.wrapper.save = True
+        if type(filepath) == str :  
+            filepath = [filepath]
 
         # Set parent path to the selected element if it is None
         if parent_path is None: 
@@ -296,27 +379,76 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         if self.wrapper.get_type(parent_path) != h5py._hl.group.Group:
             parent_path = "/".join(parent_path.split("/")[:-1])
 
+        # If we have dragged an entire directory, add each element of the directory with the same structure (directory <=> groups)
+        dir_present = False
+        for f in filepath:
+            if os.path.splitext(f)[1] == "":
+                dir_present = True
+        if dir_present:
+            response = qtw.QMessageBox.question(self, "Warning", "You are trying to add a directory. Do you want to add all the files in the directory with the same structure?", qtw.QMessageBox.Yes | qtw.QMessageBox.No)
+            if response == qtw.QMessageBox.Yes:
+                extensions = get_extensions(filepath)
+                dialog = ComboboxChoose(text = "Choose the file you want to load by their extension", list_choices = extensions, parent = self)
+                if dialog.exec_() == qtw.QDialog.Accepted:
+                    extension = dialog.get_selected_structure()
+                    files, path_from_parent = [], []
+                    for file in filepath:
+                        temp_file, temp_path_from_parent = get_children_files_by_extension(file, extension)
+                        files += temp_file
+                        path_from_parent += temp_path_from_parent
+                    # Create file structure in the HDF5 file
+                    for path_parent in path_from_parent:
+                        path_split = path_parent.split("/")
+                        temp_path = ""
+                        for p in path_split:
+                            if temp_path == "": 
+                                if p not in self.wrapper.get_children_elements(parent_path):
+                                    self.wrapper.create_group(p, parent_group = parent_path)
+                                temp_path = p
+                            else: 
+                                if p not in self.wrapper.get_children_elements(parent_path+"/"+temp_path):
+                                    self.wrapper.create_group(p, parent_group = parent_path+"/"+temp_path)
+                                temp_path = f"{temp_path}/{p}"
+                    filepath = files
+                else:
+                    return
+        else:
+            path_from_parent = ["" for i in filepath]
+        
         # Creating the dictionnary with the data and the attributes starting with the addition of a single file
-        if type(filepath) == str :  filepath = [filepath]
         file = filepath.pop(0)
-        creator, parameters = get_dictionnary(file, creator = None, parameters = None)
+        path_parent = path_from_parent.pop(0)
+        creator, parameters, dic = get_dictionnary(file, creator = None, parameters = None)
         name_group = os.path.basename(file).split(".")[0]
+        name_group = name_group.replace("  ", " ")
+        if path_parent == "":
+            self.wrapper.add_dictionnary(dic, 
+                                        parent_group = parent_path, 
+                                        name_group = name_group)
+        else:
+            self.wrapper.add_dictionnary(dic, 
+                                        parent_group = parent_path+"/"+path_parent, 
+                                        name_group = name_group)
+        
         # Logging the added data
         self.textBrowser_Log.append(f"<i>{file}</i> added to <b>{parent_path}</b>")
 
-        # Using the creator and parameters used to load the first data to load the rest of the data
-        if len(filepath): 
-            for file in filepath:
-                dic = load_data.load_general(file, creator = creator, parameters = parameters)
-                name_group = os.path.basename(file).split(".")[0]
-                self.wrapper.add_dictionnary(dic, 
-                                             parent_group = parent_path, 
-                                             name_group = name_group)
-                # Logging the added data
-                self.textBrowser_Log.append(f"<i>{file}</i> added to <b>{parent_path}</b>")
+        # Using the creator and parameters used to load the first data to load the rest of the data. During loading, a progress window is opened allowing to see the progress of the loading
+        timer = qtc.QTimer(self)
+        i = 0
+        progress = ProgressBar(f"Adding {len(filepath)} files to the HDF5 file", self)
+        progress.show()
+        timer.timeout.connect(update_progress)
+        timer.start(10)  # Update every 10 ms
+        while timer.isActive(): # Wait for the timer to finish
+            qtw.QApplication.processEvents()
 
         # Updating the treeview
-        self.treeview_selected = f"{parent_path}/{name_group}"
+        if path_parent == "":
+            self.treeview_selected = f"{parent_path}/{name_group}"
+        else:
+            self.treeview_selected = f"{parent_path}/{path_parent}/{name_group}"
+
         self.update_treeview()
         self.update_parameters()
         self.expand_treeview_path(self.treeview_selected)
@@ -344,8 +476,16 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         -------
         None
         """
+        # Handle the error if the wrapper is not saved
         if self.wrapper.save:
             self.handle_error_save()
+
+        # Repack the wrapper if it exists
+        if os.path.isfile(self.filepath):
+            self.wrapper.repack()
+        
+        # Delete the temporary file if it exists
+        self.wrapper.close(delete_temp_file = True)
         self.close()
 
     def convert_csv(self):
@@ -458,16 +598,20 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
 
     def get_PSD(self):
         """
-        Get the Power Spectrum Density of the selected data.
+        Get the Power Spectrum Density of the selected data. If the process to extract the PSD is already stored in the attributes of the selected group, it is opened.
 
         Returns
         -------
         None
         """
-        type = self.wrapper.get_attributes(self.treeview_selected)['SPECTROMETER.Type']
-        type = type.replace(" ", "_")
-        type = type.replace("-", "_")
-            
+        try:
+            type = self.wrapper.get_attributes(self.treeview_selected)['SPECTROMETER.Type']
+            type = type.replace(" ", "_")
+            type = type.replace("-", "_")
+        except KeyError:
+            qtw.QMessageBox.warning(self, "Warning", "The selected data does not have a spectrometer type.")
+            return
+
         # Check if the conversion can be performed
         function_name = f"check_conversion_{type}"
         functions = [func for func in getmembers(conversion_PSD, isfunction)]
@@ -633,6 +777,31 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             self.update_treeview()
             self.expand_treeview_path(self.treeview_selected)
 
+    def rename_element(self):
+        """
+        Renames the selected element in the HDF5 file.
+
+        Returns
+        -------
+        None
+        """
+        new_name = qtw.QInputDialog.getText(self, "Rename element", "Enter the new name:")[0]
+        if new_name:
+            self.wrapper.change_name(path = self.treeview_selected, name = new_name)
+            self.treeview_selected = new_name
+            self.update_treeview()
+            self.expand_treeview_path(self.treeview_selected)
+
+    def repack(self):
+        """
+        Repacks the wrapper to minimize its size.
+
+        Returns
+        -------
+        None
+        """
+        self.wrapper.repack()
+
     def save_hdf5(self, saveas=False):
         """
         Save the current data to an HDF5 file.
@@ -675,7 +844,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                 qtw.QMessageBox.information(self, "Not implemented", "To do")
 
             def apply_change(value):
-                self.wrapper.update_property(name="Brillouin_type", value=value, path=self.treeview_selected, apply_to_all=False)
+                self.wrapper.change_brillouin_type(path=self.treeview_selected, brillouin_type=value)
                 self.update_treeview()
                 self.expand_treeview_path("/".join(self.treeview_selected.split("/")[:-1]))
 
@@ -731,7 +900,19 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                 edit_Brillouin_type.addAction(action)    
         
         def sub_menu_export():
-            
+            def export_algorithm(str_algorithm):
+                # Convert string algorithm into dictionnary
+                try:
+                    algorithm = json.loads(str_algorithm)
+                except:
+                    qtw.QMessageBox.warning(self, "Warning", "The algorithm is not valid.")
+                    return
+
+                filepath = qtw.QFileDialog.getSaveFileName(self, "Open File", "", "JSON Files (*.json)")[0]
+                if filepath:
+                    with open(filepath, 'w') as f:
+                        json.dump(algorithm, f, indent=4)
+
             export.clear()
             actions = []
 
@@ -746,6 +927,10 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                 export_HDF5 = qtg.QAction("Export group as HDF5 file", self)
                 export_HDF5.triggered.connect(self.export_HDF5_group)
                 actions.append(export_HDF5)
+                if "Process_PSD" in self.wrapper.get_attributes(path=self.treeview_selected).keys():
+                    export_PSD = qtg.QAction("Export PSD algorithm", self)
+                    export_PSD.triggered.connect(lambda: export_algorithm(self.wrapper.get_attributes(path=self.treeview_selected)["Process_PSD"]))
+                    actions.append(export_PSD)
             if self.wrapper.get_type(path=self.treeview_selected) == h5py._hl.dataset.Dataset:
                 export_HDF5 = qtg.QAction("Export dataset as numpy array", self)
                 export_HDF5.triggered.connect(self.export_numpy_array)
@@ -754,7 +939,12 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                     export_image = qtg.QAction("Export image", self)
                     export_image.triggered.connect(self.export_image)
                     actions.append(export_image)
-            
+
+                if "Process_PSD" in self.wrapper.get_attributes(path="/".join(self.treeview_selected.split("/")[:-1])).keys():
+                    export_PSD = qtg.QAction("Export PSD algorithm", self)
+                    export_PSD.triggered.connect(lambda: export_algorithm(self.wrapper.get_attributes(path="/".join(self.treeview_selected.split("/")[:-1]))["Process_PSD"]))
+                    actions.append(export_PSD)
+
             for action in actions:
                 export.addAction(action)   
 
@@ -1089,10 +1279,12 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         """
         # If no filepath was given, take the file corresponding to the specified version of the library, make sure no overwrite is allowed.
         if filepath is None: 
+            import_file = False
             filepath = "/".join(os.path.abspath(__file__).split("/")[:-3]) + f"/spreadsheets/attributes_v{wrapper.HDF5_BLS_Version}.xlsx"
             overwrite = False
         # If the filepath is given, ask the user if they want to update the properties of the wrapper
         else:
+            import_file = True
             overwrite = qtw.QMessageBox.question(self, "Update properties", "Do you want to overwrite the properties of the wrapper with the properties stored in the file?")
             overwrite = True if overwrite == qtw.QMessageBox.Yes else False
 
@@ -1299,6 +1491,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
 
         # Activate buttons
         self.activate_buttons()
+        self.activate_menu()
 
         # Initiates the table view properties
         self.tableView_Measure.setAcceptDrops(True)

@@ -1,0 +1,32 @@
+The \textit{\_history} attribute resembles the \textit{algorithm} attribute in the sense that it is also a list of dictionnaries where each element corresponds to a step of the analysis. However, the main difference is that the \textit{\_history} attribute is not a JSON file but a "silent" attribute that is automatically updated whenever a function is called. This means that the \textit{\_history} attribute is not meant to be used by the user but is rather used internally by the module to store the evolution of the attributes during the analysis and speed up the analysis whenever the user decides to change a parameter during the analysis.
+
+The elements of the \textit{\_history} attribute are dictionnaries that contain 5 keys, 4 of which are optional to minimize the size of the memory used:
+\begin{itemize}
+    \item \textit{function}: The algorithm used for the analysis
+    \item \textit{x} (optional): The abscissa of the data on which we perform the analysis (only if the attribute has been changed at this step)
+    \item \textit{y} (optional): The data points that are to be analyzed (only if the attribute has been changed at this step)
+    \item \textit{points} (optional): A dictionnary of points on which to base the analysis (only if the attribute has been changed at this step)
+    \item \textit{windows} (optional): A dictionnary of windows on which to base the analysis (only if the attribute has been changed at this step)
+\end{itemize}
+
+Example:
+\begin{lstlisting}
+self._history = [
+    {
+        "function": "__init__",
+        "x": np.array([0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]),
+        "y": np.array([0.0, 1.0, 4.0, 2.0, 3.0, 3.0, 5.0, 3.0, 2.0, 1.0]),
+        "points": {},
+        "windows": {}
+    },
+    {
+        "function": "normalize",
+        "y": np.array([0.0, 0.2, 0.8, 0.4, 0.6, 0.6, 1.0, 0.6, 0.4, 0.2])
+    }
+    {
+        "function": "get_point_window",
+        "points": {"anti-stokes\_1": 5.5542},
+        "windows": {"anti-stokes\_1": (3.0, 8.0)},
+    }
+]
+\end{lstlisting}

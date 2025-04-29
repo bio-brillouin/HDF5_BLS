@@ -1,0 +1,98 @@
+The \textit{\_algorithm} attribute is a JSON file describing a particular sequence of functions to be applied for the analysis. It is built with two ideas in mind:
+\begin{itemize}
+    \item Store the sequence of functions that are applied for the analysis, with all their parameters, so that it is possible to reproduce the analysis or improve it by changing the parameters of the functions.
+    \item Store a human-readable description of the sequence of functions that are applied for the analysis, so that it is possible to understand what is done in the analysis even for someone who is not familiar with the code.
+\end{itemize}
+
+The \textit{\_algorithm} attribute is a JSON file that is built with the following structure:
+\begin{itemize}
+    \item \textit{name}: The name of the algorithm used for the analysis
+    \item \textit{version}: The version of the algorithm
+    \item \textit{author}: The author of the algorithm (laboratory or person)
+    \item \textit{description}: A human-readable short presentation of the algorithm
+    \item \textit{functions}: A list of functions to be applied for the analysis following this structure:
+    \begin{itemize}
+        \item \textit{function}: The name of the function to be applied. This name does not include the name of the class as this name depends on the name of "SPECTROMETER.Type" attribute of the data to be treated.
+        \item \textit{version}: The version of the function
+        \item \textit{parameters}: A dictionnary of parameters to be passed to the function
+        \item \textit{description}: A human-readable presentation of the function
+    \end{itemize}
+\end{itemize}
+
+As an example, the following JSON file describes a simple analysis that consists in taking the mean of the data points:
+
+\begin{lstlisting}[language=json]
+{
+    "name": "Mean",
+    "version": "1.0",
+    "author": "Pierre Bouvet - Medical University of Vienna",
+    "description": "Mean of the data points",
+    "functions": [
+        {
+            "function": "mean",
+            "version": "1.0",
+            "parameters": {
+                points: None
+                }
+            "description": "Mean of the data points"
+        }
+    ]
+}
+\end{lstlisting}
+
+This description of the algorithm is "blank" meaning that the parameters are not defined. This is useful when the algorithm is stored as a sequence of functions that have to be adapted. However, if the analysis concerns a specific data set, then we can pass the attribute names as parameters, as well as any other parameters that are used for the analysis. For example, if we want to perform a polynomial fit with a polynomial of order 2 on the data points windowed around the first anti-stokes peak as defined in the "window" attribute, we can write the following JSON file:
+
+\begin{lstlisting}[language=json]
+{
+    "name": "Polynomial fit",
+    "version": "1.0",
+    "author": "Pierre Bouvet - Medical University of Vienna",
+    "description": "Polynomial fit of the data points",
+    "functions": [
+        {
+            "function": "polyfit",
+            "version": "1.0",
+            "parameters": {
+                "x": "self.x",
+                "y": "self.y",
+                "window": "self.windows['anti_stokes_1']",
+                "degree": 2
+                }
+            "description": "Polynomial fit of the data points performed on x=self.x and y=self.y, around the window defined by self.windows['anti_stokes_1'], with a polynomial of order 2"
+        }
+    ]
+}
+\end{lstlisting}
+
+Storing algorithms composed of a sequence of function is done by adding a function to the list of functions, following the same structure as the one described above:
+
+\begin{lstlisting}[language=json]
+    {
+        "name": "Polynomial fit",
+        "version": "1.0",
+        "author": "Pierre Bouvet - Medical University of Vienna",
+        "description": "Polynomial fit of the data points",
+        "functions": [
+            {
+                "function": "function_1",
+                "version": "1.0",
+                "parameters": {
+                    "x": "self.x",
+                    "degree": 2
+                    }
+                "description": "The first function of the analysis performed on x=self.x with a degree of 2"
+            },
+            {
+                "function": "function_2",
+                "version": "1.0",
+                "parameters": {
+                    "y": "self.y",
+                    "resampling": True
+                    }
+                "description": "The second function of the analysis performed on y=self.y with resampling=True"
+            }
+        ]
+    }
+\end{lstlisting}
+
+Note that these examples are meant to present the principle at the core of the treatment but do not represent the actual implementation of the functions. The actual implementation of the functions is detailed in the following sections. Full examples will also be given at the end of this chapter.

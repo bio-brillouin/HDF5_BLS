@@ -1,12 +1,14 @@
 from PySide6 import QtCore as qtc
 from PySide6 import QtWidgets as qtw
 from PySide6 import QtGui as qtg
+import h5py
 
 import numpy as np
 from scipy.optimize import minimize
 
 from ComboboxChoose.main import ComboboxChoose
 from ParameterCurve.main import ar_BLS_VIPA_parameters
+from AnalyzeWindow.main import AnalyzeWindow_VIPA
 
 from HDF5_BLS import wrapper
 
@@ -150,36 +152,63 @@ def conversion_VIPA(parent, wrp, path):
     -------
     None
     """
-    # Get the list of calibration curves from the file up to the element that has been selected
-    calibration_files = wrp.get_special_groups_hierarchy(path = parent.treeview_selected, brillouin_type="Calibration_spectrum") 
-
     # Verify that the FSR can be found in the arguments. If not, the frequency axis ca
     if not "SPECTROMETER.VIPA_FSR_(GHz)" in wrp.get_attributes(path).keys():
         qtw.QMessageBox.warning(parent, "Warning", "PSD cannot be constructed because the FSR of the VIPA is not defined.")
         return
 
-    # If there are calibration curves, asks the user wether to create the frequency axis from the datasets of the selected group or to use a calibration group
-    calibration = None
-    if len(calibration_files)>0:
-        response = qtw.QMessageBox.question(parent, "Frequency axis", "Do you want to create the frequency axis from the datasets of the selected group (Yes) or use a calibration group (No)?", qtw.QMessageBox.Yes | qtw.QMessageBox.No | qtw.QMessageBox.Cancel)
-        if response == qtw.QMessageBox.No:
-            # Create the combobox GUI to select the calibration data
-            text = "Select the calibration curves from the list below."
-            dialog = ComboboxChoose(text, calibration_files, parent)
-            if dialog.exec_() == qtw.QDialog.Accepted:
-                calibration = dialog.get_selected_structure()
-                dialog.close()
-            else:
-                dialog.close()
-                return
-        elif response == qtw.QMessageBox.Cancel:
-            return
+    # If the user has chosen a dataset, select the parent group
+    if not wrp.get_type(path = path) == h5py._hl.group.Group:
+        path = "/".join(path.split("/")[:-1])  
+
+    # Check if the chosen gorup is a measure group
+    if not wrp.get_type(path = path, return_Brillouin_type = True) == "Measure":
+        qtw.QMessageBox.information(parent, "Information", "Only measure groups can be analyzed for now.")
+        return
     
-    # If there are no calibration curves or the user chose to not use them, open the GUI on the chosen dataset
-    if calibration is None:
-        print("OK")
+    # Extract the raw data and the PSD from the wrapper corresponding to the selected curve in the combobox
+    raw_data, PSD = False, False
+    for e in wrp.get_children_elements(path = path):
+        if wrp.get_type(path = f"{path}/{e}", return_Brillouin_type = True) == "Raw_data":
+            y_rd = wrp[f"{path}/{e}"]
+            str_algorithm_rd = None
+            raw_data = True
+        elif wrp.get_type(path = f"{path}/{e}", return_Brillouin_type = True) == "PSD":
+            y_psd = wrp[f"{path}/{e}"]
+            str_algorithm_psd = wrp.get_attributes(path = f"{path}/{e}")["Process_PSD"]
+            PSD = True
+    
+    if raw_data and not PSD:
+        dialog = AnalyzeWindow_VIPA(parent, x = np.arange(y_rd.shape[-1]), y = y_rd)
+    elif PSD and not raw_data:
+        dialog = AnalyzeWindow_VIPA(parent, x = np.arange(y_psd.shape[-1]), y = y_psd, str_algorithm = str_algorithm_psd)
     else:
-        qtw.QMessageBox.information(parent, "To do", "Not implemented yet")
+        response = qtw.QMessageBox.question(parent, "Warning", "Do you want to open the previous analysis (Yes) or create a new one (No)?", qtw.QMessageBox.Yes | qtw.QMessageBox.No | qtw.QMessageBox.Cancel)
+        if response == qtw.QMessageBox.No:
+            dialog = AnalyzeWindow_VIPA(parent, x = np.arange(y_psd.shape[-1]), y = y_psd, str_algorithm = str_algorithm_psd)
+        elif response == qtw.QMessageBox.Yes:
+            dialog = AnalyzeWindow_VIPA(parent, x = np.arange(y_rd.shape[-1]), y = y_rd)
+        else:
+            return
+        
+    dialog.exec_()
+    if dialog.result() == qtw.QDialog.Accepted:
+        process, frequency = dialog.get_results()
+        dialog.close()
+    else: 
+        dialog.close()
+        return
+
+    dic = {"Frequency": {"Name": "Frequency",
+                            "Data": frequency},
+            "Attributes": {"Process_PSD": process}}
+    # wrp = wrapper.Wrapper()
+    wrp.add_dictionnary(dic = dic,
+                        parent_group = path,
+                        name_group = path)
+    wrp.change_brillouin_type(path = f"{path}/{e}", brillouin_type = "PSD")
+    parent.update_treeview()
+
 
     
 
