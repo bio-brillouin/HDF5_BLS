@@ -49,3 +49,4 @@ guides/Tutorial/Tutorial.fdb_latexmk
 guides/Tutorial/Tutorial.aux
 HDF5_BLS.code-workspace
 local_use
+graphical_algorithm.pdf
