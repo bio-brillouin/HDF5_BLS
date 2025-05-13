@@ -17,10 +17,10 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
 from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QGridLayout,
-    QGroupBox, QHeaderView, QMainWindow, QMenu,
-    QMenuBar, QPushButton, QSizePolicy, QSpacerItem,
-    QStatusBar, QTabWidget, QTableView, QTextBrowser,
-    QTreeView, QWidget)
+    QGroupBox, QHBoxLayout, QHeaderView, QMainWindow,
+    QMenu, QMenuBar, QPushButton, QSizePolicy,
+    QSpacerItem, QStatusBar, QTabWidget, QTableView,
+    QTextBrowser, QTreeView, QWidget)
 import Icons_rc
 
 class Ui_w_Main(object):
@@ -53,10 +53,13 @@ class Ui_w_Main(object):
         self.a_RenameElement.setEnabled(False)
         self.a_ExportPython = QAction(w_Main)
         self.a_ExportPython.setObjectName(u"a_ExportPython")
-        self.actionGet_PSD = QAction(w_Main)
-        self.actionGet_PSD.setObjectName(u"actionGet_PSD")
-        self.actionApply_Treatment = QAction(w_Main)
-        self.actionApply_Treatment.setObjectName(u"actionApply_Treatment")
+        self.a_Get_PSD = QAction(w_Main)
+        self.a_Get_PSD.setObjectName(u"a_Get_PSD")
+        self.a_Apply_Treatment = QAction(w_Main)
+        self.a_Apply_Treatment.setObjectName(u"a_Apply_Treatment")
+        self.a_ExportImage = QAction(w_Main)
+        self.a_ExportImage.setObjectName(u"a_ExportImage")
+        self.a_ExportImage.setEnabled(False)
         self.centralwidget = QWidget(w_Main)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
@@ -113,10 +116,28 @@ class Ui_w_Main(object):
 
         self.gridLayout_7.addWidget(self.f_VisualizePlots, 1, 0, 1, 2)
 
-        self.cb_Treatment = QComboBox(self.tab_Visualize)
+        self.f_SelectionPlots = QFrame(self.tab_Visualize)
+        self.f_SelectionPlots.setObjectName(u"f_SelectionPlots")
+        self.f_SelectionPlots.setFrameShape(QFrame.Shape.StyledPanel)
+        self.f_SelectionPlots.setFrameShadow(QFrame.Shadow.Plain)
+        self.f_SelectionPlots.setLineWidth(0)
+        self.horizontalLayout = QHBoxLayout(self.f_SelectionPlots)
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.b_Parameters = QPushButton(self.f_SelectionPlots)
+        self.b_Parameters.setObjectName(u"b_Parameters")
+        icon = QIcon()
+        icon.addFile(u":/Buttons/icon/parameters.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.b_Parameters.setIcon(icon)
+
+        self.horizontalLayout.addWidget(self.b_Parameters)
+
+        self.cb_Treatment = QComboBox(self.f_SelectionPlots)
         self.cb_Treatment.setObjectName(u"cb_Treatment")
 
-        self.gridLayout_7.addWidget(self.cb_Treatment, 0, 0, 1, 1)
+        self.horizontalLayout.addWidget(self.cb_Treatment)
+
+
+        self.gridLayout_7.addWidget(self.f_SelectionPlots, 0, 0, 1, 2)
 
         self.tabWidget_Visualize.addTab(self.tab_Visualize, "")
 
@@ -138,9 +159,9 @@ class Ui_w_Main(object):
         self.b_ConvertCSV = QPushButton(self.gb_buttons)
         self.b_ConvertCSV.setObjectName(u"b_ConvertCSV")
         self.b_ConvertCSV.setEnabled(False)
-        icon = QIcon()
-        icon.addFile(u":/Buttons/icon/properties_to_csv.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.b_ConvertCSV.setIcon(icon)
+        icon1 = QIcon()
+        icon1.addFile(u":/Buttons/icon/properties_to_csv.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.b_ConvertCSV.setIcon(icon1)
         self.b_ConvertCSV.setIconSize(QSize(35, 35))
 
         self.gridLayout_2.addWidget(self.b_ConvertCSV, 0, 6, 1, 1)
@@ -148,9 +169,9 @@ class Ui_w_Main(object):
         self.b_Save = QPushButton(self.gb_buttons)
         self.b_Save.setObjectName(u"b_Save")
         self.b_Save.setEnabled(True)
-        icon1 = QIcon()
-        icon1.addFile(u":/Buttons/icon/save.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.b_Save.setIcon(icon1)
+        icon2 = QIcon()
+        icon2.addFile(u":/Buttons/icon/save.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.b_Save.setIcon(icon2)
         self.b_Save.setIconSize(QSize(35, 35))
 
         self.gridLayout_2.addWidget(self.b_Save, 0, 2, 1, 1)
@@ -158,18 +179,18 @@ class Ui_w_Main(object):
         self.b_AddData = QPushButton(self.gb_buttons)
         self.b_AddData.setObjectName(u"b_AddData")
         self.b_AddData.setEnabled(False)
-        icon2 = QIcon()
-        icon2.addFile(u":/Buttons/icon/add_spectra.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.b_AddData.setIcon(icon2)
+        icon3 = QIcon()
+        icon3.addFile(u":/Buttons/icon/add_spectra.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.b_AddData.setIcon(icon3)
         self.b_AddData.setIconSize(QSize(35, 35))
 
         self.gridLayout_2.addWidget(self.b_AddData, 0, 3, 1, 1)
 
         self.b_NewHDF5 = QPushButton(self.gb_buttons)
         self.b_NewHDF5.setObjectName(u"b_NewHDF5")
-        icon3 = QIcon()
-        icon3.addFile(u":/Buttons/icon/new_db.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.b_NewHDF5.setIcon(icon3)
+        icon4 = QIcon()
+        icon4.addFile(u":/Buttons/icon/new_db.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.b_NewHDF5.setIcon(icon4)
         self.b_NewHDF5.setIconSize(QSize(35, 35))
 
         self.gridLayout_2.addWidget(self.b_NewHDF5, 0, 0, 1, 1)
@@ -177,18 +198,18 @@ class Ui_w_Main(object):
         self.b_RemoveData = QPushButton(self.gb_buttons)
         self.b_RemoveData.setObjectName(u"b_RemoveData")
         self.b_RemoveData.setEnabled(False)
-        icon4 = QIcon()
-        icon4.addFile(u":/Buttons/icon/remove_spectra.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.b_RemoveData.setIcon(icon4)
+        icon5 = QIcon()
+        icon5.addFile(u":/Buttons/icon/remove_spectra.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.b_RemoveData.setIcon(icon5)
         self.b_RemoveData.setIconSize(QSize(35, 35))
 
         self.gridLayout_2.addWidget(self.b_RemoveData, 0, 4, 1, 1)
 
         self.b_Close = QPushButton(self.gb_buttons)
         self.b_Close.setObjectName(u"b_Close")
-        icon5 = QIcon()
-        icon5.addFile(u":/Buttons/icon/exit.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.b_Close.setIcon(icon5)
+        icon6 = QIcon()
+        icon6.addFile(u":/Buttons/icon/exit.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.b_Close.setIcon(icon6)
         self.b_Close.setIconSize(QSize(35, 35))
 
         self.gridLayout_2.addWidget(self.b_Close, 0, 8, 1, 1)
@@ -199,9 +220,9 @@ class Ui_w_Main(object):
 
         self.b_OpenHDF5 = QPushButton(self.gb_buttons)
         self.b_OpenHDF5.setObjectName(u"b_OpenHDF5")
-        icon6 = QIcon()
-        icon6.addFile(u":/Buttons/icon/open_db.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.b_OpenHDF5.setIcon(icon6)
+        icon7 = QIcon()
+        icon7.addFile(u":/Buttons/icon/open_db.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.b_OpenHDF5.setIcon(icon7)
         self.b_OpenHDF5.setIconSize(QSize(35, 35))
 
         self.gridLayout_2.addWidget(self.b_OpenHDF5, 0, 1, 1, 1)
@@ -209,9 +230,9 @@ class Ui_w_Main(object):
         self.b_ExportCodeLine = QPushButton(self.gb_buttons)
         self.b_ExportCodeLine.setObjectName(u"b_ExportCodeLine")
         self.b_ExportCodeLine.setEnabled(False)
-        icon7 = QIcon()
-        icon7.addFile(u":/Buttons/icon/export_code.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.b_ExportCodeLine.setIcon(icon7)
+        icon8 = QIcon()
+        icon8.addFile(u":/Buttons/icon/export_code.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.b_ExportCodeLine.setIcon(icon8)
         self.b_ExportCodeLine.setIconSize(QSize(35, 35))
 
         self.gridLayout_2.addWidget(self.b_ExportCodeLine, 0, 5, 1, 1)
@@ -253,9 +274,10 @@ class Ui_w_Main(object):
         self.menuEdit.addSeparator()
         self.menuEdit.addAction(self.a_RenameElement)
         self.menuEdit.addAction(self.menuExport_code.menuAction())
+        self.menuEdit.addAction(self.a_ExportImage)
         self.menuEdit.addSeparator()
-        self.menuEdit.addAction(self.actionGet_PSD)
-        self.menuEdit.addAction(self.actionApply_Treatment)
+        self.menuEdit.addAction(self.a_Get_PSD)
+        self.menuEdit.addAction(self.a_Apply_Treatment)
         self.menuExport_code.addAction(self.a_ExportPython)
 
         self.retranslateUi(w_Main)
@@ -279,12 +301,14 @@ class Ui_w_Main(object):
         self.a_RepackHDF5.setText(QCoreApplication.translate("w_Main", u"Repack HDF5", None))
         self.a_RenameElement.setText(QCoreApplication.translate("w_Main", u"Rename element", None))
         self.a_ExportPython.setText(QCoreApplication.translate("w_Main", u"Python", None))
-        self.actionGet_PSD.setText(QCoreApplication.translate("w_Main", u"Get PSD", None))
-        self.actionApply_Treatment.setText(QCoreApplication.translate("w_Main", u"Apply Treatment", None))
+        self.a_Get_PSD.setText(QCoreApplication.translate("w_Main", u"Get PSD", None))
+        self.a_Apply_Treatment.setText(QCoreApplication.translate("w_Main", u"Apply Treatment", None))
+        self.a_ExportImage.setText(QCoreApplication.translate("w_Main", u"Export Image", None))
         self.gb_viewers.setTitle("")
         self.tabWidget_Visualize.setTabText(self.tabWidget_Visualize.indexOf(self.tab_Measure), QCoreApplication.translate("w_Main", u"Measure", None))
         self.tabWidget_Visualize.setTabText(self.tabWidget_Visualize.indexOf(self.tab_Spectrometer), QCoreApplication.translate("w_Main", u"Spectrometer", None))
         self.tabWidget_Visualize.setTabText(self.tabWidget_Visualize.indexOf(self.tab_Other), QCoreApplication.translate("w_Main", u"Other", None))
+        self.b_Parameters.setText("")
         self.tabWidget_Visualize.setTabText(self.tabWidget_Visualize.indexOf(self.tab_Visualize), QCoreApplication.translate("w_Main", u"Visualize", None))
         self.gb_buttons.setTitle("")
         self.b_ConvertCSV.setText("")

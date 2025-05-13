@@ -74,8 +74,34 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="0">
-            <widget class="QComboBox" name="cb_Treatment"/>
+           <item row="0" column="0" colspan="2">
+            <widget class="QFrame" name="f_SelectionPlots">
+             <property name="frameShape">
+              <enum>QFrame::Shape::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Shadow::Plain</enum>
+             </property>
+             <property name="lineWidth">
+              <number>0</number>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout">
+              <item>
+               <widget class="QPushButton" name="b_Parameters">
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset resource="../../Icons.qrc">
+                  <normaloff>:/Buttons/icon/parameters.png</normaloff>:/Buttons/icon/parameters.png</iconset>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="cb_Treatment"/>
+              </item>
+             </layout>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -312,9 +338,10 @@
     <addaction name="separator"/>
     <addaction name="a_RenameElement"/>
     <addaction name="menuExport_code"/>
+    <addaction name="a_ExportImage"/>
     <addaction name="separator"/>
-    <addaction name="actionGet_PSD"/>
-    <addaction name="actionApply_Treatment"/>
+    <addaction name="a_Get_PSD"/>
+    <addaction name="a_Apply_Treatment"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -384,14 +411,22 @@
     <string>Python</string>
    </property>
   </action>
-  <action name="actionGet_PSD">
+  <action name="a_Get_PSD">
    <property name="text">
     <string>Get PSD</string>
    </property>
   </action>
-  <action name="actionApply_Treatment">
+  <action name="a_Apply_Treatment">
    <property name="text">
     <string>Apply Treatment</string>
+   </property>
+  </action>
+  <action name="a_ExportImage">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Export Image</string>
    </property>
   </action>
  </widget>

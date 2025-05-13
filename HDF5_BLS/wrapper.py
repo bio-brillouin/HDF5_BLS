@@ -600,7 +600,15 @@ class Wrapper:
         """
         with h5py.File(self.filepath, 'r') as file:
             data = file[path][()]
+
+            # Reshape the element to avoid singleton dimensions
+            new_shape = []
+            for s in data.shape:
+                if s > 1: new_shape.append(s)
+            data = data.reshape(new_shape)
+
             if len(data.shape) == 2:
+                data = np.nan_to_num(data, nan=0)
                 plt.imsave(filepath, data)
 
     def get_attributes(self, path=None): # Test made

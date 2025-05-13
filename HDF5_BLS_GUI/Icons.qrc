@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="Buttons">
+    <file>icon/parameters.png</file>
     <file>icon/help.png</file>
     <file>icon/add_spectra.png</file>
     <file>icon/convert_bh5.png</file>

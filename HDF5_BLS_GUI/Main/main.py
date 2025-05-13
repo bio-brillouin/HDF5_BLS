@@ -89,10 +89,13 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             self.a_AddData.triggered.connect(self.add_data)
             self.a_ConvertCSV.triggered.connect(self.convert_csv)
 
-            # Edit menu
+            # Action menu
             self.a_RenameElement.triggered.connect(self.rename_element) 
             self.a_RepackHDF5.triggered.connect(self.repack)
             self.a_ExportPython.triggered.connect(self.export_code_line)
+            self.a_Apply_Treatment.triggered.connect(self.perform_treatment)
+            self.a_Get_PSD.triggered.connect(self.get_PSD)
+            self.a_ExportImage.triggered.connect(self.export_image)
 
         def initialize_timer(self):
             self.hover_timer = qtc.QTimer(self) 
@@ -125,7 +128,10 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             self.cb_SelectionPlots = CheckableComboBox()
             self.cb_SelectionPlots.addItems(["Amplitude", "Amplitude Variance", "Shift", "Shift Variance", "Linewidth", "Linewidth Variance", "BLT", "BLT Variance"])
             self.cb_SelectionPlots.setObjectName(u"cb_SelectionPlots")
-            self.gridLayout_7.addWidget(self.cb_SelectionPlots, 0, 1, 1, 1)
+            self.horizontalLayout.addWidget(self.cb_SelectionPlots)
+
+            # Connect parameter button
+            self.b_Parameters.clicked.connect(self.paramters_visualize)
 
             # Deactivate the combobox and the plots
             self.cb_Treatment.setEnabled(False)
@@ -222,8 +228,9 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             self.a_RepackHDF5.setEnabled(True)
             self.a_RenameElement.setEnabled(True)
             self.a_ExportPython.setEnabled(True)
-            self.actionGet_PSD.setEnabled(True)
-            self.actionApply_Treatment.setEnabled(True) 
+            self.a_Get_PSD.setEnabled(True)
+            self.a_Apply_Treatment.setEnabled(True) 
+            self.a_ExportImage.setEnabled(True) 
 
     def add_data(self, event=None, filepath=None, parent_path=None):
         """
@@ -605,9 +612,112 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         -------
         None
         """
-        filepath = qtw.QFileDialog.getSaveFileName(self, "Open File", "", "Image (*.tiff)")[0]
-        if filepath:
-            self.wrapper.export_image(self.treeview_selected, filepath)
+        def return_names_2D_datasets_children(path, names = []):
+            for e in self.wrapper.get_children_elements(path = path):
+                if self.wrapper.get_type(path = f"{path}/{e}") == h5py._hl.dataset.Dataset:
+                    data = self.wrapper[f"{path}/{e}"]
+
+                    # Reshape the element to avoid singleton dimensions
+                    new_shape = []
+                    for s in data.shape:
+                        if s > 1: new_shape.append(s)
+                    data = data.reshape(new_shape)
+
+                    # If the dataset is 2D and the name is not already in the list of names, add it to the list
+                    if len(data.shape) == 2:
+                        if not e in names:
+                            names.append(e)
+                else:
+                    names = return_names_2D_datasets_children(path = f"{path}/{e}", names = names)
+
+            return names
+
+        def save_images_group_recursively(filepath, path, name, save_hierarchy = True, fmt = ".tiff"):
+            """Saves all the 2D datasets present under the given path in the HDF5 file as images 
+
+            Parameters
+            ----------
+            filepath : str
+                The path to the directory where to save the images
+            path : str
+                The path to the group in the HDF5 file
+            name : str
+                The name of the dataset to store
+            save_hierarchy : bool, optional
+                Wether to store the file hierarchically or not. If False, the name of the image will be the name of the whole path in the HDF5 file. If true, directories corresponding to the groups of the HDF5 file are created, and the image names are just the name of the elements in the HDF5 file, by default True.
+            """
+            for e in self.wrapper.get_children_elements(path = path):
+                if self.wrapper.get_type(path = f"{path}/{e}") == h5py._hl.dataset.Dataset and e == name:
+                    if save_hierarchy:
+                        self.wrapper.export_image(f"{path}/{e}", filepath+"/"+e+fmt)
+                    else:
+                        self.wrapper.export_image(f"{path}/{e}", filepath+"/"+path.replace("/", " - ")+" - "+e+fmt)
+                elif self.wrapper.get_type(path = f"{path}/{e}") == h5py._hl.group.Group:
+                    if self.wrapper.get_type(path = f"{path}/{e}", return_Brillouin_type= True) == "Treatment" or not save_hierarchy:
+                        save_images_group_recursively(filepath, path+"/"+e, name, save_hierarchy, fmt = fmt)
+                    else:
+                        if not os.path.isdir(filepath+"/"+e):
+                            os.makedirs(filepath+"/"+e)
+                        save_images_group_recursively(filepath+"/"+e, path+"/"+e, name, save_hierarchy, fmt = fmt)
+
+        hierarchy = False
+        # If a dataset has been selected, ask the user for a filename to save the image at
+        if self.wrapper.get_type(self.treeview_selected) == h5py._hl.dataset.Dataset:
+            # Asks the user for the format of the image
+            formats = [".tiff", ".png", ".jpg", ".jpeg", ".bmp", ".gif"]
+            dialog = ComboboxChoose(text = "Choose the format in which to store the images", list_choices = formats, parent = self)
+            # If the user cancels the dialog box, we return
+            if dialog.exec_() == qtw.QDialog.Rejected:
+                return
+            else:
+                fmt = dialog.get_selected_structure()
+            
+            # Asks the user for the filepath to save the image at
+            filepath = qtw.QFileDialog.getSaveFileName(self, "Save File", "", f"Image (*{fmt})")[0]
+            if filepath:
+                self.wrapper.export_image(self.treeview_selected, filepath)
+        # If a group has been selected, ask the user wether to store all the images of the group in the same file or recreate the hierarchy
+        else:
+            response = qtw.QMessageBox.question(self, "Warning", "Do you want to export every image of the selected group at the same location (Yes) or recreate the hierarchy (No)?", qtw.QMessageBox.Yes | qtw.QMessageBox.No | qtw.QMessageBox.Cancel)
+            if response == qtw.QMessageBox.Yes: hierarchy = False
+            elif response == qtw.QMessageBox.No: hierarchy = True
+            else: return
+        
+        # Get the potential candidates for export
+        candidates = return_names_2D_datasets_children(path = self.treeview_selected)
+
+        # Ask the user which name has to be exported
+        if len(candidates) == 0: 
+            qtw.QMessageBox.warning(self, "Warning", "No 2D dataset found in the selected group")
+        else:
+            dialog = ComboboxChoose(text = "Choose the name of the datasets you wish to export as images", list_choices = candidates, parent = self)
+            # If the user cancels the dialog box, we return
+            if dialog.exec_() == qtw.QDialog.Rejected:
+                return
+            else:
+                name = dialog.get_selected_structure()
+
+        # Asks the user for a file to export the images
+        filepath = qtw.QFileDialog.getExistingDirectory(self, "Select Directory", self.filepath)
+        if not filepath: return 
+
+        # Asks the user for the format of the image
+        formats = [".tiff", ".png", ".jpg", ".jpeg", ".bmp", ".gif"]
+        dialog = ComboboxChoose(text = "Choose the format in which to store the images", list_choices = formats, parent = self)
+        # If the user cancels the dialog box, we return
+        if dialog.exec_() == qtw.QDialog.Rejected:
+            return
+        else:
+            fmt = dialog.get_selected_structure()
+        
+        
+        # Export the images. If hierarchy is set to True, start by creating a directory with name the name of the selected group
+        if hierarchy: 
+            # Save recursively the images 
+            save_images_group_recursively(filepath, self.treeview_selected, name, save_hierarchy=True, fmt = fmt)
+        else:
+            # Save recursively the images 
+            save_images_group_recursively(filepath, self.treeview_selected, name, save_hierarchy=False, fmt = fmt)
 
     def export_numpy_array(self):
         """
@@ -629,44 +739,45 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         -------
         None
         """
-        try:
-            type = self.wrapper.get_attributes(self.treeview_selected)['SPECTROMETER.Type']
-            type = type.replace(" ", "_")
-            type = type.replace("-", "_")
-        except KeyError:
-            qtw.QMessageBox.warning(self, "Warning", "The selected data does not have a spectrometer type.")
-            return
+        qtw.QMessageBox.information(self, "Not implemented", "To do")
+        # try:
+        #     type = self.wrapper.get_attributes(self.treeview_selected)['SPECTROMETER.Type']
+        #     type = type.replace(" ", "_")
+        #     type = type.replace("-", "_")
+        # except KeyError:
+        #     qtw.QMessageBox.warning(self, "Warning", "The selected data does not have a spectrometer type.")
+        #     return
 
-        # Check if the conversion can be performed
-        function_name = f"check_conversion_{type}"
-        functions = [func for func in getmembers(conversion_PSD, isfunction)]
-        not_found = True
-        for (name, func) in functions:
-            if name == function_name:
-                if func(self.wrapper, self.treeview_selected):
-                    conversion = True
-                    not_found = False
-                else:
-                    conversion = False
-                    not_found = False
+        # # Check if the conversion can be performed
+        # function_name = f"check_conversion_{type}"
+        # functions = [func for func in getmembers(conversion_PSD, isfunction)]
+        # not_found = True
+        # for (name, func) in functions:
+        #     if name == function_name:
+        #         if func(self.wrapper, self.treeview_selected):
+        #             conversion = True
+        #             not_found = False
+        #         else:
+        #             conversion = False
+        #             not_found = False
         
-        if not_found:
-            qtw.QMessageBox.warning(self, "Warning", "The type of spectrometer is not recognized")
-            return
+        # if not_found:
+        #     qtw.QMessageBox.warning(self, "Warning", "The type of spectrometer is not recognized")
+        #     return
             
-        # If conversion can be performed, perform it
-        if conversion:
-            qtw.QMessageBox.information(self, "Not implemented", "Conversion can be performed")
-        # If not, then execute the function from conversion_ui associated with the type of the data
-        else:
-            function_name = f"conversion_{type}"
-            functions = [func for func in getmembers(conversion_ui, isfunction)]
-            for (name, func) in functions:
-                if name == function_name:
-                    func(self, self.wrapper, self.treeview_selected)
+        # # If conversion can be performed, perform it
+        # if conversion:
+        #     qtw.QMessageBox.information(self, "Not implemented", "Conversion can be performed")
+        # # If not, then execute the function from conversion_ui associated with the type of the data
+        # else:
+        #     function_name = f"conversion_{type}"
+        #     functions = [func for func in getmembers(conversion_ui, isfunction)]
+        #     for (name, func) in functions:
+        #         if name == function_name:
+        #             func(self, self.wrapper, self.treeview_selected)
         
-        self.update_treeview()
-        self.expand_treeview_path(self.treeview_selected)
+        # self.update_treeview()
+        # self.expand_treeview_path(self.treeview_selected)
 
     def handle_error_save(self):
         """Function that handles the error when trying to close the wrapper without saving it.
@@ -744,6 +855,12 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
 
         self.textBrowser_Log.append(f"<i>{self.filepath}</i> opened")
     
+    def paramters_visualize(self):
+        """
+        Opens the GUI to visualize the parameters of the selected data.
+        """
+        qtw.QMessageBox.information(self, "Not implemented", "To do")
+
     def perform_treatment(self):
         """
         Treats all the PSD of the selected data.
@@ -952,11 +1069,14 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                 export_HDF5 = qtg.QAction("Export group as HDF5 file", self)
                 export_HDF5.triggered.connect(self.export_HDF5_group)
                 actions.append(export_HDF5)
+                export_image = qtg.QAction("Export image", self)
+                export_image.triggered.connect(self.export_image)
+                actions.append(export_image)
                 if "Process_PSD" in self.wrapper.get_attributes(path=self.treeview_selected).keys():
                     export_PSD = qtg.QAction("Export PSD algorithm", self)
                     export_PSD.triggered.connect(lambda: export_algorithm(self.wrapper.get_attributes(path=self.treeview_selected)["Process_PSD"]))
                     actions.append(export_PSD)
-            if self.wrapper.get_type(path=self.treeview_selected) == h5py._hl.dataset.Dataset:
+            else:
                 export_HDF5 = qtg.QAction("Export dataset as numpy array", self)
                 export_HDF5.triggered.connect(self.export_numpy_array)
                 actions.append(export_HDF5)
@@ -1300,12 +1420,13 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         None
         """
         def plot(treatment, element, cols, lines):
-            def plot_2D(image, max_col, max_line, pos):
+            def plot_2D(image, max_col, max_line, pos, title):
                 ax = self.figure.add_subplot(max_line, max_col, pos)
                 ax.imshow(image)
+                ax.text(0.01, 0.99, title, transform=ax.transAxes, fontsize=6, fontname='Arial', color='white', verticalalignment='top', horizontalalignment='left')
                 ax.set_xticks([])
                 ax.set_yticks([])
-
+            
             # Get the correspondance between the type of elements to plot and the indexes in cols and lines
             plots_correspondance = ["Shift", "Linewidth", "BLT", "Amplitude", "Shift Variance", "Linewidth Variance", "BLT Variance", "Amplitude Variance"]
             indexes_correspondance = [[0,0],[1,0],[2,0],[3,0],[0,1],[1,1],[2,1],[3,1]]
@@ -1328,33 +1449,35 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             parent_path = self.treeview_selected + "/" + treatment
             childs = self.wrapper.get_children_elements(parent_path)
 
-            # Adjust e to the type of element
+            # Adjust the value selected in the combobox to the Brillouin type of the element
             if " Variance" in element: 
                 element = element.replace(" Variance", "_std")
             elif "Loss Tangent" in element:
                 element = element.replace("Loss Tangent", "BLT")
 
+            # Goes through the children elements of the selected group and plot the one with the correct type
             for child in childs:
-                print(child, self.wrapper.get_type(path=f"{parent_path}/{child}", return_Brillouin_type=True))
                 if self.wrapper.get_type(path=f"{parent_path}/{child}", return_Brillouin_type=True) == element:
+                    # Extract the element
                     elt = self.wrapper[f"{parent_path}/{child}"]
 
-            # Reshape the element to avoid singleton dimensions
-            new_shape = []
-            for s in elt.shape:
-                if s > 1: new_shape.append(s)
-            elt = elt.reshape(new_shape)
+                    # Reshape the element to avoid singleton dimensions
+                    new_shape = []
+                    for s in elt.shape:
+                        if s > 1: new_shape.append(s)
+                    elt = elt.reshape(new_shape)
 
-            # Plot the element depending on its shape
-            if len(elt.shape) == 2:
-                plot_2D(elt, max_col, max_line, pos)
-            else:
-                print(elt.shape)
-                qtw.QMessageBox.warning(self, "Warning", "Only 2D plots are supported for now")
-            self.canvas.draw()
+                    # Store the name of the element
+                    title = child
 
+                    # Plot the element depending on its shape
+                    if len(elt.shape) == 2:
+                        plot_2D(elt, max_col, max_line, pos, title)
+                    else:
+                        qtw.QMessageBox.warning(self, "Warning", "Only 2D plots are supported for now")
+                    self.canvas.draw()
+                    break
 
-        
         # Clear the canvas
         self.figure.clear()
 
@@ -1395,19 +1518,6 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         # Plot the selected plots
         for e in selected_plots:
             plot(treatment, e, cols, lines)
-            
-
-
-
-        # self.figure = Figure(figsize=(3,4))
-        # self.canvas = FigureCanvas(self.figure)
-
-        # # Get the position of the plots
-        # for k in treatment:
-        #     if k == "Shift": 
-                
-        #         self.canvas.axes.plot(self.frequency, self.data[:,0], color='red')
-
 
     @qtc.Slot()
     def update_parameters(self, filepath=None, delete_child_attributes = False):
@@ -1427,6 +1537,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         """
         def update_graph():
             def activate_all(state = False):
+                self.b_Parameters.setEnabled(state)
                 self.cb_Treatment.setEnabled(state)
                 self.cb_SelectionPlots.setEnabled(state)
                 self.tab_Visualize.setEnabled(state)
@@ -1473,7 +1584,6 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
 
             # Update the graph
             self.update_graph()
-
 
         # If no filepath was given, take the file corresponding to the specified version of the library, make sure no overwrite is allowed.
         if filepath is None: 
