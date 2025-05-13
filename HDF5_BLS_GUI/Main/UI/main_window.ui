@@ -25,153 +25,73 @@
         <widget class="QTreeView" name="treeView"/>
        </item>
        <item row="0" column="1">
-        <widget class="QTabWidget" name="tabWidget">
+        <widget class="QTabWidget" name="tabWidget_Visualize">
          <property name="currentIndex">
-          <number>0</number>
+          <number>3</number>
          </property>
          <widget class="QWidget" name="tab_Measure">
           <attribute name="title">
-           <string>Tab 1</string>
+           <string>Measure</string>
           </attribute>
           <layout class="QGridLayout" name="gridLayout_5">
-           <item row="1" column="1">
-            <widget class="QPushButton" name="b_AddPropertyMeasure">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-             <property name="icon">
-              <iconset resource="../../Icons.qrc">
-               <normaloff>:/Buttons/icon/add_spectra.png</normaloff>:/Buttons/icon/add_spectra.png</iconset>
-             </property>
-             <property name="iconSize">
-              <size>
-               <width>20</width>
-               <height>20</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="2">
-            <widget class="QPushButton" name="b_RemovePropertyMeasure">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-             <property name="icon">
-              <iconset resource="../../Icons.qrc">
-               <normaloff>:/Buttons/icon/remove_spectra.png</normaloff>:/Buttons/icon/remove_spectra.png</iconset>
-             </property>
-             <property name="iconSize">
-              <size>
-               <width>20</width>
-               <height>20</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QPushButton" name="b_LoadPropertiesMeasure">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-             <property name="icon">
-              <iconset resource="../../Icons.qrc">
-               <normaloff>:/Buttons/icon/open_config.png</normaloff>:/Buttons/icon/open_config.png</iconset>
-             </property>
-             <property name="iconSize">
-              <size>
-               <width>20</width>
-               <height>20</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0" colspan="3">
+           <item row="0" column="0" colspan="2">
             <widget class="QTableView" name="tableView_Measure"/>
            </item>
           </layout>
          </widget>
          <widget class="QWidget" name="tab_Spectrometer">
           <attribute name="title">
-           <string>Tab 2</string>
+           <string>Spectrometer</string>
           </attribute>
           <layout class="QGridLayout" name="gridLayout_4">
-           <item row="1" column="1">
-            <widget class="QPushButton" name="b_AddPropertySpectrometer">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-             <property name="icon">
-              <iconset resource="../../Icons.qrc">
-               <normaloff>:/Buttons/icon/add_spectra.png</normaloff>:/Buttons/icon/add_spectra.png</iconset>
-             </property>
-             <property name="iconSize">
-              <size>
-               <width>20</width>
-               <height>20</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="2">
-            <widget class="QPushButton" name="b_RemovePropertySpectrometer">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-             <property name="icon">
-              <iconset resource="../../Icons.qrc">
-               <normaloff>:/Buttons/icon/remove_spectra.png</normaloff>:/Buttons/icon/remove_spectra.png</iconset>
-             </property>
-             <property name="iconSize">
-              <size>
-               <width>20</width>
-               <height>20</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QPushButton" name="b_LoadPropertiesSpectrometer">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-             <property name="icon">
-              <iconset resource="../../Icons.qrc">
-               <normaloff>:/Buttons/icon/open_config.png</normaloff>:/Buttons/icon/open_config.png</iconset>
-             </property>
-             <property name="iconSize">
-              <size>
-               <width>20</width>
-               <height>20</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0" colspan="3">
+           <item row="0" column="0" colspan="2">
             <widget class="QTableView" name="tableView_Spectrometer"/>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="tab_Other">
+          <attribute name="title">
+           <string>Other</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_6">
+           <item row="0" column="0">
+            <widget class="QTableView" name="tableView_Other"/>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="tab_Visualize">
+          <attribute name="title">
+           <string>Visualize</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_7">
+           <item row="1" column="0" colspan="2">
+            <widget class="QFrame" name="f_VisualizePlots">
+             <property name="frameShape">
+              <enum>QFrame::Shape::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Shadow::Raised</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QComboBox" name="cb_Treatment"/>
            </item>
           </layout>
          </widget>
         </widget>
        </item>
       </layout>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QTextBrowser" name="textBrowser_Log">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>100</height>
+       </size>
+      </property>
      </widget>
     </item>
     <item row="0" column="0">
@@ -345,16 +265,6 @@
         </widget>
        </item>
       </layout>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="QTextBrowser" name="textBrowser_Log">
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>100</height>
-       </size>
-      </property>
      </widget>
     </item>
    </layout>

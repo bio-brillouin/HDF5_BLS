@@ -118,6 +118,9 @@ class AnalyzeWindow_VIPA(AnalyzeWindow):
         if str_algorithm is not None:
             self.analyzer._algorithm = json.loads(str_algorithm)
             self.algorithm_function_index = 0
+            self.b_GraphAlgorithm.setEnabled(True)
+            self.b_RunAll.setEnabled(True)
+            self.b_SaveAlgorithm.setEnabled(True)
             self.update_graph(average=True)
             self.update_treeview()
     
@@ -281,6 +284,11 @@ class AnalyzeWindow_VIPA(AnalyzeWindow):
 
         # If the clicked item is a top-level function
         if parent is None:
+            # Expand the selected item and reduce all the others
+            self.t_Functions.collapseAll()
+            index = self.t_Functions.indexFromItem(item)
+            self.t_Functions.expand(index)
+
             # Get the index of the function number in the algorithm
             index = self.t_Functions.indexOfTopLevelItem(item)
             self.algorithm_function_index = index
@@ -567,7 +575,7 @@ class AnalyzeWindow_VIPA(AnalyzeWindow):
             parameter_widgets.update(add_paramter_step(i, function_item, function_data))
         
         # Make the treeview scrollable if needed
-        self.t_Functions.header().setSectionResizeMode(qtw.QHeaderView.ResizeToContents)
+        # self.t_Functions.header().setSectionResizeMode(qtw.QHeaderView.ResizeToContents)
         self.t_Functions.header().setStretchLastSection(False)
         self.t_Functions.itemClicked.connect(self.on_treeview_item_clicked)
 
@@ -607,6 +615,11 @@ class AnalyzeWindow_VIPA(AnalyzeWindow):
             y_temp = self.analyzer.y
             for d in dimension:
                 y_temp = y_temp[d, :]
+        
+        # Plot the data
+        if keep_lim:
+            self.graph_canvas.axes.set_xlim(xlim)
+            self.graph_canvas.axes.set_ylim(ylim)
         self.graph_canvas.axes.plot(self.analyzer.x, y_temp)
 
         # Plot points and windows
@@ -631,6 +644,4 @@ class AnalyzeWindow_VIPA(AnalyzeWindow):
         self.graph_canvas.axes.set_xlabel("x")
         self.graph_canvas.axes.set_ylabel("y")
         self.graph_canvas.draw()
-        if keep_lim:
-            self.graph_canvas.axes.set_xlim(xlim)
-            self.graph_canvas.axes.set_ylim(ylim)
+        

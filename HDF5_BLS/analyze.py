@@ -674,6 +674,62 @@ class Analyze_VIPA(Analyze_general):
         # Return the x axis if the user wants to use it
         return self.x
 
+    def interpolate_elastic(self, FSR: float = None):
+        """
+        Uses positions of the elastic peaks on the different orders, to obtain a frequency axis by interpolating the position of the peaks with a quadratic polynomial. The user has to enter a value for the FSR to calibrate the frequency axis.
+
+        Parameters
+        ----------  
+        FSR : float
+            The free spectral range of the VIPA spectrometer (in GHz).
+        """
+        def create_matrices(E):
+            # Create the matrices that will be used to minimize the second order polynomial
+            A = []
+            B = []
+            C = []
+            for i in range(len(E)-1):
+                A.append(E[i+1]**2 - E[i]**2)
+                B.append(E[i+1] - E[i])
+                C.append(-FSR)
+            return A, B, C
+
+        def error(params):
+            a, b, c = params
+            return np.sum((a * A + b * B + c + C) ** 2)
+
+        if FSR is None:
+            return
+        
+        # Start by extracting the stokes, anti-Stokes and elastic peaks
+        E = []
+        for point in self.points:
+            name, value = point
+            if name[0] == "E":
+                E.append(value)
+        
+        E.sort()
+
+        A, B, C = create_matrices(E)
+       
+        # Converting the lists to numpy arrays
+        A = np.array(A)
+        B = np.array(B)
+        C = np.array(C)
+        # Defining the minimization function
+        result = minimize(error, [0, len(E)*FSR/self.x.size, 0], method='SLSQP')
+        
+        a, b, c = result.x
+
+        # Now we can create the new x axis
+        self.x = a*self.x**2 + b*self.x + c
+
+        # Clear the points and windows
+        self._clear_points()
+
+        # Return the x axis if the user wants to use it
+        return self.x
+
 # Example Usage
 if __name__ == "__main__":
     import h5py

@@ -3,17 +3,18 @@ import os
 from PySide6 import QtCore as qtc
 from PySide6 import QtWidgets as qtw
 from PySide6 import QtGui as qtg
-import numpy as np
 import h5py
 import pyperclip
-import re
 import json
 from inspect import getmembers, isfunction
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
 
 from Main.UI.main_window_ui import Ui_w_Main
 from ComboboxChoose.main import ComboboxChoose
 from ParameterWindow.main import ParameterWindow
 from ProgressBar.main import ProgressBar
+from _customWidgets import CheckableComboBox
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 relative_path_libs = os.path.join(current_dir, "..", "..", "..")
@@ -98,18 +99,17 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             self.hover_timer.setSingleShot(True)
             self.hover_timer.timeout.connect(self.expand_on_hover)  # Connect to the expand function
 
-        def initialize_tableview(self):
-            # Changes the names of the frames of the tab widget
-            self.tabWidget.setTabText(0, "Measure")
-            self.tabWidget.setTabText(1, "Spectrometer")   
-
+        def initialize_tableview(self):   
             # Creates a model with 3 columns and sets it to the tableview.
             self.model_table_Measure = qtg.QStandardItemModel()
             self.model_table_Measure.setHorizontalHeaderLabels(["Parameter", "Value"])
             self.model_table_Spectrometer = qtg.QStandardItemModel()
             self.model_table_Spectrometer.setHorizontalHeaderLabels(["Parameter", "Value"])
+            self.model_table_Other = qtg.QStandardItemModel()
+            self.model_table_Other.setHorizontalHeaderLabels(["Parameter", "Value"])
             self.tableView_Measure.setModel(self.model_table_Measure)    
             self.tableView_Spectrometer.setModel(self.model_table_Spectrometer)
+            self.tableView_Other.setModel(self.model_table_Other)
 
             # Connect signals to the slot
             self.model_table_Measure.itemChanged.connect(self.update_parameters_from_table_view)
@@ -120,6 +120,31 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             self.tableView_Measure.setSelectionMode(qtw.QAbstractItemView.SingleSelection)
             self.tableView_Spectrometer.setSelectionBehavior(qtw.QAbstractItemView.SelectRows)
             self.tableView_Spectrometer.setSelectionMode(qtw.QAbstractItemView.SingleSelection)
+
+            # Adds a CheckableCombobox to the f_SelectionPlots frame
+            self.cb_SelectionPlots = CheckableComboBox()
+            self.cb_SelectionPlots.addItems(["Amplitude", "Amplitude Variance", "Shift", "Shift Variance", "Linewidth", "Linewidth Variance", "BLT", "BLT Variance"])
+            self.cb_SelectionPlots.setObjectName(u"cb_SelectionPlots")
+            self.gridLayout_7.addWidget(self.cb_SelectionPlots, 0, 1, 1, 1)
+
+            # Deactivate the combobox and the plots
+            self.cb_Treatment.setEnabled(False)
+            self.cb_SelectionPlots.setEnabled(False)
+
+            # Connect the comboboxes to the "update_graph" function
+            self.cb_Treatment.currentIndexChanged.connect(self.update_graph)
+            self.cb_SelectionPlots.selectionChanged.connect(self.update_graph)
+
+            # Create a Matplotlib figure and canvas
+            self.figure = Figure(figsize=(3,4))
+            self.canvas = FigureCanvas(self.figure)
+
+            # Add the canvas to the frame
+            self.layout_visualize_plots = qtw.QVBoxLayout(self.f_VisualizePlots)
+            self.layout_visualize_plots.addWidget(self.canvas)
+
+            # Select Measure Tab by default
+            self.tabWidget_Visualize.setCurrentIndex(0)
 
         def initialize_treeview(self):
             self.treeView.setAcceptDrops(True)
@@ -961,6 +986,8 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             perform_treatment = menu.addAction("Treat all Power Spectrum Density")
             menu.addSeparator()
             export = menu.addMenu("Export")
+            menu.addSeparator()
+            expand = menu.addAction("Expand all children")
 
             edit_Brillouin_type.aboutToShow.connect(sub_menu_Brillouin_type)
             export.aboutToShow.connect(sub_menu_export)
@@ -976,6 +1003,9 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                 self.get_PSD()
             elif action == perform_treatment:
                 self.perform_treatment()
+            elif action == expand:
+                for e in self.wrapper.get_children_elements(path = self.treeview_selected):
+                    self.expand_treeview_path(f"{self.treeview_selected}/{e}")
 
     @qtc.Slot()
     def table_view_dragEnterEvent(self, event: qtg.QDragEnterEvent):
@@ -1260,7 +1290,125 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             path = selected_index.data(qtc.Qt.UserRole)
             self.treeview_selected = path
             self.update_parameters()
+
+    @qtc.Slot()
+    def update_graph(self):
+        """Update the graph based on the selected treatment and selected plots.
+
+        Returns
+        -------
+        None
+        """
+        def plot(treatment, element, cols, lines):
+            def plot_2D(image, max_col, max_line, pos):
+                ax = self.figure.add_subplot(max_line, max_col, pos)
+                ax.imshow(image)
+                ax.set_xticks([])
+                ax.set_yticks([])
+
+            # Get the correspondance between the type of elements to plot and the indexes in cols and lines
+            plots_correspondance = ["Shift", "Linewidth", "BLT", "Amplitude", "Shift Variance", "Linewidth Variance", "BLT Variance", "Amplitude Variance"]
+            indexes_correspondance = [[0,0],[1,0],[2,0],[3,0],[0,1],[1,1],[2,1],[3,1]]
+
+            # Get the position of the plot
+            index = indexes_correspondance[plots_correspondance.index(element)]
+            col = cols[index[0]]
+            line = lines[index[1]]
+ 
+            # Extract the maximum column and line and deduce the position of the subplot
+            max_col, max_line = 0, 0
+            for c in cols:
+                if c is not None and c > max_col: max_col = c
+            for l in lines: 
+                if l is not None and l > max_line: max_line = l
+
+            pos = max_col*(line-1) + col
+
+            # Extract the element to plot
+            parent_path = self.treeview_selected + "/" + treatment
+            childs = self.wrapper.get_children_elements(parent_path)
+
+            # Adjust e to the type of element
+            if " Variance" in element: 
+                element = element.replace(" Variance", "_std")
+            elif "Loss Tangent" in element:
+                element = element.replace("Loss Tangent", "BLT")
+
+            for child in childs:
+                print(child, self.wrapper.get_type(path=f"{parent_path}/{child}", return_Brillouin_type=True))
+                if self.wrapper.get_type(path=f"{parent_path}/{child}", return_Brillouin_type=True) == element:
+                    elt = self.wrapper[f"{parent_path}/{child}"]
+
+            # Reshape the element to avoid singleton dimensions
+            new_shape = []
+            for s in elt.shape:
+                if s > 1: new_shape.append(s)
+            elt = elt.reshape(new_shape)
+
+            # Plot the element depending on its shape
+            if len(elt.shape) == 2:
+                plot_2D(elt, max_col, max_line, pos)
+            else:
+                print(elt.shape)
+                qtw.QMessageBox.warning(self, "Warning", "Only 2D plots are supported for now")
+            self.canvas.draw()
+
+
+        
+        # Clear the canvas
+        self.figure.clear()
+
+        # Get the existing treatment at the selected path and sets it to the self.cb_Treatment combobox
+        treatment = self.cb_Treatment.currentText()
+        selected_plots = self.cb_SelectionPlots.currentData()
+
+        # Get the number of plots ond their position from the selected plots.
+        col_Shift, col_Linewidth, col_Amplitude, col_BLT = 0,0,0,0
+        line_Plain, line_Variance = 0, 0
+        for k in selected_plots:
+            if "Shift" in k: col_Shift = 1
+            elif "Linewidth" in k: col_Linewidth = 1
+            elif "BLT" in k: col_BLT = 1
+            elif "Amplitude" in k: col_Amplitude = 1
+
+            if "Variance" in k: line_Variance = 1
+            else: line_Plain = 1
+
+        nb_lines = line_Plain + line_Variance
+        nb_cols = col_Shift + col_Linewidth + col_Amplitude + col_BLT
+
+        # Assign columns and lines in the subplots to the 8 possible plots
+        count = 0
+        cols, lines = [], []
+        for col in [col_Shift, col_Linewidth, col_BLT, col_Amplitude]:
+            if col == 1: 
+                count+=1
+                cols.append(count)
+            else: cols.append(None)
+        count = 0
+        for line in line_Plain, line_Variance:
+            if line == 1: 
+                count+=1
+                lines.append(count)
+            else: lines.append(None)
+
+        # Plot the selected plots
+        for e in selected_plots:
+            plot(treatment, e, cols, lines)
             
+
+
+
+        # self.figure = Figure(figsize=(3,4))
+        # self.canvas = FigureCanvas(self.figure)
+
+        # # Get the position of the plots
+        # for k in treatment:
+        #     if k == "Shift": 
+                
+        #         self.canvas.axes.plot(self.frequency, self.data[:,0], color='red')
+
+
     @qtc.Slot()
     def update_parameters(self, filepath=None, delete_child_attributes = False):
         """
@@ -1277,6 +1425,56 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         -------
         None
         """
+        def update_graph():
+            def activate_all(state = False):
+                self.cb_Treatment.setEnabled(state)
+                self.cb_SelectionPlots.setEnabled(state)
+                self.tab_Visualize.setEnabled(state)
+
+            # Clear the canvas
+            self.figure.clear()
+
+            # Verify that the selected element can have a treatment group
+            parent_path = self.treeview_selected
+
+            # If the parent is the root, no treatment can be observed as by default measures are stored in groups under the root
+            if parent_path == "Brillouin": 
+                activate_all(state = False)
+                return
+            
+            # If the parent is a group, check it is either a treatment or a measure group
+            if self.wrapper.get_type(path=parent_path) == h5py._hl.group.Group:
+                if self.wrapper.get_type(path=parent_path, return_Brillouin_type = True) == "Measure": 
+                    pass
+                elif self.wrapper.get_type(path=parent_path, return_Brillouin_type = True) == "Treatment": 
+                    pass
+                else: 
+                    activate_all(state = False)
+                    return
+                
+            # Treatments are stored in groups under measure groups, therefore we make sure the parent group is a measure group
+            while self.wrapper.get_type(path=parent_path, return_Brillouin_type = True) != "Measure":
+                parent_path = "/".join(parent_path.split("/")[:-1])
+
+            # And then we can extract the different treatments that have been stored in the parent group
+            treatments = self.wrapper.get_children_elements(parent_path, Brillouin_type="Treatment")
+            self.cb_Treatment.clear()
+
+            # If no treatment exist, disable the combobox and the plots
+            if len(treatments) == 0:
+                activate_all(state = False)
+                return
+
+            # Activate the combobox and the plots
+            activate_all(state = True)
+
+            # Add the treatments to the combobox
+            self.cb_Treatment.addItems(treatments)
+
+            # Update the graph
+            self.update_graph()
+
+
         # If no filepath was given, take the file corresponding to the specified version of the library, make sure no overwrite is allowed.
         if filepath is None: 
             import_file = False
@@ -1321,6 +1519,8 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         self.tableView_Spectrometer.setModel(self.model_table_Spectrometer)
 
         self.textBrowser_Log.append(f"Parameters of <b>{self.treeview_selected}</b> have been updated")
+
+        update_graph()
 
     @qtc.Slot()
     def update_parameters_from_table_view(self):
@@ -1409,28 +1609,37 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             directory = "/".join(current_dir.split("/")[:-1]) + "/icon"
             if "Abscissa" in brillouin_type: 
                 item.setIcon(qtg.QIcon(f"{directory}/Abscissa.png"))
+            if brillouin_type == "Amplitude":
+                item.setIcon(qtg.QIcon(f"{directory}/Amplitude.png"))
+            if brillouin_type == "Amplitude_std": 
+                item.setIcon(qtg.QIcon(f"{directory}/Amplitude_error.png"))
+            if brillouin_type == "BLT":
+                item.setIcon(qtg.QIcon(f"{directory}/BLT.png"))
+            if brillouin_type == "BLT_std": 
+                item.setIcon(qtg.QIcon(f"{directory}/BLT_error.png"))
             elif brillouin_type == "Frequency": 
                 item.setIcon(qtg.QIcon(f"{directory}/Frequency.png"))
             elif brillouin_type == "Linewidth_std": 
                 item.setIcon(qtg.QIcon(f"{directory}/Gamma_error.png"))
             elif brillouin_type == "Linewidth": 
-                item.setIcon(qtg.QIcon(f"{directory}/Gamma.png"))  
+                item.setIcon(qtg.QIcon(f"{directory}/Gamma.png")) 
+            elif brillouin_type == "PSD": 
+                item.setIcon(qtg.QIcon(f"{directory}/PSD.png"))    
+            elif brillouin_type == "Raw_data": 
+                item.setIcon(qtg.QIcon(f"{directory}/Raw_data.png")) 
             elif brillouin_type == "Shift_std": 
                 item.setIcon(qtg.QIcon(f"{directory}/Nu_error.png"))  
             elif brillouin_type == "Shift": 
                 item.setIcon(qtg.QIcon(f"{directory}/Nu.png"))  
-            elif brillouin_type == "PSD": 
-                item.setIcon(qtg.QIcon(f"{directory}/PSD.png"))    
-            elif brillouin_type == "Raw_data": 
-                item.setIcon(qtg.QIcon(f"{directory}/Raw_data.png"))  
-            elif brillouin_type == "Root": 
-                item.setIcon(qtg.QIcon(f"{directory}/Root.png"))  
-            elif brillouin_type == "Measure": 
-                item.setIcon(qtg.QIcon(f"{directory}/Measure.png"))  
+
             elif brillouin_type == "Calibration_spectrum": 
                 item.setIcon(qtg.QIcon(f"{directory}/Calibration.png"))  
             elif brillouin_type == "Impulse_response": 
                 item.setIcon(qtg.QIcon(f"{directory}/Impulse_response.png"))  
+            elif brillouin_type == "Measure": 
+                item.setIcon(qtg.QIcon(f"{directory}/Measure.png"))   
+            elif brillouin_type == "Root": 
+                item.setIcon(qtg.QIcon(f"{directory}/Root.png"))   
             elif brillouin_type == "Treatment": 
                 item.setIcon(qtg.QIcon(f"{directory}/Treatment.png"))  
         

@@ -26,8 +26,9 @@ class Wrapper:
     data_attributes: dic
         The attributes specific to an array
     """
-    filepath: str
-    save: bool # A boolean to indicate if the data should be saved (True) or not (False)
+    BRILLOUIN_TYPES_DATASETS = ["Abscissa", "Amplitude", "Amplitude_std", "BLT", "BLT_std", "Frequency", "Linewidth", "Linewidth_std", "Other", "PSD", "Raw_data", "Shift", "Shift_std"]
+    BRILLOUIN_TYPES_GROUPS = ["Calibration_spectrum", "Impulse_response", "Measure", "Root", "Treatment"]
+
 
     ##########################
     #     Magic methods      #
@@ -48,7 +49,6 @@ class Wrapper:
                 group = file.create_group("Brillouin")
                 group.attrs["HDF5_BLS_version"] = HDF5_BLS_Version
                 group.attrs["Brillouin_type"] = "Root"
-            self.save = False
         else:
             if not os.path.isfile(filepath):
                 with h5py.File(filepath, 'w') as file:
@@ -56,7 +56,7 @@ class Wrapper:
                     group.attrs["Brillouin_type"] = "Root"
                     group.attrs["HDF5_BLS_version"] = HDF5_BLS_Version
             self.filepath = filepath
-            self.save = False
+        self.save = False
         self.need_for_repack = False
 
     def __getitem__(self, key): # Test made, Dev guide made
@@ -85,7 +85,10 @@ class Wrapper:
                 data = item[()]
                 shape = self.get_attributes(path=key)["MEASURE.Sampling_Matrix_Size_(Nx,Ny,Nz)_()"]
                 shape = [int(i) for i in shape.split(",")] + [-1]
-                return data.reshape(shape)
+                try:
+                    return data.reshape(shape)
+                except:
+                    return data
             return item
         # It would be better to return a new wrapper with only the selected group. But in this case we need to make sure that we will not overwrite temp.h5 by mistake.
 
@@ -357,17 +360,19 @@ class Wrapper:
             if not "Brillouin_type" in new_group.attrs.keys() or overwrite: 
                 new_group.attrs["Brillouin_type"] =  brillouin_type # We add the brillouin_type here to ensure overwrite
             for key, value in dic.items():
-                if type(value) is dict and key in ["Raw_data", "Other", "PSD", "Frequency", "Shift", "Shift_std", "Linewidth", "Linewidth_std"]:
-                    name_dataset = value["Name"]
-                    value = np.array(value["Data"])
-                    dataset = new_group.create_dataset(name_dataset, data=np.array(value))
-                    dataset.attrs["Brillouin_type"] = key
-                elif type(value) is dict and"Abscissa_" in key:
-                    assert list(value.keys()) == ["Name", "Data", "Unit", "Dim_start", "Dim_end"], WrapperError_ArgumentType("The abscissa should be a dictionnary with the keys 'Name', 'Data', 'Unit', 'Dim_start' and 'Dim_end'.")
+                if type(value) is dict and "Abscissa_" in key:
+                    if not list(value.keys()) == ["Name", "Data", "Unit", "Dim_start", "Dim_end"]:
+                        raise WrapperError_ArgumentType("The abscissa should be a dictionnary with the keys 'Name', 'Data', 'Unit', 'Dim_start' and 'Dim_end'.")
+                    
                     name_dataset = value["Name"]
                     dataset = new_group.create_dataset(name_dataset, data=np.array(value["Data"]))
                     dataset.attrs["Brillouin_type"] = "Abscissa_" + str(value["Dim_start"]) + "_" + str(value["Dim_end"])
                     dataset.attrs["Unit"] = value["Unit"]
+                elif type(value) is dict and key in self.BRILLOUIN_TYPES_DATASETS:
+                    name_dataset = value["Name"]
+                    value = np.array(value["Data"])
+                    dataset = new_group.create_dataset(name_dataset, data=np.array(value))
+                    dataset.attrs["Brillouin_type"] = key
                 elif key == "Attributes":
                     for k, v in value.items():
                         try:
@@ -412,10 +417,10 @@ class Wrapper:
         
         # Check if the type is valid
         if self.get_type(path) == h5py._hl.group.Group:
-            if brillouin_type not in ["Root", "Measure", "Calibration_spectrum", "Impulse_response", "Treatment", "Metadata"]:
+            if brillouin_type not in self.BRILLOUIN_TYPES_GROUPS:
                 raise WrapperError_ArgumentType(f"The brillouin type '{brillouin_type}' is not valid.")
         else:
-            if brillouin_type not in ["Abscissa", "Frequency", "Linewidth", "Linewidth_std", "Shift", "Shift_std", "Raw_data", "Other", "PSD", "PSD", "Treatment"]:
+            if brillouin_type not in self.BRILLOUIN_TYPES_DATASETS:
                 raise WrapperError_ArgumentType(f"The brillouin type '{brillouin_type}' is not valid.")
         
         # Change the brillouin type
@@ -633,13 +638,15 @@ class Wrapper:
                     attr[e] = file[path_temp].attrs[e]
         return attr
 
-    def get_children_elements(self, path=None):
-        """Returns the children elements of a given path
+    def get_children_elements(self, path=None, Brillouin_type = None):
+        """Returns the children elements of a given path. If Brillouin_type is specified, only the children elements with the given Brillouin_type are returned.
 
         Parameters
         ----------
         path : str, optional
             The path to the element, by default None which means the root of the file ("Brillouin" group)
+        Brillouin_type : str, optional
+            The type of the element, by default None which means all the elements are returned
 
         Returns
         -------
@@ -653,7 +660,11 @@ class Wrapper:
                 children = list(file[path].keys())
             else:
                 children = []
-        return list(children)
+        if Brillouin_type is None:
+            return list(children)
+        else:
+            return [e for e in children if self.get_type(path=f"{path}/{e}", return_Brillouin_type=True) == Brillouin_type]
+
 
     def get_special_groups_hierarchy(self, path = None, brillouin_type = None):
         """Get all the groups with desired brillouin type that are hierarchically above a given path.
