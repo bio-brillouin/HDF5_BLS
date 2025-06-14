@@ -32,8 +32,6 @@ class TimeDomain():
         self.data = None
 
     def scrape_m_file(self):
-        logging.info(f"Call: scrape_m_file:{{}}:{{}}")
-
         meta_filebase = self.filepath[0:len(self.filepath)-4]
         meta_file = meta_filebase + ".m"
         # extract useful information from the relevant meta-file
@@ -63,7 +61,6 @@ class TimeDomain():
         self.attributes.update(dic)
 
     def scrape_con_file(self):
-        logging.info(f"Call: scrape_con_file:{{}}:{{}}")
         n_traces = self.attributes["TIMEDOMAIN.n_traces"]
         # Open the file and read its contents as a single string
         with open(self.attributes["TIMEDOMAIN.file_con"], 'r') as file:
@@ -378,8 +375,6 @@ def load_dat_TimeDomain(filepath, parameters = None):
         The dictionnary with the time vector, the time resolved data and the attributes of the file stored respectively in the keys "Data", "Abscissa_dt" and "Attributes"
     """
     def scrape_m_file(filepath):
-        logging.info(f"Call: scrape_m_file:{filepath}:{{}}")
-
         meta_filebase = filepath[0:len(filepath)-4]
         meta_file = meta_filebase + ".m"
         # extract useful information from the relevant meta-file
@@ -609,7 +604,7 @@ def load_dat_TimeDomain(filepath, parameters = None):
                     data_in[i, j, :] = filtfilt(b, a, data_in[i, j, :]) 
         return data_in 
 
-    def take_FFT(wrp, data_in, dt):
+    def take_FFT(attributes, data_in, dt):
         print('Taking the FFT...')
         zp = int(attributes["TIMEDOMAIN.zp"]) # zero padding coefficient
         fmin_search = attributes["TIMEDOMAIN.fmin"] * 1e9
@@ -650,10 +645,6 @@ def load_dat_TimeDomain(filepath, parameters = None):
 
         return plot_fft, freqs_plot_GHz, fB_GHz
 
-    pipeline_logger = PipelineLogger()
-    logging.getLogger().addHandler(pipeline_logger)
-    logging.getLogger().setLevel(logging.INFO)
-
     if parameters is None:
         parameters_list = ["ac_gain", 
                            "bool_reverse_data", 
@@ -683,24 +674,37 @@ def load_dat_TimeDomain(filepath, parameters = None):
                 attributes[f"TIMEDOMAIN.{k}"] = v
             else:
                 attributes[f"TIMEDOMAIN.{k}"] = float(v)
+    
+    TD = TimeDomain(filepath = filepath, attributes = attributes)
 
-    process = []
     attributes['SPECTROMETER.Type'] = "TimeDomain"
 
-    attributes.update(scrape_m_file(filepath))
+    TD.scrape_m_file()
+
+    attributes.update(TD.scrape_con_file())
+    
+    print("scrape_con_file")
     attributes.update(scrape_con_file(attributes))
-    data_ac = basic_process(attributes, filepath)
+    print("basic_process")
+    data_ac = basic_process(attributes, filepath)  
+    print("load_dc")
     filepath_dc = filepath[0:len(filepath)-10] + "a2d1_1f.d"
     data_mod = load_dc(attributes, data_ac, filepath_dc)
+    print("find_copeaks")
     mod_shifted, signal_idxs = find_copeaks(attributes, data_mod)
+    print("make_time")
     data_t, dt = make_time(attributes)
+    print("LPfilter")
     mod_shifted = LPfilter(attributes, mod_shifted, dt)
+    print("polyfit_removal")
     data_pro, polyfit = polyfit_removal(attributes, mod_shifted)
+    print("HPfilter")
     data_pro = HPfilter(attributes, data_pro, dt)
+    print("take_FFT")
     fft_out, freqs_out_GHz, fB_GHz = take_FFT(attributes, data_pro, dt)
 
     attributes['SPECTROMETER.Filtering_Module'] = "None"
-    attributes['Process_PSD': process]
+    # attributes['Process_PSD': process]
 
     return {"Raw_data": {"Name": "Time measures", "Data": data_pro}, 
             "Abscissa_Time": {"Name": "Time axis", 

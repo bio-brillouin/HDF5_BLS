@@ -1,17 +1,13 @@
 import numpy as np
 from scipy import optimize
+import json
+import inspect
 
 Treat_version = 0.1
 
 class TreatmentError(Exception):
     def __init__(self, message):
         super().__init__(message)
-
-
-import json
-import inspect
-import numpy as np
-import matplotlib.pyplot as plt
 
 
 class Models():
@@ -106,7 +102,7 @@ class Models():
         function
             The function associated to the given parameters
         """
-        func = b + a*(gamma*nu0**2)/((nu**2-nu0**2)**2+gamma*nu0**2)
+        func = b + a*(gamma*nu0**2)/((nu**2-nu0**2)**2+gamma*nu**2)
         if IR is not None: return np.convolve(func, IR, "same")
         return func 
     
@@ -135,11 +131,10 @@ class Models():
         function
             The function associated to the given parameters
         """
-        func = be + ae*nu + a*(gamma*nu0**2)/((nu**2-nu0**2)**2+gamma*nu0**2)
+        func = be + ae*nu + a*(gamma*nu0**2)/((nu**2-nu0**2)**2+gamma*nu**2)
         if IR is not None: return np.convolve(func, IR, "same")
         return func
  
-
 class Treat_backend:
     """This class is the base class for all the treat classes. Its purpose is to provide the basic silent functions to open, create and save algorithms, and to store the different steps of the treatment and their effects on the data.
     The philosophy of this class is to rely on 2 fixed attributes:
@@ -471,7 +466,7 @@ class Treat_backend:
         return json.dumps(self._algorithm, indent=4)
 
     def _run_algorithm(self, step: int = None, algorithm: dict = None):
-        """Runs the algorithm stored in the _algorithm attribute of the class up to the given step (included). If no step is given, the algorithm is run up to the last step.
+        """Runs an algorithm. By default, the algorithm run is the one stored in the _algorithm attribute of the class. This function can also run other algorithms if specified. The function runs the algorithm up to the given step (included). If no step is given, the algorithm is run up to the last step (included). 
 
         Parameters
         ----------
@@ -510,6 +505,7 @@ class Treat_backend:
                 func_to_call = getattr(self, function_name)
                 func_to_call(**parameters)
 
+        # If the algorithm is None, set the algorithm to the _algorithm attribute of the class
         if algorithm is None:
             algorithm = self._algorithm
 
@@ -517,7 +513,7 @@ class Treat_backend:
         if step is None:
             step = len(algorithm["functions"])-1
 
-        # Ensures that the step is within the range of the functions list
+        # Ensures that the step is within the range of the functions list, raise an error if not
         if step < 0 or step >= len(algorithm["functions"]):
             raise ValueError(f"The step parameter has to be a positive integersmaller than the number of functions (here {len(algorithm['functions'])}, step = {step}).")
 
@@ -555,7 +551,7 @@ class Treat_backend:
                 elif step > len(self._history):
                     # In the particular case where no steps are stored, we run the first step of the algorithm recursively. This reinitializes the points and windows attributes, the _history attribute, and the x and y attributes
                     if len(self._history) == 0:
-                        self._run_algorithm(0)
+                        self._run_algorithm(step = 0)
                         first_step = 1
 
                     # If some steps are stored, we update the attributes using the parameters stored in the _history attribute and run from there
@@ -570,9 +566,10 @@ class Treat_backend:
                 # Run the selected step
                 run_step(self, step)
 
-        elif self._treat_selection == "all":
-            for step in range(len(algorithm["functions"])):
-                run_step(self, step)
+        # If the _treat_selection attribute is set to "all" or "errors", the _history attribute is not used and the functions are run sequentially from the first step to the given step (included)
+        elif self._treat_selection in ["all", "errors"]:
+            for s in range(step+1):
+                run_step(self, s)
 
         self._record_algorithm = True
 
@@ -772,6 +769,7 @@ class Treat(Treat_backend):
             # Initialize the list of points that could not be fitted
             self.point_error = []
             self.point_error_type = []
+            self.point_error_value = []
 
             # Initialize the list of fitted points
             self.shift = np.zeros(self.PSD.shape[:-1]).astype(float)
@@ -803,12 +801,11 @@ class Treat(Treat_backend):
             self.PSD_sample = self.PSD[tuple(PSD_i)]
 
             # Run the algorithm on the current PSD and frequency arrays
-            self._run_algorithm(step=0)
+            self._run_algorithm()
 
             # Combine the results of the algorithm to get an average value for the shift and linewidth and store them
             temp_shift, temp_linewidth, temp_shift_std, temp_linewidth_std, temp_amplitude, temp_amplitude_std = 0, 0, 0, 0, 0, 0
             nb = 0
-            is_nan = True
 
             if amplitude_weight_of_shift_and_linewidth:
                 for a, s, l,std_s, std_l, std_a in zip(self.amplitude_sample, self.shift_sample, self.linewidth_sample, self.shift_std_sample, self.linewidth_std_sample, self.amplitude_std_sample):
@@ -823,7 +820,6 @@ class Treat(Treat_backend):
                         temp_shift_std += (a*std_s)**2
                         temp_linewidth_std += (a*std_l)**2
                         nb += 1
-                        is_nan = False
                 if keep_max_amplitude:
                     self.amplitude[tuple(PSD_i)] = temp_amplitude
                     self.amplitude_var[tuple(PSD_i)] = temp_amplitude_std
@@ -843,6 +839,7 @@ class Treat(Treat_backend):
             if np.isnan(self.shift[tuple(PSD_i)]):
                 self.point_error.append(PSD_i.copy())
                 self.point_error_type.append("fit_error")
+                self.point_error_value.append(np.nan)
 
             PSD_i = plus_one(PSD_i, self.PSD.shape[:-1], len(PSD_i)-1)
         
@@ -1105,6 +1102,7 @@ class Treat(Treat_backend):
             pos = [int(p[i]) for p in positions]
             self.point_error.append(pos)
             self.point_error_type.append("shift_max")
+            self.point_error_value.append(self.shift[tuple(pos)])
         self.shift_var[positions] = np.nan
         self.shift[positions] = np.nan
         self.linewidth_var[positions] = np.nan   
@@ -1119,6 +1117,7 @@ class Treat(Treat_backend):
             pos = [int(p[i]) for p in positions]
             self.point_error.append(pos)
             self.point_error_type.append("shift_min")
+            self.point_error_value.append(self.shift[tuple(pos)])
         self.shift_var[positions] = np.nan
         self.shift[positions] = np.nan
         self.linewidth_var[positions] = np.nan   
@@ -1141,6 +1140,7 @@ class Treat(Treat_backend):
             pos = [int(p[i]) for p in positions]
             self.point_error.append(pos)
             self.point_error_type.append("shift_var")
+            self.point_error_value.append(self.shift_var[tuple(pos)])
         self.shift_var[positions] = np.nan
         self.shift[positions] = np.nan
         self.linewidth_var[positions] = np.nan   
@@ -1165,6 +1165,7 @@ class Treat(Treat_backend):
             pos = [int(p[i]) for p in positions]
             self.point_error.append(pos)
             self.point_error_type.append("linewidth_max")
+            self.point_error_value.append(self.linewidth[tuple(pos)])
         self.shift_var[positions] = np.nan
         self.shift[positions] = np.nan
         self.linewidth_var[positions] = np.nan   
@@ -1179,6 +1180,7 @@ class Treat(Treat_backend):
             pos = [int(p[i]) for p in positions]
             self.point_error.append(pos)
             self.point_error_type.append("linewidth_min")
+            self.point_error_value.append(self.linewidth[tuple(pos)])
         self.shift_var[positions] = np.nan
         self.shift[positions] = np.nan
         self.linewidth_var[positions] = np.nan   
@@ -1201,6 +1203,7 @@ class Treat(Treat_backend):
             pos = [int(p[i]) for p in positions]
             self.point_error.append(pos)
             self.point_error_type.append("linewidth_var")
+            self.point_error_value.append(self.linewidth_var[tuple(pos)])
         self.shift_var[positions] = np.nan
         self.shift[positions] = np.nan
         self.linewidth_var[positions] = np.nan   
@@ -1225,6 +1228,7 @@ class Treat(Treat_backend):
             pos = [int(p[i]) for p in positions]
             self.point_error.append(pos)
             self.point_error_type.append("BLT_max")
+            self.point_error_value.append(self.BLT[tuple(pos)])
         self.shift_var[positions] = np.nan
         self.shift[positions] = np.nan
         self.linewidth_var[positions] = np.nan   
@@ -1239,6 +1243,7 @@ class Treat(Treat_backend):
             pos = [int(p[i]) for p in positions]
             self.point_error.append(pos)
             self.point_error_type.append("BLT_min")
+            self.point_error_value.append(self.BLT[tuple(pos)])
         self.shift_var[positions] = np.nan
         self.shift[positions] = np.nan
         self.linewidth_var[positions] = np.nan   
@@ -1261,6 +1266,7 @@ class Treat(Treat_backend):
             pos = [int(p[i]) for p in positions]
             self.point_error.append(pos)
             self.point_error_type.append("BLT_var")
+            self.point_error_value.append(self.BLT_var[tuple(pos)])
         self.shift_var[positions] = np.nan
         self.shift[positions] = np.nan
         self.linewidth_var[positions] = np.nan   
@@ -1284,6 +1290,7 @@ class Treat(Treat_backend):
         """
         self.point_error.append(position)
         self.point_error_type.append("point_error")
+        self.point_error_value.append(np.nan)
         self.shift_var[tuple(position)] = np.nan
         self.shift[tuple(position)] = np.nan
         self.linewidth_var[tuple(position)] = np.nan   
@@ -1300,57 +1307,42 @@ class Treat(Treat_backend):
         ----------
         position : list, optional
             The position of the point error to be adjusted. Default is None.
-        new_parameters : dictionnary, optional 
+        new_parameters : list of dictionnaries, optional 
             The list of new parameters to be applied to re-run the treatment on the errors. Each element is either None (if we don't change the parameters) or a dictionnary of the parameters to be passed to the function. Default is None, means that all the parameters used earlier are used.
         """
-        # Extract the algorithm to be used by selecting all the steps up to the apply_algorithm_on_all step
-        algorithm = {"functions": []}
-        mark_errors = {"functions": []}
-        amplitude_weight_of_shift_and_linewidth = False
-        keep_max_amplitude = False
-
-        # We extract all the steps up to the apply_algorithm_on_all step, at this point we have all the steps of the algorithm, and we switch to the steps to identify errors. The identification of errors is done up to the first call to adjust_treatment_on_errors, which is the last step of the algorithm that will be re-run.
-        passed_apply_on_all = False
-        for f in self._algorithm["functions"]:
-            if not f["function"] == "apply_algorithm_on_all":
-                if not passed_apply_on_all:
-                    algorithm["functions"].append(f)
-                else:
-                    if not f["function"] == "adjust_treatment_on_errors":
-                        mark_errors["functions"].append(f)
+        def extract_initial_algorithm():
+            algorithm = {"functions": []}
+            mark_errors_algorithm = {"functions": []}
+            passed_apply_on_all = False
+            # We go through the functions that are applied 
+            for f in self._algorithm["functions"]:
+                # If we are not applying the algorithm to all the data
+                if not f["function"] == "apply_algorithm_on_all":
+                    # If the function is before the apply_algorithm_on_all function, we add it to the algorithm
+                    if not passed_apply_on_all:
+                        algorithm["functions"].append(f)
+                    # If it's after but before the adjust_treatment_on_errors function, we add it to the mark_errors as it will be used to mark errors
                     else:
-                        break
-            else:
-                amplitude_weight_of_shift_and_linewidth = f["parameters"]["amplitude_weight_of_shift_and_linewidth"]
-                keep_max_amplitude = f["parameters"]["keep_max_amplitude"]
-                passed_apply_on_all = True
-        
-        # Update the parameters
-        if not new_parameters is None:
-            for i in range(len(algorithm["functions"])):
-                if new_parameters[i] is not None:
-                    for k, v in new_parameters[i].items():
-                        algorithm["functions"][i]["parameters"][k] = v
-        
-        # If no position are specified, we apply the algorithm on all the points that had errors
-        if position is None:
-            position = self.point_error
-        
-        # Apply the algorithm on all the points that had errors
-        for PSD_i in position:
-            self.PSD_sample = self.PSD[tuple(PSD_i)]
-            self._run_algorithm(step=0, algorithm=algorithm)
+                        if not f["function"] == "adjust_treatment_on_errors":
+                            mark_errors_algorithm["functions"].append(f)
+                        else:
+                            break
+                else:
+                    amplitude_weight_of_shift_and_linewidth = f["parameters"]["amplitude_weight_of_shift_and_linewidth"]
+                    keep_max_amplitude = f["parameters"]["keep_max_amplitude"]
+                    passed_apply_on_all = True
+            return algorithm, mark_errors_algorithm, amplitude_weight_of_shift_and_linewidth, keep_max_amplitude
 
-            # Update the shift and linewidth arrays with the new values
-            temp_shift = 0
-            temp_linewidth = 0
-            temp_shift_std = 0
-            temp_linewidth_std = 0
-            temp_amplitude = 0
-            temp_amplitude_std = 0
-            nb = 0
-
+        def update_treated_arrays(PSD_i, amplitude_weight_of_shift_and_linewidth, keep_max_amplitude):
+            # If we want to update the arrays with values weighted by the amplitude of the peak
             if amplitude_weight_of_shift_and_linewidth:
+                temp_shift = 0
+                temp_linewidth = 0
+                temp_shift_std = 0
+                temp_linewidth_std = 0
+                temp_amplitude = 0
+                temp_amplitude_std = 0
+                nb = 0
                 for a, s, l,std_s, std_l, std_a in zip(self.amplitude_sample, self.shift_sample, self.linewidth_sample, self.shift_std_sample, self.linewidth_std_sample, self.amplitude_std_sample):
                     if not a == np.nan:
                         if keep_max_amplitude:
@@ -1374,17 +1366,54 @@ class Treat(Treat_backend):
                 self.shift[tuple(PSD_i)] = temp_shift/np.sum(self.amplitude_sample)
                 self.linewidth[tuple(PSD_i)] = temp_linewidth/np.sum(self.amplitude_sample)
                 self.shift_var[tuple(PSD_i)] = np.sqrt(temp_shift_std)/np.sum(self.amplitude_sample)**2
-                self.linewidth_var[tuple(PSD_i)] = np.sqrt(temp_linewidth_std)/np.sum(self.amplitude_sample)**2
+                self.linewidth_var[tuple(PSD_i)] = np.sqrt(temp_linewidth_std)/np.nansusumm(self.amplitude_sample)**2
+            # If we don't weigh the values by the amplitude of the peak
             else:
-                self.shift[tuple(PSD_i)] = np.average(self.shift_sample)
-                self.linewidth[tuple(PSD_i)] = np.average(self.linewidth_sample)
-                self.shift_var[tuple(PSD_i)] = np.sqrt(np.sum(np.array(self.shift_std_sample)**2))/(len(self.amplitude_sample)**2)
-                self.linewidth_var[tuple(PSD_i)] = np.sqrt(np.sum(np.array(self.linewidth_std_sample)**2))/(len(self.amplitude_sample)**2)
+                self.shift[tuple(PSD_i)] = np.nanmean(np.abs(self.shift_sample))
+                self.linewidth[tuple(PSD_i)] = np.nanmean(self.linewidth_sample)
+                self.shift_var[tuple(PSD_i)] = np.sqrt(np.sum(np.array(self.shift_std_sample)**2)) / (np.count_nonzero(~np.isnan(self.amplitude_sample))**2)
+                self.linewidth_var[tuple(PSD_i)] = np.sqrt(np.sum(np.array(self.linewidth_std_sample)**2))/(np.count_nonzero(~np.isnan(self.amplitude_sample))**2)
+            
+        # Extract the algorithm that was used to initially treat the data, the one used to mark the errors and the parameters used to store the extracted values
+        algorithm, mark_errors, amplitude_weight_of_shift_and_linewidth, keep_max_amplitude = extract_initial_algorithm()
+
+        # Update the parameters with the new values
+        new_algorithm = {"functions": []}
+        if not new_parameters is None:
+            for i in range(len(algorithm["functions"])):
+                if new_parameters[i] is None:
+                    new_algorithm["functions"].append(algorithm["functions"][i])
+                elif new_parameters[i] == False:
+                    continue
+                elif new_parameters[i] is not None:
+                    for k, v in new_parameters[i].items():
+                        if k in algorithm["functions"][i]["parameters"].keys():
+                            algorithm["functions"][i]["parameters"][k] = v
+                    new_algorithm["functions"].append(algorithm["functions"][i])
+        
+        # If no position are specified, we apply the algorithm on all the points that had errors
+        if position is None:
+            position = self.point_error
+        
+        # Sets the _treat_selection attribute to "errors". This makes sure that the algorithm doesn't store the results in _history (reduces the memory usage and time complexity)
+        self._treat_selection = "errors"
+        
+        # Apply the algorithm on all the points that had errors
+        for PSD_i in position:
+            self.PSD_sample = self.PSD[tuple(PSD_i)]
+            self._run_algorithm(algorithm = new_algorithm)
+
+            update_treated_arrays(PSD_i, amplitude_weight_of_shift_and_linewidth, keep_max_amplitude)
+        
+        # Update the Loss Tangent array and its variance
+        self.BLT = self.linewidth/self.shift
+        self.BLT_var = self.BLT**2*((self.shift_var/self.shift)**2 + (self.linewidth_var/self.linewidth)**2)
 
         # And we mark the errors again.
         self.point_error = []
         self.point_error_type = []
-        self._run_algorithm(step=0, algorithm=mark_errors)
+        self.point_error_value = []
+        self._run_algorithm(algorithm = mark_errors)
 
     def normalize_data(self, threshold_noise : float = 0.01):
         """
@@ -1426,92 +1455,5 @@ class Treat(Treat_backend):
         self._clear_points()
 
         return self.PSD_sample
-        
-if __name__ == "__main__":
-    import matplotlib.pyplot as plt
-    import h5py
-    import time
-
-    with h5py.File("/Users/pierrebouvet/Documents/Databases/250409 - fixed cells/Test.h5", "r") as f:
-        tpe = "HCU29"
-        acq = 1
-        i = 1
-        data = np.array(f[f"Brillouin/{tpe}/{tpe} - {acq}/Acq {i}/Raw data"][()]).reshape((50,50,-1))
-        frequency = np.array(f[f"Brillouin/{tpe}/{tpe} - {acq}/Acq {i}/Frequency"][()])
-    
-    treat = Treat(frequency = frequency, PSD = data)
-
-    treat.add_point(position_center_window = -5.8, type_pnt = "Other", window_width = 1.5)
-    treat.add_point(position_center_window = 5.8, type_pnt = "Other", window_width = 1.5)
-    treat.normalize_data(threshold_noise = 0.05)
-
-    treat.add_point(position_center_window = -7, type_pnt = "Stokes", window_width = 6)
-    treat.add_point(position_center_window = 7, type_pnt = "Anti-Stokes", window_width = 5)
-    treat.add_point(position_center_window = 0, type_pnt = "Elastic", window_width = 4)
-
-
-    # plt.figure()
-    # plt.plot(treat.frequency_sample, treat.PSD_sample)
-    # for point in treat.points:
-    #     plt.axvline(x=point[1], color="red")
-    # for window in treat.windows:
-    #     plt.axvspan(window[0], window[1], color="blue", alpha=0.2)
-
-    treat.define_model(model="Lorentzian", elastic_correction=True)
-    treat.estimate_width_inelastic_peaks(max_width_guess=2)
-    t0 = time.time()
-    treat.fit_all_inelastic_of_curve(default_width=1, guess_offset=True, update_point_position=True)
-    print("Initial fit: ", time.time()-t0)
-
-    # models = Models()
-    # for shift, linewidth, amplitude, offset, slope, window in zip(treat.shift_sample, treat.linewidth_sample, treat.amplitude_sample, treat.offset_sample, treat.slope_sample, treat.windows):
-    #     pos_window = np.where((treat.frequency_sample >= window[0]) & (treat.frequency_sample <= window[1]))
-    #     model = models.models[treat.fit_model]
-    #     plt.plot(treat.frequency_sample[pos_window], model(treat.frequency_sample[pos_window], ae = slope, be = offset, a=amplitude, nu0=shift, gamma=linewidth, IR=None))  
-
-    t0 = time.time()
-    treat.apply_algorithm_on_all(amplitude_weight_of_shift_and_linewidth = True, keep_max_amplitude = True)
-    print(f"Time for fitting all spectra: {time.time()-t0:.2f} s")
-    treat.blind_deconvolution(default_width=1)
-    treat.mark_errors_shift(min_shift=5.5, max_shift=6.6)
-    treat.mark_errors_std_shift(max_error_shift_variance=1)
-    # treat.mark_errors_linewidth(min_linewidth=1, max_linewidth=2)
-    treat.mark_errors_std_linewidth(max_error_linewidth_variance=1)
-    # treat.mark_errors_BLT(min_BLT=0, max_BLT=1)
-
-    
-    # plt.figure()
-    # plt.subplot(241)
-    # plt.title("Shift")
-    # plt.imshow(treat.shift)
-    # plt.subplot(242)
-    # plt.title("Linewidth")
-    # plt.imshow(treat.linewidth)
-    # plt.subplot(243)
-    # plt.title("BLT")
-    # plt.imshow(treat.BLT)
-    # plt.subplot(244)
-    # plt.title("Amplitude")
-    # plt.imshow(treat.amplitude)
-    # plt.subplot(245)
-    # plt.title("Shift Variance")
-    # plt.imshow(treat.shift_var)
-    # plt.subplot(246)
-    # plt.title("Linewidth Variance")
-    # plt.imshow(treat.linewidth_var)
-    # plt.subplot(247)
-    # plt.title("BLT Variance")    
-    # plt.imshow(treat.BLT_var)
-    # plt.subplot(248)
-    # plt.title("Amplitude Variance")    
-    # plt.imshow(treat.amplitude_var)
-
-    # plt.figure()
-    # for p, r in zip(treat.point_error, treat.point_error_type):
-    #     plt.plot(treat.frequency, treat.PSD[tuple(p)])
-
-    # print(treat._return_string_algorithm())
-
-
-    plt.show()
+   
     

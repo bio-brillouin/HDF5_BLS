@@ -14,6 +14,7 @@ from Main.UI.main_window_ui import Ui_w_Main
 from ComboboxChoose.main import ComboboxChoose
 from ParameterWindow.main import ParameterWindow
 from ProgressBar.main import ProgressBar
+from TreatWindow.main import TreatWindow
 from _customWidgets import CheckableComboBox
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
@@ -93,7 +94,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             self.a_RenameElement.triggered.connect(self.rename_element) 
             self.a_RepackHDF5.triggered.connect(self.repack)
             self.a_ExportPython.triggered.connect(self.export_code_line)
-            self.a_Apply_Treatment.triggered.connect(self.perform_treatment)
+            self.a_Apply_Treatment.triggered.connect(self.get_treatment)
             self.a_Get_PSD.triggered.connect(self.get_PSD)
             self.a_ExportImage.triggered.connect(self.export_image)
 
@@ -175,6 +176,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             # Set context menu policy for the tree view
             self.treeView.setContextMenuPolicy(qtc.Qt.CustomContextMenu)
             self.treeView.customContextMenuRequested.connect(self.show_treeview_context_menu)
+            self.treeView.expanded.connect(self.adjust_treeview_columns)
 
         super().__init__()
         self.setupUi(self)
@@ -430,6 +432,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                         path_from_parent += temp_path_from_parent
                     # Create file structure in the HDF5 file
                     for path_parent in path_from_parent:
+                        if path_parent == "": continue
                         path_split = path_parent.split("/")
                         temp_path = ""
                         for p in path_split:
@@ -500,7 +503,15 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         self.update_treeview()
         self.expand_treeview_path(self.treeview_selected)
 
-    def closeEvent(self, event="Close directly"):
+    def adjust_treeview_columns(self, index=None):
+        """
+        Adjusts the width of all columns in the treeView to fit their contents.
+        """
+        header = self.treeView.header()
+        for col in range(self.treeView.model().columnCount()):
+            self.treeView.resizeColumnToContents(col)
+
+    def closeEvent(self):
         """
         Close the window and exit the application.
 
@@ -513,12 +524,15 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             self.handle_error_save()
 
         # Repack the wrapper if it exists
-        if os.path.isfile(self.filepath):
-            self.wrapper.repack()
+        # if os.path.isfile(self.filepath):
+        #     self.wrapper.repack()
         
         # Delete the temporary file if it exists
         self.wrapper.close(delete_temp_file = True)
-        self.close()
+        try:
+            self.close()
+        except:
+            pass
 
     def convert_csv(self):
         """
@@ -739,45 +753,63 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         -------
         None
         """
-        qtw.QMessageBox.information(self, "Not implemented", "To do")
-        # try:
-        #     type = self.wrapper.get_attributes(self.treeview_selected)['SPECTROMETER.Type']
-        #     type = type.replace(" ", "_")
-        #     type = type.replace("-", "_")
-        # except KeyError:
-        #     qtw.QMessageBox.warning(self, "Warning", "The selected data does not have a spectrometer type.")
-        #     return
+        try:
+            type = self.wrapper.get_attributes(self.treeview_selected)['SPECTROMETER.Type']
+            type = type.replace(" ", "_")
+            type = type.replace("-", "_")
+        except KeyError:
+            qtw.QMessageBox.warning(self, "Warning", "The selected data does not have a spectrometer type.")
+            return
 
-        # # Check if the conversion can be performed
-        # function_name = f"check_conversion_{type}"
-        # functions = [func for func in getmembers(conversion_PSD, isfunction)]
-        # not_found = True
-        # for (name, func) in functions:
-        #     if name == function_name:
-        #         if func(self.wrapper, self.treeview_selected):
-        #             conversion = True
-        #             not_found = False
-        #         else:
-        #             conversion = False
-        #             not_found = False
+        # Check if the conversion can be performed
+        function_name = f"check_conversion_{type}"
+        functions = [func for func in getmembers(conversion_PSD, isfunction)]
+        not_found = True
+        for (name, func) in functions:
+            if name == function_name:
+                if func(self.wrapper, self.treeview_selected):
+                    conversion = True
+                    not_found = False
+                else:
+                    conversion = False
+                    not_found = False
         
-        # if not_found:
-        #     qtw.QMessageBox.warning(self, "Warning", "The type of spectrometer is not recognized")
-        #     return
+        if not_found:
+            qtw.QMessageBox.warning(self, "Warning", "The type of spectrometer is not recognized")
+            return
             
-        # # If conversion can be performed, perform it
-        # if conversion:
-        #     qtw.QMessageBox.information(self, "Not implemented", "Conversion can be performed")
-        # # If not, then execute the function from conversion_ui associated with the type of the data
-        # else:
-        #     function_name = f"conversion_{type}"
-        #     functions = [func for func in getmembers(conversion_ui, isfunction)]
-        #     for (name, func) in functions:
-        #         if name == function_name:
-        #             func(self, self.wrapper, self.treeview_selected)
+        # If conversion can be performed, perform it
+        if conversion:
+            qtw.QMessageBox.information(self, "Not implemented", "Conversion can be performed")
+        # If not, then execute the function from conversion_ui associated with the type of the data
+        else:
+            function_name = f"conversion_{type}"
+            functions = [func for func in getmembers(conversion_ui, isfunction)]
+            for (name, func) in functions:
+                if name == function_name:
+                    func(self, self.wrapper, self.treeview_selected)
         
-        # self.update_treeview()
-        # self.expand_treeview_path(self.treeview_selected)
+        self.update_treeview()
+        self.expand_treeview_path(self.treeview_selected)
+
+    def get_treatment(self):
+        """
+        Treats all the PSD of the selected data.
+        """
+        # Verifies that in the Measure group selected, a PSD is stored
+        parent = self.treeview_selected
+        while self.wrapper.get_type(path = parent, return_Brillouin_type = True) != "Measure":
+            parent = "/".join(parent.split("/")[:-1])
+        no_PSD = True
+        for e in self.wrapper.get_children_elements(path = parent):
+            if self.wrapper.get_type(path = f"{parent}/{e}", return_Brillouin_type = True) == "PSD":
+                no_PSD = False
+        if no_PSD:
+            qtw.QMessageBox.warning(self, "Warning", "No PSD has been stored in the selected group")
+        
+        # Opens the treatment GUI
+        treatment = TreatWindow(self)
+        treatment.exec_()
 
     def handle_error_save(self):
         """Function that handles the error when trying to close the wrapper without saving it.
@@ -797,6 +829,50 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         elif dialog == qtw.QMessageBox.Cancel:
             return False
         return True
+
+    def merge_group_dataset(self):
+        """
+        Merge all the datasets of a group into a single dataset
+
+        Returns
+        -------
+        None
+        """
+        def get_all_brillouin_types(path, brillouin_types = []):
+            for e in self.wrapper.get_children_elements(path = path):
+                if self.wrapper.get_type(path = f"{path}/{e}") == h5py._hl.group.Group:
+                    get_all_brillouin_types(path = f"{path}/{e}", brillouin_types = brillouin_types)
+                else:
+                    tpe = self.wrapper.get_type(path = f"{path}/{e}", return_Brillouin_type = True)
+                    if tpe not in brillouin_types:
+                        brillouin_types.append(tpe)
+            return brillouin_types
+
+        def get_all_datasets(path, type_dset = None, datasets = []):
+            for e in self.wrapper.get_children_elements(path = path):
+                if self.wrapper.get_type(path = f"{path}/{e}") == h5py._hl.dataset.Dataset:
+                    if self.wrapper.get_type(path = f"{path}/{e}", return_Brillouin_type = True) == type_dset:
+                        datasets.append(f"{path}/{e}")
+                else:
+                    datasets = get_all_datasets(path = f"{path}/{e}", type_dset = type_dset, datasets = datasets)
+            return datasets
+
+        # Extract the types of all the datasets under the selected group
+        brillouin_types = get_all_brillouin_types(self.treeview_selected)
+
+        # Asks the user for the type to merge the datasets into
+        dialog = ComboboxChoose(text = "Choose the type to merge the datasets into", list_choices = brillouin_types, parent = self)
+        if dialog.exec_() == qtw.QDialog.Accepted:
+            brillouin_type = dialog.get_selected_structure()
+        else:
+            return
+        
+        # Extract a list of all the datasets under the selected groups with the correct type.
+        datasets = get_all_datasets(self.treeview_selected, type_dset = brillouin_type)
+
+        self.wrapper.combine_datasets(datasets = datasets, parent_group = self.treeview_selected, name = brillouin_type, overwrite = True)
+        self.update_treeview()
+        self.expand_treeview_path(self.treeview_selected)
 
     def new_hdf5(self):
         """
@@ -860,30 +936,6 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         Opens the GUI to visualize the parameters of the selected data.
         """
         qtw.QMessageBox.information(self, "Not implemented", "To do")
-
-    def perform_treatment(self):
-        """
-        Treats all the PSD of the selected data.
-        """
-        elt = self.wrapper
-        for e in self.treeview_selected.split("/")[1:]: elt = elt.data[e]
-        type = self.wrapper.get_attributes_path(self.treeview_selected)['SPECTROMETER.Type']
-        type = type.replace(" ", "_")
-        type = type.replace("-", "_")
-            
-        # Runs the dedicated treatment function from the treat_ui module
-        function_name = f"treat_{type}"
-        functions = [func for func in getmembers(treat_ui, isfunction)]
-        
-        for (name, func) in functions:
-            if name == function_name:
-                func(self, self.wrapper, self.treeview_selected)
-
-                self.update_treeview()
-                self.expand_treeview_path(self.treeview_selected)
-                return
-
-        qtw.QMessageBox.warning(self, "Warning", "The type of spectrometer is not recognized. Please make sure that the 'SPECTROMETER.Type' attribute is correctly defined.")
 
     def read_table_view(self, table_view):
         """
@@ -957,16 +1009,15 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         -------
         None
         """
-        if self.filepath is None or saveas:
-            self.filepath = qtw.QFileDialog.getSaveFileName(self, "Save File", "", "HDF5 Files (*.h5)")[0]
-            if self.filepath:
-                # We first try to save the file, if the file already exists, then the user is asked if he wants to overwrite it by the system (not done by this code)
-                try:
-                    self.wrapper.save_as_hdf5(self.filepath)
-                # If the user continues despite the system error message, we overwrite the file
-                except WrapperError_Overwrite:
-                    self.wrapper.save_as_hdf5(self.filepath, overwrite = True)
-                self.textBrowser_Log.append(f"<i>{self.filepath}</i> has been saved")
+        self.filepath = qtw.QFileDialog.getSaveFileName(self, "Save File", "", "HDF5 Files (*.h5)")[0]
+        if self.filepath:
+            # We first try to save the file, if the file already exists, then the user is asked if he wants to overwrite it by the system (not done by this code)
+            try:
+                self.wrapper.save_as_hdf5(self.filepath)
+            # If the user continues despite the system error message, we overwrite the file
+            except WrapperError_Overwrite:
+                self.wrapper.save_as_hdf5(self.filepath, overwrite = True)
+            self.textBrowser_Log.append(f"<i>{self.filepath}</i> has been saved")
 
     def show_treeview_context_menu(self, position):
         """
@@ -1101,6 +1152,8 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             menu.addSeparator()
             add_group_action = menu.addAction("Add Group")
             edit_Brillouin_type = menu.addMenu("Edit Type")
+            if self.wrapper.get_type(path=self.treeview_selected, return_Brillouin_type = True) == "Root":
+                merge_group = menu.addAction("Merge Group into Dataset")
             menu.addSeparator()
             get_PSD = menu.addAction("Get Power Spectrum Density")
             perform_treatment = menu.addAction("Treat all Power Spectrum Density")
@@ -1122,10 +1175,12 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             elif action == get_PSD:
                 self.get_PSD()
             elif action == perform_treatment:
-                self.perform_treatment()
+                self.get_treatment()
             elif action == expand:
                 for e in self.wrapper.get_children_elements(path = self.treeview_selected):
                     self.expand_treeview_path(f"{self.treeview_selected}/{e}")
+            elif self.wrapper.get_type(path=self.treeview_selected, return_Brillouin_type = True) == "Root" and action == merge_group:
+                self.merge_group_dataset()
 
     @qtc.Slot()
     def table_view_dragEnterEvent(self, event: qtg.QDragEnterEvent):
@@ -1194,6 +1249,8 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                             return
                         else:
                             self.update_parameters(filepath = url) # Verify that the file is a .csv file
+                    else:
+                        self.update_parameters(filepath = url, delete_child_attributes = True) # Verify that the file is a .csv file
                 else: 
                     qtw.QMessageBox.warning(self, "Warning", "Only .csv, .xlsx or .xls property files can be used")
             event.accept()
@@ -1609,24 +1666,34 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         # Update the tables associated to the measure and spectrometer
         self.model_table_Measure.clear()
         self.model_table_Spectrometer.clear()
+        self.model_table_Other.clear()
         self.model_table_Measure.setHorizontalHeaderLabels(["Parameter", "Value", "Units"])
         self.model_table_Spectrometer.setHorizontalHeaderLabels(["Parameter", "Value", "Units"])
+        self.model_table_Other.setHorizontalHeaderLabels(["Parameter", "Value", "Units"])
 
         for k, v in attr.items():
             try:
-                cat, name = k.split(".")
-                name = name.split("_")
-                if name[-1][0] == "(" and name[-1][-1] == ")": unit = name.pop(-1)[1:-1]
-                else: unit = ""
-                if cat == "MEASURE":
-                    self.model_table_Measure.appendRow([qtg.QStandardItem(" ".join(name)), qtg.QStandardItem(v), qtg.QStandardItem(unit)])
-                elif cat == "SPECTROMETER":
-                    self.model_table_Spectrometer.appendRow([qtg.QStandardItem(" ".join(name)), qtg.QStandardItem(v), qtg.QStandardItem(unit)])
+                if "." in k:
+                    cat, name = k.split(".")
+                    name = name.split("_")
+                    if name[-1][0] == "(" and name[-1][-1] == ")": unit = name.pop(-1)[1:-1]
+                    else: unit = ""
+                    if cat == "MEASURE":
+                        self.model_table_Measure.appendRow([qtg.QStandardItem(" ".join(name)), qtg.QStandardItem(v), qtg.QStandardItem(unit)])
+                    elif cat == "SPECTROMETER":
+                        self.model_table_Spectrometer.appendRow([qtg.QStandardItem(" ".join(name)), qtg.QStandardItem(v), qtg.QStandardItem(unit)])
+                    else:
+                        if len(v)>100: v = v[:100]+"..."
+                        self.model_table_Other.appendRow([qtg.QStandardItem(" ".join(k.split("_"))), qtg.QStandardItem(v), qtg.QStandardItem(unit)])
+                else:
+                    if len(v)>100: v = v[:100]+"..."
+                    self.model_table_Other.appendRow([qtg.QStandardItem(" ".join(k.split("_"))), qtg.QStandardItem(v), qtg.QStandardItem(unit)])
             except:
                 pass
         
         self.tableView_Measure.setModel(self.model_table_Measure)    
         self.tableView_Spectrometer.setModel(self.model_table_Spectrometer)
+        self.tableView_Other.setModel(self.model_table_Other)
 
         self.textBrowser_Log.append(f"Parameters of <b>{self.treeview_selected}</b> have been updated")
 

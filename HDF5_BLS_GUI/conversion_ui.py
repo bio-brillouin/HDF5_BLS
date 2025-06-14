@@ -205,10 +205,84 @@ def conversion_VIPA(parent, wrp, path):
     # wrp = wrapper.Wrapper()
     wrp.add_dictionnary(dic = dic,
                         parent_group = path,
-                        name_group = path)
+                        name_group = path,
+                        overwrite = True)
     wrp.change_brillouin_type(path = f"{path}/{e}", brillouin_type = "PSD")
     parent.update_treeview()
 
+def conversion_Streak_VIPA(parent, wrp, path):
+    """This function allows the user to convert a raw spectrum  from aVIPA spectrometer to a PSD. It opens a dedicated GUI to perform the conversion
+
+    Parameters
+    ----------
+    parent : QtWidgets.QWidget
+        The parent widget of the function.
+    wrp : wrapper.Wrapper
+        The wrapper object leading to the data to be converted.
+    path : str
+        The path to the data to be converted.
+
+    Returns
+    -------
+    None
+    """
+    # Verify that the FSR can be found in the arguments. If not, the frequency axis ca
+    if not "SPECTROMETER.VIPA_FSR_(GHz)" in wrp.get_attributes(path).keys():
+        qtw.QMessageBox.warning(parent, "Warning", "PSD cannot be constructed because the FSR of the VIPA is not defined.")
+        return
+
+    # If the user has chosen a dataset, select the parent group
+    if not wrp.get_type(path = path) == h5py._hl.group.Group:
+        path = "/".join(path.split("/")[:-1])  
+
+    # Check if the chosen gorup is a measure group
+    if not wrp.get_type(path = path, return_Brillouin_type = True) == "Measure":
+        qtw.QMessageBox.information(parent, "Information", "Only measure groups can be analyzed for now.")
+        return
+    
+    # Extract the raw data and the PSD from the wrapper corresponding to the selected curve in the combobox
+    raw_data, PSD = False, False
+    for e in wrp.get_children_elements(path = path):
+        if wrp.get_type(path = f"{path}/{e}", return_Brillouin_type = True) == "Raw_data":
+            y_rd = wrp[f"{path}/{e}"]
+            str_algorithm_rd = None
+            raw_data = True
+        elif wrp.get_type(path = f"{path}/{e}", return_Brillouin_type = True) == "PSD":
+            y_psd = wrp[f"{path}/{e}"]
+            str_algorithm_psd = wrp.get_attributes(path = f"{path}/{e}")["Process_PSD"]
+            PSD = True
+    
+    if raw_data and not PSD:
+        dialog = AnalyzeWindow_VIPA(parent, x = np.arange(y_rd.shape[-1]), y = y_rd)
+    elif PSD and not raw_data:
+        dialog = AnalyzeWindow_VIPA(parent, x = np.arange(y_psd.shape[-1]), y = y_psd, str_algorithm = str_algorithm_psd)
+    else:
+        response = qtw.QMessageBox.question(parent, "Warning", "Do you want to open the previous analysis (Yes) or create a new one (No)?", qtw.QMessageBox.Yes | qtw.QMessageBox.No | qtw.QMessageBox.Cancel)
+        if response == qtw.QMessageBox.No:
+            dialog = AnalyzeWindow_VIPA(parent, x = np.arange(y_psd.shape[-1]), y = y_psd, str_algorithm = str_algorithm_psd)
+        elif response == qtw.QMessageBox.Yes:
+            dialog = AnalyzeWindow_VIPA(parent, x = np.arange(y_rd.shape[-1]), y = y_rd)
+        else:
+            return
+        
+    dialog.exec_()
+    if dialog.result() == qtw.QDialog.Accepted:
+        process, frequency = dialog.get_results()
+        dialog.close()
+    else: 
+        dialog.close()
+        return
+
+    dic = {"Frequency": {"Name": "Frequency",
+                            "Data": frequency},
+            "Attributes": {"Process_PSD": process}}
+    # wrp = wrapper.Wrapper()
+    wrp.add_dictionnary(dic = dic,
+                        parent_group = path,
+                        name_group = path,
+                        overwrite = True)
+    wrp.change_brillouin_type(path = f"{path}/{e}", brillouin_type = "PSD")
+    parent.update_treeview()
 
     
 

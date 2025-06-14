@@ -22,7 +22,7 @@ class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(743, 312)
+        Form.resize(509, 382)
         self.gridLayout = QGridLayout(Form)
         self.gridLayout.setObjectName(u"gridLayout")
         self.l_main = QLabel(Form)
@@ -32,6 +32,7 @@ class Ui_Form(object):
 
         self.text_docstring = QTextBrowser(Form)
         self.text_docstring.setObjectName(u"text_docstring")
+        self.text_docstring.setMinimumSize(QSize(485, 300))
 
         self.gridLayout.addWidget(self.text_docstring, 1, 0, 1, 1)
 
@@ -47,7 +48,7 @@ class Ui_Form(object):
     # setupUi
 
     def retranslateUi(self, Form):
-        Form.setWindowTitle(QCoreApplication.translate("Form", u"Form", None))
+        Form.setWindowTitle(QCoreApplication.translate("Form", u"Help window", None))
         self.l_main.setText(QCoreApplication.translate("Form", u"TextLabel", None))
         self.b_close.setText(QCoreApplication.translate("Form", u"Close", None))
     # retranslateUi

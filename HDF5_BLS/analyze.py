@@ -261,7 +261,7 @@ class Analyze:
 
         # Ensures that the step is within the range of the functions list
         if step < 0 or step >= len(self._algorithm["functions"]):
-            raise ValueError(f"The step parameter has to be a positive integersmaller than the number of functions (here {len(self._algorithm['functions'])}).")
+            raise ValueError(f"The step parameter has to be a positive integersmaller than the number of functions (here {len(self._algorithm['functions'])}). The step value given was {step}")
 
         # Sets the _record_algorithm attribute to False to avoid recording the steps in the _algorithm attributes when running the __getattribute__ function
         self._record_algorithm = False
@@ -329,10 +329,31 @@ class Analyze:
         save_parameters : bool, optional
             Whether to save the parameters of the functions. Default is False.
         """
+    
+
+
+
         # Creates a local dictionnary to store the algorithm to save. This allows to reinitiate the parameters if needed.
         algorithm_loc = {}
 
         # Then go through the keys of the algorithm
+        # for k in self._algorithm.keys():
+        #     # In particular for functions, if we don't want to save the parameters, we reinitiate them to empty lists or dictionaries
+        #     if k == "functions":
+        #         algorithm_loc[k] = []
+        #         for f in self._algorithm[k]:
+        #             algorithm_loc[k].append({})
+        #             algorithm_loc[k][-1]["function"] = f["function"]
+        #             if not save_parameters:
+        #                 for k_param in f["parameters"].keys():
+        #                     if type(f["parameters"][k_param]) == list:
+        #                         f["parameters"][k_param] = []
+        #                     elif type(f["parameters"][k_param]) == dict:
+        #                         f["parameters"][k_param] = {}
+        #                     else:
+        #                         f["parameters"][k_param] = None
+        #             algorithm_loc[k][-1]["parameters"] = f["parameters"]
+        #             algorithm_loc[k][-1]["description"] = f["description"]
         for k in self._algorithm.keys():
             # In particular for functions, if we don't want to save the parameters, we reinitiate them to empty lists or dictionaries
             if k == "functions":
@@ -341,14 +362,11 @@ class Analyze:
                     algorithm_loc[k].append({})
                     algorithm_loc[k][-1]["function"] = f["function"]
                     if not save_parameters:
-                        for k_param in f["parameters"].keys():
-                            if type(f["parameters"][k_param]) == list:
-                                f["parameters"][k_param] = []
-                            elif type(f["parameters"][k_param]) == dict:
-                                f["parameters"][k_param] = {}
-                            else:
-                                f["parameters"][k_param] = None
-                    algorithm_loc[k][-1]["parameters"] = f["parameters"]
+                        sgn = inspect.signature(f["function"])
+                        for k, v in sgn.parameters.items():
+                            if k != "self":
+                                f["parameters"][k] = v.default
+                    algorithm_loc[k][-1]["parameters"] = f["parameters"].copy()
                     algorithm_loc[k][-1]["description"] = f["description"]
             # Otherwise we just copy the value of the key
             else:
@@ -453,7 +471,7 @@ class Analyze_VIPA(Analyze_general):
         } 
         self._history = []
 
-    def add_point(self, position_center_window: float = None, window_width: float = None, type_pnt: str = None):
+    def add_point(self, position_center_window: float = 0, window_width: float = 0, type_pnt: str = "Elastic"):
         """
         Adds a single point to the list of points together with a window to the list of windows with its type. Each point is an intensity extremum obtained by fitting a quadratic polynomial to the windowed data.
         The point is given as a value on the x axis (not a position).
@@ -470,12 +488,12 @@ class Analyze_VIPA(Analyze_general):
         """
 
         # Base case: if any of the parameters is None, return
-        if position_center_window is None or window_width is None or type_pnt is None:
+        if window_width == 0:
             return
 
         # Check that the type of the point is correct
         if type_pnt not in ["Stokes", "Anti-Stokes", "Elastic"]:
-            raise ValueError("The type of the point must be one of the following: 'Stokes', 'Anti-Stokes' or 'Elastic'")
+            raise ValueError(f"The type of the point must be one of the following: 'Stokes', 'Anti-Stokes' or 'Elastic'. Here the value given was '{type_pnt}'")
 
         # Check that the window is in the range of the data
         window = [position_center_window-window_width/2, position_center_window+window_width/2]
@@ -729,6 +747,7 @@ class Analyze_VIPA(Analyze_general):
 
         # Return the x axis if the user wants to use it
         return self.x
+
 
 # Example Usage
 if __name__ == "__main__":

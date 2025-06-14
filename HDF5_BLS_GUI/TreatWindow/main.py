@@ -10,10 +10,8 @@ import numpy as np
 
 from AnalyzeWindow.UI.analyze_window_ui import Ui_Dialog
 from ComboboxChoose.main import ComboboxChoose
-from HelpFunction.main import HelpFunction
-from AlgorithmCreator.main import AlgorithmCreator
 
-from HDF5_BLS import wrapper, analyze
+from HDF5_BLS import wrapper, treat
 import numpy as np
 import json
 import graphviz
@@ -24,9 +22,9 @@ class MplCanvas(FigureCanvasQTAgg):
         self.axes = fig.add_subplot(111)
         super().__init__(fig)
 
-class AnalyzeWindow(qtw.QDialog, Ui_Dialog):
+class TreatWindow(qtw.QDialog, Ui_Dialog):
     """"
-    This class defines the GUI of the AnalyzeWindow. It is meant to interface the analyze module
+    This class defines the GUI of the TreatWindow. It is meant to interface the analyze module
 
     Methods
     -------
@@ -43,7 +41,7 @@ class AnalyzeWindow(qtw.QDialog, Ui_Dialog):
     graph_toolbar = None
     graph_layout = None
 
-    def __init__(self, parent, x, y):
+    def __init__(self, parent):
         def initialize_graph(self):
             # Initializes the graph
             self.graph_canvas = MplCanvas(self, width=5, height=4, dpi=100)
@@ -57,16 +55,39 @@ class AnalyzeWindow(qtw.QDialog, Ui_Dialog):
             # Set the frame
             self.frame_graph.setLayout(self.graph_layout)
 
+        def get_initial_values():
+            # Get the initial values of the algorithm
+            path = parent.treeview_selected
+            while not parent.wrapper.get_type(path=path, return_Brillouin_type = True) == "Measure":
+                path = "/".join(path.split("/")[:-1])
+            psd, freq = None, None
+            for elt in parent.wrapper.get_children_elements(path = path):
+                if parent.wrapper.get_type(path=f"{path}/{elt}", return_Brillouin_type = True) == "PSD":
+                    psd = parent.wrapper[f"{path}/{elt}"][()]
+                elif parent.wrapper.get_type(path=f"{path}/{elt}", return_Brillouin_type = True) == "Frequency":
+                    freq = parent.wrapper[f"{path}/{elt}"][()]
+            if psd is not None and freq is not None:
+                return treat.Treat(freq, psd)
+            else:
+                raise ValueError("The selected data does not have a PSD and a Frequency.")
+                
         super().__init__(parent)
         self.setupUi(self)
 
         # Initializes the graph
         initialize_graph(self)
 
-        # Inititalizes the function index to 0
+        # Inititalizes the algorithm
+        self.treatment = get_initial_values()
         self.algorithm_function_index = 0
 
-class AnalyzeWindow_VIPA(AnalyzeWindow):
+        
+
+
+
+
+
+class AnalyzeWindow_VIPA(TreatWindow):
     def __init__(self, parent, x, y, str_algorithm = None):
         def initialize_buttons(self):
             # Ensure f_Dimension has a layout
@@ -92,11 +113,6 @@ class AnalyzeWindow_VIPA(AnalyzeWindow):
             self.b_GraphAlgorithm.setEnabled(False)
             # Adding the button to open or create a new algorithm
             self.b_OpenAlgorithm.clicked.connect(self.open_algorithm)
-            # Adding the button to edit the algorithm
-            self.b_AddAfter.clicked.connect(self.add_after)
-            self.b_AddBefore.clicked.connect(self.add_before)
-            self.b_DeleteStep.clicked.connect(self.delete_step)
-            self.b_Help.clicked.connect(self.help)
             # Adding the button to create a new algorithm
             self.b_NewAlgorithm.clicked.connect(self.new_algorithm)
             # Adding the button to save the algorithm
@@ -106,7 +122,7 @@ class AnalyzeWindow_VIPA(AnalyzeWindow):
             self.b_RunAll.clicked.connect(self.run_all)
             self.b_RunAll.setEnabled(False)
 
-        super().__init__(parent, x, y)
+        super().__init__(parent)
 
         self.analyzer = analyze.Analyze_VIPA(x = x, y = y)
 
@@ -124,25 +140,13 @@ class AnalyzeWindow_VIPA(AnalyzeWindow):
         # Set the algorithm if it is given
         if str_algorithm is not None:
             self.analyzer._algorithm = json.loads(str_algorithm)
-            self.algorithm_function_index = -1
+            self.algorithm_function_index = 0
             self.b_GraphAlgorithm.setEnabled(True)
             self.b_RunAll.setEnabled(True)
             self.b_SaveAlgorithm.setEnabled(True)
             self.update_graph(average=True)
             self.update_treeview()
     
-    def add_after(self):
-        """Adds a function after the current function"""
-        self.add_function(step=self.algorithm_function_index+1)
-        
-    def add_before(self):
-        """Adds a function before the current function"""
-        if self.algorithm_function_index == -1:
-            self.add_function(step=0)
-            self.algorithm_function_index = 0
-        else:
-            self.add_function(step=self.algorithm_function_index)
-
     def add_function(self, step = None):
         """
         Adds a function to the algorithm from the available functions of the class of the analyzer attribute.
@@ -171,11 +175,6 @@ class AnalyzeWindow_VIPA(AnalyzeWindow):
         self.update_treeview()
         self.t_Functions.setCurrentIndex(self.t_Functions.model().index(self.algorithm_function_index+1, 0))
         self.t_Functions.setExpanded(self.t_Functions.model().index(self.algorithm_function_index+1, 0), True)
-
-    def change_title_algorithm(self, name, version):
-        if len(name) > 25:
-            name = name[:25] + "..."
-        self.l_titleAlgorithm.setText(name + " - " + version)
 
     def change_plot_mode(self):
         """
@@ -282,14 +281,6 @@ class AnalyzeWindow_VIPA(AnalyzeWindow):
 
         dot.render("graphical_algorithm", view=True, cleanup=True)
 
-    def delete_step(self):
-        """Deletes the current step"""
-        self.analyzer._remove_step(step=self.algorithm_function_index)
-        self.analyzer._run_algorithm(step=self.algorithm_function_index)
-
-        self.update_treeview()
-        self.update_graph(average=True)
-
     def get_results(self):
         """Returns the result of the analysis (here the x-axis of the data).
 
@@ -300,30 +291,12 @@ class AnalyzeWindow_VIPA(AnalyzeWindow):
         """
         return self.analyzer._return_string_algorithm(), self.analyzer.x
 
-    def help(self):
-        """Displays the help of the current function"""
-        function_name = self.analyzer._algorithm["functions"][self.algorithm_function_index]["function"]
-        docstring = self.analyzer._algorithm["functions"][self.algorithm_function_index]["description"]
-        helpwndw = HelpFunction(self, function_name, docstring = docstring)
-        helpwndw.exec_()
-
     def new_algorithm(self):
         """
         Creates a new algorithm.
         """ 
-        creator = AlgorithmCreator(self, analyze.Analyze_VIPA)
-        creator.exec_()
-        if creator.result() == qtw.QDialog.Accepted:
-            self.analyzer._algorithm = creator.return_algorithm()
-            creator.close()
-            self.change_title_algorithm(self.analyzer._algorithm["name"], self.analyzer._algorithm["version"])
-            self.update_treeview()
-            self.b_SaveAlgorithm.setEnabled(True)
-            self.b_RunAll.setEnabled(True)
-            self.b_GraphAlgorithm.setEnabled(True)
-        else:
-            creator.close()
-            
+        qtw.QMessageBox.information(self, "To do", "Not implemented yet")
+
     def on_treeview_item_clicked(self, item):
         """
         Slot to handle treeview item clicks.
@@ -369,7 +342,7 @@ class AnalyzeWindow_VIPA(AnalyzeWindow):
         self.b_RunAll.setEnabled(True)
 
         # Sets the title of the algorithm
-        self.change_title_algorithm(self.analyzer._algorithm["name"], self.analyzer._algorithm["version"])
+        self.l_titleAlgorithm.setText(self.analyzer._algorithm["name"] + " - " + self.analyzer._algorithm["version"])
 
         # Updates the treeview and the graph
         self.update_treeview()
@@ -466,7 +439,7 @@ class AnalyzeWindow_VIPA(AnalyzeWindow):
                 self.analyzer._run_algorithm(step=self.algorithm_function_index)
 
                 # Update the graph
-                self.update_graph(average=True, keep_lim=True)
+                self.update_graph(average=True)
 
             def change_value(param_name):
                 # Get the new value of the parameter
@@ -480,7 +453,7 @@ class AnalyzeWindow_VIPA(AnalyzeWindow):
                     self.analyzer._run_algorithm(step=self.algorithm_function_index)
 
                     # Update the graph
-                    self.update_graph(average=True, keep_lim=True)
+                    self.update_graph(average=True)
                 except:
                     pass
                     
@@ -613,7 +586,6 @@ class AnalyzeWindow_VIPA(AnalyzeWindow):
         self.t_Functions.setColumnCount(3)
         self.t_Functions.setEditTriggers(qtw.QAbstractItemView.DoubleClicked | qtw.QAbstractItemView.SelectedClicked)
         self.t_Functions.setHeaderLabels(["", "Name", "Value"])
-        self.t_Functions.header().resizeSection(0, 50)
         self.t_Functions.clear()
 
         # Create an empty list of the widgets for each parameter of each function. Each element of the list is a dictionnary with the name of the parameter as key and the widget as value, that corresponds to the parameters of the function at the current step.

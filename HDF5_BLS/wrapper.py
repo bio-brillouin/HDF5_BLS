@@ -83,9 +83,9 @@ class Wrapper:
             item = file[key]
             if isinstance(item, h5py.Dataset):
                 data = item[()]
-                shape = self.get_attributes(path=key)["MEASURE.Sampling_Matrix_Size_(Nx,Ny,Nz)_()"]
-                shape = [int(i) for i in shape.split(",")] + [-1]
                 try:
+                    shape = self.get_attributes(path=key)["MEASURE.Sampling_Matrix_Size_(Nx,Ny,Nz)_()"]
+                    shape = [int(i) for i in shape.split(",")] + [-1]
                     return data.reshape(shape)
                 except:
                     return data
@@ -464,6 +464,46 @@ class Wrapper:
         else:
             raise WrapperError_Save(f"The wrapper has not been saved yet.")
 
+    def combine_datasets(self, datasets, parent_group, name, overwrite = False):
+        """Combines a list of elements into a unique dataset.
+
+        Parameters
+        ----------
+        datasets : list of str
+            The list of paths in the file to the datasets to combine
+        name : str
+            The name of the new dataset
+        overwrite : bool, optional
+            If a dataset with the same name already exists, overwrite it, by default False
+        """
+        # Check if the datasets are in the file
+        for dataset in datasets:
+            if not self.get_type(dataset) == h5py._hl.dataset.Dataset:
+                raise WrapperError_ArgumentType(f"The datasets {dataset} are not in the file.")
+
+        # Check if the name is not already in use
+        if name in self.get_children_elements(path=parent_group):
+            raise WrapperError_Overwrite(f"A dataset with the name '{name}' already exists.")
+        
+        # Checks that the datasets have the same shape
+        shapes = []
+        for dataset in datasets:
+            shape = self[dataset].shape
+            if not shape in shapes:
+                shapes.append(self[dataset].shape)
+        if len(set(shapes)) > 1:
+            raise WrapperError_ArgumentType(f"The datasets have different shapes.")
+    
+        # Create the new dataset
+        tpe = self.get_type(path = datasets[0], return_Brillouin_type = True)
+        new_dataset = [self[dataset][()] for dataset in datasets]
+        new_dataset = np.array(new_dataset)
+        print(new_dataset.shape)
+        dic = {tpe: {"Name": name,
+                     "Data": new_dataset}}
+        
+        self.add_dictionnary(dic, parent_group = parent_group, name_group = parent_group, overwrite = overwrite)
+
     def create_group(self, name, parent_group=None, brillouin_type = "Root", overwrite=False): # Test made
         """Creates a group in the HDF5 file
 
@@ -672,7 +712,6 @@ class Wrapper:
             return list(children)
         else:
             return [e for e in children if self.get_type(path=f"{path}/{e}", return_Brillouin_type=True) == Brillouin_type]
-
 
     def get_special_groups_hierarchy(self, path = None, brillouin_type = None):
         """Get all the groups with desired brillouin type that are hierarchically above a given path.

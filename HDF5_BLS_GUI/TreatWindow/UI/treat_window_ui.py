@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'analyze_window.ui'
+## Form generated from reading UI file 'treat_window.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.2
 ##
@@ -19,7 +19,6 @@ from PySide6.QtWidgets import (QAbstractButton, QApplication, QDialog, QDialogBu
     QFrame, QGridLayout, QHeaderView, QLabel,
     QPushButton, QSizePolicy, QTreeWidget, QTreeWidgetItem,
     QWidget)
-import Icons_rc
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
@@ -54,41 +53,10 @@ class Ui_Dialog(object):
         self.f_Functions.setFrameShadow(QFrame.Shadow.Raised)
         self.gridLayout_4 = QGridLayout(self.f_Functions)
         self.gridLayout_4.setObjectName(u"gridLayout_4")
-        self.b_Help = QPushButton(self.f_Functions)
-        self.b_Help.setObjectName(u"b_Help")
-        icon = QIcon()
-        icon.addFile(u":/Buttons/icon/help.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.b_Help.setIcon(icon)
-        self.b_Help.setIconSize(QSize(20, 20))
+        self.b_SaveAlgorithm = QPushButton(self.f_Functions)
+        self.b_SaveAlgorithm.setObjectName(u"b_SaveAlgorithm")
 
-        self.gridLayout_4.addWidget(self.b_Help, 1, 2, 1, 1)
-
-        self.b_AddBefore = QPushButton(self.f_Functions)
-        self.b_AddBefore.setObjectName(u"b_AddBefore")
-        icon1 = QIcon()
-        icon1.addFile(u":/Buttons/icon/add_above.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.b_AddBefore.setIcon(icon1)
-        self.b_AddBefore.setIconSize(QSize(20, 20))
-
-        self.gridLayout_4.addWidget(self.b_AddBefore, 1, 0, 1, 1)
-
-        self.b_AddAfter = QPushButton(self.f_Functions)
-        self.b_AddAfter.setObjectName(u"b_AddAfter")
-        icon2 = QIcon()
-        icon2.addFile(u":/Buttons/icon/add_below.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.b_AddAfter.setIcon(icon2)
-        self.b_AddAfter.setIconSize(QSize(20, 20))
-
-        self.gridLayout_4.addWidget(self.b_AddAfter, 1, 1, 1, 1)
-
-        self.b_DeleteStep = QPushButton(self.f_Functions)
-        self.b_DeleteStep.setObjectName(u"b_DeleteStep")
-        icon3 = QIcon()
-        icon3.addFile(u":/Buttons/icon/bin.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.b_DeleteStep.setIcon(icon3)
-        self.b_DeleteStep.setIconSize(QSize(20, 20))
-
-        self.gridLayout_4.addWidget(self.b_DeleteStep, 1, 3, 1, 1)
+        self.gridLayout_4.addWidget(self.b_SaveAlgorithm, 1, 0, 1, 1)
 
         self.t_Functions = QTreeWidget(self.f_Functions)
         __qtreewidgetitem = QTreeWidgetItem()
@@ -96,17 +64,12 @@ class Ui_Dialog(object):
         self.t_Functions.setHeaderItem(__qtreewidgetitem)
         self.t_Functions.setObjectName(u"t_Functions")
 
-        self.gridLayout_4.addWidget(self.t_Functions, 0, 0, 1, 4)
+        self.gridLayout_4.addWidget(self.t_Functions, 0, 0, 1, 2)
 
         self.b_RunAll = QPushButton(self.f_Functions)
         self.b_RunAll.setObjectName(u"b_RunAll")
 
-        self.gridLayout_4.addWidget(self.b_RunAll, 2, 2, 1, 2)
-
-        self.b_SaveAlgorithm = QPushButton(self.f_Functions)
-        self.b_SaveAlgorithm.setObjectName(u"b_SaveAlgorithm")
-
-        self.gridLayout_4.addWidget(self.b_SaveAlgorithm, 2, 0, 1, 2)
+        self.gridLayout_4.addWidget(self.b_RunAll, 1, 1, 1, 1)
 
 
         self.gridLayout_3.addWidget(self.f_Functions, 3, 0, 1, 2)
@@ -176,15 +139,11 @@ class Ui_Dialog(object):
     # setupUi
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(QCoreApplication.translate("Dialog", u"Analyze window", None))
+        Dialog.setWindowTitle(QCoreApplication.translate("Dialog", u"Treat window", None))
         self.b_OpenAlgorithm.setText(QCoreApplication.translate("Dialog", u"Open Algorithm", None))
         self.l_titleAlgorithm.setText(QCoreApplication.translate("Dialog", u"Blank algorithm", None))
-        self.b_Help.setText("")
-        self.b_AddBefore.setText("")
-        self.b_AddAfter.setText("")
-        self.b_DeleteStep.setText("")
-        self.b_RunAll.setText(QCoreApplication.translate("Dialog", u"Run all", None))
         self.b_SaveAlgorithm.setText(QCoreApplication.translate("Dialog", u"Save Algorithm", None))
+        self.b_RunAll.setText(QCoreApplication.translate("Dialog", u"Run all", None))
         self.b_GraphAlgorithm.setText(QCoreApplication.translate("Dialog", u"Display Algorithm Graph", None))
         self.b_NewAlgorithm.setText(QCoreApplication.translate("Dialog", u"New Algorithm", None))
         self.b_Sum.setText(QCoreApplication.translate("Dialog", u"Plot average", None))

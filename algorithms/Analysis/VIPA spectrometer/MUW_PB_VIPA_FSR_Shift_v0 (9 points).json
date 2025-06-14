@@ -1,8 +1,8 @@
 {
-    "name": "Test 9",
-    "version": "",
-    "author": "",
-    "description": "",
+    "name": "Quadratic interpolation frequency axis 3 orders VIPA (9 pts)",
+    "version": "v1.0",
+    "author": "Pierre Bouvet",
+    "description": "This algorithm allows the user to select 9 points (3 elastic, 6 inelastic) and creates a frequency axis that maximizes the equality between frequency shifts.",
     "functions": [
         {
             "function": "add_point",
@@ -11,7 +11,7 @@
                 "window_width": null,
                 "type_pnt": null
             },
-            "description": "\nAdds a single point to the list of points together with a window to the list of windows with its type. Each point is an intensity extremum obtained by fitting a quadratic polynomial to the windowed data.\nThe point is given as a value on the x axis (not a position).\nThe \"position_center_window\" parameter is the center of the window surrounding the peak. The \"window_width\" parameter is the width of the window surrounding the peak (full width). The \"type_pnt\" parameter is the type of the peak. It can be either \"Stokes\", \"Anti-Stokes\" or \"Elastic\".\n\nParameters\n----------\nposition_center_window : float\n    A value on the self.x axis corresponding to the center of a window surrounding a peak\nwindow : float\n    A value on the self.x axis corresponding to the width of a window surrounding a peak\ntype_pnt : str\n    The nature of the peak. Must be one of the following: \"Stokes\", \"Anti-Stokes\" or \"Elastic\"\n"
+            "description": "See previous run"
         },
         {
             "function": "add_point",

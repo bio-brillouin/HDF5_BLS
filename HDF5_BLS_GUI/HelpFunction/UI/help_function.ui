@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>743</width>
-    <height>312</height>
+    <width>509</width>
+    <height>382</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Help window</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
@@ -22,7 +22,14 @@
     </widget>
    </item>
    <item row="1" column="0">
-    <widget class="QTextBrowser" name="text_docstring"/>
+    <widget class="QTextBrowser" name="text_docstring">
+     <property name="minimumSize">
+      <size>
+       <width>485</width>
+       <height>300</height>
+      </size>
+     </property>
+    </widget>
    </item>
    <item row="2" column="0">
     <widget class="QPushButton" name="b_close">

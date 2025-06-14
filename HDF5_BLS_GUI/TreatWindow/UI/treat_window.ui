@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Analyze window</string>
+   <string>Treat window</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="1">
@@ -54,75 +54,14 @@
          <enum>QFrame::Shadow::Raised</enum>
         </property>
         <layout class="QGridLayout" name="gridLayout_4">
-         <item row="1" column="2">
-          <widget class="QPushButton" name="b_Help">
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="../../Icons.qrc">
-             <normaloff>:/Buttons/icon/help.png</normaloff>:/Buttons/icon/help.png</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>20</width>
-             <height>20</height>
-            </size>
-           </property>
-          </widget>
-         </item>
          <item row="1" column="0">
-          <widget class="QPushButton" name="b_AddBefore">
+          <widget class="QPushButton" name="b_SaveAlgorithm">
            <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="../../Icons.qrc">
-             <normaloff>:/Buttons/icon/add_above.png</normaloff>:/Buttons/icon/add_above.png</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>20</width>
-             <height>20</height>
-            </size>
+            <string>Save Algorithm</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
-          <widget class="QPushButton" name="b_AddAfter">
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="../../Icons.qrc">
-             <normaloff>:/Buttons/icon/add_below.png</normaloff>:/Buttons/icon/add_below.png</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>20</width>
-             <height>20</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="3">
-          <widget class="QPushButton" name="b_DeleteStep">
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="../../Icons.qrc">
-             <normaloff>:/Buttons/icon/bin.png</normaloff>:/Buttons/icon/bin.png</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>20</width>
-             <height>20</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0" colspan="4">
+         <item row="0" column="0" colspan="2">
           <widget class="QTreeWidget" name="t_Functions">
            <column>
             <property name="text">
@@ -131,17 +70,10 @@
            </column>
           </widget>
          </item>
-         <item row="2" column="2" colspan="2">
+         <item row="1" column="1">
           <widget class="QPushButton" name="b_RunAll">
            <property name="text">
             <string>Run all</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0" colspan="2">
-          <widget class="QPushButton" name="b_SaveAlgorithm">
-           <property name="text">
-            <string>Save Algorithm</string>
            </property>
           </widget>
          </item>
@@ -232,9 +164,7 @@
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="../../Icons.qrc"/>
- </resources>
+ <resources/>
  <connections>
   <connection>
    <sender>buttonBox</sender>
