@@ -1,0 +1,33 @@
+The treatment of the data consist in extracting the relevant information from an already obtained Power Spectral Density and a frequency vector. This information is then used to perform the analysis. The treatment module works similarly to the analysis module: a series of functions are defined and an algorithm is created with these functions and then applied to the data. Additionally, the treatment module also contains functions to identify outliers and errors. 
+
+The general treatment approach on which the module is based is the following:
+\begin{center}
+    \begin{tikzpicture}[node distance=15mm]
+
+        \node (start) [startstop, align = center] {Select peak positions and windows around the peaks\\ on the average PSD(frequency) of the measure};
+        \node (refine) [process, below of=start] {Refine peak positions};
+        \node (model) [process, below of=refine] {Define the model to fit the data};
+        \node (initial_guess) [process, below of=model] {Estimate initial guess for the fitting parameters};
+        \node (treat) [process, below of=initial_guess, align = center, xshift = -25mm] {Fit the data with the model\\ and the initial guess};
+        \node (treat_outliers) [process, right of=treat, align = center, xshift = 5cm] {Fit the data with the model\\ and the corrected initial guess};
+        \node (outliers) [process, below of=treat, align = center] {Identify outliers and errors\\ in the fit};
+        \node (adjust) [process, below of=outliers, align=center] {Adjust the initial guesses or windows};
+        \node (end) [startstop, below of=adjust] {Combine and return the results};
+
+        \draw [arrow] (start) -- (refine);
+        \draw [arrow] (refine) -- (model);
+        \draw [arrow] (model) -- (initial_guess);
+        \draw [arrow] (initial_guess) -- (treat);
+        \draw [arrow] (treat) -- (outliers);
+        \draw [arrow] (outliers) -- (adjust);
+        \draw [arrow] (adjust.east) -| (treat_outliers.south);
+        \draw [arrow] ++(treat_outliers.west) -| +(-1cm, 0cm) |- (outliers.east);
+        \draw [arrow] (adjust) -- (end);
+
+    \end{tikzpicture}
+\end{center}
+
+The goal of the treatment module is then to allow the user to define and apply an algorithm to the data. The treatment module is composed of a series of functions that can be used to define the algorithm. The user can also add his own functions to the module and then use them in the algorithm. The treatment module is designed to be flexible and adaptable to the user's needs.
+
+
+

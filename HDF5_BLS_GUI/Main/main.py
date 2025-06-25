@@ -994,7 +994,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         -------
         None
         """
-        self.wrapper.repack()
+        self.wrapper.repack(force_repack=True)
 
     def save_hdf5(self, saveas=False):
         """
