@@ -893,6 +893,41 @@ class Wrapper:
             # Set the need_for_repack flag to False
             self.need_for_repack = False
 
+    def move_channel_dimension_to_last(self, path, channel_dimension=None):
+        """Moves the channel dimension to the last dimension of the data to comply with the HDF5_BLS convention.
+
+        Parameters
+        ----------
+        channel_dimension : int, optional
+            The dimension of the channel. Default is None, which means the channel dimension is the last dimension.
+        """
+        # Check if the path exists
+        with h5py.File(self.filepath, 'r') as file:
+            if path not in file:
+                raise WrapperError_StructureError(f"The path '{path}' does not exist in the file.")
+        
+        # Check that the path leads to a dataset
+        if not self.get_type(path = path) == h5py._hl.dataset.Dataset:
+            raise WrapperError_ArgumentType(f"The path '{path}' does not lead to a dataset.")
+
+        # Extract the data
+        data = self[path]
+
+        # If nothing has to be done on the data (either no channel dimension or the channel dimension is the last dimension), return
+        if channel_dimension is None or channel_dimension == data.ndim - 1:
+            return 
+        
+        # If the channel dimension is not the last dimension, move it to the last dimension
+        data = np.moveaxis(data, channel_dimension, -1)
+
+        # Replace the dataset, starting by extracting all its attributes, deleting the dataset and creating a new one
+        with h5py.File(self.filepath, 'a') as file:
+            attributes = file[path].attrs
+            del file[path]
+            file.create_dataset(path, data=data)
+            for k, v in attributes.items():
+                file[path].attrs[k] = v
+        
     def save_as_hdf5(self, filepath=None, remove_old_file=True, overwrite = False): # Test made
         """Saves the data and attributes to an HDF5 file. In practice, moves the temporary hdf5 file to a new location and removes the old file if specified.
     
