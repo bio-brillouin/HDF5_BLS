@@ -138,7 +138,7 @@ class Models():
         func = ae*nu + self.DHO(nu, be, a, nu0, gamma)
         if IR is not None: return np.convolve(func, IR, "same")
         return func
- 
+  
 class Treat_backend:
     """This class is the base class for all the treat classes. Its purpose is to provide the basic silent functions to open, create and save algorithms, and to store the different steps of the treatment and their effects on the data.
     The philosophy of this class is to rely on 2 fixed attributes:
@@ -148,12 +148,10 @@ class Treat_backend:
     - shift: the shift array obtained after the treatment
     - shift_var: the array of standard deviation of the shift array obtained after the treatment
     - linewidth: the linewidth array obtained after the treatment
+    - linewidth_var: the array of standard deviation of the linewidth array obtained after the treatment
     - amplitude: the amplitude array obtained after the treatment
-    This treatment is performed on the whole PSD array using the following attributes:
-    - shift_ini: the list of initial guesses for the shift on which to perform the treatment
-    - linewidth_ini: the list of initial guesses for the linewidth on which to perform the treatment
-    - window_peak_find: the list of windows around the peak on which the treatment is performed
-    
+    - amplitude_var: the array of standard deviation of the amplitude array obtained after the treatment
+
     The treatment itself is stored in the _algorithm attribute and each change to a classe's attribute is stored in the _history attribute:
     - _algorithm: a dictionary that stores the name of the algorithm, its version, the author, and a description
     - _record_algorithm: a boolean that indicates whether the algorithm should be recorded or not while running the functions of the class
@@ -164,13 +162,13 @@ class Treat_backend:
     Additionally, the class uses sub-attributes to test the treatment on particular spectra. These sub-attributes are:
     - frequency_sample: A 1-D sampled frequency array
     - PSD_sample: A 1-D sampled PSD array
-    - selected_sample : the index of the selected element in the PSD array
-    - shift_sample: A list of shift values obtained on the sampled PSD array
-    - linewidth_sample: A list of linewidth values obtained on the sampled PSD array
-    - amplitude_sample: A list of amplitude values obtained on the sampled PSD array    
-    - shift_ini_sample: A list of shift values obtained on the sampled PSD array
-    - linewidth_ini_sample: A list of linewidth values obtained on the sampled PSD array
-    - amplitude_ini_sample: A list of amplitude values obtained on the sampled PSD array  
+    - offset_sample: A list of offset values obtained on the sampled PSD array (size of lists corresponds to number of peaks analyzed)
+    - shift_sample: A list of shift values obtained on the sampled PSD array(size of lists corresponds to number of peaks analyzed)
+    - shift_std_sample: A list of the standard deviation on the shift values obtained on the sampled PSD array(size of lists corresponds to number of peaks analyzed)
+    - linewidth_sample: A list of linewidth values obtained on the sampled PSD array(size of lists corresponds to number of peaks analyzed)
+    - linewidth_std_sample: A list of the standard deviation on the linewidth values obtained on the sampled PSD array(size of lists corresponds to number of peaks analyzed)
+    - amplitude_sample: A list of amplitude values obtained on the sampled PSD array  (size of lists corresponds to number of peaks analyzed)  
+    - amplitude_std_sample: A list of the standard deviation on the amplitude values obtained on the sampled PSD array(size of lists corresponds to number of peaks analyzed)
     For treating these samples, the class offers an argument to store the steps of the treatment. This is stored in the _history attribute.
     - _history: a list that stores the evolution of the attributes 
     
@@ -180,51 +178,6 @@ class Treat_backend:
         - sampled: the sampled PSD arrays are treated
         - errors: the error points are treated
     Note that the _history attribute is implemented only if _treat_selection is set to "sampled".
-
-    Parameters
-    ----------
-    frequency : np.ndarray
-        The array of frequency axis corresponding to the PSD
-    PSD : np.ndarray
-        The array of power spectral density to be treated
-    shift : np.ndarray
-        The shift array obtained after the treatment
-    linewidth : np.ndarray
-        The linewidth array obtained after the treatment
-    amplitude : np.ndarray
-        The amplitude array obtained after the treatment
-    shift_var : np.ndarray
-        The array of standard deviation of the shift array obtained after the treatment
-    linewidth_var : np.ndarray
-        The array of standard deviation of the linewidth array obtained after the treatment
-    amplitude_var : np.ndarray
-        The array of standard deviation of the amplitude array obtained after the treatment
-    point_errors : list
-        The list of points that are not well fitted
-    shift_ini : list
-        The list of initial guesses for the shift on which to perform the treatment
-    linewidth_ini : list
-        The list of initial guesses for the linewidth on which to perform the treatment
-    window_peak_find : list
-        The list of windows around the peak on which the treatment is performed
-    _algorithm : dict
-        The algorithm used to analyze the data.
-    frequency_sample : np.ndarray
-        The array of frequency axis corresponding to the PSD
-    PSD_sample : np.ndarray
-        The array of power spectral density to be treated
-    shift_sample : list
-        A list of shift values obtained on the sampled PSD array
-    linewidth_sample : list
-        A list of linewidth values obtained on the sampled PSD array
-    amplitude_sample : list
-        A list of amplitude values obtained on the sampled PSD array    
-    shift_ini_sample : list
-        A list of shift values obtained on the sampled PSD array
-    linewidth_ini_sample : list
-        A list of linewidth values obtained on the sampled PSD array
-    amplitude_ini_sample : list
-        A list of amplitude values obtained on the sampled PSD array    
     """
     _record_algorithm = True # This attribute is used to record the steps of the analysis
 
@@ -241,7 +194,13 @@ class Treat_backend:
             The tuple leading to the 1-D array to use as frequency axis. By default, the first dimension of the frequency is used.
         """
         # Initialize the algorithm and history
-        self._algorithm = {}
+        self._algorithm = {
+            "name": "Algorithm",
+            "version": "v0",
+            "author": "No author",
+            "description": "No description",
+            "functions": []
+        } 
         self._history = []
 
         # Initializing main attributes
@@ -377,7 +336,7 @@ class Treat_backend:
         self.points = []    
         self.windows = []
 
-    def _create_algorithm(self, algorithm_name: str ="Unnamed Algorithm", version: str ="0.1", author: str = "Unknown", description: str = ""):
+    def _create_algorithm(self, algorithm_name: str ="Unnamed Algorithm", version: str ="0.1", author: str = "Unknown", description: str = "", new_algorithm = False):
         """Creates a new JSON algorithm with the given name, version, author and description. This algorithm is stored in the _algorithm attribute. This function also creates an empty history. for the software.
 
         Parameters
@@ -391,14 +350,16 @@ class Treat_backend:
         description : str, optional
             The description of the algorithm, by default ""
         """
+        if new_algorithm:
+            self._algorithm["functions"] = []
+            self._history = []
         self._algorithm = {
             "name": algorithm_name,
             "version": version,
             "author": author,
             "description": description,
-            "functions": []
+            "functions": self._algorithm["functions"]
         } 
-        self._history = []
 
     def _move_step(self, step: int, new_step: int):
         """Moves a step from one position to another in the _algorithm attribute. Deletes the elements of the _history attribute that are after the moved step (included)
@@ -630,7 +591,7 @@ class Treat(Treat_backend):
             "functions": []
         } 
 
-    # Functions that need direct access to the data
+    # Point and window definition
 
     def add_point(self, position_center_window: float = None, window_width: float = None, type_pnt: str = "Other"):
         """
@@ -642,8 +603,8 @@ class Treat(Treat_backend):
         ----------
         position_center_window : float
             A value on the self.x axis corresponding to the center of a window surrounding a peak
-        window : float
-            A value on the self.x axis corresponding to the width of a window surrounding a peak
+        window_width : float or 2-tuple of float
+            A value on the self.x axis corresponding to the width of a window surrounding a peak. If a tuple is given, the first element is the lower bound of the window and the second element is the upper bound given in absolute value from center point.
         type_pnt : str
             The nature of the peak. Must be one of the following: "Other","Stokes", "Anti-Stokes" or "Elastic"
         """
@@ -661,8 +622,12 @@ class Treat(Treat_backend):
             wndw_x = frequency[pos] 
             wndw_y = PSD[pos]
 
+            # select the window of 10 points around the peak
+            pos_peak0 = np.argmax(wndw_y)
+            loc_wndw = np.arange(max(0, pos_peak0-5), min(len(wndw_y), pos_peak0+5))
+
             # Fit a quadratic polynomial to the windowed data and returns the local extremum
-            params = np.polyfit(wndw_x, wndw_y, 2)
+            params = np.polyfit(wndw_x[loc_wndw], wndw_y[loc_wndw], 2)
             new_x = -params[1]/(2*params[0])
 
             return new_x
@@ -676,9 +641,14 @@ class Treat(Treat_backend):
             raise ValueError("The type of the point must be one of the following: 'Stokes', 'Anti-Stokes' or 'Elastic'")
 
         # Check that the window is in the range of the data
-        window = [position_center_window-window_width/2, position_center_window+window_width/2]
-        if window[1]<self.frequency_sample[0] or window[0]>self.frequency_sample[-1]:
-            raise ValueError(f"The window {window} is out of the range of the data")
+        if type(window_width) in [float, int]:
+            window = [position_center_window-window_width/2, position_center_window+window_width/2]
+            if window[1]<self.frequency_sample[0] or window[0]>self.frequency_sample[-1]:
+                raise ValueError(f"The window {window} is out of the range of the data")
+        else:
+            window = [position_center_window - window_width[0]/2, position_center_window + window_width[1]/2]
+            if window[1]<self.frequency_sample[0] or window[0]>self.frequency_sample[-1]:
+                raise ValueError(f"The window {window} is out of the range of the data")
 
         # Ensure that the window is within the range of the data
         window[0] = max(self.frequency_sample[0], window[0])
@@ -788,6 +758,70 @@ class Treat(Treat_backend):
 
         return self.PSD_sample
    
+    # Estimation functions
+
+    def estimate_width_inelastic_peaks(self, max_width_guess : float = 2):
+        """
+        Estimates the full width at half maximum of the inelastic peaks stored in self.points. Note that the data is supposed to have a zero offset. The estimation is done by finding the samples of the data closes to half of the peak height.
+
+        Parameters
+        ----------
+        max_width_guess : float, optional
+            The higher limit to the estimation of the full width. Default is 2 GHz.
+        """
+        # Initiate the width estimator
+        self.width_estimator = []
+
+        # Extract the points corresponding either to Stokes or Anti-Stokes peaks
+        for i in range(len(self.points)):
+            if self.points[i][0].split("_")[0] in ["Anti-Stokes", "Stokes"]:
+                p = self.points[i][1]
+    
+                # Extract the peak position
+                pos_peak = np.argmin(np.abs(self.frequency_sample - p))
+
+                # Guess the width of the peak by finding the points at half the height
+                pos_half = pos_peak
+                while pos_half>0:
+                    if self.PSD_sample[pos_half] > self.PSD_sample[pos_peak]/2:
+                        pos_half = pos_half-1
+                    else:
+                        break
+                gamma = self.frequency_sample[pos_half]
+
+                pos_half = pos_peak
+                while pos_half<len(self.frequency_sample)-1:
+                    if self.PSD_sample[pos_half] > self.PSD_sample[pos_peak]/2:
+                        pos_half = pos_half+1
+                    else:
+                        break
+                gamma = min(max_width_guess, self.frequency_sample[pos_half] - gamma)
+
+                self.width_estimator.append(gamma)
+            else:
+                self.width_estimator.append(0)
+
+    # Fitting model definition
+
+    def define_model(self, model: str = "Lorentzian", elastic_correction: bool = False):
+        """Defines the model to be used to fit the data.
+
+        Parameters
+        ----------
+        model : str, optional
+            The model to be used. The models should match the names of the attribute "models" of the class Models, by default "Lorentzian"
+        elastic_correction : bool, optional
+            Whether to correct for the presence of an elastic peak by setting adding a linear function to the model, by default False
+        """
+        if elastic_correction:
+            model = model + " elastic"
+
+        # Try selecting the model, raise an error if the model is not found
+        Model = Models()
+        if model not in Model.models.keys():
+            raise ValueError(f"The model {model} is not recognized.")
+        self.fit_model = model
+
     # Algorithm application functions
 
     def apply_algorithm_on_all(self):
@@ -860,6 +894,9 @@ class Treat(Treat_backend):
                 self.point_error_value.append(np.nan)
 
             PSD_i = plus_one(PSD_i, self.PSD.shape[:-1], len(PSD_i)-1)
+        
+        self.BLT = self.linewidth/self.shift
+        self.BLT_var = self.BLT**2 * ((self.shift_var/self.shift)**2 + (self.linewidth_var/self.linewidth)**2)
 
         self._algorithm["functions"].append(temp_algorithm)
 
@@ -978,72 +1015,7 @@ class Treat(Treat_backend):
         self.point_error_value = []
         self._run_algorithm(algorithm = mark_errors)
 
-    # Automatic estimation functions
-
-    def estimate_width_inelastic_peaks(self, max_width_guess : float = 2):
-        """
-        Estimates the full width at half maximum of the inelastic peaks stored in self.points. Note that the data is supposed to have a zero offset. The estimation is done by finding the samples of the data closes to half of the peak height.
-
-        Parameters
-        ----------
-        max_width_guess : float, optional
-            The higher limit to the estimation of the full width. Default is 2 GHz.
-        """
-        # Initiate the width estimator
-        self.width_estimator = []
-
-        # Extract the points corresponding either to Stokes or Anti-Stokes peaks
-        for i in range(len(self.points)):
-            if self.points[i][0].split("_")[0] in ["Anti-Stokes", "Stokes"]:
-                p = self.points[i][1]
-    
-                # Extract the peak position
-                pos_peak = np.argmin(np.abs(self.frequency_sample - p))
-
-                # Guess the width of the peak by finding the points at half the height
-                pos_half = pos_peak
-                while pos_half>0:
-                    if self.PSD_sample[pos_half] > self.PSD_sample[pos_peak]/2:
-                        pos_half = pos_half-1
-                    else:
-                        break
-                gamma = self.frequency_sample[pos_half]
-
-                pos_half = pos_peak
-                while pos_half<len(self.frequency_sample)-1:
-                    if self.PSD_sample[pos_half] > self.PSD_sample[pos_peak]/2:
-                        pos_half = pos_half+1
-                    else:
-                        break
-                gamma = min(max_width_guess, self.frequency_sample[pos_half] - gamma)
-
-                self.width_estimator.append(gamma)
-            else:
-                self.width_estimator.append(0)
-
-    # Model
-
-    def define_model(self, model: str = "Lorentzian", elastic_correction: bool = False):
-        """Defines the model to be used to fit the data.
-
-        Parameters
-        ----------
-        model : str, optional
-            The model to be used. The models should match the names of the attribute "models" of the class Models, by default "Lorentzian"
-        elastic_correction : bool, optional
-            Whether to correct for the presence of an elastic peak by setting adding a linear function to the model, by default False
-        """
-        if elastic_correction:
-            model = model + " elastic"
-
-        # Try selecting the model, raise an error if the model is not found
-        Model = Models()
-        try:
-            self.fit_model = model
-        except:
-            raise ValueError(f"The model {model} is not recognized.")
-
-    # Fit functions
+    # Fitting functions
 
     def single_fit_all_inelastic(self, default_width: float = 1, guess_offset: bool = False, update_point_position: bool = True, bound_shift: list = None, bound_linewidth: list = None):
         """
@@ -1139,7 +1111,7 @@ class Treat(Treat_backend):
         peaks, windows, guess_gamma = extract_point_window_gammaGuess()
         
         # Fit each peak that has been selected
-        for peak, window, gamma in zip(peaks, windows, guess_gamma):
+        for peak, window, gamma, bs, bl in zip(peaks, windows, guess_gamma, bound_shift, bound_linewidth):
             # Extract the peak position and the window around the peak
             pos_peak = np.argmin(np.abs(self.frequency_sample - peak))
             pos_window = np.where((self.frequency_sample >= window[0]) & (self.frequency_sample <= window[1]))
@@ -1162,11 +1134,11 @@ class Treat(Treat_backend):
 
                 # If bounds are provided for the shift or the linewidth , update them accordingly
                 if bound_shift is not None:
-                    bounds[0][2] = bound_shift[0]
-                    bounds[1][2] = bound_shift[1]
+                    bounds[0][2] = bs[0]
+                    bounds[1][2] = bs[1]
                 if bound_linewidth is not None:
-                    bounds[0][3] = bound_linewidth[0]
-                    bounds[1][3] = bound_linewidth[1]
+                    bounds[0][3] = bl[0]
+                    bounds[1][3] = bl[1]
 
                 # Estimate the slope from the first and last points of the window
                 slope_guess = (self.PSD_sample[pos_window[0][-1]] - self.PSD_sample[pos_window[0][0]])/(self.frequency_sample[pos_window[0][-1]] - self.frequency_sample[pos_window[0][0]])
@@ -1187,19 +1159,22 @@ class Treat(Treat_backend):
                                                     ydata = self.PSD_sample[pos_window], 
                                                     p0 = [offset_guess, amplitude_guess, peak, gamma, slope_guess],
                                                     bounds = bounds)
-                except:
+                except Exception as e:
+                    print("\n", e)
+                    print([offset_guess, amplitude_guess, peak, gamma, slope_guess])
+                    print(bounds)
                     error_fit = True
             else:
-                # Define the bounds for the fit (ensure the linewidth is positive)
-                bounds = [[-np.inf, -np.inf, -np.inf, 0], [np.inf, np.inf, np.inf, np.inf]]
+                # Define the bounds for the fit (ensure the linewidth and amplitude are positive)
+                bounds = [[-np.inf, 0, -np.inf, 0], [np.inf, np.inf, np.inf, np.inf]]
 
                 # If bounds are provided for the shift or the linewidth , update them accordingly
                 if bound_shift is not None:
-                    bounds[0][2] = bound_shift[0]
-                    bounds[1][2] = bound_shift[1]
+                    bounds[0][2] = bs[0]
+                    bounds[1][2] = bs[1]
                 if bound_linewidth is not None:
-                    bounds[0][3] = bound_linewidth[0]
-                    bounds[1][3] = bound_linewidth[1]
+                    bounds[0][3] = bl[0]
+                    bounds[1][3] = bl[1]
 
                 error_fit = False
                 try:
@@ -1208,7 +1183,8 @@ class Treat(Treat_backend):
                                                     ydata = self.PSD_sample[pos_window], 
                                                     p0 = [offset_guess, amplitude_guess, peak, gamma],
                                                     bounds = bounds)
-                except:
+                except Exception as e:
+                    print(e)
                     error_fit = True
 
             # If the fit succeeded, update the parameters, if not store np.nan
@@ -1694,12 +1670,15 @@ class Treat(Treat_backend):
             self.shift_var = np.sum(1, axis = -1) / np.sum(1/self.shift_var**2, axis=-1)
         
         else:
-            self.shift = np.average(self.shift, axis=-1)
-            self.linewidth = np.average(self.linewidth, axis=-1)
-            self.amplitude = np.average(self.amplitude, axis=-1)
-            self.linewidth_var = np.average(self.linewidth_var**2, axis = -1)
-            self.amplitude_var = np.average(self.amplitude_var**2, axis = -1)
-            self.shift_var = np.average(self.shift_var**2, axis = -1)
+            self.shift = np.nanmean(self.shift, axis=-1)
+            self.linewidth = np.nanmean(self.linewidth, axis=-1)
+            self.amplitude = np.nanmean(self.amplitude, axis=-1)
+            self.linewidth_var = np.nanmean(self.linewidth_var**2, axis = -1)
+            self.amplitude_var = np.nanmean(self.amplitude_var**2, axis = -1)
+            self.shift_var = np.nanmean(self.shift_var**2, axis = -1)
+        
+        self.BLT = self.linewidth / self.shift 
+        self.BLT_var = self.BLT**2 * ((self.linewidth_var / self.linewidth)**2 + (self.shift_var / self.shift)**2)
 
     # Outliers 
 

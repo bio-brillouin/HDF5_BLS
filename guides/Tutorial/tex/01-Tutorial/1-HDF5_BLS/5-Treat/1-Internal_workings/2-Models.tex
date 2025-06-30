@@ -1,0 +1,97 @@
+The \textit{Models} class is a class that is used to store the analytical models that can be used to fit the data. These can be both fundamental lineshapes (lorentzian, Gaussian, DHO, Voigt, ...) or custom lineshapes for example if a first order Taylor expansion is used to reduce the effect of the elastic peak on the Brillouin scattered peak. 
+
+The class is composed of a series of functions that are used to define the models. These functions are then stored as elements of the \textit{Models.models} dictionnary attribute. The keys of this dictionnary are the names of the models and the values are the functions that define the model. This choice was made to allow the user to easily select a model by simply writing its name. 
+
+Note that all models have by default an "IR" parameter. This parameter is meant to be the lineshape of the response of the instrument. If this parameter is given, then the model is numerically convolved with the IR. This allows the user to essentially deconvolve the response of the instrument during the fitting of the data.
+
+\subsubsection{Signature}
+
+For now we have restricted the models to functions that can describe a peak by a central position, a width and a height. The signature of functions where no elastic peak correction is applied is tehrefore the following:
+\begin{lstlisting}
+def function_name(self, nu, b, a, nu0, gamma, IR = None):
+    ...
+\end{lstlisting}
+
+where:
+\begin{itemize}
+    \item \textit{self} is the class itself
+    \item \textit{nu} is the frequency array
+    \item \textit{b} is the constant offset of the data
+    \item \textit{a} is the amplitude of the peak
+    \item \textit{nu0} is the center position of the function
+    \item \textit{gamma} is the linewidth of the function
+    \item \textit{IR} is the impulse response of the instrument, by default None
+\end{itemize}
+
+The signature of functions where the elastic peak correction is applied by using a first order Taylor expansion is the following:
+\begin{lstlisting}
+def function_name(self, nu, ae, be, a, nu0, gamma, IR = None:
+    ...
+\end{lstlisting}
+
+where:
+\begin{itemize}
+    \item \textit{self} is the class itself
+    \item \textit{nu} is the frequency array
+    \item \textit{ae} is the slope of the first order Taylor expansion of the elastic peak at the position of the peak fitted
+    \item \textit{be} is the constant offset of the data
+    \item \textit{a} is the amplitude of the peak
+    \item \textit{nu0} is the center position of the function
+    \item \textit{gamma} is the linewidth of the function        
+    \item \textit{IR} is the impulse response of the instrument, by default None
+\end{itemize}
+
+To maintain a seemless compatibility with all the models, we ask the user to use the following convention:
+\begin{itemize}
+    \item The parameter \textit{gamma} is always the full width at half maximum of the peak. Make sure that your model is defined in this way.
+    \item The models are normalized to 1. The parameter \textit{a} is therefore the amplitude of the peak.
+    \item The models have no offset. The parameter \textit{b} (or \textit{be} when elastic correction is applied) is therefore the constant offset of the data.
+\end{itemize}
+
+\subsubsection{Adding a new model}
+
+To add a new model, you need to 
+\begin{itemize}
+    \item Create a new function that follows the signature of the functions already present in the class
+    \item Add the function to the \textit{Models.models} dictionnary attribute
+\end{itemize}
+
+For example if you want to add a Gaussian model, you would need to create the following function:
+\begin{lstlisting}
+def gaussian(self, nu, b, a, nu0, gamma, IR = None):
+    ...
+\end{lstlisting}
+
+Then you would need to add the function to the \textit{Models.models} dictionnary attribute:
+\begin{lstlisting}
+Models.models["Gaussian"] = lambda nu, b, a, nu0, gamma, IR=None: self.gaussian(nu, b, a, nu0, gamma, IR)
+\end{lstlisting}
+
+We strongly encourage the user to add a docstring to the function. As for the rest of the library, numpy style docstrings are used to document the functions. The docstrings should be written in the following way:
+
+\begin{lstlisting}
+def function_name(self, nu, b, a, nu0, gamma, IR = None):
+    """
+    Brief description of the function
+
+    Parameters
+    ----------
+    nu : array
+        The frequency array
+    b : float
+        The constant offset of the data
+    a : float
+        The amplitude of the peak
+    nu0 : float
+        The center position of the function
+    gamma : float
+        The linewidth of the function
+    IR : array, optional
+        The impulse response of the instrument, by default None
+
+    Returns
+    -------
+    function
+        The function associated to the given parameters
+    """
+\end{lstlisting}

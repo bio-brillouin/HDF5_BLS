@@ -18,6 +18,9 @@
 \usepackage[table]{xcolor}
 \usepackage{verbatim}
 
+% Define levels of depth
+\setcounter{secnumdepth}{5} % Numbering up to subsection 5
+\setcounter{tocdepth}{3} % Include up to subsection 5 in the table of contents
 
 % Define colors
 \definecolor{grayheavy}{gray}{0.7}
@@ -148,7 +151,7 @@
     \chapter*{Installation and presentation}\addcontentsline{toc}{chapter}{Installation and presentation}
         \input{tex/01-Tutorial/1-HDF5_BLS/0-Installation.tex}
         
-    \chapter{Initialization of the Wrapper object - creating or opening a HDF5 file}
+    \chapter{The Wrapper module}
         \input{tex/01-Tutorial/1-HDF5_BLS/1-Initialization.tex}
 
     \chapter{Adding arrays to the HDF5 file using the Wrapper object}
@@ -160,6 +163,8 @@
     \chapter{Import or combinine HDF5 files using the Wrapper object}
         \input{tex/01-Tutorial/1-HDF5_BLS/4-Merge_combine.tex}
 
+    \chapter{The Treat module}
+        \input{tex/01-Tutorial/1-HDF5_BLS/5-Treat.tex}
 
 \mypart{HDF5\_BLS GUI tutorial}
     \chapter{GUI quick start guide}

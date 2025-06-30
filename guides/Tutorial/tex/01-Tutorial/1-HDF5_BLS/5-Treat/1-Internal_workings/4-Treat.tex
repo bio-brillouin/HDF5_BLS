@@ -1,0 +1,115 @@
+The \textit{Treat} class is the class that is meant to be used by the user to define the functions he needs to perform the treatment and to apply them to the data seemlessly. This class inherits from the \textit{Treat\_backend} class and thus inherits all the functions of the latter.
+
+\subsubsection{Organization of the class}
+
+The \textit{Treat} class is divided in 8 different types of functions:
+\begin{itemize}
+    \item \textit{Point and window definition}: functions that are used to define the points and windows of interest on the data. These can then be used to apply correction to the data (like a normalization) or a fitting.
+    \item \textit{Estimation functions}: functions that are used to estimate the parameters of the model.
+    \item \textit{Fitting model definition}: functions that are used to define the model to be used to fit the data.
+    \item \textit{Automatic estimation functions}: functions that are used to automatically estimate the parameters of the model.
+    \item \textit{Fitting functions}: functions that are used to fit the data.
+    \item \textit{Post-treatment functions}: functions that are used to perform post-treatment tasks on the data.
+    \item \textit{Outliers and errors functions}: functions that are used to identify outliers and errors in the data.
+    \item \textit{Algorithm application functions}: functions that are used to apply the algorithm to the data.
+\end{itemize}
+
+\subsubsection{Return of functions}
+
+All the functions of the \textit{Treat} class are silent by default, meaning that the result of the function is not returned and they only modify the attributes of the class. This strategy allows for a reliable tracking of the treatment, its effect on the data and the ability to examine the treatment at any step of the algorithm.
+
+The attributes of the class that are modified by the functions are:
+\begin{itemize}
+    \item \textit{\_treat\_selection}: a string that directs the treatment towards the whole PSD array, sampled PSD arrays or error points with the following options:
+        \begin{itemize}
+            \item \textit{all}: the whole PSD array is treated
+            \item \textit{sampled}: only the PSD array stored in the \textit{PSD\_sample} attribute is treated
+            \item \textit{errors}: only the spectra in the PSD dataset whose position are stored in the \textit{point\_error} attribute are treated
+        \end{itemize}
+    \item \textit{point\_error}: the position of the spectra that lead to an error, in the PSD dataset. This is a list of tuples.
+    \item \textit{point\_error\_type}: the type of the error (fit error, shift outlier, etc.) corresponding to each point in the \textit{point\_error} attribute. This is a list of strings.
+    \item \textit{point\_error\_value}: the value of the error (NaN if fit error, the shift value if shift outlier, etc.) corresponding to each point in the \textit{point\_error} attribute. This is a list of floats.
+    \item \textit{PSD\_sample}: the PSD array on which the treatment is performed. This can either be an average of the whole PSD on the frequency axis or any individual PSD of the array.
+    \item \textit{frequency\_sample}: the frequency array on which the treatment is performed. This is equivalent to the \textit{frequency} attribute of the class for 1D frequency arrays (the only available option for now).
+    \item \textit{points}: a list of points that are not well fitted
+    \item \textit{windows}: a list of windows that are not well fitted
+    \item \textit{width\_estimator}: the estimation of the width of each peak. This is a list of floats with the same length as the \textit{points} attribute.
+    \item \textit{fit\_model}: the string corresponding to the model used to fit the data, matching one of the keys of the \textit{Models.models} dictionnary.
+    \item \textit{shift}: the shift array obtained after the treatment
+    \item \textit{linewidth}: the linewidth array obtained after the treatment
+    \item \textit{shift\_var}: the array of standard deviation of the shift array obtained after the treatment
+    \item \textit{linewidth\_var}: the array of standard deviation of the linewidth array obtained after the treatment
+    \item \textit{amplitude}: the amplitude array obtained after the treatment
+    \item \textit{amplitude\_var}: the array of standard deviation of the amplitude array obtained after the treatment
+    \item \textit{BLT}: the BLT array obtained after the treatment
+    \item \textit{BLT\_var}: the array of standard deviation of the BLT array obtained after the treatment
+\end{itemize}
+
+\subsubsection{Functions signature}
+
+Each function defined in the \textit{Treat} class uses key-word only arguments where the type of the argument is specified in the function signature. Defining the type of the arguments allows for an easier integration of the treatment in the GUI. The arguments with type \textit{booleans} for example will be recognized and presented to the user as a checkbox in the GUI.
+
+Using key-word only arguments also ensures that the function can be called without any argument without raising an error. This is particularly usefull to create algorithms without parameters by just calling the functions one after the other. Note that for a safe-by-default definition of the functions, we recommend defining a specific breakpoint at the beginning of the function to check if arguments are given to the function and return nothing if they are not.
+
+To further improve the seamless integration of new functions to the GUI, arguments of the function have a preferred nomenclature. This nomenclature works by using defined prefixes to the arguments to orient the best way to define them in the GUI. The list of prefixes is extendable. In the actual version of the library, these prefixes are:
+\begin{itemize}
+    \item \textit{position}: The argument refers to a position on the x axis of the data. The GUI recognizes this parameter and allows the user to click on the graph to select a position.
+    \item \textit{window}: The width of the window around the peak. The GUI recognizes this parameter and creates a text box to enter the value of the window.
+    \item \textit{type\_peak}: The type of the peak. Can be either "Stokes", "Anti-Stokes" or "Elastic".
+    \item \textit{center\_type}: The type of the peak to center the x axis around. Must be either "Elastic" or "Inelastic".
+    \item \textit{model}: The model to be used to fit the data. The GUI recognizes this parameter and creates a combobox to select the model based on the keys of the \textit{Models.models} dictionnary.
+\end{itemize}
+
+All other arguments will be displayed in the GUI as text boxes. 
+
+Note that using the beforementionned nomenclature of the arguments is not mandatory for the function to work.
+
+\subsubsection{Example of a function}
+
+Let's define here a function that applies a Savitsky-Golay filter to the data before fitting. This function is meant to be used before the fitting so we'll define it as a function that is called before the fitting. A Savitsky-Golay filter is a type of filter that is used to smooth the data by fitting a polynomial to the data. The function will be applied on the classe's argument "PSD" takes the following arguments:
+\begin{itemize}
+    \item \textit{window}: The length of the window to be used to fit the data.
+    \item \textit{order}: The order of the polynomial to be used to fit the data.
+\end{itemize}
+
+Both of these parameters are integers so we don't need to use a particular prefix for them. We'll give the function initial values to be recognized as the break case. The signature of the function is therefore the following:
+
+\begin{lstlisting}
+def savgol_filter(self, window : int = None, order : int = None):
+    ...
+\end{lstlisting}
+
+We can now define the break case of the function when called without arguments:
+\begin{lstlisting}
+def savgol_filter(self, window = None, order = None):
+    if window is None or order is None:
+        return
+    ...
+\end{lstlisting}
+
+Following this step, we can just apply the function to the data. Note that fits are applied to the attribute "PSD\_sample", and attribute that is updated when calling "apply\_algorithm\_on\_all". Therefore here, the function will write:
+
+\begin{lstlisting}
+def savgol_filter(self, window = None, order = None):
+    if window is None or order is None:
+        return
+    self.PSD_sample = signal.savgol_filter(self.PSD_sample, window_length = window, polyorder = order)
+\end{lstlisting}
+ 
+The last step here is to add the docstring of the function. Here we could for example add the following:
+\begin{lstlisting}
+def savgol_filter(self, window = None, order = None):
+    """
+    Applies a Savitsky-Golay filter to the given PSD.
+
+    Parameters
+    ----------
+    window : int, optional
+        The length of the window to be used to fit the data, by default None.
+    order : int, optional
+        The order of the polynomial to be used to fit the data, by default None.
+    """
+    if window is None or order is None:
+        return
+    self.PSD_sample = signal.savgol_filter(self.PSD_sample, window_length = window, polyorder = order)
+\end{lstlisting}

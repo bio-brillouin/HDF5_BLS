@@ -152,31 +152,64 @@ def conversion_VIPA(parent, wrp, path):
     -------
     None
     """
-    # Verify that the FSR can be found in the arguments. If not, the frequency axis ca
+    if type(path) == list:
+        all_paths = path
+        path = path[0]
+    else: 
+        all_paths = None
+
+    # Verify that the FSR can be found in the arguments. If not, the frequency axis cannot be created
     if not "SPECTROMETER.VIPA_FSR_(GHz)" in wrp.get_attributes(path).keys():
         qtw.QMessageBox.warning(parent, "Warning", "PSD cannot be constructed because the FSR of the VIPA is not defined.")
         return
 
-    # If the user has chosen a dataset, select the parent group
-    if not wrp.get_type(path = path) == h5py._hl.group.Group:
-        path = "/".join(path.split("/")[:-1])  
+    # If the user has chosen a single dataset, select the parent group
+    if all_paths is None:   
+        if not wrp.get_type(path = path) == h5py._hl.group.Group:
+            path = "/".join(path.split("/")[:-1])  
+    # If the user has chosen multiple elements, make sure they are all groups
+    else:
+        for p in all_paths:
+            if not wrp.get_type(path = p) == h5py._hl.group.Group:
+                qtw.QMessageBox.information(parent, "Information", "All selected elements must be groups.")
+                return
 
     # Check if the chosen gorup is a measure group
-    if not wrp.get_type(path = path, return_Brillouin_type = True) == "Measure":
-        qtw.QMessageBox.information(parent, "Information", "Only measure groups can be analyzed for now.")
-        return
+    if all_paths is None:   
+        if not wrp.get_type(path = path, return_Brillouin_type = True) == "Measure":
+            qtw.QMessageBox.information(parent, "Information", "Only measure groups can be analyzed for now.")
+            return
+    else:
+        for p in all_paths:
+            if not wrp.get_type(path = p, return_Brillouin_type = True) == "Measure":
+                qtw.QMessageBox.information(parent, "Information", "All selected groups must be measure groups.")
+                return
     
     # Extract the raw data and the PSD from the wrapper corresponding to the selected curve in the combobox
     raw_data, PSD = False, False
-    for e in wrp.get_children_elements(path = path):
-        if wrp.get_type(path = f"{path}/{e}", return_Brillouin_type = True) == "Raw_data":
-            y_rd = wrp[f"{path}/{e}"]
-            str_algorithm_rd = None
-            raw_data = True
-        elif wrp.get_type(path = f"{path}/{e}", return_Brillouin_type = True) == "PSD":
-            y_psd = wrp[f"{path}/{e}"]
-            str_algorithm_psd = wrp.get_attributes(path = f"{path}/{e}")["Process_PSD"]
-            PSD = True
+    if all_paths is None: 
+        for e in wrp.get_children_elements(path = path):
+            if wrp.get_type(path = f"{path}/{e}", return_Brillouin_type = True) == "Raw_data":
+                y_rd = wrp[f"{path}/{e}"]
+                str_algorithm_rd = None
+                raw_data = True
+            elif wrp.get_type(path = f"{path}/{e}", return_Brillouin_type = True) == "PSD":
+                y_psd = wrp[f"{path}/{e}"]
+                str_algorithm_psd = wrp.get_attributes(path = f"{path}/{e}")["Process_PSD"]
+                PSD = True
+    else:
+        y_rd = None
+        str_algorithm_rd = None
+        for p in all_paths:
+            for e in wrp.get_children_elements(path = p):
+                if wrp.get_type(path = f"{p}/{e}", return_Brillouin_type = True) in ["Raw_data", "PSD"]:
+                    temp_y_rd = wrp[f"{p}/{e}"]
+                    temp_y_rd = np.array(temp_y_rd).reshape((-1, temp_y_rd.shape[-1]))
+                    raw_data = True
+                    if y_rd is None:
+                        y_rd = temp_y_rd
+                    else:
+                        y_rd = np.concatenate((y_rd, temp_y_rd), axis = 0)
     
     if raw_data and not PSD:
         dialog = AnalyzeWindow_VIPA(parent, x = np.arange(y_rd.shape[-1]), y = y_rd)
@@ -202,12 +235,24 @@ def conversion_VIPA(parent, wrp, path):
     dic = {"Frequency": {"Name": "Frequency",
                             "Data": frequency},
             "Attributes": {"Process_PSD": process}}
-    # wrp = wrapper.Wrapper()
-    wrp.add_dictionnary(dic = dic,
-                        parent_group = path,
-                        name_group = path,
+    
+    if all_paths is None:  
+        if "Frequency" in wrp.get_children_elements(path):
+            wrp.delete_element(f"{path}/Frequency")
+        wrp.add_dictionnary(dic = dic,
+                            parent_group = path,
+                            name_group = path,
+                            overwrite = True)
+        wrp.change_brillouin_type(path = f"{path}/{e}", brillouin_type = "PSD")
+    else:
+        for p in all_paths:
+            if "Frequency" in wrp.get_children_elements(path = p):
+                wrp.delete_element(f"{p}/Frequency")
+            wrp.add_dictionnary(dic = dic,
+                        parent_group = p,
+                        name_group = p,
                         overwrite = True)
-    wrp.change_brillouin_type(path = f"{path}/{e}", brillouin_type = "PSD")
+            wrp.change_brillouin_type(path = f"{p}/{e}", brillouin_type = "PSD")
     parent.update_treeview()
 
 def conversion_Streak_VIPA(parent, wrp, path):

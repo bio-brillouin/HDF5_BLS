@@ -160,7 +160,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
 
             # Sets the selection mode of the tree view
             self.treeView.setSelectionBehavior(qtw.QAbstractItemView.SelectRows)
-            self.treeView.setSelectionMode(qtw.QAbstractItemView.SingleSelection)
+            self.treeView.setSelectionMode(qtw.QAbstractItemView.ExtendedSelection)
             self.treeView.setStyleSheet("""
                 QTreeView::item:selected {
                     background-color: lightblue;
@@ -419,6 +419,9 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             if os.path.splitext(f)[1] == "":
                 dir_present = True
         if dir_present:
+            if len(filepath) > 1:
+                qtw.QMessageBox.warning(self, "Warning", "You are trying to add more than one directory. Please select only one directory.")
+                return
             response = qtw.QMessageBox.question(self, "Warning", "You are trying to add a directory. Do you want to add all the files in the directory with the same structure?", qtw.QMessageBox.Yes | qtw.QMessageBox.No)
             if response == qtw.QMessageBox.Yes:
                 extensions = get_extensions(filepath)
@@ -507,7 +510,6 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         """
         Adjusts the width of all columns in the treeView to fit their contents.
         """
-        header = self.treeView.header()
         for col in range(self.treeView.model().columnCount()):
             self.treeView.resizeColumnToContents(col)
 
@@ -787,7 +789,11 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             functions = [func for func in getmembers(conversion_ui, isfunction)]
             for (name, func) in functions:
                 if name == function_name:
-                    func(self, self.wrapper, self.treeview_selected)
+                    if self.treeview_selected_multiple is None:
+                        func(self, self.wrapper, self.treeview_selected)
+                    else:
+                        func(self, self.wrapper, self.treeview_selected_multiple)
+
         
         self.update_treeview()
         self.expand_treeview_path(self.treeview_selected)
@@ -1457,15 +1463,18 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         -------
         None
         """
-
         self.b_ExportCodeLine.setEnabled(True)
         selected_indexes = self.treeView.selectionModel().selectedIndexes()
 
         if selected_indexes:
             # Get the first selected index (assuming single selection)
-            selected_index = selected_indexes[0]
-            path = selected_index.data(qtc.Qt.UserRole)
-            self.treeview_selected = path
+            l = [s.data(qtc.Qt.UserRole) for s in selected_indexes]
+            l = [e for e in l if e is not None]
+            self.treeview_selected = l[0]
+            if len(l) > 1:
+                self.treeview_selected_multiple = l
+            else:
+                self.treeview_selected_multiple = None
             self.update_parameters()
 
     @qtc.Slot()
