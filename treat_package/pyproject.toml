@@ -1,0 +1,27 @@
+# treat_package/pyproject.toml
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "HDF5_BLS_treat" # Choose a unique name for PyPI, e.g., 'treat-bls' or 'hdf5-bls-treat'
+version = "0.1.0"
+authors = [
+  { name="Pierre Bouvet", email="pierre.bouvet@meduniwien.ac.at" },
+]
+description = "A package for treating BLS data."
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License", # Or your chosen license
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    "scipy",
+    "numpy"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"] # Look for packages in the 'src' directory

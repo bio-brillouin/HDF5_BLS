@@ -12,11 +12,11 @@ def parse_requirements(filename):
         return [line.strip() for line in f if line.strip() and not line.startswith('#')]
 
 # Read the requirements from requirements.txt
-requirements = parse_requirements('requirements.txt')
+requirements = parse_requirements('/Users/pierrebouvet/Documents/Code/HDF5_BLS/requirements_library.txt')
 
 setup(
     name='HDF5_BLS', # name of pack which will be package dir below project
-    version='0.1.0',
+    version='0.1.0', # v 0.1.0.4 current on test PyPI
     url='https://github.com/bio-brillouin/HDF5_BLS',
     author='Pierre Bouvet',
     author_email='pierre.bouvet@meduniwien.ac.at',

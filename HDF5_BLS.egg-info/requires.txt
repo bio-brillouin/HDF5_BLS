@@ -3,9 +3,8 @@ numpy>=2.0
 Pillow>=10.0.1
 scipy>=1.10
 sif_parser>=0.3
-datetime>=5
-pytest
 setuptools
 wheel
-sphinx
-sphinx-rtd-theme
+openpyxl
+pyperclip
+pandas>=2.0.3
