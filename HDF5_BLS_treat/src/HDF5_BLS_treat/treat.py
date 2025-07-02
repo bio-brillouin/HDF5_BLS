@@ -911,7 +911,15 @@ class Treat(Treat_backend):
             The list of new parameters to be applied to re-run the treatment on the errors. Each element is either None (if we don't change the parameters) or a dictionnary of the parameters to be passed to the function. Default is None, means that all the parameters used earlier are used.
         """
         def extract_initial_algorithm():
+            """Extracts the functions that are applied before the apply_algorithm_on_all function.
+
+            Returns
+            -------
+            3 dictionaries
+                The algorithm that has been applied to all the data, the algorithm that has been used to combine the data and the algorithm used to mark errors
+            """
             algorithm = {"functions": []}
+            combine_algotihm = {"functions": []}
             mark_errors_algorithm = {"functions": []}
             passed_apply_on_all = False
             # We go through the functions that are applied 
@@ -923,61 +931,26 @@ class Treat(Treat_backend):
                         algorithm["functions"].append(f)
                     # If it's after but before the adjust_treatment_on_errors function, we add it to the mark_errors as it will be used to mark errors
                     else:
-                        if not f["function"] == "adjust_treatment_on_errors":
-                            mark_errors_algorithm["functions"].append(f)
-                        else:
+                        if f["function"] == "combine_results_FSR":
+                            combine_algotihm["functions"].append(f)
+                        elif f["function"] == "adjust_treatment_on_errors":
                             break
-                else:
-                    amplitude_weight_of_shift_and_linewidth = f["parameters"]["amplitude_weight_of_shift_and_linewidth"]
-                    keep_max_amplitude = f["parameters"]["keep_max_amplitude"]
-                    passed_apply_on_all = True
-            return algorithm, mark_errors_algorithm, amplitude_weight_of_shift_and_linewidth, keep_max_amplitude
-
-        def update_treated_arrays(PSD_i, amplitude_weight_of_shift_and_linewidth, keep_max_amplitude):
-            # If we want to update the arrays with values weighted by the amplitude of the peak
-            if amplitude_weight_of_shift_and_linewidth:
-                temp_shift = 0
-                temp_linewidth = 0
-                temp_shift_std = 0
-                temp_linewidth_std = 0
-                temp_amplitude = 0
-                temp_amplitude_std = 0
-                nb = 0
-                for a, s, l,std_s, std_l, std_a in zip(self.amplitude_sample, self.shift_sample, self.linewidth_sample, self.shift_std_sample, self.linewidth_std_sample, self.amplitude_std_sample):
-                    if not a == np.nan:
-                        if keep_max_amplitude:
-                            if a > temp_amplitude:
-                                temp_amplitude = a
-                                temp_amplitude_std = std_a
                         else:
-                            temp_amplitude += a
-                            temp_amplitude_std += (a*std_a)**2
-                        temp_shift += a*np.abs(s)
-                        temp_linewidth += a*l
-                        temp_shift_std += (a*std_s)**2
-                        temp_linewidth_std += (a*std_l)**2
-                        nb += 1
-                if keep_max_amplitude:
-                    self.amplitude[tuple(PSD_i)] = temp_amplitude
-                    self.amplitude_var[tuple(PSD_i)] = temp_amplitude_std
+                            mark_errors_algorithm["functions"].append(f)
                 else:
-                    self.amplitude[tuple(PSD_i)] = temp_amplitude/nb
-                    self.amplitude_var[tuple(PSD_i)] = np.sqrt(temp_amplitude_std)/(nb**2)
-                self.shift[tuple(PSD_i)] = temp_shift/np.sum(self.amplitude_sample)
-                self.linewidth[tuple(PSD_i)] = temp_linewidth/np.sum(self.amplitude_sample)
-                self.shift_var[tuple(PSD_i)] = np.sqrt(temp_shift_std)/np.sum(self.amplitude_sample)**2
-                self.linewidth_var[tuple(PSD_i)] = np.sqrt(temp_linewidth_std)/np.nansusumm(self.amplitude_sample)**2
-            # If we don't weigh the values by the amplitude of the peak
-            else:
-                self.shift[tuple(PSD_i)] = np.nanmean(np.abs(self.shift_sample))
-                self.linewidth[tuple(PSD_i)] = np.nanmean(self.linewidth_sample)
-                self.shift_var[tuple(PSD_i)] = np.sqrt(np.sum(np.array(self.shift_std_sample)**2)) / (np.count_nonzero(~np.isnan(self.amplitude_sample))**2)
-                self.linewidth_var[tuple(PSD_i)] = np.sqrt(np.sum(np.array(self.linewidth_std_sample)**2))/(np.count_nonzero(~np.isnan(self.amplitude_sample))**2)
-            
-        # Extract the algorithm that was used to initially treat the data, the one used to mark the errors and the parameters used to store the extracted values
-        algorithm, mark_errors, amplitude_weight_of_shift_and_linewidth, keep_max_amplitude = extract_initial_algorithm()
+                    passed_apply_on_all = True
+            return algorithm, combine_algotihm, mark_errors_algorithm
 
-        # Update the parameters with the new values
+        def set_position(algorithm, position):
+            for f in algorithm["functions"]:
+                if f["function"] == "combine_results_FSR":
+                    f["parameters"]["position"] = position
+            return algorithm
+
+        # Extract the algorithm that was used to initially treat the data, the one used to mark the errors and the parameters used to store the extracted values
+        algorithm, combine_algorithm, mark_errors_algorithm = extract_initial_algorithm()
+
+        # Update the parameters with the new values. If new value is None, keep as is, if False, don't add step, else update with the provided new values
         new_algorithm = {"functions": []}
         if not new_parameters is None:
             for i in range(len(algorithm["functions"])):
@@ -985,11 +958,12 @@ class Treat(Treat_backend):
                     new_algorithm["functions"].append(algorithm["functions"][i])
                 elif new_parameters[i] == False:
                     continue
-                elif new_parameters[i] is not None:
+                else:
                     for k, v in new_parameters[i].items():
                         if k in algorithm["functions"][i]["parameters"].keys():
                             algorithm["functions"][i]["parameters"][k] = v
                     new_algorithm["functions"].append(algorithm["functions"][i])
+        
         
         # If no position are specified, we apply the algorithm on all the points that had errors
         if position is None:
@@ -997,23 +971,20 @@ class Treat(Treat_backend):
         
         # Sets the _treat_selection attribute to "errors". This makes sure that the algorithm doesn't store the results in _history (reduces the memory usage and time complexity)
         self._treat_selection = "errors"
-        
-        # Apply the algorithm on all the points that had errors
+
+        # Apply the algorithm on either the provided positions or all the points that had errors
         for PSD_i in position:
             self.PSD_sample = self.PSD[tuple(PSD_i)]
             self._run_algorithm(algorithm = new_algorithm)
 
-            update_treated_arrays(PSD_i, amplitude_weight_of_shift_and_linewidth, keep_max_amplitude)
-        
-        # Update the Loss Tangent array and its variance
-        self.BLT = self.linewidth/self.shift
-        self.BLT_var = self.BLT**2*((self.shift_var/self.shift)**2 + (self.linewidth_var/self.linewidth)**2)
+            combine_algorithm = set_position(algorithm = combine_algorithm, position = PSD_i)
+            self._run_algorithm(algorithm = combine_algorithm)
 
         # And we mark the errors again.
         self.point_error = []
         self.point_error_type = []
         self.point_error_value = []
-        self._run_algorithm(algorithm = mark_errors)
+        self._run_algorithm(algorithm = mark_errors_algorithm)
 
     # Fitting functions
 
@@ -1160,9 +1131,7 @@ class Treat(Treat_backend):
                                                     p0 = [offset_guess, amplitude_guess, peak, gamma, slope_guess],
                                                     bounds = bounds)
                 except Exception as e:
-                    print("\n", e)
-                    print([offset_guess, amplitude_guess, peak, gamma, slope_guess])
-                    print(bounds)
+                    print(e)
                     error_fit = True
             else:
                 # Define the bounds for the fit (ensure the linewidth and amplitude are positive)
@@ -1586,7 +1555,7 @@ class Treat(Treat_backend):
         self.linewidth = self.linewidth-default_width
         self.BLT = self.linewidth/self.shift
 
-    def combine_results_FSR(self, FSR: float = 15, keep_max_amplitude: bool = False, amplitude_weight: bool = False, shift_std_weight: bool = False):
+    def combine_results_FSR(self, FSR: float = 15, keep_max_amplitude: bool = False, amplitude_weight: bool = False, shift_std_weight: bool = False, position: list = None):
         """
         Combines the results of the algorithm to have a value for frequency shift based on a known Free Spectral Range (FSR) value. The end shift value is obtained by "moving" the peak by a FSR value until the peak is within the [-FSR/2, FSR/2] range. Then the absolute value of the shift is taken as the end shift value.
         The combination of the result is done by taking the average of all the values by default. Alternatively, the user can choose to keep the maximum of the amplitude of the peak by setting the "keep_max_amplitude" parameter to True. The user can also choose to weight the shift and linewidth by the amplitude of the peak by setting the "amplitude_weight" parameter to True. Note that in the latter case, the precise knowledge of the frequency axis is a must as averaging slightly uncentered peaks will lead to a wrong result.
@@ -1601,6 +1570,8 @@ class Treat(Treat_backend):
             If True, the amplitude of the spectra is used to weight the shift and linewidth. If set to false, a simple average is performed. Default is False.
         shift_std_weight : bool, optional
             If True, the inverse of the standard deviation of the shift is used to weight the shift and linewidth. If set to false, a simple average is performed. Default is False.
+        position: list, optional
+            The position of the spectrum to be updated in case we combine the sampled results. This is used to update the values of a spectrum that has been re-fitted.  
         """
         def nature_peaks():
             """
@@ -1617,10 +1588,13 @@ class Treat(Treat_backend):
         if keep_max_amplitude and amplitude_weight:
             raise ValueError("The parameters 'keep_max_amplitude' and 'amplitude_weight' cannot be both set to True.")
         
-        # Average the values of shift on all the PSDs 
-        shift = np.mean(self.shift, axis = 0)
-        while shift.ndim > 1:
-            shift = np.mean(shift, axis = 0)
+        if position is None:
+            # Average the values of shift on all the PSDs 
+            shift = np.nanmean(self.shift, axis = 0)
+            while shift.ndim > 1:
+                shift = np.mean(shift, axis = 0)
+        else:
+            shift = self.shift_sample
         
         # Get the nature of the peaks (Stokes or Anti-Stokes)
         nature = nature_peaks()
@@ -1630,55 +1604,105 @@ class Treat(Treat_backend):
         for s in shift:
             temp = -(s+FSR/2)/FSR
             k.append(np.ceil(temp))
-        
-        # Realign the shift values
-        self.shift = np.moveaxis(self.shift, [0, -1], [-1, 0])
-        for i in range(len(k)):
-            self.shift[i] += k[i] * FSR
-            if nature[i] == "Anti-Stokes":
-                self.shift[i] = -self.shift[i]
-        self.shift = np.moveaxis(self.shift, [-1, 0], [0, -1])
+
+        if position is None:
+            # Realign the shift values
+            self.shift = np.moveaxis(self.shift, [0, -1], [-1, 0])
+            for i in range(len(k)):
+                self.shift[i] += k[i] * FSR
+                if nature[i] == "Anti-Stokes":
+                    self.shift[i] = -self.shift[i]
+            self.shift = np.moveaxis(self.shift, [-1, 0], [0, -1])
+        else:
+            for i in range(len(k)):
+                self.shift_sample[i] += k[i] * FSR
+                if nature[i] == "Anti-Stokes":
+                    self.shift_sample[i] = -self.shift_sample[i]
+            shift_sample = np.array(self.shift_sample)
+            linewidth_sample = np.array(self.linewidth_sample)
+            amplitude_sample = np.array(self.amplitude_sample)
+            shift_std_sample = np.array(self.shift_std_sample)
+            linewidth_std_sample = np.array(self.linewidth_std_sample)
+            amplitude_std_sample = np.array(self.amplitude_std_sample)
+
 
         # If keep_max_amplitude is set to True, we select only the shift corresponding to the maximum amplitude
         if keep_max_amplitude:
-            # For each set of amplitudes along the last axis, find the index of the maximum amplitude
-            max_indices = np.argmax(self.amplitude, axis=-1)
-            # Use advanced indexing to select the corresponding shift values
-            self.shift = np.take_along_axis(self.shift, np.expand_dims(max_indices, axis=-1), axis=-1).squeeze(-1)
-            self.amplitude = np.take_along_axis(self.amplitude, np.expand_dims(max_indices, axis=-1), axis=-1).squeeze(-1)
-            self.linewidth = np.take_along_axis(self.linewidth, np.expand_dims(max_indices, axis=-1), axis=-1).squeeze(-1)
-            self.shift_var = np.take_along_axis(self.shift_var, np.expand_dims(max_indices, axis=-1), axis=-1).squeeze(-1)
-            self.linewidth_var = np.take_along_axis(self.linewidth_var, np.expand_dims(max_indices, axis=-1), axis=-1).squeeze(-1)
-            self.amplitude_var = np.take_along_axis(self.amplitude_var, np.expand_dims(max_indices, axis=-1), axis=-1).squeeze(-1)
+            if position is None:
+                # For each set of amplitudes along the last axis, find the index of the maximum amplitude
+                max_indices = np.argmax(self.amplitude, axis=-1)
+                # Use advanced indexing to select the corresponding shift values
+                self.shift = np.take_along_axis(self.shift, np.expand_dims(max_indices, axis=-1), axis=-1).squeeze(-1)
+                self.amplitude = np.take_along_axis(self.amplitude, np.expand_dims(max_indices, axis=-1), axis=-1).squeeze(-1)
+                self.linewidth = np.take_along_axis(self.linewidth, np.expand_dims(max_indices, axis=-1), axis=-1).squeeze(-1)
+                self.shift_var = np.take_along_axis(self.shift_var, np.expand_dims(max_indices, axis=-1), axis=-1).squeeze(-1)
+                self.linewidth_var = np.take_along_axis(self.linewidth_var, np.expand_dims(max_indices, axis=-1), axis=-1).squeeze(-1)
+                self.amplitude_var = np.take_along_axis(self.amplitude_var, np.expand_dims(max_indices, axis=-1), axis=-1).squeeze(-1)
+            else:
+                pos = np.argmax(amplitude_sample)
+                self.shift[tuple(position)] = shift_sample[pos]
+                self.linewidth[tuple(position)] = linewidth_sample[pos]
+                self.shift_var[tuple(position)] = shift_std_sample[pos]
+                self.linewidth_var[tuple(position)] = linewidth_std_sample[pos]
+                self.amplitude[tuple(position)] = amplitude_sample[pos]
+                self.amplitude_var[tuple(position)] = amplitude_std_sample[pos]
         
         elif amplitude_weight:
-            # For each set of amplitudes along the last axis, calculate the weighted average of the shift and linewidth
-            self.shift = np.average(self.shift, axis=-1, weights=self.amplitude)
-            self.linewidth = np.average(self.linewidth, axis=-1, weights=self.amplitude)
-            self.amplitude = np.average(self.amplitude, axis=-1, weights=self.amplitude)
-            self.shift_var = np.sum(self.shift_var**2 * self.amplitude**2, axis = -1) / np.sum(self.amplitude**2, axis=-1)
-            self.linewidth_var = np.sum(self.linewidth_var**2 * self.amplitude**2, axis = -1) / np.sum(self.amplitude**2, axis=-1)
-            self.amplitude_var = np.sum(self.amplitude_var**4, axis = -1) / np.sum(self.amplitude**2, axis=-1)
+            if position is None:
+                # For each set of amplitudes along the last axis, calculate the weighted average of the shift and linewidth
+                self.shift = np.average(self.shift, axis=-1, weights=self.amplitude)
+                self.linewidth = np.average(self.linewidth, axis=-1, weights=self.amplitude)
+                self.amplitude = np.average(self.amplitude, axis=-1, weights=self.amplitude)
+                self.shift_var = np.sum(self.shift_var**2 * self.amplitude**2, axis = -1) / np.sum(self.amplitude**2, axis=-1)
+                self.linewidth_var = np.sum(self.linewidth_var**2 * self.amplitude**2, axis = -1) / np.sum(self.amplitude**2, axis=-1)
+                self.amplitude_var = np.sum(self.amplitude_var**4, axis = -1) / np.sum(self.amplitude**2, axis=-1)
+            else:
+                self.shift[tuple(position)] = np.average(shift_sample)
+                self.linewidth[tuple(position)] = np.average(linewidth_sample)
+                self.shift_var[tuple(position)] = np.sum(shift_std_sample**2 * amplitude_sample**2) / np.sum(amplitude_sample**2, axis=-1)
+                self.linewidth_var[tuple(position)] = np.sum(linewidth_std_sample**2 * amplitude_sample**2) / np.sum(amplitude_sample**2, axis=-1)
+                self.amplitude[tuple(position)] = np.average(amplitude_sample)
+                self.amplitude_var[tuple(position)] = np.sum(amplitude_std_sample**4) / np.sum(amplitude_sample**2, axis=-1)
 
         elif shift_std_weight:
-            # For each set of amplitudes along the last axis, calculate the weighted average of the shift and linewidth
-            self.shift = np.average(self.shift, axis=-1, weights=1/self.shift_var)
-            self.linewidth = np.average(self.linewidth, axis=-1, weights=1/self.shift_var)
-            self.amplitude = np.average(self.amplitude, axis=-1, weights=1/self.shift_var)
-            self.linewidth_var = np.sum(self.linewidth_var**2 / self.shift_var**2, axis = -1) / np.sum(1/self.shift_var**2, axis=-1)
-            self.amplitude_var = np.sum(self.amplitude_var**2 / self.shift_var**2, axis = -1) / np.sum(1/self.shift_var**2, axis=-1)
-            self.shift_var = np.sum(1, axis = -1) / np.sum(1/self.shift_var**2, axis=-1)
+            if position is None:
+                # For each set of amplitudes along the last axis, calculate the weighted average of the shift and linewidth
+                self.shift = np.average(self.shift, axis=-1, weights=1/self.shift_var)
+                self.linewidth = np.average(self.linewidth, axis=-1, weights=1/self.shift_var)
+                self.amplitude = np.average(self.amplitude, axis=-1, weights=1/self.shift_var)
+                self.linewidth_var = np.sum(self.linewidth_var**2 / self.shift_var**2, axis = -1) / np.sum(1/self.shift_var**2, axis=-1)
+                self.amplitude_var = np.sum(self.amplitude_var**2 / self.shift_var**2, axis = -1) / np.sum(1/self.shift_var**2, axis=-1)
+                self.shift_var = self.shift_var.shape[-1] / np.sum(1/self.shift_var**2, axis=-1)
+            else:
+                self.shift[tuple(position)] = np.average(shift_sample, weights=1/shift_std_sample)
+                self.linewidth[tuple(position)] = np.average(linewidth_sample, weights=1/shift_std_sample)
+                self.amplitude[tuple(position)] = np.average(amplitude_sample, weights=1/shift_std_sample)
+                self.shift_var[tuple(position)] = len(shift_std_sample) / np.sum(1/shift_std_sample**2)
+                self.linewidth_var[tuple(position)] = np.sum(linewidth_std_sample**2 / shift_std_sample**2) / np.sum(1 / shift_std_sample**2)
+                self.amplitude_var[tuple(position)] = np.sum(amplitude_std_sample**2 / shift_std_sample**2) / np.sum(1 / shift_std_sample**2)
         
         else:
-            self.shift = np.nanmean(self.shift, axis=-1)
-            self.linewidth = np.nanmean(self.linewidth, axis=-1)
-            self.amplitude = np.nanmean(self.amplitude, axis=-1)
-            self.linewidth_var = np.nanmean(self.linewidth_var**2, axis = -1)
-            self.amplitude_var = np.nanmean(self.amplitude_var**2, axis = -1)
-            self.shift_var = np.nanmean(self.shift_var**2, axis = -1)
+            if position is None:
+                self.shift = np.nanmean(self.shift, axis=-1)
+                self.linewidth = np.nanmean(self.linewidth, axis=-1)
+                self.amplitude = np.nanmean(self.amplitude, axis=-1)
+                self.linewidth_var = np.nanmean(self.linewidth_var**2, axis = -1)
+                self.amplitude_var = np.nanmean(self.amplitude_var**2, axis = -1)
+                self.shift_var = np.nanmean(self.shift_var**2, axis = -1)
+            else:
+                self.shift[tuple(position)] = np.nanmean(shift_sample)
+                self.linewidth[tuple(position)] = np.nanmean(linewidth_sample)
+                self.amplitude[tuple(position)] = np.nanmean(amplitude_sample)
+                self.linewidth_var[tuple(position)] = np.nanmean(linewidth_std_sample**2)
+                self.amplitude_var[tuple(position)] = np.nanmean(amplitude_std_sample**2)
+                self.shift_var[tuple(position)] = np.nanmean(shift_std_sample**2)
         
-        self.BLT = self.linewidth / self.shift 
-        self.BLT_var = self.BLT**2 * ((self.linewidth_var / self.linewidth)**2 + (self.shift_var / self.shift)**2)
+        if position is None:
+            self.BLT = self.linewidth / self.shift 
+            self.BLT_var = self.BLT**2 * ((self.linewidth_var / self.linewidth)**2 + (self.shift_var / self.shift)**2)
+        else:
+            self.BLT[tuple(position)] = self.linewidth[tuple(position)] / self.shift[tuple(position)]
+            self.BLT_var[tuple(position)] = self.BLT[tuple(position)]**2 * ((self.linewidth_var[tuple(position)] / self.linewidth[tuple(position)])**2 + (self.shift_var[tuple(position)] / self.shift[tuple(position)])**2)
 
     # Outliers 
 
@@ -1693,7 +1717,6 @@ class Treat(Treat_backend):
             The threshold above which the shift is marked as an error , by default 10GHz
         """
         positions = np.where(self.shift > max_shift)
-        print(positions)
         for i in range(len(positions[0])):
             pos = [int(p[i]) for p in positions]
             self.point_error.append(pos)
