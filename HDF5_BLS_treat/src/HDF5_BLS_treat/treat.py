@@ -646,7 +646,7 @@ class Treat(Treat_backend):
             if window[1]<self.frequency_sample[0] or window[0]>self.frequency_sample[-1]:
                 raise ValueError(f"The window {window} is out of the range of the data")
         else:
-            window = [position_center_window - window_width[0]/2, position_center_window + window_width[1]/2]
+            window = [position_center_window - window_width[0], position_center_window + window_width[1]]
             if window[1]<self.frequency_sample[0] or window[0]>self.frequency_sample[-1]:
                 raise ValueError(f"The window {window} is out of the range of the data")
 
