@@ -21,7 +21,8 @@ class Models():
         self.models["Lorentzian elastic"] = lambda nu, be, a, nu0, gamma, ae, IR=None: self.lorentzian_elastic(nu, ae, be, a, nu0, gamma, IR)
         self.models["DHO"] = lambda nu, b, a, nu0, gamma, IR=None: self.DHO(nu, b, a, nu0, gamma, IR)
         self.models["DHO elastic"] = lambda nu, be, a, nu0, gamma, ae, IR=None: self.DHO_elastic(nu, ae, be, a, nu0, gamma, IR)
-        
+        self.models["Gaussian"] = lambda nu, b, a, nu0, gamma, IR=None: self.gaussian(nu, b, a, nu0, gamma, IR)
+
     def lorentzian(self, nu, b, a, nu0, gamma, IR = None):
         """Model of a simple lorentzian lineshape
 
@@ -139,6 +140,32 @@ class Models():
         if IR is not None: return np.convolve(func, IR, "same")
         return func
   
+    def gaussian(self, nu, b, a, nu0, gamma, IR = None):
+        """Model of a simple gaussian lineshape
+        Parameters
+        ----------
+        nu : array
+            The frequency array
+        b : float
+            The constant offset of the data
+        a : float
+            The amplitude of the peak
+        nu0 : float
+            The center position of the function 
+        gamma : float
+            The linewidth of the function
+        IR : array, optional
+            The impulse response of the instrument, by default None
+        Returns
+        -------
+        function
+            The function associated to the given parameters
+        """
+        gamma = 2*np.log(2)/gamma
+        func = b + a*np.exp(-(nu-nu0)**2/(2*gamma**2))
+        if IR is not None: return np.convolve(func, IR, "same")
+        return func 
+
 class Treat_backend:
     """This class is the base class for all the treat classes. Its purpose is to provide the basic silent functions to open, create and save algorithms, and to store the different steps of the treatment and their effects on the data.
     The philosophy of this class is to rely on 2 fixed attributes:
@@ -641,21 +668,24 @@ class Treat(Treat_backend):
             raise ValueError("The type of the point must be one of the following: 'Stokes', 'Anti-Stokes' or 'Elastic'")
 
         # Check that the window is in the range of the data
-        if type(window_width) in [float, int]:
-            window = [position_center_window-window_width/2, position_center_window+window_width/2]
-            if window[1]<self.frequency_sample[0] or window[0]>self.frequency_sample[-1]:
-                raise ValueError(f"The window {window} is out of the range of the data")
+        if not window_width is None:
+            if type(window_width) in [float, int]:
+                window = [position_center_window-window_width/2, position_center_window+window_width/2]
+                if window[1]<self.frequency_sample[0] or window[0]>self.frequency_sample[-1]:
+                    raise ValueError(f"The window {window} is out of the range of the data")
+            else:
+                window = [position_center_window - window_width[0], position_center_window + window_width[1]]
+                if window[1]<self.frequency_sample[0] or window[0]>self.frequency_sample[-1]:
+                    raise ValueError(f"The window {window} is out of the range of the data")
+
+            # Ensure that the window is within the range of the data
+            window[0] = max(self.frequency_sample[0], window[0])
+            window[1] = min(self.frequency_sample[-1], window[1])
+
+            # Refine the position of the peaks
+            new_x = refine_peak_position(frequency = self.frequency_sample, PSD = self.PSD_sample, window = window)
         else:
-            window = [position_center_window - window_width[0], position_center_window + window_width[1]]
-            if window[1]<self.frequency_sample[0] or window[0]>self.frequency_sample[-1]:
-                raise ValueError(f"The window {window} is out of the range of the data")
-
-        # Ensure that the window is within the range of the data
-        window[0] = max(self.frequency_sample[0], window[0])
-        window[1] = min(self.frequency_sample[-1], window[1])
-
-        # Refine the position of the peaks
-        new_x = refine_peak_position(frequency = self.frequency_sample, PSD = self.PSD_sample, window = window)
+            new_x = position_center_window
 
         # Goes through the list of points to get the number of occurences of peaks of same type
         i = 0
@@ -967,23 +997,27 @@ class Treat(Treat_backend):
         
         # If no position are specified, we apply the algorithm on all the points that had errors
         if position is None:
-            position = self.point_error
+            position = self.point_error.copy()
         
         # Sets the _treat_selection attribute to "errors". This makes sure that the algorithm doesn't store the results in _history (reduces the memory usage and time complexity)
         self._treat_selection = "errors"
+
+        # Initialize the list of error points
+        self.point_error = []
+        self.point_error_type = []
+        self.point_error_value = []
 
         # Apply the algorithm on either the provided positions or all the points that had errors
         for PSD_i in position:
             self.PSD_sample = self.PSD[tuple(PSD_i)]
             self._run_algorithm(algorithm = new_algorithm)
 
+            print(self.shift_sample)
+
             combine_algorithm = set_position(algorithm = combine_algorithm, position = PSD_i)
             self._run_algorithm(algorithm = combine_algorithm)
 
         # And we mark the errors again.
-        self.point_error = []
-        self.point_error_type = []
-        self.point_error_value = []
         self._run_algorithm(algorithm = mark_errors_algorithm)
 
     # Fitting functions
@@ -1918,3 +1952,4 @@ class Treat(Treat_backend):
         self.amplitude[tuple(position)] = np.nan
         self.BLT_var[tuple(position)] = np.nan
         self.BLT[tuple(position)] = np.nan
+
