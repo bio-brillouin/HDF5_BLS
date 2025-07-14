@@ -276,6 +276,9 @@ class Treat_backend:
         self.points = []
         self.windows = []
 
+        # Initializes the progress callback
+        self.progress_callback = None
+
     def __getattribute__(self, name: str):
         """This function is used to override the __getattribute__ function of the class. It is used to keep track of the history of the algorithm, its impact on the classes attributes, and to store the algorithm in the _algorithm attribute so as to be able to save it or run it later.
 
@@ -903,6 +906,10 @@ class Treat(Treat_backend):
         # Sets the frequency array to the main frequency array (assuming 1D frequency array)
         self.frequency_sample = self.frequency
 
+        # Initialize the attributes for the progress callback
+        count = 0
+        total = np.prod(self.PSD.shape[:-1])
+
         # Iterate on each spectrum of the PSD array
         while PSD_i is not None:
             # Assign the current PSD and frequency arrays to the corresponding variables
@@ -924,6 +931,10 @@ class Treat(Treat_backend):
                 self.point_error_value.append(np.nan)
 
             PSD_i = plus_one(PSD_i, self.PSD.shape[:-1], len(PSD_i)-1)
+
+            if self.progress_callback is not None:
+                count += 1
+                self.progress_callback(count, total)
         
         self.BLT = self.linewidth/self.shift
         self.BLT_var = self.BLT**2 * ((self.shift_var/self.shift)**2 + (self.linewidth_var/self.linewidth)**2)
@@ -1007,15 +1018,21 @@ class Treat(Treat_backend):
         self.point_error_type = []
         self.point_error_value = []
 
+        # Initialize the callback for the progress bar
+        count = 0
+        total = len(position)
+
         # Apply the algorithm on either the provided positions or all the points that had errors
         for PSD_i in position:
             self.PSD_sample = self.PSD[tuple(PSD_i)]
             self._run_algorithm(algorithm = new_algorithm)
 
-            print(self.shift_sample)
-
             combine_algorithm = set_position(algorithm = combine_algorithm, position = PSD_i)
             self._run_algorithm(algorithm = combine_algorithm)
+
+            if self.progress_callback is not None:
+                count += 1
+                self.progress_callback(count, total)
 
         # And we mark the errors again.
         self._run_algorithm(algorithm = mark_errors_algorithm)
@@ -1375,11 +1392,6 @@ class Treat(Treat_backend):
             return sum(models.models[self.fit_model](x, *params) for params in p0)
 
         wndw_fit = np.unique(wndw_fit.astype(int))
-
-        # import matplotlib.pyplot as plt
-        # p0_temp = np.array(p0).reshape((-1, 4))
-        # print(p0_temp)
-        # plt.plot(self.frequency_sample[wndw_fit], models.models[self.fit_model](self.frequency_sample[wndw_fit], *p0_temp[0]))
 
         error_fit = False
         try:

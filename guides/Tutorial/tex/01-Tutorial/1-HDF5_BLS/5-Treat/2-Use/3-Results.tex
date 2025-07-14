@@ -1,0 +1,27 @@
+After the treatment defined earlier on has been run, we'd like to see the results of the treatment. Let's first understand how the results are obtained. Let's say that we want to treat a dataset corresponding to a 2d array of points. Doing so will require giving the treat module two arrays:
+\begin{itemize}
+    \item \textit{frequency}: the frequency array of the data (a 1D array)
+    \item \textit{PSD}: the power spectral density array of the data (a 3D array, with the last dimension corresponding to the frequency axis)
+\end{itemize}
+
+Defining the treatment cannot be done on the whole dataset, we need a sample of the dataset to test the treatment on. The module therefore makes a distinction between the whole dataset and the samples that are used to test the treatment. There are therefore two main categories of attributes in the class:
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|l|l|l|}
+        \hline
+        \textbf{} & 
+        \textbf{Sample attributes} & 
+        \textbf{Dataset attributes} \\
+        \hline
+        Frequency     & frequency\_sample                     & frequency \\
+        PSD           & PSD\_sample                           & PSD \\
+        Shift         & shift\_sample                         & shift \\
+        Linewidth     & linewidth\_sample                     & linewidth \\
+        \dots         & \dots                                 & \dots\\
+        \hline
+    \end{tabular}
+\end{table}
+
+This is really helpfull to allow the same functions to be used on selected points of the dataset, either to treat each point individually, to verify the treatment on a particular point or also to adjust the treatment on a particular point.
+
+The difficulty is passing from the sample attributes to the dataset attributes. The strategy of the module is to work only on the sample attributes, and use combination functions to obtain the dataset attributes. 

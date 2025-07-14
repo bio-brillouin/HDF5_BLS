@@ -26,7 +26,19 @@ class Wrapper:
     data_attributes: dic
         The attributes specific to an array
     """
-    BRILLOUIN_TYPES_DATASETS = ["Abscissa", "Amplitude", "Amplitude_std", "BLT", "BLT_std", "Frequency", "Linewidth", "Linewidth_std", "Other", "PSD", "Raw_data", "Shift", "Shift_std"]
+    BRILLOUIN_TYPES_DATASETS = ["Abscissa", 
+                                "Amplitude", 
+                                "Amplitude_std", 
+                                "BLT", 
+                                "BLT_std", 
+                                "Frequency", 
+                                "Linewidth", 
+                                "Linewidth_std", 
+                                "Other", 
+                                "PSD", 
+                                "Raw_data", 
+                                "Shift", 
+                                "Shift_std"]
     BRILLOUIN_TYPES_GROUPS = ["Calibration_spectrum", "Impulse_response", "Measure", "Root", "Treatment"]
 
 
@@ -504,6 +516,34 @@ class Wrapper:
         
         self.add_dictionnary(dic, parent_group = parent_group, name_group = parent_group, overwrite = overwrite)
 
+    def copy_dataset(self, path, copy_path):
+        """
+        Copies the dataset at the given path to the given path.
+
+        Parameters
+        ----------
+        path : str
+            The path to the dataset to copy.
+        copy_path : str
+            The path to the dataset to copy to.
+
+        Returns
+        -------
+        None
+        """
+        with h5py.File(self.filepath, 'r') as file:
+            if path not in file:
+                raise WrapperError_StructureError(f"The path '{path}' does not exist in the file.")
+            if copy_path not in file:
+                raise WrapperError_StructureError(f"The path '{copy_path}' does not exist in the file.")
+        
+        with h5py.File(self.filepath, 'a') as file:
+            new_name = file[path].name.split("/")[-1]
+            file[copy_path].create_dataset(name = new_name, data = file[path][()])
+            for e in file[path].attrs.keys():
+                print(e, file[path].attrs[e])
+                file[copy_path+"/"+new_name].attrs[e] = file[path].attrs[e]
+
     def create_group(self, name, parent_group=None, brillouin_type = "Root", overwrite=False): # Test made
         """Creates a group in the HDF5 file
 
@@ -623,7 +663,7 @@ class Wrapper:
                 group = new_file["Brillouin"]
                 group.attrs["Brillouin_type"] = "Root"
 
-    def export_image(self, path, filepath):
+    def export_image(self, path, filepath, simple_image = True, image_size = None, cmap = 'viridis', colorbar = False, colorbar_label = None, axis = False, xlabel = None, ylabel = None):
         """
         Exports the dataset at the given path as an image.
 
@@ -633,11 +673,29 @@ class Wrapper:
             The path to the dataset to export.
         filepath : str
             The path to the image to export to.
-
+        simple_image : bool, optional
+            If set to True, the image is exported as a simple image with grayscale colormap.
+        image_size : tuple, optional
+            The size of the image to export. If None, the size is set to the default figure size.
+        cmap : str, optional
+            The colormap to use for the image. Default is 'viridis'. All the available colormaps can be found here: https://matplotlib.org/stable/tutorials/colors/colormaps.html
+        colorbar : bool, optional
+            If set to True, a colorbar is added to the image.
+        axis : boolean, optional
+            If set to True, the image is displayed with an extent given by the "MEASURE.Field_Of_View_(X,Y,Z)_(um)" attribute. If set to False, the image is displayed without any extent.
+            
         Returns
         -------
         None
         """
+        simple_image = False
+        image_size = (5,5)
+        cmap = 'jet'
+        colorbar = True
+        axis = True
+        xlabel = "x (µm)"
+        ylabel = "y (µm)"
+
         with h5py.File(self.filepath, 'r') as file:
             data = file[path][()]
 
@@ -648,8 +706,40 @@ class Wrapper:
             data = data.reshape(new_shape)
 
             if len(data.shape) == 2:
-                data = np.nan_to_num(data, nan=0)
-                plt.imsave(filepath, data)
+                if simple_image:
+                    data = np.nan_to_num(data, nan = np.nanmin(data))
+                    plt.imsave(filepath, data, cmap='gray')
+                else:
+                    # Set the figure size
+                    if image_size is None:
+                        plt.figure()
+                    else:
+                        plt.figure(figsize = image_size)
+
+                    # Display the image
+                    if axis is False:
+                        plt.imshow(data, cmap = cmap)
+                    elif axis is True:
+                        extent = self.get_attributes(path = f"{path}")["MEASURE.Field_Of_View_(X,Y,Z)_(um)"]
+                        extent = [float(e) for e in extent.split(",")]
+                        extent = [-extent[0]/2, extent[0]/2, -extent[1]/2, extent[1]/2]
+                        plt.imshow(data, cmap = cmap, extent = extent)
+                    
+                    # Add a label to the x and y axis
+                    if not xlabel is None:
+                        plt.xlabel(xlabel)
+                    if not ylabel is None:
+                        plt.ylabel(ylabel)
+
+                    # Add a colorbar if needed
+                    if colorbar:
+                        if colorbar_label is None:
+                            plt.colorbar()
+                        else:
+                            plt.colorbar(label = colorbar_label)
+
+                    # Save the image
+                    plt.savefig(filepath)
 
     def get_attributes(self, path=None): # Test made
         """Returns the attributes of the file

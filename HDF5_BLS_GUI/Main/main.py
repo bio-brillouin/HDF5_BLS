@@ -548,6 +548,46 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         if filepath:
             self.wrapper.save_properties_csv(filepath, path = self.treeview_selected)
 
+    def copy_frequency_axis(self):
+        """
+        Copies the frequency of another file in the HDF5 file and applies it to the selected element
+
+        """
+        def get_structure_list(elt = "Brillouin", lst = ["Brillouin"], selectable = [True], lvl = 0):
+            for child in self.wrapper.get_children_elements(path = elt):
+                if self.wrapper.get_type(path = f"{elt}/{child}") == h5py._hl.group.Group:
+                    if self.wrapper.get_type(path = f"{elt}/{child}", return_Brillouin_type=True) in ["Measure", "Calibration_spectrum", "Impulse_response"]:
+                        for e in self.wrapper.get_children_elements(path = f"{elt}/{child}"):
+                            if self.wrapper.get_type(path = f"{elt}/{child}/{e}", return_Brillouin_type=True) == "Frequency":
+                                lst.append("  "*lvl + "|- " + f"{elt}/{child}/{e}")
+                                selectable.append(False)
+                    elif self.wrapper.get_type(path = f"{elt}/{child}", return_Brillouin_type=True) == "Root":
+                        lst.append("  "*lvl + "|- " + f"{elt}/{child}")
+                        selectable.append(True)
+                        lst, selectable = get_structure_list(elt = f"{elt}/{child}", lst = lst, selectable = selectable, lvl = lvl+1)
+            return lst, selectable
+
+        new_path = self.treeview_selected
+        if self.wrapper.get_type(path = new_path, return_Brillouin_type = False) == h5py._hl.dataset.Dataset:
+            new_path = "/".join(new_path.split("/")[:-1])
+        if not self.wrapper.get_type(path = new_path, return_Brillouin_type = True) == "Measure":
+            qtw.QMessageBox.warning(self, "Warning", "The selected group is not a measure group")
+            return
+
+        lst, selectable = get_structure_list()
+
+        cmb = ComboboxChoose(text = "Choose the element to copy the frequency from (select only elements that are not italic)", list_choices = lst, element_italic=selectable, parent = self)
+        if cmb.exec_() == qtw.QDialog.Accepted:
+            path = cmb.get_selected_structure()
+            if not selectable[path.index(path[0])]:
+                qtw.QMessageBox.warning(self, "Warning", "The selected element is not selectable")
+        while path[0] != "B":
+            path = path[1:]
+        
+        self.wrapper.copy_dataset(path = path, copy_path = new_path)
+        self.update_treeview()
+        self.expand_treeview_path(new_path)
+        
     @qtc.Slot()
     def expand_on_hover(self):
         """
@@ -664,10 +704,14 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             """
             for e in self.wrapper.get_children_elements(path = path):
                 if self.wrapper.get_type(path = f"{path}/{e}") == h5py._hl.dataset.Dataset and e == name:
+                    if 'shift' in name.lower():
+                        colorbarlabel = "Shift (GHz)"
+                    elif 'linewidth' in name.lower():
+                        colorbarlabel = "Linewidth (GHz)"
                     if save_hierarchy:
-                        self.wrapper.export_image(f"{path}/{e}", filepath+"/"+e+fmt)
+                        self.wrapper.export_image(f"{path}/{e}", filepath+"/"+e+fmt, colorbar_label=colorbarlabel)
                     else:
-                        self.wrapper.export_image(f"{path}/{e}", filepath+"/"+path.replace("/", " - ")+" - "+e+fmt)
+                        self.wrapper.export_image(f"{path}/{e}", filepath+"/"+path.replace("/", " - ")+" - "+e+fmt, colorbar_label=colorbarlabel)
                 elif self.wrapper.get_type(path = f"{path}/{e}") == h5py._hl.group.Group:
                     if self.wrapper.get_type(path = f"{path}/{e}", return_Brillouin_type= True) == "Treatment" or not save_hierarchy:
                         save_images_group_recursively(filepath, path+"/"+e, name, save_hierarchy, fmt = fmt)
@@ -677,10 +721,10 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                         save_images_group_recursively(filepath+"/"+e, path+"/"+e, name, save_hierarchy, fmt = fmt)
 
         hierarchy = False
+        formats = [".tiff", ".png", ".jpg", ".jpeg", ".bmp", ".gif", ".pdf"]
         # If a dataset has been selected, ask the user for a filename to save the image at
         if self.wrapper.get_type(self.treeview_selected) == h5py._hl.dataset.Dataset:
             # Asks the user for the format of the image
-            formats = [".tiff", ".png", ".jpg", ".jpeg", ".bmp", ".gif"]
             dialog = ComboboxChoose(text = "Choose the format in which to store the images", list_choices = formats, parent = self)
             # If the user cancels the dialog box, we return
             if dialog.exec_() == qtw.QDialog.Rejected:
@@ -692,6 +736,8 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             filepath = qtw.QFileDialog.getSaveFileName(self, "Save File", "", f"Image (*{fmt})")[0]
             if filepath:
                 self.wrapper.export_image(self.treeview_selected, filepath)
+            
+            return
         # If a group has been selected, ask the user wether to store all the images of the group in the same file or recreate the hierarchy
         else:
             response = qtw.QMessageBox.question(self, "Warning", "Do you want to export every image of the selected group at the same location (Yes) or recreate the hierarchy (No)?", qtw.QMessageBox.Yes | qtw.QMessageBox.No | qtw.QMessageBox.Cancel)
@@ -718,7 +764,6 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         if not filepath: return 
 
         # Asks the user for the format of the image
-        formats = [".tiff", ".png", ".jpg", ".jpeg", ".bmp", ".gif"]
         dialog = ComboboxChoose(text = "Choose the format in which to store the images", list_choices = formats, parent = self)
         # If the user cancels the dialog box, we return
         if dialog.exec_() == qtw.QDialog.Rejected:
@@ -1162,6 +1207,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                 merge_group = menu.addAction("Merge Group into Dataset")
             menu.addSeparator()
             get_PSD = menu.addAction("Get Power Spectrum Density")
+            copy_frequency_axis = menu.addAction("Copy Frequency Axis")
             perform_treatment = menu.addAction("Treat all Power Spectrum Density")
             menu.addSeparator()
             export = menu.addMenu("Export")
@@ -1182,6 +1228,8 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                 self.get_PSD()
             elif action == perform_treatment:
                 self.get_treatment()
+            elif action == copy_frequency_axis:
+                self.copy_frequency_axis()
             elif action == expand:
                 for e in self.wrapper.get_children_elements(path = self.treeview_selected):
                     self.expand_treeview_path(f"{self.treeview_selected}/{e}")

@@ -1,0 +1,49 @@
+Let's take a practical example to start this section. Consider that you want to run the following simple algorithm:
+\begin{itemize}
+    \item Normalize the data to have a noise mean of zero and the amplitude of the Brillouin peaks located at $-5 GHz$ to 1.
+    \item Fit two peaks located at $-5 GHz$ and $5 Ghz$ on a window of width $5$ GHz using a Lorentzian model on all the spectra of the dataset.
+\end{itemize}
+
+Using the treat module to apply this algorithm would look like this:
+\begin{lstlisting}
+    treat = treat.Treat(freq, psd)
+    treat.add_point(point_position = -5, window_width = 2)
+    treat.normalize_data()
+    treat.add_point(point_position = -5, window_width = 5, type="Anti-Stokes")
+    treat.add_point(point_position = 5, window_width = 5, type="Stokes")
+    treat.define_model(model = "Lorentzian")
+    treat.estimate_width_inelastic_peaks()
+    treat.multi_fit_all_inelastic()
+\end{lstlisting}
+
+where \textit{freq} and \textit{psd} are the frequency and power spectral density arrays of the data. 
+
+The results of the treatment will be stored in the attributes of the class. Let's now look at how we can extract these results.
+
+
+
+
+
+% Let's now say that a spectrum is not fitted correctly due to some over-reflected elastic peak. We might want to reduce the size of the window of fit for this single spectrum and re-run the algorithm. This is exactly what the module is designed to do. For each calling of a function, the module stores the name and parameters of the function in a list, itself stored as a JSON file. The user has therefore only to here change the parameters "window\_width" of lines 4 and 5 and run the algorithm again. 
+
+% To do so, the user will adjust the parameters of the functions that have been called and run it on the point that causes problems. Let's say that the position of the spectrum that caused the error in the psd dataset is stored at the position (20,30), and that by reducing the size of the fitting window from $5GHz$ to $4GHz$ we might fix the problem. Then the user can rerun the algorithm on this point with:
+% \begin{lstlisting}
+%     new_parameters = [None, None, None, {"window_width": 4}, {"window_width": 4}, None, None, None]
+%     treat.adjust_treatment_on_errors(self, position = (20,30), new_parameters = new_parameters)
+% \end{lstlisting}
+
+% A more thorough explanation of the treatment adjustment function is given further in this chapter. The final code for this treatment would in the end look like this:
+
+% \begin{lstlisting}
+%     treat = treat.Treat(freq, psd)
+%     treat.add_point(point_position = -5, window_width = 2)
+%     treat.normalize_data()
+%     treat.add_point(point_position = -5, window_width = 5, type="Anti-Stokes")
+%     treat.add_point(point_position = 5, window_width = 5, type="Stokes")
+%     treat.define_model(model = "Lorentzian")
+%     treat.estimate_width_inelastic_peaks()
+%     treat.multi_fit_all_inelastic()
+
+%     new_parameters = [None, None, None, {"window_width": 4}, {"window_width": 4}, None, None, None]
+%     treat.adjust_treatment_on_errors(self, position = (20,30), new_parameters = new_parameters)
+% \end{lstlisting}
