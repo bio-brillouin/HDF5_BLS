@@ -277,7 +277,7 @@ class Treat_backend:
         self.windows = []
 
         # Initializes the progress callback
-        self.progress_callback = None
+        self._progress_callback = None
 
     def __getattribute__(self, name: str):
         """This function is used to override the __getattribute__ function of the class. It is used to keep track of the history of the algorithm, its impact on the classes attributes, and to store the algorithm in the _algorithm attribute so as to be able to save it or run it later.
@@ -932,9 +932,9 @@ class Treat(Treat_backend):
 
             PSD_i = plus_one(PSD_i, self.PSD.shape[:-1], len(PSD_i)-1)
 
-            if self.progress_callback is not None:
+            if self._progress_callback is not None:
                 count += 1
-                self.progress_callback(count, total)
+                self._progress_callback(count, total)
         
         self.BLT = self.linewidth/self.shift
         self.BLT_var = self.BLT**2 * ((self.shift_var/self.shift)**2 + (self.linewidth_var/self.linewidth)**2)
@@ -1030,9 +1030,9 @@ class Treat(Treat_backend):
             combine_algorithm = set_position(algorithm = combine_algorithm, position = PSD_i)
             self._run_algorithm(algorithm = combine_algorithm)
 
-            if self.progress_callback is not None:
+            if self._progress_callback is not None:
                 count += 1
-                self.progress_callback(count, total)
+                self._progress_callback(count, total)
 
         # And we mark the errors again.
         self._run_algorithm(algorithm = mark_errors_algorithm)
