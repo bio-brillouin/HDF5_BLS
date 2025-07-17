@@ -12,23 +12,29 @@ For groups, this attribute can have the following values:
 For datasets, this attribute can have the following values:
 \begin{itemize}
     \item "Abscissa\_...": An abscissa array for the measures where the name is written after the underscore.
-    \item "Frequency": a frequency array associated to the power spectral density
-    \item "Linewidth": the dataset contains the values of the fitted linewidths.
-    \item "Linewidth\_std": the dataset contains the standard deviation of the fitted linewidths. 
-    \item "PSD": a power spectral density array
-    \item "Raw\_data": the raw data
-    \item "Shift": the dataset contains the values of the fitted frequency shifts.
-    \item "Shift\_std": the dataset contains the standard deviation of the fitted frequency shifts.
-    \item "Other": the dataset contains other data that will not be used by the library.
+    \item "Amplitude": The dataset contains the values of the fitted amplitudes.
+    \item "Amplitude\_std": The dataset contains the standard deviation of the fitted amplitudes.
+    \item "BLT": The dataset contains the values of the fitted amplitudes.
+    \item "BLT\_std": The dataset contains the standard deviation of the fitted amplitudes.
+    \item "Frequency": A frequency array associated to the power spectral density
+    \item "Linewidth": The dataset contains the values of the fitted linewidths.
+    \item "Linewidth\_std": The dataset contains the standard deviation of the fitted linewidths. 
+    \item "PSD": A power spectral density array
+    \item "Raw\_data": The raw data
+    \item "Shift": The dataset contains the values of the fitted frequency shifts.
+    \item "Shift\_std": The dataset contains the standard deviation of the fitted frequency shifts.
+    \item "Other": The dataset contains other data that will not be used by the library.
 \end{itemize}
 
 
-\paragraph{Example of an abscissa dataset:}
+\paragraph*{Example of an abscissa dataset:}
 Let's consider a dataset consisting of 10x10 point mappings of cells in a grid of $10\mu m$ by $10\mu m$. We can store the abscissa in two ways:
 \begin{itemize}
     \item We can store the abscissa as two 1D array of 10 elements each, for axis x and y for example. The array corresponding to the x axis will be stored in the dataset with the attribute "Brillouin\_type" set to "Abscissa\_0\_1". The array corresponding to the y axis will be stored in the dataset with the attribute "Brillouin\_type" set to "Abscissa\_1\_2".
     \item We can store the abscissa as a 2D array of 10x10 elements. This array will be stored in the dataset with the attribute "Brillouin\_type" set to "Abscissa\_0\_2".
 \end{itemize}
-A dedicated function is meant to do this step without the user having to worry about the attribute names. Examples of HDF5 files with mappings can be found in the repository under the "guides/Tutorial/examples" folder.
+A dedicated function is meant to do this step without the user having to worry about the attribute names. 
 
-\textbf{Note:} The "Brillouin\_type" attribute is not mandatory, but it is highly recommended to use it to differentiate the content of the groups and datasets. If this parameter is not present, the library will assume that the group is a "Root" group if it contains groups and a "Measure" dataset if not.
+% Examples of HDF5 files with mappings can be found in the repository under the "guides/Tutorial/examples" folder.
+
+\textbf{Note:} The "Brillouin\_type" attribute is not mandatory, but it is highly recommended to use it to differentiate the content of the groups and datasets. If this parameter is not present, the library will assume that group are "Root" group if they contain other groups and a "Measure" dataset if not, and that datasets are "Other" datasets.

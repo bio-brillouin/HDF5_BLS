@@ -9,8 +9,8 @@ The treatment of any PSD being essentially the same: a fitting of one or several
         \node (start) [startstop] {Start};
         \node (acquire) [process, below of=start, align=center] {Measurement -> obtaining\\ raw data};
         \node (storage) [process, below of=acquire, align=center] {Storing the measured data\\ in a HDF5 file};
-        \node (psd) [process, below of=storage, align=center] {Conversion of the raw data\\ into a PSD and Frequency\\ and storage in the HDF5 file};
-        \node (fits) [process, below of=psd, align=center] {Analysis of the PSD\\ with a unified treatment};
+        \node (psd) [process, below of=storage, align=center] {Analyze the raw data\\ to extract a PSD and Frequency\\ and store result in HDF5 file};
+        \node (fits) [process, below of=psd, align=center] {Treatment of the PSD\\ with a unified treatment};
         \node (end) [startstop, below of=fits] {End};
 
         \draw [arrow] (start) -- (acquire);
@@ -21,7 +21,7 @@ The treatment of any PSD being essentially the same: a fitting of one or several
 
         \node (filestart) [file, right of=storage, xshift=3cm, align=center] {Create HDF5 file with\\ the measured data};
         \node (fileraw) [file, below of=filestart, align=center] {Convert the raw data\\ into a PSD and Frequency\\ and store in the HDF5 file};  
-        \node (filetreat) [file, below of=fileraw, align=center] {Analyse the PSD and\\ store the result in the HDF5 file};
+        \node (filetreat) [file, below of=fileraw, align=center] {Treat the PSD and\\ store the result in the HDF5 file};
         \node (fileend) [file, below of=filetreat] {Save file};
 
         \draw [arrow] (filestart) -- (fileraw);
@@ -31,3 +31,4 @@ The treatment of any PSD being essentially the same: a fitting of one or several
     \caption{Flowchart of the pipeline}
 \end{figure}
 
+On this figure, the left side represents the steps of the pipeline, while the right side represents the steps that the HDF5\_BLS package is designed to perform.

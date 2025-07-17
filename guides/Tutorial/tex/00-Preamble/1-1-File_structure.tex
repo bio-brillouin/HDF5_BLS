@@ -11,4 +11,9 @@ HDF5 stands for "Hierarchical Data Format" and is a file format that allows the 
 
 The dimensionality of the dataset is free, there are therefore by design virtually no restrictions on the data that can be stored in this format.
 
-In order to organize the measures, we impose a maximum of one measure per group. This condition will be implemented by the library as will be described later on.
+The organization of the file is based on the following principles:
+\begin{itemize}
+    \item The file is organized in groups and datasets, which allows to store data in a hierarchical structure.
+    \item Only one dataset corresponding to a measure can be stored per group. 
+    \item The groups are used to organize the file and store metadata and parameters related to the measure, and the datasets are used to store the actual data.
+\end{itemize}
