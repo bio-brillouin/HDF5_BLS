@@ -282,6 +282,7 @@ class Treat_backend:
         self.linewidth_var = None
         self.amplitude = None
         self.amplitude_var = None
+        self.offset = None
 
         # Initializing points and windows of interest
         self.points = []
@@ -895,6 +896,7 @@ class Treat(Treat_backend):
             # Initialize the list of fitted points
             dim = list(self.PSD.shape[:-1])+[len(self.shift_sample)]
             self.shift = np.zeros(dim).astype(float)
+            self.offset = np.zeros(dim).astype(float)
             self.linewidth = np.zeros(dim).astype(float)
             self.shift_var = np.zeros(dim).astype(float)
             self.linewidth_var = np.zeros(dim).astype(float)
@@ -929,6 +931,7 @@ class Treat(Treat_backend):
             # Run the algorithm on the current PSD and frequency arrays
             self._run_algorithm()
 
+            self.offset[tuple(PSD_i)] = self.offset_sample
             self.shift[tuple(PSD_i)] = self.shift_sample
             self.linewidth[tuple(PSD_i)] = self.linewidth_sample
             self.shift_var[tuple(PSD_i)] = self.shift_std_sample
@@ -1220,7 +1223,6 @@ class Treat(Treat_backend):
                                                     bounds = bounds)
                 except Exception as e:
                     print(e)
-                    print(f"Initial values: {offset_guess}, {amplitude_guess}, {peak}, {gamma}")
                     error_fit = True
 
             # If the fit succeeded, update the parameters, if not store np.nan
@@ -1367,11 +1369,13 @@ class Treat(Treat_backend):
 
             # If bounds are provided for the shift or the linewidth , update them accordingly
             if bound_shift is not None:
-                temp_bounds[0][2] = bs[0]
-                temp_bounds[1][2] = bs[1]
+                bounds[0][2] = bs[0]
+                bounds[1][2] = bs[1]
+                peak = min(max(peak, bounds[0][2]), bounds[1][2])  # Ensure the peak is within the bounds
             if bound_linewidth is not None:
-                temp_bounds[0][3] = bl[0]
-                temp_bounds[1][3] = bl[1]
+                bounds[0][3] = bl[0]
+                bounds[1][3] = bl[1]
+                gamma = min(max(gamma, bounds[0][3]), bounds[1][3])  # Ensure the gamma is within the bounds
 
             # Append the initial conditions to the list of initial conditions
             if len(p0) == 0:
@@ -1417,7 +1421,7 @@ class Treat(Treat_backend):
                                             p0 = p0,
                                             bounds = bounds)
         except Exception as e:
-            print(e, p0)
+            print(e)
             error_fit = True
 
         # If the fit succeeded, update the parameters, if not store np.nan
@@ -1680,6 +1684,7 @@ class Treat(Treat_backend):
                 self.shift_sample[i] += k[i] * FSR
                 if nature[i] == "Anti-Stokes":
                     self.shift_sample[i] = -self.shift_sample[i]
+            offset_sample = np.array(self.offset_sample)
             shift_sample = np.array(self.shift_sample)
             linewidth_sample = np.array(self.linewidth_sample)
             amplitude_sample = np.array(self.amplitude_sample)
@@ -1694,6 +1699,7 @@ class Treat(Treat_backend):
                 # For each set of amplitudes along the last axis, find the index of the maximum amplitude
                 max_indices = np.argmax(self.amplitude, axis=-1)
                 # Use advanced indexing to select the corresponding shift values
+                self.offset = np.take_along_axis(self.offset, np.expand_dims(max_indices, axis=-1), axis=-1).squeeze(-1)
                 self.shift = np.take_along_axis(self.shift, np.expand_dims(max_indices, axis=-1), axis=-1).squeeze(-1)
                 self.amplitude = np.take_along_axis(self.amplitude, np.expand_dims(max_indices, axis=-1), axis=-1).squeeze(-1)
                 self.linewidth = np.take_along_axis(self.linewidth, np.expand_dims(max_indices, axis=-1), axis=-1).squeeze(-1)
@@ -1702,6 +1708,7 @@ class Treat(Treat_backend):
                 self.amplitude_var = np.take_along_axis(self.amplitude_var, np.expand_dims(max_indices, axis=-1), axis=-1).squeeze(-1)
             else:
                 pos = np.argmax(amplitude_sample)
+                self.offset[tuple(position)] = offset_sample[pos]
                 self.shift[tuple(position)] = shift_sample[pos]
                 self.linewidth[tuple(position)] = linewidth_sample[pos]
                 self.shift_var[tuple(position)] = shift_std_sample[pos]
@@ -1712,6 +1719,7 @@ class Treat(Treat_backend):
         elif amplitude_weight:
             if position is None:
                 # For each set of amplitudes along the last axis, calculate the weighted average of the shift and linewidth
+                self.offset = np.average(self.offset, axis=-1, weights=self.amplitude)
                 self.shift = np.average(self.shift, axis=-1, weights=self.amplitude)
                 self.linewidth = np.average(self.linewidth, axis=-1, weights=self.amplitude)
                 self.amplitude = np.average(self.amplitude, axis=-1, weights=self.amplitude)
@@ -1719,6 +1727,7 @@ class Treat(Treat_backend):
                 self.linewidth_var = np.sum(self.linewidth_var**2 * self.amplitude**2, axis = -1) / np.sum(self.amplitude**2, axis=-1)
                 self.amplitude_var = np.sum(self.amplitude_var**4, axis = -1) / np.sum(self.amplitude**2, axis=-1)
             else:
+                self.offset[tuple(position)] = np.average(offset_sample)
                 self.shift[tuple(position)] = np.average(shift_sample)
                 self.linewidth[tuple(position)] = np.average(linewidth_sample)
                 self.shift_var[tuple(position)] = np.sum(shift_std_sample**2 * amplitude_sample**2) / np.sum(amplitude_sample**2, axis=-1)
@@ -1729,6 +1738,7 @@ class Treat(Treat_backend):
         elif shift_std_weight:
             if position is None:
                 # For each set of amplitudes along the last axis, calculate the weighted average of the shift and linewidth
+                self.offset = np.average(self.offset, axis=-1, weights=1/self.shift_var)
                 self.shift = np.average(self.shift, axis=-1, weights=1/self.shift_var)
                 self.linewidth = np.average(self.linewidth, axis=-1, weights=1/self.shift_var)
                 self.amplitude = np.average(self.amplitude, axis=-1, weights=1/self.shift_var)
@@ -1736,6 +1746,7 @@ class Treat(Treat_backend):
                 self.amplitude_var = np.sum(self.amplitude_var**2 / self.shift_var**2, axis = -1) / np.sum(1/self.shift_var**2, axis=-1)
                 self.shift_var = self.shift_var.shape[-1] / np.sum(1/self.shift_var**2, axis=-1)
             else:
+                self.offset[tuple(position)] = np.average(offset_sample, weights=1/shift_std_sample)
                 self.shift[tuple(position)] = np.average(shift_sample, weights=1/shift_std_sample)
                 self.linewidth[tuple(position)] = np.average(linewidth_sample, weights=1/shift_std_sample)
                 self.amplitude[tuple(position)] = np.average(amplitude_sample, weights=1/shift_std_sample)
@@ -1745,6 +1756,7 @@ class Treat(Treat_backend):
         
         else:
             if position is None:
+                self.offset = np.nanmean(self.offset, axis=-1)
                 self.shift = np.nanmean(self.shift, axis=-1)
                 self.linewidth = np.nanmean(self.linewidth, axis=-1)
                 self.amplitude = np.nanmean(self.amplitude, axis=-1)
@@ -1752,6 +1764,7 @@ class Treat(Treat_backend):
                 self.amplitude_var = np.nanmean(self.amplitude_var**2, axis = -1)
                 self.shift_var = np.nanmean(self.shift_var**2, axis = -1)
             else:
+                self.offset[tuple(position)] = np.nanmean(offset_sample)
                 self.shift[tuple(position)] = np.nanmean(shift_sample)
                 self.linewidth[tuple(position)] = np.nanmean(linewidth_sample)
                 self.amplitude[tuple(position)] = np.nanmean(amplitude_sample)
