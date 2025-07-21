@@ -237,6 +237,17 @@ class Treat_backend:
         # Initializing treatment applicator selection attributes
         self._treat_selection = "sampled"
 
+        # Delete unused dimensions
+        new_shape = []
+        for s in self.frequency.shape:
+            if s > 1: new_shape.append(s)
+        self.frequency = self.frequency.reshape(new_shape)
+        
+        new_shape = []
+        for s in self.PSD.shape:
+            if s > 1: new_shape.append(s)
+
+
         # Initializing array sample attributes WARNING: ONLY 1D frequency arrays are supported for now
         if len(self.frequency.shape) == 1:
             self.frequency_sample = self.frequency
@@ -244,7 +255,7 @@ class Treat_backend:
             while len(self.PSD_sample.shape) > 1:
                 self.PSD_sample = np.average(self.PSD_sample, axis = 0) 
         else:
-            raise ValueError("Only 1D frequency arrays are supported for now")
+            raise ValueError(f"Only 1D frequency arrays are supported for now. The given frequency array has the following dimension: {self.frequency.shape}.")
 
         # Store the base arrays
         self._history_base = {"frequency_sample": self.frequency_sample,
@@ -1158,9 +1169,11 @@ class Treat(Treat_backend):
                 if bound_shift is not None:
                     bounds[0][2] = bs[0]
                     bounds[1][2] = bs[1]
+                    peak = min(max(peak, bounds[0][2]), bounds[1][2])  # Ensure the peak is within the bounds
                 if bound_linewidth is not None:
                     bounds[0][3] = bl[0]
                     bounds[1][3] = bl[1]
+                    gamma = min(max(gamma, bounds[0][3]), bounds[1][3])  # Ensure the gamma is within the bounds
 
                 # Estimate the slope from the first and last points of the window
                 slope_guess = (self.PSD_sample[pos_window[0][-1]] - self.PSD_sample[pos_window[0][0]])/(self.frequency_sample[pos_window[0][-1]] - self.frequency_sample[pos_window[0][0]])
@@ -1192,9 +1205,11 @@ class Treat(Treat_backend):
                 if bound_shift is not None:
                     bounds[0][2] = bs[0]
                     bounds[1][2] = bs[1]
+                    peak = min(max(peak, bounds[0][2]), bounds[1][2])  # Ensure the peak is within the bounds
                 if bound_linewidth is not None:
                     bounds[0][3] = bl[0]
                     bounds[1][3] = bl[1]
+                    gamma = min(max(gamma, bounds[0][3]), bounds[1][3])  # Ensure the gamma is within the bounds
 
                 error_fit = False
                 try:
@@ -1205,6 +1220,7 @@ class Treat(Treat_backend):
                                                     bounds = bounds)
                 except Exception as e:
                     print(e)
+                    print(f"Initial values: {offset_guess}, {amplitude_guess}, {peak}, {gamma}")
                     error_fit = True
 
             # If the fit succeeded, update the parameters, if not store np.nan
