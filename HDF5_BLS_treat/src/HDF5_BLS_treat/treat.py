@@ -1369,13 +1369,13 @@ class Treat(Treat_backend):
 
             # If bounds are provided for the shift or the linewidth , update them accordingly
             if bound_shift is not None:
-                bounds[0][2] = bs[0]
-                bounds[1][2] = bs[1]
-                peak = min(max(peak, bounds[0][2]), bounds[1][2])  # Ensure the peak is within the bounds
+                temp_bounds[0][2] = bs[0]
+                temp_bounds[1][2] = bs[1]
+                peak = min(max(peak, bs[0]), bs[1])  # Ensure the peak is within the bounds
             if bound_linewidth is not None:
-                bounds[0][3] = bl[0]
-                bounds[1][3] = bl[1]
-                gamma = min(max(gamma, bounds[0][3]), bounds[1][3])  # Ensure the gamma is within the bounds
+                temp_bounds[0][3] = bl[0]
+                temp_bounds[1][3] = bl[1]
+                gamma = min(max(gamma, bl[0]), bl[1])  # Ensure the gamma is within the bounds
 
             # Append the initial conditions to the list of initial conditions
             if len(p0) == 0:
