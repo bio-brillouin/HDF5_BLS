@@ -692,6 +692,60 @@ class Analyze_VIPA(Analyze_general):
         # Return the x axis if the user wants to use it
         return self.x
 
+    def interpolate_between_one_order(self, FSR: float = None):
+        """
+        Creates a frequency axis by using the signal between two elastic peaks included. By imposing that the distance in frequency between two neighboring elastic peaks is one FSR, and that the shift of both stokes and anti-stokes peaks to their respective elastic peak is the same, we can obtain a frequency axis. The user has to enter a value for the FSR to calibrate the frequency axis.
+
+        Parameters
+        ----------  
+        FSR : float
+            The free spectral range of the VIPA spectrometer (in GHz).
+        """
+        if FSR is None:
+            return
+        
+        # Start by extracting the elastic peaks
+        E, AS, S = [], [], []
+        for point in self.points:
+            name, value = point
+            if name[0] == "E":
+                E.append(value)
+            elif name[0] == "A":
+                AS.append(value)
+            elif name[0] == "S":
+                S.append(value)
+        
+        if len(AS) != 1:
+            raise ValueError("There must be exactly one anti-Stokes peak to use this function.")
+        if len(S) != 1:
+            raise ValueError("There must be exactly one Stokes peak to use this function.")
+
+        E.sort()
+
+        x0 = E[0]
+        x1 = S[0]
+        x2 = AS[0]
+        x3 = E[1]
+
+        # Create the matrices that will be used to minimize the second order polynomial
+        temp = x3**2 - x2**2 - x1**2 + x0**2
+        denom = (x3**2-x0**2)*(x1-x0-x3+x2) + (x3-x0)*(x3**2-x2**2-x1**2+x0**2)
+        b =  FSR*temp/denom
+
+        a = (FSR-b*(x3-x0))/(x3**2-x0**2)
+
+        f = lambda freq: a*freq**2 + b*freq
+        c = -f(x0)  
+
+        # Now we can create the new x axis
+        self.x = a*self.x**2 + b*self.x + c
+
+        # Clear the points and windows
+        self._clear_points()
+
+        # Return the x axis if the user wants to use it
+        return self.x
+
     def interpolate_elastic(self, FSR: float = None):
         """
         Uses positions of the elastic peaks on the different orders, to obtain a frequency axis by interpolating the position of the peaks with a quadratic polynomial. The user has to enter a value for the FSR to calibrate the frequency axis.
