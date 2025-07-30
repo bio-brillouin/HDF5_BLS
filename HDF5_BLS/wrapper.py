@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 # from HDF5_BLS.load_data import load_general
 from HDF5_BLS.WrapperError import *
 from HDF5_BLS.load_data import load_general
+import HDF5_BLS.wrapper_compatibility as compat
 HDF5_BLS_Version = "1.0"
 
 
@@ -28,17 +29,17 @@ class Wrapper:
     """
     BRILLOUIN_TYPES_DATASETS = ["Abscissa", 
                                 "Amplitude", 
-                                "Amplitude_std", 
+                                "Amplitude_err", 
                                 "BLT", 
                                 "BLT_std", 
                                 "Frequency", 
                                 "Linewidth", 
-                                "Linewidth_std", 
+                                "Linewidth_err", 
                                 "Other", 
                                 "PSD", 
                                 "Raw_data", 
                                 "Shift", 
-                                "Shift_std"]
+                                "Shift_err"]
     BRILLOUIN_TYPES_GROUPS = ["Calibration_spectrum", "Impulse_response", "Measure", "Root", "Treatment"]
 
 
@@ -54,13 +55,14 @@ class Wrapper:
         filepath : str, optional
             The filepath of the HDF5 file to load, by default None means that a temporary file is created.
         """
-        # Create a temporary HDF5 file with a single group "Brillouin"
+        # If no file are given, create a temporary HDF5 file with a single group "Brillouin"
         if filepath is None:
             self.filepath = os.path.abspath(os.path.dirname(__file__)) + "/temp.h5"
             with h5py.File(self.filepath, 'w') as file:
                 group = file.create_group("Brillouin")
                 group.attrs["HDF5_BLS_version"] = HDF5_BLS_Version
                 group.attrs["Brillouin_type"] = "Root"
+        # Opens the given file
         else:
             if not os.path.isfile(filepath):
                 with h5py.File(filepath, 'w') as file:
@@ -68,6 +70,7 @@ class Wrapper:
                     group.attrs["Brillouin_type"] = "Root"
                     group.attrs["HDF5_BLS_version"] = HDF5_BLS_Version
             self.filepath = filepath
+            self.compatibility_changes()
         self.save = False
         self.need_for_repack = False
 
@@ -401,6 +404,149 @@ class Wrapper:
         if self.filepath == os.path.abspath(os.path.dirname(__file__)) + "/temp.h5":
             self.save = True
 
+    def add_dictionary(self, dic, parent_group, create_group = False, brillouin_type_parent_group = None, overwrite = False): # Test made
+        """Adds a data dictionary to the wrapper. This is the preferred way to add data using the GUI.
+
+        Parameters
+        ----------
+        dic : dict
+            The data dictionary to add. The accepted keys for this dictionary are either the one given in the self.BRILLOUIN_TYPES_DATASET list, a key starting with "Abscissa" or "Attributes".
+            All the element of the dictionary are also dictionnaries.
+            Except for attributes, each dictionary has at least two keys: "Name" and "Data". If an abscissa is to be added, then the keys "Dim_start", "Dim_end" and "Units" need to be populated. 
+            For attributes, each key is the name of the attribute, and the value is the value of the attribute, which will automatically be converted to string if it is not a string.
+        parent_group : str, optional
+            The path in the file where to store the dataset.
+        brillouin_type_parent_group : str, optional            
+            The type of the data group where the data are stored. This argument must be given if a new group is being created. If this argument is given and overwrite is set to True, then the brillouin type of the parent group will be overwritten. Otherwise, the original brillouin type of the parent group will be used.
+        overwrite : bool, optional
+            If set to True, any element of the file with a name corresponding to a name given in the dictionary will be overwritten. Similarly any existing argument will be overwritten and Brillouin type will be redefined. Default is False
+        
+        Raises
+        ------  
+        WrapperError_StructureError
+            Raises an error if the parent group does not exist in the HDF5 file.
+        WrapperError_Overwrite
+            Raises an error if the group already exists in the parent group.
+        WrapperError_ArgumentType
+            Raises an error if arguments given to the function do not match the expected type.
+        """
+        def check_parent_group(parent_group):
+            with h5py.File(self.filepath, 'a') as file:
+                # Check if parent group is in the file
+                if parent_group not in file:
+                    # if not but "create_group" is True, create the group with the given Brillouin_type
+                    if create_group:
+                        if not type(brillouin_type_parent_group) is None and brillouin_type_parent_group in self.BRILLOUIN_TYPES_GROUPS:
+                            group = file.create_group(parent_group)
+                            group.attrs["Brillouin_type"] = brillouin_type_parent_group
+                        else:
+                            raise WrapperError_StructureError(f"A valid Brillouin type must be given when a new group has to be created")
+                    # else, raise an error
+                    else:
+                        raise WrapperError_StructureError(f"The parent group '{parent_group}' does not exist in the HDF5 file.")
+
+                # Check that the path leads to a group, if not, select the group above
+                if not isinstance(file[parent_group], h5py._hl.group.Group):
+                    parent_group = "/".join(parent_group.split("/")[:-1])
+            
+            return parent_group
+
+        def retrieve_brillouin_type(brillouin_type):
+            # Retrieve existing Brillouin type is none was provided
+            with h5py.File(self.filepath, 'r') as file:
+                group = file[parent_group]
+                brillouin_type = group.attrs["Brillouin_type"]
+
+            return brillouin_type
+
+        def check_dictionary():
+            for k in dic.keys():
+                # Check that each key is a dictionary
+                if type(dic[k]) is not dict:
+                    raise WrapperError_ArgumentType(f"The element '{k}' is not a dictionary")
+                
+                # Check that each key has a valid brillouin_type
+                if "Attribute" not in k and k not in self.BRILLOUIN_TYPES_DATASETS and k.split("_")[0] != "Abscissa":
+                    valid_keys = [e for e in self.BRILLOUIN_TYPES_DATASETS if e.split("_")[0] != "Abscissa"]
+                    raise WrapperError_ArgumentType(f"The key '{k}' does not exist. Valid keys are: {valid_keys} or 'Abscissa_i_j'")
+                #Check that if the key is an abscissa, the dictionary has the correct format
+                elif k.split("_")[0] == "Abscissa":
+                    l = [e for e in dic[k].keys()]
+                    l.sort()
+                    if not l == ["Data","Dim_end","Dim_start","Name","Units"]:
+                        if not l == ["Data","Dim_end","Dim_start","Name","Unit"]:
+                            raise WrapperError_ArgumentType(f"The key '{k}' does not have the correct format. It should be a dictionary with the following keys: 'Data', 'Dim_end', 'Dim_start', 'Name', 'Units'")
+                # Check that if the key is not an abscissa, the dictionary has the correct format
+                elif "Attribute" not in k:
+                    l = [e for e in dic[k].keys()]
+                    l.sort()
+                    assert (l == ["Data","Name"]), WrapperError_ArgumentType(f"The key '{k}' does not have the correct format. It should be a dictionary with the following keys: 'Data', 'Name'")
+
+        def check_raw_data():
+            with h5py.File(self.filepath, 'r') as file:
+                group = file[parent_group]
+                for elt in group:
+                    elt = group[elt]
+                    if elt.attrs["Brillouin_type"] == "Raw_data":
+                        if "Raw_data" in dic.keys():
+                            if overwrite:
+                                del group[elt.name]
+                            else:
+                                raise WrapperError_Overwrite("You cannot add another raw data to a group with an existing raw data")
+
+        def check_name():
+            with h5py.File(self.filepath, 'r') as file:
+                group = file[parent_group]
+                for key in dic.keys():
+                    if "Attribute" not in key and dic[key]["Name"] in group:
+                        if overwrite:
+                            del group[dic[key]["Name"]]
+                        else:
+                            raise WrapperError_Overwrite(f"The name {dic[key]["Name"]} is already used in the group {parent_group}")
+
+        # Check that no issues come from the parent group and get the right parent group if a path to a dataset was given
+        parent_group = check_parent_group(parent_group)
+
+        # Check that the brillouin_type is correct and get the brillouin type of the group if none was given
+        brillouin_type_parent_group = retrieve_brillouin_type(brillouin_type_parent_group)
+
+        # Check that the dictionary has valid keys
+        check_dictionary()
+
+        # Check that the user is not adding another raw data to a group with an existing raw data
+        check_raw_data()
+
+        # Check that all the names given in the dictionary are free 
+        check_name()
+
+        # Add the data and the attributes to the file
+        with h5py.File(self.filepath, 'a') as file:
+            group = file[parent_group]
+            for key, value in dic.items():
+                if key in self.BRILLOUIN_TYPES_DATASETS and key != "Abscissa":
+                    if key in ["Amplitude", "Amplitude_err", "BLT", "BLT_std", "Linewidth", "Linewidth_err", "Shift", "Shift_err"]:
+                        if not brillouin_type_parent_group == "Treatment":
+                            raise WrapperError_StructureError(f"The brillouin_type '{brillouin_type_parent_group}' should be 'Treatment' if you want to add a dataset with type '{key}'.")
+                    elif key in ["Frequency", "PSD", "Raw_data"]:
+                        if not brillouin_type_parent_group in ["Calibration_spectrum", "Impulse_response", "Measure"]:
+                            raise WrapperError_StructureError(f"The brillouin_type '{brillouin_type_parent_group}' should be 'Calibration_spectrum', 'Impulse_response' or 'Measure' if you want to add a dataset with type '{key}'.")
+                    dataset = group.create_dataset(value["Name"], data=value["Data"])
+                    dataset.attrs["Brillouin_type"] = key
+                elif "Attribute" in key:
+                    for k, v in value.items():
+                        if k in group.attrs.keys():
+                            if overwrite and v:
+                                group.attrs.modify(k, str(v))
+                        elif v:
+                            group.attrs.create(k, str(v))
+                elif key.split("_")[0] == "Abscissa":
+                    dataset = group.create_dataset(value["Name"], data=value["Data"])
+                    dataset.attrs["Brillouin_type"] = f"Abscissa_{value['Dim_start']}_{value['Dim_end']}"
+                    if "Units" in value.keys():
+                        dataset.attrs["Units"] = value["Units"]
+                    else:
+                        dataset.attrs["Units"] = value["Unit"]
+                    
     def change_brillouin_type(self, path, brillouin_type):
         """Changes the brillouin type of an element in the HDF5 file.
 
@@ -422,14 +568,17 @@ class Wrapper:
         WrapperError_ArgumentType
             If the type is not valid
         """
-        # Check if the path is a valid path
-        with h5py.File(self.filepath, 'r') as file:
-            if path not in file:
-                raise WrapperError_StructureError(f"The path '{path}' does not exist in the file.")
+        def check_path():
+            # Check if the path is a valid path
+            with h5py.File(self.filepath, 'r') as file:
+                if path not in file:
+                    raise WrapperError_StructureError(f"The path '{path}' does not exist in the file.")
+        
+        check_path()
         
         # Check if the type is valid
         if self.get_type(path) == h5py._hl.group.Group:
-            if brillouin_type not in self.BRILLOUIN_TYPES_GROUPS:
+            if brillouin_type not in self.BRILLOUIN_TYPES_GROUPS and brillouin_type.split("_")[0] != "Abscissa":
                 raise WrapperError_ArgumentType(f"The brillouin type '{brillouin_type}' is not valid.")
         else:
             if brillouin_type not in self.BRILLOUIN_TYPES_DATASETS:
@@ -477,7 +626,7 @@ class Wrapper:
             raise WrapperError_Save(f"The wrapper has not been saved yet.")
 
     def combine_datasets(self, datasets, parent_group, name, overwrite = False):
-        """Combines a list of elements into a unique dataset.
+        """Combines a list of elements into a unique dataset. All the datasets must have the same shape. They are added into a new dataset where the first dimension is the number of datasets, under the group "parent_group". If the dataset already exists and overwrite is set to True, it is overwritten.
 
         Parameters
         ----------
@@ -510,11 +659,21 @@ class Wrapper:
         tpe = self.get_type(path = datasets[0], return_Brillouin_type = True)
         new_dataset = [self[dataset][()] for dataset in datasets]
         new_dataset = np.array(new_dataset)
-        print(new_dataset.shape)
         dic = {tpe: {"Name": name,
                      "Data": new_dataset}}
         
-        self.add_dictionnary(dic, parent_group = parent_group, name_group = parent_group, overwrite = overwrite)
+        self.add_dictionary(dic, parent_group = parent_group)
+
+    def compatibility_changes(self):
+        """
+        Applies changes from previous versions of the wrapper to newest versions
+        """
+        with h5py.File(self.filepath, "a") as f:
+            # Update the Brillouin_type attribute
+            f.visititems(compat.brillouin_type_update)
+
+            # Update the HDF5_BLS_version attribute
+            f["Brillouin"].attrs["HDF5_BLS_version"] = HDF5_BLS_Version
 
     def copy_dataset(self, path, copy_path):
         """
@@ -1123,7 +1282,7 @@ class Wrapper:
     #    Derived methods     #
     ##########################
 
-    def add_abscissa(self, data, parent_group, name=None, unit = "AU" , dim_start = 0, dim_end = None, overwrite = False): # Test made
+    def add_abscissa(self, data, parent_group, name=None, unit = "AU", dim_start = 0, dim_end = None, overwrite = False): # Test made
         """Adds abscissa as a dataset to the "parent_group" group. 
         
         Parameters
@@ -1148,10 +1307,6 @@ class Wrapper:
         WrapperError_StructureError
             If the parent group does not exist in the HDF5 file.
         """
-        with h5py.File(self.filepath, 'r') as file:
-            if parent_group not in file:
-                raise WrapperError_StructureError(f"The parent group '{parent_group}' does not exist in the HDF5 file.")
-        
         if dim_end is None: dim_end = len(data.shape)
         if name is None: name = f"Abscissa_{dim_start}_{dim_end}"
 
@@ -1161,13 +1316,33 @@ class Wrapper:
                            "Dim_start": dim_start, 
                            "Dim_end": dim_end}}
         
-        parent_group = parent_group.split("/")
-        name_group = parent_group.pop(-1)
-        parent_group = "/".join(parent_group)
-        
-        self.add_dictionnary(dic, parent_group = parent_group, name_group = name_group, overwrite = overwrite)
+        self.add_dictionary(dic, 
+                            parent_group = parent_group, 
+                            create_group=True, 
+                            brillouin_type_parent_group="Measure", 
+                            overwrite = overwrite)
 
-    def add_frequency(self, data, parent_group=None, name=None, overwrite=False):
+    def add_attributes(self, attributes, parent_group=None, overwrite=False): # Test made
+        """Adds attributes to the wrapper.
+
+        Parameters
+        ----------
+        attributes : dict
+            The attributes to add to the wrapper. The keys of the dictionary should be the name of the attributes, and the values should be the values of the attributes.
+        parent_group : str, optional
+            The parent group where to store the attributes of the HDF5 file. The format of this group should be "Brillouin/Measure".
+        overwrite : bool, optional
+            If True, the attributes will be overwritten if they already exist.
+        """
+        attr = {"Attributes": attributes}
+
+        self.add_dictionary(attr, 
+                            create_group=True,
+                            brillouin_type_parent_group="Root",
+                            parent_group = parent_group, 
+                            overwrite = overwrite)
+
+    def add_frequency(self, data, parent_group=None, name=None, overwrite=False): # Test made
         """Adds a frequency array to the wrapper by creating a new group.
         
         Parameters
@@ -1186,20 +1361,16 @@ class Wrapper:
         WrapperError_StructureError
             If the parent group does not exist in the HDF5 file.
         """
-        with h5py.File(self.filepath, 'r') as file:
-            if parent_group not in file:
-                raise WrapperError_StructureError(f"The parent group '{parent_group}' does not exist in the HDF5 file.")
-        
         if name is None: name = "Frequency"
 
         dic = {"Frequency": {"Name": name, 
                              "Data": data}}  
         
-        parent_group = parent_group.split("/")
-        name_group = parent_group.pop(-1)
-        parent_group = "/".join(parent_group)
-
-        self.add_dictionnary(dic, parent_group = parent_group, name_group = name_group, overwrite = overwrite)
+        self.add_dictionary(dic, 
+                            parent_group = parent_group, 
+                            create_group=True, 
+                            brillouin_type_parent_group="Measure", 
+                            overwrite = overwrite)
 
     def add_PSD(self, data, parent_group=None, name=None, overwrite=False): # Test made
         """Adds a PSD array to the wrapper by creating a new group.
@@ -1220,20 +1391,16 @@ class Wrapper:
         WrapperError_StructureError
             If the parent group does not exist in the HDF5 file.
         """
-        with h5py.File(self.filepath, 'r') as file:
-            if parent_group not in file:
-                raise WrapperError_StructureError(f"The parent group '{parent_group}' does not exist in the HDF5 file.")
-        
         if name is None: name = "PSD"
 
         dic = {"PSD": {"Name": name, 
                        "Data": data}}  
         
-        parent_group = parent_group.split("/")
-        name_group = parent_group.pop(-1)
-        parent_group = "/".join(parent_group)
-
-        self.add_dictionnary(dic, parent_group = parent_group, name_group = name_group, overwrite = overwrite)
+        self.add_dictionary(dic, 
+                            parent_group = parent_group, 
+                            create_group=True, 
+                            brillouin_type_parent_group="Measure", 
+                            overwrite = overwrite)
 
     def add_raw_data(self, data, parent_group, name=None, overwrite=False): # Test made
         """Adds a raw data array to the wrapper by creating a new group.
@@ -1253,67 +1420,77 @@ class Wrapper:
         ------
         WrapperError_StructureError
             If the parent group does not exist in the HDF5 file.
-        """
-        with h5py.File(self.filepath, 'r') as file:
-            if parent_group not in file:
-                raise WrapperError_StructureError(f"The parent group '{parent_group}' does not exist in the HDF5 file.")
-        
-        if name is None: name = "Raw data"
+        """        
+        if name is None: 
+            name = "Raw data"
 
         dic = {"Raw_data": {"Name": name, 
                             "Data": data}}  
-        
-        parent_group = parent_group.split("/")
-        name_group = parent_group.pop(-1)
-        parent_group = "/".join(parent_group)
 
-        self.add_dictionnary(dic, parent_group = parent_group, name_group = name_group, overwrite = overwrite)
+        self.add_dictionary(dic, 
+                            parent_group = parent_group, 
+                            create_group=True, 
+                            brillouin_type_parent_group="Measure", 
+                            overwrite = overwrite)
 
-    def add_treated_data(self, shift, linewidth, shift_std, linewidth_std, parent_group, name_group = None, overwrite = False): # Test made
+    def add_treated_data(self, parent_group, name_group = None, overwrite = False, **kwargs): # Test made, Dev guide made
         """Adds the arrays resulting from the treatment of the PSD to the wrapper by creating a new group.
         
         Parameters
         ----------
-        shift : np.ndarray
-            The shift array to add to the wrapper.
-        linewidth : np.ndarray
-            The linewidth array to add to the wrapper.
-        shift_std : np.ndarray
-            The shift standard deviation array to add to the wrapper.
-        linewidth_std : np.ndarray
-            The linewidth standard deviation array to add to the wrapper.
         parent_group : str, optional
             The parent group where to store the data of the HDF5 file. The format of this group should be "Brillouin/Measure".
         name_group : str, optional
             The name of the group that will be created to store the treated data. By default the name is "Treat_i" with i the number of the treatment so that the name is unique.
         overwrite : bool, optional 
             A parameter to indicate whether the dataset should be overwritten if a dataset with same name already exist or not, by default False - not overwritten. 
-        
+        shift: np.ndarray, optional
+            The shift array to add to the wrapper.
+        linewidth: np.ndarray, optional
+            The linewidth array to add to the wrapper.
+        amplitude: np.ndarray, optional
+            The amplitude array to add to the wrapper.
+        blt: np.ndarray, optional
+            The Loss Tangent array to add to the wrapper.
+        shift_err: np.ndarray, optional
+            The shift error array to add to the wrapper.
+        linewidth_err: np.ndarray, optional
+            The linewidth error array to add to the wrapper.
+        amplitude_err: np.ndarray, optional 
+            The amplitude error array to add to the wrapper.
+        blt_std: np.ndarray, optional   
+            The Loss Tangent error array to add to the wrapper.
+            
         Raises
         ------
         WrapperError_StructureError
             If the parent group does not exist in the HDF5 file.
         """
-        with h5py.File(self.filepath, 'r') as file:
-            if parent_group not in file:
-                raise WrapperError_StructureError(f"The parent group '{parent_group}' does not exist in the HDF5 file.")
-            if name_group is None:
-                group = file[parent_group]
-                i=0
-                while f"Treat_{i}" in group.keys(): i+=1
-
-        dic = {"Shift": {"Name": "Shift", 
-                         "Data": shift},
-                "Linewidth": {"Name": "Linewidth",
-                              "Data": linewidth},
-                "Shift_std": {"Name": "Shift_std",
-                              "Data": shift_std},
-                "Linewidth_std": {"Name": "Linewidth_std",
-                                  "Data": linewidth_std}}  
+        dic = {}
+        shift = kwargs.get("shift", None)
+        if shift is not None: dic["Shift"] = {"Name": "Shift", "Data": shift}
+        linewidth = kwargs.get("linewidth", None)
+        if linewidth is not None: dic["Linewidth"] = {"Name": "Linewidth", "Data": linewidth}
+        amplitude = kwargs.get("amplitude", None)
+        if amplitude is not None: dic["Amplitude"] = {"Name": "Amplitude", "Data": amplitude}
+        blt = kwargs.get("blt", None)
+        if blt is not None: dic["BLT"] = {"Name": "BLT", "Data": blt}
+        shift_err = kwargs.get("shift_err", None)
+        if shift_err is not None: dic["Shift_err"] = {"Name": "Shift error", "Data": shift_err}
+        linewidth_err = kwargs.get("linewidth_err", None)
+        if linewidth_err is not None: dic["Linewidth_err"] = {"Name": "Linewidth error", "Data": linewidth_err}
+        amplitude_err = kwargs.get("amplitude_err", None)
+        if amplitude_err is not None: dic["Amplitude_err"] = {"Name": "Amplitude error", "Data": amplitude_err}
+        blt_std = kwargs.get("blt_std", None)
+        if blt_std is not None: dic["BLT_std"] = {"Name": "BLT error", "Data": blt_std}
         
-        self.create_group(name_group, parent_group=parent_group, overwrite=overwrite)
+        if len(dic.keys()) == 0: return
 
-        self.add_dictionnary(dic, parent_group = parent_group, name_group = name_group, overwrite = overwrite)
+        self.add_dictionary(dic, 
+                            parent_group = f"{parent_group}/{name_group}", 
+                            create_group=True, 
+                            brillouin_type_parent_group="Treatment", 
+                            overwrite = overwrite)
 
     def clear_empty_attributes(self, path):
         """Deletes all the attributes that are empty at the given path.
@@ -1331,8 +1508,8 @@ class Wrapper:
         else:
             self.clear_empty_attributes(path = "/".join(path.split("/")[:-1]))
 
-    def import_file(self, filepath, parent_group=None, creator = None, parameters = None, reshape = None, overwrite = False):
-        """Adds a raw data array to the wrapper from a file.
+    def import_raw_data(self, filepath, parent_group=None, name = None, creator = None, parameters = None, reshape = None, overwrite = False): # Test made
+        """Adds a raw data array to the HDF5 file from a file.
         
         Parameters
         ----------
@@ -1340,6 +1517,8 @@ class Wrapper:
             The filepath to the raw data file to import.
         parent_group : str, optional
             The parent group where to store the data of the HDF5 file. The format of this group should be "Brillouin/Measure".
+        name : str, optional
+            The name of the dataset, by default None.
         creator : str, optional
             The structure of the file that has to be loaded. If None, a LoadError can be raised.
         parameters : dict, optional
@@ -1355,19 +1534,11 @@ class Wrapper:
         dic = load_general(filepath,
                             creator=creator,
                             parameters=parameters)
-        
-        parent_group = parent_group.split("/")
-        name_group = parent_group.pop(-1)
-        parent_group = "/".join(parent_group)
 
         if reshape is not None: 
             dic["Raw_data"]["Data"] = np.reshape(dic["Raw_data"]["Data"], reshape)
         
-        self.add_dictionnary(dic=dic,
-                             parent_group=parent_group,
-                             name_group=name_group,
-                             brillouin_type="Measure",
-                             overwrite=overwrite)
+        self.add_raw_data(dic["Raw_data"]["Data"], parent_group, name = name, overwrite = overwrite)
 
     def import_other(self, filepath, parent_group=None, name = None, creator = None, parameters = None, reshape = None, overwrite = False):
         """Adds a raw data array to the wrapper from a file.
@@ -1403,20 +1574,12 @@ class Wrapper:
                             creator=creator,
                             parameters=parameters,
                             brillouin_type = "Other")
-        
-        parent_group = parent_group.split("/")
-        name_group = parent_group.pop(-1)
-        parent_group = "/".join(parent_group)
 
         if reshape is not None: 
-            dic["Other"]["Data"] = np.reshape(dic["Raw_data"]["Data"], reshape)
+            dic["Other"]["Data"] = np.reshape(dic["Other"]["Data"], reshape)
         dic["Other"]["Name"] = name
-        
-        self.add_dictionnary(dic=dic,
-                             parent_group=parent_group,
-                             name_group=name_group,
-                             brillouin_type="Measure",
-                             overwrite=overwrite)
+
+        self.add_dictionary(dic, parent_group = parent_group, create_group = True, brillouin_type_parent_group = "Measure", overwrite = overwrite)
 
     def import_properties_data(self, filepath, path = None, overwrite = False, delete_child_attributes = False): 
         """Imports properties from an excel or CSV file into a dictionary.
@@ -1474,17 +1637,7 @@ class Wrapper:
             delete_attributes(path, new_attributes)
 
         # Updating the attributes
-        if path == "Brillouin": 
-            parent_group = "Brillouin"
-            name_group = "Brillouin"
-        else:
-            parent_group = path.split("/")
-            name_group = parent_group.pop(-1)
-            parent_group = "/".join(parent_group)
-        self.add_dictionnary({"Attributes": new_attributes},
-                             parent_group=parent_group,
-                             name_group=name_group,
-                             overwrite=overwrite)
+        self.add_dictionary({"Attributes": new_attributes}, parent_group=path, overwrite=overwrite)
         
     def update_property(self, name, value, path, apply_to_all = None):
         """Updates a property of the HDF5 file given a path to the dataset or group, the name of the property and its value.
@@ -1500,37 +1653,20 @@ class Wrapper:
         """
         # If the path is not specified, we set it to the root of the file
         if path is None: path = "Brillouin"
-
-        if name!="Brillouin_type": 
-            brillouin_type = self.get_attributes(path)["Brillouin_type"]
-        else: 
-            brillouin_type = value
         
         if apply_to_all is None and self.get_attributes(path)["Brillouin_type"] == "Root" and len(self.get_children_elements(path = path)) > 0:
             raise WrapperError_ArgumentType("Apply to all elements or not?")
         elif apply_to_all is not None and apply_to_all:
             if self.get_type(path = path) is h5py._hl.group.Group:
-                self.add_dictionnary({"Attributes": {name: value}},
-                                    parent_group=path,
-                                    name_group=path,
-                                    brillouin_type=brillouin_type,
-                                    overwrite=True)
+                self.add_dictionary({"Attributes": {name: value}}, parent_group=path, overwrite=True)
                 for e in self.get_children_elements(path = path):
                     self.update_property(name = name, value = value, path = f"{path}/{e}", apply_to_all = apply_to_all)
             else:
                 return
         elif apply_to_all is not None and not apply_to_all:
-            self.add_dictionnary({"Attributes": {name: value}},
-                                  parent_group=path,
-                                  name_group=path,
-                                  brillouin_type=brillouin_type,
-                                  overwrite=True)
+            self.add_dictionary({"Attributes": {name: value}}, parent_group=path, overwrite=True)
         else:
-            self.add_dictionnary({"Attributes": {name: value}},
-                                parent_group=path,
-                                name_group=path,
-                                brillouin_type=brillouin_type,
-                                overwrite=True)
+            self.add_dictionary({"Attributes": {name: value}}, parent_group=path, overwrite=True)
 
     ##########################
     #    Terminal methods    #
@@ -1571,4 +1707,22 @@ class Wrapper:
         for k, v in dic.items():
             print(k," : ", v)
     
+
+if __name__ == "__main__":
+    wrp = Wrapper()
+    dic = {"Raw_data": {"Name": "Wonderful measure 019", 
+                        "Data": np.random.random((100, 100))},
+           "PSD": {"Name": "Wonderful measure 019 - PSD", 
+                    "Data": np.random.random((100, 100))},
+           "Frequency": {"Name": "Frequency",
+                        "Data": np.random.random((100))},
+           "Abscissa_": {"Name":"Time (s)", 
+                          "Data":np.linspace(0,10,100), 
+                          "Units":"s",
+                          "Dim_start":0, 
+                          "Dim_end":1}}
+    wrp.add_dictionary(dic, parent_group="Brillouin/Group1/Group2/Group3/Test", create_group = True, brillouin_type_parent_group="Calibration_spectrum", overwrite=True)
+
+
+    wrp.close()
 
