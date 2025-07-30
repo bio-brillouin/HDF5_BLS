@@ -115,7 +115,7 @@ The function's logic is represented in the following flowchart:
         \draw [arrow] ++(addData) |- +(0cm,-2.6cm) -| node[anchor=east, align=center, yshift=-1cm] {element\\ is dict with\\ key "Attributes"} (addAttributes);
         \draw [arrow] ++(addData.south) |- node[anchor=south, align=center, xshift=-1cm, yshift=-0.4cm] {element\\ is other} (raiseError4.east);
         \draw [arrow] ++(nameOverwrite.south)|- +(0cm, -2.3cm) -|  (addAbscissa.north);
-        \draw [arrow] ++(addData.south) |- +(0cm, -1cm) -| node[anchor=north, align=center, xshift=2.5cm, yshift=0cm] {element is dict\\ with key in "Raw\_data", "PSD",\\"Frequency", "Shift", "Shift\_std"\\ "Linewidth", "Linewidth\_std" \\ or "Other"} (addNormal.north);
+        \draw [arrow] ++(addData.south) |- +(0cm, -1cm) -| node[anchor=north, align=center, xshift=2.5cm, yshift=0cm] {element is dict\\ with key in "Raw\_data", "PSD",\\"Frequency", "Shift", "Shift\_err"\\ "Linewidth", "Linewidth\_err" \\ or "Other"} (addNormal.north);
         \draw [arrow] (addAbscissa) -- (end);
         \draw [arrow] (addNormal) |- (end);
         \draw [arrow] (addAttributes) |- (end);

@@ -125,7 +125,7 @@
     \input{tex/00-Introduction/Introduction.tex}
 
     
-\chapter*{Preamble: The project in a nutshell}\addcontentsline{toc}{chapter}{Preamble: The project in a nutshell}
+\chapter*{Preamble: The project in a nutshell}\addcontentsline{toc}{chapter}{Preamble: The project in a nutshell}\label{chap:preamble}
     \section*{HDF5 file structure}\addcontentsline{toc}{section}{HDF5 file structure}
         \subsection*{Basic file structure}\addcontentsline{toc}{subsection}{Basic file structure}
             \input{tex/00-Preamble/1-1-File_structure.tex}
@@ -147,26 +147,25 @@
         \input{tex/00-Preamble/2-Pipeline.tex}
 
 
-\mypart{HDF5\_BLS package tutorial}\label{chapter:tutorial}
-    \chapter*{Installation and presentation}\addcontentsline{toc}{chapter}{Installation and presentation}
+\mypart{The HDF5\_BLS Python package}\label{part:tutorial}
+    \chapter*{Installation and presentation}\addcontentsline{toc}{chapter}{Installation and presentation}\label{chapter:HDF5_BLS.installation}
         \input{tex/01-Tutorial/1-HDF5_BLS/0-Installation.tex}
-        
-    \chapter{The Wrapper module}
-        \input{tex/01-Tutorial/1-HDF5_BLS/1-Initialization.tex}
 
-    \chapter{Adding arrays to the HDF5 file using the Wrapper object}
-        \input{tex/01-Tutorial/1-HDF5_BLS/2-Adding_data.tex}
+    \chapter{The \textit{wrapper} module}\label{chapter:HDF5_BLS.wrapper}
+        \input{tex/01-Tutorial/1-HDF5_BLS/1-Wrapper.tex}
 
-    \chapter{Importing data to the HDF5 file using the Wrapper object}
-        \input{tex/01-Tutorial/1-HDF5_BLS/3-Import_file.tex}
+    \chapter{The \textit{analyze} module}\label{chapter:HDF5_BLS.analyze}
+        \input{tex/01-Tutorial/1-HDF5_BLS/2-Analyze.tex}
 
-    \chapter{Import or combinine HDF5 files using the Wrapper object}
-        \input{tex/01-Tutorial/1-HDF5_BLS/4-Merge_combine.tex}
+    \chapter{The \textit{treat} module}\label{chapter:HDF5_BLS.treat}
+        % \input{tex/01-Tutorial/1-HDF5_BLS/3-Treat.tex}
 
-    \chapter{The Treat module}
-        \input{tex/01-Tutorial/1-HDF5_BLS/5-Treat.tex}
+    \chapter{How do I? (Hands-on tutorial)}\label{chapter:HDF5_BLS.how_do_i}
+        \input{tex/01-Tutorial/1-HDF5_BLS/4-How_do_i.tex}
 
-\mypart{HDF5\_BLS GUI tutorial}
+
+
+\mypart{HDF5\_BLS GUI tutorial}\label{part:GUI_tutorial}
     \chapter{GUI quick start guide}
         \input{tex/01-Tutorial/1-GUI_quick_start.tex}
 
@@ -176,8 +175,8 @@
 
 
 
-\mypart{Development Guide} \label{chapter:dev_guide}
-    \chapter{Wrapper}\label{sec:wrapper}
+\mypart{Development Guide} \label{part:dev_guide}
+    \chapter{Wrapper}\label{chapter:wrapper}
         \section{A little tour of the class}
             \input{tex/02-Development_guide/1-1-Introduction.tex}
         
@@ -194,28 +193,28 @@
             \input{tex/02-Development_guide/1-5-Console_Methods.tex}
 
     
-    \chapter{Load data} \label{chap:load_data}
+    \chapter{Load data} \label{chapter:load_data}
         \input{tex/02-Development_guide/2-Orientation.tex}
-        \section{Adding a user-specific function to an already supported format} \label{subsec:load_data.user_specific}
+        \section{Adding a user-specific function to an already supported format} \label{section:load_data.user_specific}
             \input{tex/02-Development_guide/2-1-User_specific_supported.tex}
 
-        \section{Improving an already supported function} \label{subsec:load_data.improvement}
+        \section{Improving an already supported function} \label{section:load_data.improvement}
             \input{tex/02-Development_guide/2-2-Improvement.tex}
 
-        \section{Adding a function to a new format} \label{subsec:load_data.new_format}
+        \section{Adding a function to a new format} \label{section:load_data.new_format}
             \input{tex/02-Development_guide/2-3-User_specific_new.tex}
             
-    \chapter{Analyze data} \label{chap:analysis}
+    \chapter{Analyze data} \label{chapter:analysis}
         \input{tex/02-Development_guide/3-Analysis.tex}
         \section{The attributes of the classes of the \textit{analysis} moduel} \label{sec:analysis.attributes}
             \input{tex/02-Development_guide/3-1-Attributes/0-Attributes.tex}
+
         \section{The classes of the \textit{analysis} module and the implementation of algorithms} \label{sec:analysis.inheritance}
             \input{tex/02-Development_guide/3-1-Attributes/0-Attributes.tex}
 
 
-    \chapter{Treat data} \label{sec:treatment}
+    \chapter{Treat data} \label{chapter:treatment}
         \input{tex/02-Development_guide/4-Treatment.tex}
-
         \section{Treat data to obtain a Power Spectral Density and a frequency vector} \label{subsec:treatment.toPSD}
             \input{tex/02-Development_guide/4-1-Get_PSD.tex}
 

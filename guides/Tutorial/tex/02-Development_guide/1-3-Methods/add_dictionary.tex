@@ -1,0 +1,100 @@
+This method is the preferred way to add datasets or attributes to the HDF5 file. One or more datasets can be added at once by specifying them as keys of the dictionary to add. Each key is a dictionary composed of at least two keys for datasets: "Data" and "Name". Attributes can also be added to the dataset by adding a key "Attributes" to the dictionary. 
+Please refer to \hyperref[chapter:HDF5_BLS.wrapper]{the dedicated section of the tutorial}
+
+\begin{lstlisting}
+def add_dictionary(self, dic = None, parent_group = "Brillouin", create_group = False, brillouin_type_parent_group = None, overwrite = False):
+\end{lstlisting}
+
+\paragraph*{Attributes:}
+
+\begin{itemize}
+    \item \textbf{dic}: The dictionary to add to the wrapper. The keys of the dictionary correspond to the type of data to be added. These keys are identical to the Brillouin\_types for dataset defined in \hyperref[subsec:preamble.file_structure.complete_structure]{preamble}. Each element of the dictionary is another dictionary with the following keys:
+    \begin{itemize}
+        \item "Name": The name of the dataset that will be stored. This can be any name that the user wants and find useful.
+        \item "Data": The array that will be stored, or the dictionary if we are adding attributes
+        \item "Units": \textit{Specific to "Abscissa\_..." keys}. The unit of the abscissa
+        \item "Dim\_start": \textit{Specific to "Abscissa\_..." keys}. The first dimension to which the abscissa corresponds.
+        \item "Dim\_end": \textit{Specific to "Abscissa\_..." keys}. The last dimension (excluded) to which the abscissa corresponds
+    \end{itemize}
+    \item \textbf{parent\_group}: The parent group where to store the data of the HDF5 file, by default the parent group is the top group "Brillouin". The format of this group should be "Brillouin/Measure/...". 
+    \item \textbf{create\_group}: An argument to indicate whether to create the group if it does not exist. If False, the function will raise an error if the group does not exist. Default is False.
+    \item \textbf{brillouin\_type\_parent\_group} \textit{(optional, default None)}: The type of the group that will store the elements of the dictionary. The possible values are the ones attributed to groups, defined earlier on in the \hyperref[subsec:preamble.file_structure.complete_structure]{preamble}
+    \item \textbf{overwrite} \textit{(optional, default False)}: If True, all the elements of the file with a name corresponding to a name given in the dictionary will be overwritten. Similarly any existing argument will be overwritten and Brillouin type will be redefined. Default is False.
+\end{itemize}
+
+Here are typical examples of a dictionary passed as attribute:
+\begin{lstlisting}
+dic_raw = {
+    "Raw_data": {
+        "Name": "Raw water spectrum", 
+        "Data": np.array([...])}
+} # a dictionary with a raw data array straight from the spectrometer - for example if you want to do the whole anylisis process with the library.
+
+dic_treated = {
+    "Shift": {
+        "Name": "Shift", 
+        "Data": np.array([...])}
+    "Linewidth": {
+        "Name": "Shift", 
+        "Data": np.array([...])}
+    "Abscissa_x": {
+        "Name": "x", 
+        "Data": np.array([...]),
+        "Unit": "microns",
+        "Dim_start": 0,
+        "Dim_end": 1}
+    "Abscissa_y": {
+        "Name": "y", 
+        "Data": np.array([...]),
+        "Unit": "microns",
+        "Dim_start": 1,
+        "Dim_end": 2},
+    "Attributes": {"MEASURE.Sample": "Water",
+                   "SPECTROMETER.Type": "TFP"}
+} # a dictionary of measures analyzed by a custom treatment - for example if you have your own data and just want to send them following the library's format.
+\end{lstlisting}
+
+\paragraph*{Returns:} Nothing
+
+\paragraph*{Raises:}
+
+\begin{itemize}
+    \item \textbf{WrapperError\_StructureError}: Raises an error if the parent group does not exist in the HDF5 file or if the type of group is not logical for the data to be added.
+    \item \textbf{WrapperError\_Overwrite}: Raises an error if there is a risk of overwriting the data.
+    \item \textbf{WrapperError\_ArgumentType}: Raises an error if arguments given to the function do not match the expected type.
+\end{itemize}
+
+\paragraph*{Flowchart:}
+
+The function's logic is represented in the following flowchart:
+\begin{figure}[H]
+    \centering
+    \label{fig:wrapper.flowchart_add_dictionary}
+    \small
+    \begin{tikzpicture}[node distance=2cm]
+        \node (start) [startstop, align=center] {Wrapper.add\_dictionary(...)};
+        \node (error_no_argument) [startstop, right of=start, align = center, yshift=0cm, xshift=4cm] {TypeError};
+        \node (take_parent_group) [process, below of=start, align = center, yshift=-1cm, xshift=-5cm] {Takes the hierarchically\\closest group as parent};
+        \node (create_parent_group) [process, align=center, below of=start, yshift=-1cm, xshift=0cm] {Create parent group\\with given Brillouin type};
+        \node (error_parent_group) [startstop, below of=start, yshift=0cm, xshift=5cm] {WrapperError\_StructureError};
+        \node (get_brillouin_type) [process, align=center, below of=take_parent_group, yshift=0.5cm, xshift=2.5cm] {Get the Brillouin Type\\ of the parent group};
+        \node (error_dictionary) [startstop, below of=error_parent_group, yshift=-2cm, xshift=0cm] {WrapperError\_ArgumentType};
+        \node (error_raw_data) [startstop, below of=error_dictionary, yshift=0.5cm, xshift=0cm] {WrapperError\_Overwrite};
+        \node (error_name) [startstop, below of=error_raw_data, yshift=0.5cm, xshift=0cm] {WrapperError\_Overwrite};
+        \node (error_parent_type) [startstop, below of=error_name, yshift=0.5cm, xshift=0cm] {WrapperError\_StructureError};
+        \node (add_dataset) [startstop, align=center, below of=get_brillouin_type, yshift=-5.5cm, xshift=0cm] {Add every element\\in the dictionary};
+ 
+        \draw [arrow] (start) -| node[anchor=east, align=center, yshift=-1cm] {parent\_group \\exists in file} (take_parent_group);
+        \draw [arrow] (start) -- node[anchor=south, align=center, yshift=0cm] {The arguments dic \\or parent\_group \\ are not given} (error_no_argument);
+        \draw [arrow] (start) -- node[anchor=east, align=center, yshift=0cm] {parent\_group doesn't exist\\ in file, create\_group is True,\\brillouin\_type\_parent\_group \\is valid} (create_parent_group);
+        \draw [arrow] (start) |- node[anchor=west, align=center, yshift=0.2cm, xshift=1cm] {else} (error_parent_group);
+        \draw [arrow] (create_parent_group.south) |- node[anchor=west, align=center, yshift=0cm, xshift=0cm] {} (get_brillouin_type);
+        \draw [arrow] (take_parent_group.south) |- node[anchor=west, align=center, yshift=0cm, xshift=0cm] {} (get_brillouin_type);
+        \draw [arrow] (get_brillouin_type.south) |- node[anchor=south, align=center, yshift=0cm, xshift=3cm] {If the dictionary is not \\the right format} (error_dictionary);
+        \draw [arrow] (get_brillouin_type.south) |- node[anchor=south, align=center, yshift=0cm, xshift=3cm] {If the parent group already\\contains a Raw\_data dataset\\and not overwrite} (error_raw_data);
+        \draw [arrow] (get_brillouin_type.south) |- node[anchor=south, align=center, yshift=0cm, xshift=3cm] {If the parent group already\\contains a dataset with the same\\name and not overwrite} (error_name);
+        \draw [arrow] (get_brillouin_type.south) |- node[anchor=south, align=center, yshift=0cm, xshift=3cm] {If the parent group has a brillouin\\type that does not fit the type\\of dataset to add} (error_parent_type);
+        \draw [arrow] (get_brillouin_type.south) -- node[anchor=south, align=center, yshift=-3cm, xshift=-0.5cm] {else} (add_dataset.north);
+    \end{tikzpicture}
+    \caption{Flowchart of the add\_dictionary method}
+\end{figure}

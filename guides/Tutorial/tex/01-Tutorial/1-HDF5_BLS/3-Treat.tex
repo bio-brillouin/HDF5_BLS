@@ -1,0 +1,12 @@
+The treat module allows the user to extract information from a Power Spectral Density. The module can work with all PSD relying on a 1D frequency vector and where the frequency dependence is the last dimension of the PSD. The module allows a seemless storage of the functions that have been called during a treatment. This allows the user to reapply functions to the data if needed. This chapter will present the way the module works and how it can be used and finally how the module can be extended.
+
+The philosophy of the treat module is to apply functions from the class to treat the data. This choice allows for the class to store any of the algorithm steps that have been applied to the data. 
+
+\section{The treatment module}
+    \input{tex/01-Tutorial/1-HDF5_BLS/5-Treat/1-Internal_workings.tex}
+
+\section{Using the treatment module}
+    \input{tex/01-Tutorial/1-HDF5_BLS/5-Treat/2-Use.tex}
+
+\section{Extending the treatment module}
+    \input{tex/01-Tutorial/1-HDF5_BLS/5-Treat/3-Extensions.tex}

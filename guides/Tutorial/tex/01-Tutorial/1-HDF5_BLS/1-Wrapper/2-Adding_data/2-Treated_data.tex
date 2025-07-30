@@ -1,0 +1,45 @@
+
+Adding treated data differs slightly from adding individual datasets as we'll usually collect a number of different results to store. Therefore, instead of using different functions to store a shift or linewidth array, we have chosen to use a single function to add all the results of treatment. The function follows therefore a slightly more complex logic:
+
+\begin{figure}[H]
+    \centering
+    \label{fig:wrapper.flowchart_add_treat}
+    \small
+    \begin{tikzpicture}[node distance=2cm]
+        \node (start) [startstop, align=center] {\textit{shift} is the shift\\ array to add};
+        \node (parentGroup) [startstop, right of=start, yshift=0cm, xshift=2.5cm, align=center] {\textit{parent\_group} is the parent group \\ where to store the \\data in the HDF5 file};
+        \node (name) [startstop, right of=parentGroup, yshift=0cm, xshift=3cm, align=center] {\textit{name} is the name of the \\abscissa to add};
+        \node (linewidth) [startstop, below of=start, yshift=0cm, xshift=2cm, align=center] {\textit{linewidth} is thelinewidth\\ array to add};
+        \node (shiftSTD) [startstop, right of=linewidth, yshift=0cm, xshift=3cm, align=center] {\textit{shift\_err} is the\\ error of\\ the shift array};
+        \node (linewidthSTD) [startstop, right of=shiftSTD, yshift=0cm, xshift=3cm, align=center] {\textit{linewidth\_err} is the\\ error of\\ the linewidth array};            
+        \node (function) [process, below of=shiftSTD, yshift=-1cm, xshift=0cm, align=center] {\textit{add\_treated\_data}(shift = \textit{shift}, \\ linewidth = \textit{linewidth}, \\shift\_err = \textit{shift\_err}, \\linewidth\_err = \textit{linewidth\_err},\\ parent\_group = \textit{parent\_group}, \\name = \textit{name})};
+
+        \draw [arrow] (start) |- (function);
+        \draw [arrow] ++(parentGroup.south) |- +(0cm, -2.7cm) -| (function.north);
+        \draw [arrow] ++(name.south) |- +(0cm, -2.7cm) -| (function.north);            
+        \draw [arrow] (linewidth) |- (function);
+        \draw [arrow] (shiftSTD) -- (function);
+        \draw [arrow] (linewidthSTD) |- (function);
+    \end{tikzpicture}   
+    \caption{Flowchart of the add\_abscissa method}
+\end{figure}
+
+
+\begin{center}
+    \rule{15cm}{0.4pt}
+\end{center}
+
+\paragraph*{Example}
+Let's consider the following example: we have treated our data and have obtained a shift array (shift), a linewidth array (linewidth) and their errors (shift\_err and linewidth\_err). We want to add these arrays in the same group as the PSD, that is the group "Test". The treated data are stored in a separate group nested in the "Test" group by the choices made while building the structure of the file. This is so the name of the treatment group can be chosen freely. Let's say that in this case, we have performed a non-negative matrix factorization (NnMF) on the data, and extracted the shift values closest to 5GHz. We will therefore call this treatment "NnMF - 5GHz". We will write:
+\begin{lstlisting}
+wrp.add_treated_data(shift = shift,
+                     linewidth = linewidth,
+                     shift_err = shift_err,
+                     linewidth_err = linewidth_err,
+                     parent_group = "Brillouin/Test", 
+                     name_group = "NnMF - 5GHz")
+\end{lstlisting}
+
+\begin{center}
+    \rule{15cm}{0.4pt}
+\end{center}

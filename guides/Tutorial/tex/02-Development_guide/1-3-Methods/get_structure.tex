@@ -1,4 +1,4 @@
-This method allows the user to extract the structure in the form of a dictionnary. This dictionnary is composed of all the elements of the file and their "Brillouin\_type" attribute, in the form of a JSON file or dictionnary similar to this one:
+This method allows the user to extract the structure in the form of a dictionary. This dictionary is composed of all the elements of the file and their "Brillouin\_type" attribute, in the form of a JSON file or dictionary similar to this one:
 \begin{verbatim}
 {'Brillouin': {'Brillouin_type': 'Root', 
     'M1': {'Brillouin_type': 'Root', 
@@ -20,7 +20,7 @@ def get_structure(self, filepath = None):
     \item \textbf{filepath} \textit{(optional, default None)}: The filepath to a HDF5 file. If None, the file of the wrapper is used.
 \end{itemize}
 
-\paragraph{Returns:} A dictionnary representing the structure of the file as detailed \hyperref[subsec:preamble.file_structure.complete_structure]{before}
+\paragraph{Returns:} A dictionary representing the structure of the file as detailed \hyperref[subsec:preamble.file_structure.complete_structure]{before}
 
 \paragraph{Flowchart:}
 
@@ -34,7 +34,7 @@ The function's logic is represented in the following flowchart:
         \node (setPath) [process, below of=start, yshift=-0.5cm, xshift=0cm, align=center] {Use filepath attribute \\ of the wrapper};
         \node (readFile) [process, right of=setPath, yshift=0cm, xshift=4cm, align=center] {Open and raead the file};
         \node (iterativeStructure) [process, below of=readFile, yshift=0cm, xshift=0cm, align=center] {Get the structure of the file\\ iterating through the file};
-        \node (end) [startstop, below of=iterativeStructure, yshift=0cm, xshift=0cm, align=center] {Return dictionnary of the structure};
+        \node (end) [startstop, below of=iterativeStructure, yshift=0cm, xshift=0cm, align=center] {Return dictionary of the structure};
 
         \draw [arrow] (start) -- node[anchor=east, align=center, yshift=0cm] {filepath \\is None} (setPath);
         \draw [arrow] (setPath) -- (readFile);

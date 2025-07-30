@@ -1,0 +1,10 @@
+The import functions combine both the arguments needed for the "add\_" functions and the arguments needed to extract the data and metadata from the files. These are the following arguments:
+    \begin{itemize}
+        \item \textbf{filepath}: The path to the file containing the data to import. Note that for the "Wrapper.import\_ treated\_data" function, there are 4 different files to import (for the fshift, the linewidth, the shift\_err and the linewidth\_err arrays).
+        \item \textbf{parent\_group}: The path to the group or dataset where the data will be added in the form "Brillouin/Measure/...".
+        \item \textbf{creator} \textit{(optional, default None)}: Some file extensions are not structured in the same way. Depending on how particular labs store their data, the "creator" argument can be used to specify the structure of the file that has to be loaded. In most cases, this argument is not used and can be left to None. If it however has to be used, a LoadError\_creator will be raised.
+        \item \textbf{parameters} \textit{(optional, default None)}: The parameters that are to be used to import the data correctly. These parameters are specific to the techniques used to obtain the data. In most cases, this argument is not used and can be left to None. If it however has to be used, a LoadError\_parameters will be raised.
+        \item \textbf{name} \textit{(optional, default None)}: The name that will be given to the dataset. If None, the name is set to whatever the type of data is (e.g. "Frequency").
+        \item \textbf{reshape} \textit{(optional, default None)}: The new shape of the array. If None, the shape is not changed.    
+        \item \textbf{overwrite} \textit{(optional, default False)}: If True, the attributes of the selected group or dataset are overwritten if they already exist in the file.
+    \end{itemize}

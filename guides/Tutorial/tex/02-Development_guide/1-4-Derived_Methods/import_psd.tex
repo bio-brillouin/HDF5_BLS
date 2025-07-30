@@ -1,4 +1,4 @@
-This method allows the user to add a Power Spectral Density array to the HDF5 file from a file. It adds the data by calling the \hyperref[subsec:wrapper.add_psd]{Wrapper.add\_PSD} method.
+This method allows the user to add a Power Spectral Density array to the HDF5 file from a file. It adds the data by calling the \hyperref[subchapter:wrapper.add_psd]{Wrapper.add\_PSD} method.
 
 
 \begin{lstlisting}[language=Python]
@@ -21,6 +21,6 @@ def import_PSD(self, filepath, parent_group, creator = None, parameters = None, 
 \paragraph{Raises:}
 \begin{itemize}
     \item \textbf{WrapperError\_FileNotFound}: If the file could not be found.
-    \item All the errors of the \hyperref[subsec:wrapper.add_psd]{Wrapper.add\_PSD} method.
+    \item All the errors of the \hyperref[subchapter:wrapper.add_psd]{Wrapper.add\_PSD} method.
     \item All the LoadError errors of the load\_data module.
 \end{itemize}

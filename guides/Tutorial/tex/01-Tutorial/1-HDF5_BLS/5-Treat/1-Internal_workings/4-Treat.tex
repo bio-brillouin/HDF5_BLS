@@ -34,15 +34,15 @@ The attributes of the class that are modified by the functions are:
     \item \textit{points}: a list of points that are not well fitted
     \item \textit{windows}: a list of windows that are not well fitted
     \item \textit{width\_estimator}: the estimation of the width of each peak. This is a list of floats with the same length as the \textit{points} attribute.
-    \item \textit{fit\_model}: the string corresponding to the model used to fit the data, matching one of the keys of the \textit{Models.models} dictionnary.
+    \item \textit{fit\_model}: the string corresponding to the model used to fit the data, matching one of the keys of the \textit{Models.models} dictionary.
     \item \textit{shift}: the shift array obtained after the treatment
     \item \textit{linewidth}: the linewidth array obtained after the treatment
-    \item \textit{shift\_var}: the array of standard deviation of the shift array obtained after the treatment
-    \item \textit{linewidth\_var}: the array of standard deviation of the linewidth array obtained after the treatment
+    \item \textit{shift\_var}: the array of error of the shift array obtained after the treatment
+    \item \textit{linewidth\_var}: the array of error of the linewidth array obtained after the treatment
     \item \textit{amplitude}: the amplitude array obtained after the treatment
-    \item \textit{amplitude\_var}: the array of standard deviation of the amplitude array obtained after the treatment
+    \item \textit{amplitude\_var}: the array of error of the amplitude array obtained after the treatment
     \item \textit{BLT}: the BLT array obtained after the treatment
-    \item \textit{BLT\_var}: the array of standard deviation of the BLT array obtained after the treatment
+    \item \textit{BLT\_var}: the array of error of the BLT array obtained after the treatment
 \end{itemize}
 
 \subsubsection{Functions signature}
@@ -57,7 +57,7 @@ To further improve the seamless integration of new functions to the GUI, argumen
     \item \textit{window}: The width of the window around the peak. The GUI recognizes this parameter and creates a text box to enter the value of the window.
     \item \textit{type\_peak}: The type of the peak. Can be either "Stokes", "Anti-Stokes" or "Elastic".
     \item \textit{center\_type}: The type of the peak to center the x axis around. Must be either "Elastic" or "Inelastic".
-    \item \textit{model}: The model to be used to fit the data. The GUI recognizes this parameter and creates a combobox to select the model based on the keys of the \textit{Models.models} dictionnary.
+    \item \textit{model}: The model to be used to fit the data. The GUI recognizes this parameter and creates a combobox to select the model based on the keys of the \textit{Models.models} dictionary.
 \end{itemize}
 
 All other arguments will be displayed in the GUI as text boxes. 

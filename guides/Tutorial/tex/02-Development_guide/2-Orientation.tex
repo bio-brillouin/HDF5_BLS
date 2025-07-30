@@ -22,7 +22,7 @@ In any of these situations, the pipeline to load the data is fixed. Here we sche
         \node (wrong_creator) [process, right of=if_no_creator, align = center, xshift=4cm] {Asks the user to choose\\ the way to load this file type};
         \node (if_no_parameter) [condition, below of=if_no_creator, align = center, yshift=-4cm] {Loading the format \\ requires additional\\ parameters};
         \node (wrong_parameters) [process, right of=if_no_parameter, align = center, xshift=4cm] {ParameterWindow.main.py \\-> ParameterWindow};
-        \node (add_dictionnary) [process, below of=if_no_parameter, align = center, yshift=-2cm] {HDF5\_BLS.wrapper.py -> Wrapper.add\_data\_dictionnary};
+        \node (add_dictionary) [process, below of=if_no_parameter, align = center, yshift=-2cm] {HDF5\_BLS.wrapper.py -> Wrapper.add\_data\_dictionary};
 
         \draw [arrow] (start) -- (add_data);
         \draw [arrow] (add_data) -- (load_data);
@@ -34,9 +34,9 @@ In any of these situations, the pipeline to load the data is fixed. Here we sche
         \draw [arrow] (if_no_creator) -- node[anchor=east] {Yes} (if_no_parameter);
         \draw [arrow] (wrong_creator) -- (if_no_parameter);
         \draw [arrow] (if_no_parameter) -- node[anchor=south] {Yes} (wrong_parameters);
-        \draw [arrow] (if_no_parameter) -- node[anchor=east] {No} (add_dictionnary);
+        \draw [arrow] (if_no_parameter) -- node[anchor=east] {No} (add_dictionary);
         \draw [arrow] (wrong_creator) -- (if_no_parameter);
-        \draw [arrow] (wrong_parameters) |- (add_dictionnary);
+        \draw [arrow] (wrong_parameters) |- (add_dictionary);
 
     \end{tikzpicture}
 \end{center}

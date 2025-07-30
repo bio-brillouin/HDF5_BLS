@@ -1,0 +1,50 @@
+Much like adding data from a script, we can import data from external files by using type-specific functions. These functions are:
+\begin{itemize}
+    \item \hyperref[subchapter:wrapper.import_abscissa]{Wrapper.import\_abscissa}: To import an abscissa array.
+    \item \hyperref[subchapter:wrapper.import_frequency]{Wrapper.import\_frequency}: To import a frequency array.
+    \item \hyperref[subchapter:wrapper.import_psd]{Wrapper.import\_PSD}: To import a PSD array.
+    \item \hyperref[subchapter:wrapper.import_raw_data]{Wrapper.import\_raw\_data}: To import raw data.
+    \item \hyperref[subchapter:wrapper.import_treated_data]{Wrapper.import\_treated\_data}: To import the data arrays resulting from a treatment.
+\end{itemize}
+
+The logic behind the import functions is the following:
+\begin{figure}[H]
+    \centering
+    \label{fig:wrapper.flowchart_import_functions}
+    \small
+    \begin{tikzpicture}[node distance=1cm]
+        \node (start) [startstop, align=center] {We want to import the data\\stored in the file \textit{filepath}\\to the HDF5 file};
+        \node(isAbscissa) [process, below of=start, yshift=-1cm, xshift=2cm, align=center] {We want to import\\an abscissa array};
+        \node(isFreq) [process, below of=isAbscissa, yshift=-0.5cm, xshift=0cm, align=center] {We want to import\\a frequency array};
+        \node(isPSD) [process, below of=isFreq, yshift=-0.5cm, xshift=0cm, align=center] {We want to import\\a PSD array};
+        \node(israw) [process, below of=isPSD, yshift=-0.5cm, xshift=0cm, align=center] {We want to import\\a raw data array};
+        \node(isTreated) [process, below of=israw, yshift=-0.5cm, xshift=0cm, align=center] {We want to import\\the data arrays\\after treatment};
+        \node(extAbs) [process, right of=isAbscissa, yshift=0cm, xshift=3.5cm, align=center] {Extract data and metadata\\from the file};
+        \node(extFreq) [process, right of=isFreq, yshift=0cm, xshift=3.5cm, align=center] {Extract data and metadata\\from the file};
+        \node(extPSD) [process, right of=isPSD, yshift=0cm, xshift=3.5cm, align=center] {Extract data and metadata\\from the file};
+        \node(extraw) [process, right of=israw, yshift=0cm, xshift=3.5cm, align=center] {Extract data and metadata\\from the file};
+        \node(extTreated) [process, right of=isTreated, yshift=0cm, xshift=3.5cm, align=center] {Extract data and metadata\\from the file};
+        \node(fAbs) [process, right of=extAbs, yshift=0cm, xshift=3.5cm, align=center] {Wrapper.add\_abscissa};
+        \node(fFreq) [process, right of=extFreq, yshift=0cm, xshift=3.5cm, align=center] {Wrapper.add\_frequency};
+        \node(fPSD) [process, right of=extPSD, yshift=0cm, xshift=3.5cm, align=center] {Wrapper.add\_PSD};
+        \node(fraw) [process, right of=extraw, yshift=0cm, xshift=3.5cm, align=center] {Wrapper.add\_raw\_data};
+        \node(fTreated) [process, right of=extTreated, yshift=0cm, xshift=3.5cm, align=center] {Wrapper.add\_treated\_data};
+
+        \draw[arrow] (start) |- node[anchor=west, yshift=1cm] {Depending on the type of data} (isAbscissa);
+        \draw[arrow] (start) |- (isFreq);
+        \draw[arrow] (start) |- (isPSD);
+        \draw[arrow] (start) |- (israw);
+        \draw[arrow] (start) |- (isTreated);
+        \draw[arrow] (isAbscissa) -- (extAbs);
+        \draw[arrow] (isFreq) -- (extFreq);
+        \draw[arrow] (isPSD) -- (extPSD);
+        \draw[arrow] (israw) -- (extraw);
+        \draw[arrow] (isTreated) -- (extTreated);
+        \draw[arrow] (extAbs) -- (fAbs);
+        \draw[arrow] (extFreq) -- (fFreq);
+        \draw[arrow] (extPSD) -- (fPSD);
+        \draw[arrow] (extraw) -- (fraw);
+        \draw[arrow] (extTreated) -- (fTreated);    
+    \end{tikzpicture}
+    \caption{Flowchart of the import functions}
+\end{figure}

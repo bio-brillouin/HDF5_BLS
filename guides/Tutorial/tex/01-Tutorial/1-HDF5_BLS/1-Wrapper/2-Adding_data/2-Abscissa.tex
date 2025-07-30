@@ -1,0 +1,54 @@
+
+Adding abscissa also differs from the general case as we might want to add an abscissa array that is multi-dimensional and be able to know which dimensions of the PSD the abscissa correspomnds to. The \hyperref[subchapter:wrapper.add_abscissa]{add\_abscissa}  method therefore asks the user to specify the dimension of the PSD to use as well as the units of the axis:
+
+\begin{figure}[H]
+    \centering
+    \label{fig:wrapper.flowchart_add_abscissa}
+    \small
+    \begin{tikzpicture}[node distance=2cm]
+        \node (start) [startstop, align=center] {\textit{data} is the abscissa\\ to add};
+        \node (parentGroup) [startstop, right of=start, yshift=0cm, xshift=2.5cm, align=center] {\textit{parent\_group} is the parent group \\ where to store the \\data in the HDF5 file};
+        \node (name) [startstop, right of=parentGroup, yshift=0cm, xshift=3cm, align=center] {\textit{name} is the name of the \\abscissa to add};
+        \node (unit) [startstop, below of=start, yshift=0cm, xshift=2cm, align=center] {\textit{unit} is the unit of the \\axis};
+        \node (dimensionPSD) [startstop, right of=unit, yshift=0cm, xshift=3cm, align=center] {\textit{dimension\_PSD\_start} is the\\ first dimension of the \\PSD array to which\\ the abscissa corresponds};
+        \node (dimensionPSD_end) [startstop, right of=dimensionPSD, yshift=0cm, xshift=3cm, align=center] {\textit{dimension\_PSD\_end} is the\\ last dimension of the \\PSD array to which \\the abscissa corresponds};            
+        \node (function) [process, below of=dimensionPSD, yshift=-1cm, xshift=0cm, align=center] {\textit{add\_abscissa}(data = \textit{data}, \\parent\_group = \textit{parent\_group}, \\name = \textit{name}, \\unit = \textit{unit}, \\dimension\_PSD\_start = \textit{dimension\_PSD\_start}, \\dimension\_PSD\_end = \textit{dimension\_PSD\_end})};
+
+        \draw [arrow] (start) |- (function);
+        \draw [arrow] ++(parentGroup.south) |- +(0cm, -2.7cm) -| (function.north);
+        \draw [arrow] ++(name.south) |- +(0cm, -2.7cm) -| (function.north);            
+        \draw [arrow] (unit) |- (function);
+        \draw [arrow] (dimensionPSD) -- (function);
+        \draw [arrow] (dimensionPSD_end) |- (function);
+    \end{tikzpicture}   
+    \caption{Flowchart of the add\_abscissa method}
+\end{figure}
+
+\begin{center}
+    \rule{15cm}{0.4pt}
+\end{center}
+
+\paragraph*{Example}
+Let's consider the following example: we have just initialized a wrapper object and want to add an abscissa axis corresponding to our measures that have been stored in the group "Brillouin/Temp". Say that this abscissa axis corresponds to temperature values, from 35 to 40 degrees and that there are 10 points in the axis. We will therefore call this abscissa axis "Temperature". We will write:
+\begin{lstlisting}
+wrp.add_abscissa(data = np.linspace(35, 40, 10),
+                 parent_group = "Brillouin/Temp", 
+                 name = "Temperature",
+                 unit = "C",
+                 dim_start = 0,
+                 dim_end = 1)
+\end{lstlisting}
+
+Of course if you want to import saved values for this axis, you can also specify them directly in the function call:
+\begin{lstlisting}
+wrp.add_abscissa(data = data,
+                 parent_group = "Brillouin/Temp", 
+                 name = "Temperature",
+                 unit = "C",
+                 dim_start = 0,
+                 dim_end = 1)
+\end{lstlisting}
+
+\begin{center}
+    \rule{15cm}{0.4pt}
+\end{center}

@@ -1,4 +1,4 @@
-This method allows the user to add an abscissa to the HDF5 file from a measure file. It adds the data by calling the \hyperref[subsec:wrapper.add_abscissa]{Wrapper.add\_abscissa} method.
+This method allows the user to add an abscissa to the HDF5 file from a measure file. It adds the data by calling the \hyperref[subchapter:wrapper.add_abscissa]{Wrapper.add\_abscissa} method.
 
 \begin{lstlisting}[language=Python]
 def add_abscissa(self, filepath, parent_group, creator = None, parameters = None, name=None, unit = "AU" , dim_start = 0, dim_end = None, reshape = None, overwrite = False):
@@ -22,6 +22,6 @@ def add_abscissa(self, filepath, parent_group, creator = None, parameters = None
 \paragraph{Raises:}
 \begin{itemize}
     \item \textbf{WrapperError\_FileNotFound}: If the file could not be found.  
-    \item All the errors of the \hyperref[subsec:wrapper.add_abscissa]{Wrapper.add\_abscissa} method.
+    \item All the errors of the \hyperref[subchapter:wrapper.add_abscissa]{Wrapper.add\_abscissa} method.
     \item All the LoadError errors of the load\_data module.
 \end{itemize}

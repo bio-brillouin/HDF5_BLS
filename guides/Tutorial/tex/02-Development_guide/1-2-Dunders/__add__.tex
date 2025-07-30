@@ -5,9 +5,9 @@ This magic command allows the user to add two wrappers together. This dunder met
 
 In this example, wrp1 and wrp2 are two wrappers that are added together. The resulting wrapper is stored in the variable new\_wrapper. The addition of the two wrappers is done by adding the elements stored in the "Brillouin" group of both wrappers. The addition is possible only if the two wrappers have the same "HDF5\_BLS\_version" attribute. If the two wrappers have different "HDF5\_BLS\_version" attributes, the addition is not possible and an error is raised.
 
-If you prefer to add a second wrapper to a dedicated group of the first wrapper, please use the \hyperref[subsec:wrapper.add_hdf5]{Wrapper.add\_hdf5} method.
+If you prefer to add a second wrapper to a dedicated group of the first wrapper, please use the \hyperref[subchapter:wrapper.add_hdf5]{Wrapper.add\_hdf5} method.
 
-The addition of the two wrappers also affects the addition of attributes. Common attributes to all the groups will be set to the root group whereas attributes specific to each file will be set to their respective groups. Access to attributes is guaranteed by the \hyperref[subsec:wrapper.get_attributes]{Wrapper.get\_attributes} method.
+The addition of the two wrappers also affects the addition of attributes. Common attributes to all the groups will be set to the root group whereas attributes specific to each file will be set to their respective groups. Access to attributes is guaranteed by the \hyperref[subchapter:wrapper.get_attributes]{Wrapper.get\_attributes} method.
 
 \paragraph{Attributes:}
 

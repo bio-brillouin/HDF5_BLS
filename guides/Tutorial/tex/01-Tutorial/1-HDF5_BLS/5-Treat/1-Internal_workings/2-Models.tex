@@ -1,6 +1,6 @@
 The \textit{Models} class is a class that is used to store the analytical models that can be used to fit the data. These can be both fundamental lineshapes (lorentzian, Gaussian, DHO, Voigt, ...) or custom lineshapes for example if a first order Taylor expansion is used to reduce the effect of the elastic peak on the Brillouin scattered peak. 
 
-The class is composed of a series of functions that are used to define the models. These functions are then stored as elements of the \textit{Models.models} dictionnary attribute. The keys of this dictionnary are the names of the models and the values are the functions that define the model. This choice was made to allow the user to easily select a model by simply writing its name. 
+The class is composed of a series of functions that are used to define the models. These functions are then stored as elements of the \textit{Models.models} dictionary attribute. The keys of this dictionary are the names of the models and the values are the functions that define the model. This choice was made to allow the user to easily select a model by simply writing its name. 
 
 Note that all models have by default an "IR" parameter. This parameter is meant to be the lineshape of the response of the instrument. If this parameter is given, then the model is numerically convolved with the IR. This allows the user to essentially deconvolve the response of the instrument during the fitting of the data.
 
@@ -53,7 +53,7 @@ To maintain a seemless compatibility with all the models, we ask the user to use
 To add a new model, you need to 
 \begin{itemize}
     \item Create a new function that follows the signature of the functions already present in the class
-    \item Add the function to the \textit{Models.models} dictionnary attribute
+    \item Add the function to the \textit{Models.models} dictionary attribute
 \end{itemize}
 
 For example if you want to add a Gaussian model, you would need to create the following function:
@@ -62,7 +62,7 @@ def gaussian(self, nu, b, a, nu0, gamma, IR = None):
     ...
 \end{lstlisting}
 
-Then you would need to add the function to the \textit{Models.models} dictionnary attribute:
+Then you would need to add the function to the \textit{Models.models} dictionary attribute:
 \begin{lstlisting}
 Models.models["Gaussian"] = lambda nu, b, a, nu0, gamma, IR=None: self.gaussian(nu, b, a, nu0, gamma, IR)
 \end{lstlisting}

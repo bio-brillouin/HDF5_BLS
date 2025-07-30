@@ -1,4 +1,4 @@
-This method allows the user to import a frequency array to the HDF5 file. It adds the data by calling the \hyperref[subsec:wrapper.add_frequency]{Wrapper.add\_frequency} method.
+This method allows the user to import a frequency array to the HDF5 file. It adds the data by calling the \hyperref[subchapter:wrapper.add_frequency]{Wrapper.add\_frequency} method.
 By default, the frequency array is stored in "GHz". Note however that this will just affect the presentation of the results and not the process itself.
 
 \begin{lstlisting}[language=Python]
@@ -20,6 +20,6 @@ def import_frequency(self, filepath, parent_group, creator = None, parameters = 
 \paragraph{Raises:}
 \begin{itemize}
     \item \textbf{WrapperError\_FileNotFound}: If the file could not be found.
-    \item All the errors of the \hyperref[subsec:wrapper.add_frequency]{Wrapper.add\_frequency} method.
+    \item All the errors of the \hyperref[subchapter:wrapper.add_frequency]{Wrapper.add\_frequency} method.
     \item All the LoadError errors of the load\_data module.
 \end{itemize}

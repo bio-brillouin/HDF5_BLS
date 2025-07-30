@@ -1,4 +1,4 @@
-This method allows the user to extract all the attributes of a dataset or group in a hierarchical way. This means that this method opens the file, goes from the root to the selected group, and extracts all the attributes associated to the groups along the way. The function returns a dictionnary, where the keys are the names of the attributes and the values are their values.
+This method allows the user to extract all the attributes of a dataset or group in a hierarchical way. This means that this method opens the file, goes from the root to the selected group, and extracts all the attributes associated to the groups along the way. The function returns a dictionary, where the keys are the names of the attributes and the values are their values.
 
 
 \begin{lstlisting}[language=Python]
@@ -11,7 +11,7 @@ def get_attributes(self, path = None):
     \item \textbf{path} \textit{(optional, default None)}: The path to the group or dataset which attributes we want to extract in the format "Brillouin/Measure/PSD". If None, the attributes of the root group are returned.
 \end{itemize}
 
-\paragraph{Returns:} A dictionnary containing the attributes of the selected group or dataset where the keys are the names of the attributes and the values are their values. The keys of the attributes are listed in the spreadsheet located in the spreadsheets folder of the project.
+\paragraph{Returns:} A dictionary containing the attributes of the selected group or dataset where the keys are the names of the attributes and the values are their values. The keys of the attributes are listed in the spreadsheet located in the spreadsheets folder of the project.
 
 \paragraph{Raises:}
 
@@ -31,7 +31,7 @@ The function's logic is represented in the following flowchart:
         \node (setPath) [process, below of=start, yshift=0cm, xshift=-3cm] {path = "Brillouin"};
         \node (extract) [process, right of=setPath, xshift=2cm, align=center] {Extracts attributes \\hierarchically};
         \node (raiseError1) [startstop, right of=checkExists, xshift=3cm] {WrapperError\_StructureError};
-        \node (end) [startstop, below of=checkGroup, align=center] {Returns a dictionnary\\ of attributes};
+        \node (end) [startstop, below of=checkGroup, align=center] {Returns a dictionary\\ of attributes};
 
         \draw [arrow] (start) -| node[anchor=east, align=center, yshift=-1cm] {path \\is None} (setParent);
         \draw [arrow] (setPath) -- (extract);

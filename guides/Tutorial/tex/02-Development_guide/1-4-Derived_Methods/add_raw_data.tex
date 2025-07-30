@@ -1,4 +1,4 @@
-This method allows the user to add raw data to the HDF5 file. It adds the data by calling the \hyperref[subsec:wrapper.add_dictionnary]{Wrapper.add\_dictionnary} method.
+This method allows the user to add raw data to the HDF5 file. It adds the data by calling the \hyperref[subchapter:wrapper.add_dictionary]{Wrapper.add\_dictionary} method.
 
 \begin{lstlisting}[language=Python]
 def add_raw_data(self, data, parent_group, name = None, overwrite = False):
@@ -16,5 +16,5 @@ def add_raw_data(self, data, parent_group, name = None, overwrite = False):
 \paragraph{Raises:}
 \begin{itemize}
     \item \textbf{WrapperError\_StructureError}: If the parent group does not exist in the HDF5 file.
-    \item All the errors of the \hyperref[subsec:wrapper.add_dictionnary]{Wrapper.add\_dictionnary} method.
+    \item All the errors of the \hyperref[subchapter:wrapper.add_dictionary]{Wrapper.add\_dictionary} method.
 \end{itemize}
