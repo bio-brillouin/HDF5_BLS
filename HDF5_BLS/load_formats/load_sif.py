@@ -11,12 +11,12 @@ def load_sif_base(filepath, parameters = None):
     filepath : str                           
         The filepath to the npy file
     parameters : dict, optional
-        A dictionnary with the parameters to load the data, by default None. A list of possible parameters is given in the "Notes" section of this docstring.
+        A dictionary with the parameters to load the data, by default None. A list of possible parameters is given in the "Notes" section of this docstring.
 
     Returns
     -------
     dict
-        The dictionnary with the data and the attributes of the file stored respectively in the keys "Data" and "Attributes"
+        The dictionary with the data and the attributes of the file stored respectively in the keys "Data" and "Attributes"
     
     Notes
     -----

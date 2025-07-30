@@ -315,7 +315,7 @@ def load_dat_GHOST(filepath):
     Returns
     -------
     dict
-        The dictionnary with the data and the attributes of the file stored respectively in the keys "Data" and "Attributes"
+        The dictionary with the data and the attributes of the file stored respectively in the keys "Data" and "Attributes"
     """
     metadata = {}
     data = []
@@ -367,12 +367,12 @@ def load_dat_TimeDomain(filepath, parameters = None):
     filepath : stt
         The filepath to the TimeDomain file
     parameters : dict, optional
-        A dictionnary with the parameters to load the data, by default None. In the case where no parameters are provided, the function will return a list of the names of the parameters as string that have to be provided to load the data.
+        A dictionary with the parameters to load the data, by default None. In the case where no parameters are provided, the function will return a list of the names of the parameters as string that have to be provided to load the data.
 
     Returns
     -------
     dict
-        The dictionnary with the time vector, the time resolved data and the attributes of the file stored respectively in the keys "Data", "Abscissa_dt" and "Attributes"
+        The dictionary with the time vector, the time resolved data and the attributes of the file stored respectively in the keys "Data", "Abscissa_dt" and "Attributes"
     """
     def scrape_m_file(filepath):
         meta_filebase = filepath[0:len(filepath)-4]

@@ -14,7 +14,7 @@ def load_npy_base(filepath, brillouin_type = "Raw_data"):
     Returns
     -------
     dict
-        The dictionnary with the data and the attributes of the file stored respectively in the keys "Data" and "Attributes"
+        The dictionary with the data and the attributes of the file stored respectively in the keys "Data" and "Attributes"
     """
     data = np.load(filepath)
     attributes = {}

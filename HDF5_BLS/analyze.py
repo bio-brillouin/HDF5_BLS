@@ -333,7 +333,7 @@ class Analyze:
 
 
 
-        # Creates a local dictionnary to store the algorithm to save. This allows to reinitiate the parameters if needed.
+        # Creates a local dictionary to store the algorithm to save. This allows to reinitiate the parameters if needed.
         algorithm_loc = {}
 
         # Then go through the keys of the algorithm
@@ -384,7 +384,7 @@ class Analyze_general(Analyze):
     
     def _add_point(self, x, type_pnt, window):
         """
-        Adds points to the points dictionnary and a window to the windows dictionnary
+        Adds points to the points dictionary and a window to the windows dictionary
 
         Parameters
         ----------

@@ -3,20 +3,20 @@ from PIL import Image
 import numpy as np
 
 
-def load_image_base(filepath, parameters = None, brillouin_type = "Other"):
-    """Loads image files with the Pillow library. Note that by default the Brillouin type is "Other". Please specify the Brillouin type in the parameters if you want to change it.
+def load_image_base(filepath, parameters = None, brillouin_type = "Raw_data"):
+    """Loads image files with the Pillow library. Note that by default the Brillouin type is "Raw data". Please specify the Brillouin type in the parameters if you want to change it.
 
     Parameters
     ----------
     filepath : str                           
         The filepath to the tif image
     parameters : dict, optional
-        A dictionnary with the parameters to load the data, by default None. Please refer to the Note section of this docstring for more information.
+        A dictionary with the parameters to load the data, by default None. Please refer to the Note section of this docstring for more information.
     
     Returns
     -------
     dict
-        The dictionnary with the data and the attributes of the file stored respectively in the keys "Data" and "Attributes"
+        The dictionary with the data and the attributes of the file stored respectively in the keys "Data" and "Attributes"
     
     Note
     ----

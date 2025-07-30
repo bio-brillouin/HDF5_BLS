@@ -6,10 +6,10 @@ from HDF5_BLS.load_formats.errors import LoadError_creator, LoadError_parameters
 # GENERAL GUIDELINES
     # This file is meant to dispatch the loading of the data to the sub-module load_formats. 
     # This sub-module is classified in types of files and for each file, one or more functions are defined, depending on the user's needs.
-    # All the functions return a dictionnary with two minimal keys: "Data" and "Attributes". 
+    # All the functions return a dictionary with two minimal keys: "Data" and "Attributes". 
     # The "Data" key contains the data and the "Attributes" key contains the attributes of the file.
-    # The attributes are stored in a dictionnary and their names can be found in the "spreadsheet" folder of the repository
-    # Additionally, other keys can be found in the returned dictionnary, depending on the technique used.
+    # The attributes are stored in a dictionary and their names can be found in the "spreadsheet" folder of the repository
+    # Additionally, other keys can be found in the returned dictionary, depending on the technique used.
 
 # GUIDELINES FOR GUI COMPATIBILITY:
     # If you need to load your files with a specific process, please add the parameter "creator" to the function set to None by default. Then if the function is called without any creator, have the function raise a LoadError_creator exception with the list of creators that can be used to load the data (an example is given in load_dat_file).
@@ -37,7 +37,7 @@ def load_dat_file(filepath, creator = None, parameters = None, brillouin_type = 
     Returns
     -------
     dict
-        The dictionnary with the data and the attributes of the file stored respectively in the keys "Data" and "Attributes". For time domain files, the dictionnary also contains the time vector in the key "Abscissa_dt".
+        The dictionary with the data and the attributes of the file stored respectively in the keys "Data" and "Attributes". For time domain files, the dictionary also contains the time vector in the key "Abscissa_dt".
     """
     from HDF5_BLS.load_formats.load_dat import load_dat_GHOST, load_dat_TimeDomain
 
@@ -55,14 +55,14 @@ def load_image_file(filepath, parameters = None, brillouin_type = None): # Test 
     filepath : str                           
         The filepath to the image
     parameters : dict, optional
-        A dictionnary with the parameters to load the data, by default None. Please refer to the Note section of this docstring for more information.
+        A dictionary with the parameters to load the data, by default None. Please refer to the Note section of this docstring for more information.
     brillouin_type : str, optional
         The brillouin type of the file.
     
     Returns
     -------
     dict
-        The dictionnary with the data and the attributes of the file stored respectively in the keys "Data" and "Attributes"
+        The dictionary with the data and the attributes of the file stored respectively in the keys "Data" and "Attributes"
     
     Note
     ----
@@ -89,7 +89,7 @@ def load_npy_file(filepath, brillouin_type = None): # Test made
     Returns
     -------
     dict
-        The dictionnary with the data and the attributes of the file stored respectively in the keys "Data" and "Attributes"
+        The dictionary with the data and the attributes of the file stored respectively in the keys "Data" and "Attributes"
     """
     from HDF5_BLS.load_formats.load_npy import load_npy_base
     if brillouin_type is None:
@@ -110,7 +110,7 @@ def load_sif_file(filepath, parameters = None, brillouin_type = None):
     Returns
     -------
     dict
-        The dictionnary with the data and the attributes of the file stored respectively in the keys "Data" and "Attributes"
+        The dictionary with the data and the attributes of the file stored respectively in the keys "Data" and "Attributes"
     """
     from HDF5_BLS.load_formats.load_sif import load_sif_base
     return load_sif_base(filepath, parameters = parameters)
@@ -122,11 +122,17 @@ def load_general(filepath, creator = None, parameters = None, brillouin_type = N
     ----------
     filepath : str                           
         The filepath to the file
+    creator : str
+        An argument to specify how the data was created, useful when the extension of the file is not enough to determine the type of data.
+    parameters : dict
+        A dictionary containing the parameters to be used to interpret the data, for example when multiple files need to be combined to obtain the dataset to add.
+    brillouin_type : str
+        The brillouin type of the dataset to load. Please refer to the documentation of the Brillouin software for the possible values.
     
     Returns
     -------
     dict
-        The dictionnary created with the given filepath and eventually parameters.
+        The dictionary created with the given filepath and eventually parameters.
     """
     _, file_extension = os.path.splitext(filepath)
     
