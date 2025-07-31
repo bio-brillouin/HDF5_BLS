@@ -9,7 +9,19 @@ The library is currently compatible with the following file formats:
 - "*.sif" files: image files obtained with [Andor](https://andor.oxinst.com) cameras
 - All image files supported by the Pillow library (see [this link](https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html#write-only-formats))
 
-## Quickstart: Integration to workflow
+## Quickstart
+
+### Library installation
+
+You can install **HDF5_BLS** directly from PyPI:
+
+```bash
+pip install HDF5_BLS
+```
+Please refer to [the tutorial](https://github.com/bio-brillouin/HDF5_BLS/blob/v-1.0.0/guides/Tutorial/Tutorial.pdf) for more information.
+
+
+### Integration to workflow
 
 Once the package is installed, you can use it in your Python scripts as follows:
 
@@ -44,7 +56,7 @@ linewidth = np.random.random((50, 50))
 wrp.add_treated_data(parent_group = "Brillouin", name_group = "Treat_0", shift = shift, linewidth = linewidth)
 ```
 
-## Quickstart: Extracting the data from the HDF5 file
+### Extracting the data from the HDF5 file
 
 Once the data is stored in the HDF5 file, you can extract it as follows:
 
@@ -73,14 +85,6 @@ The GUI is now capable of:
 
 ## Library 
 
-### Library installation
-
-You can install **HDF5_BLS** directly from PyPI:
-
-```bash
-pip install HDF5_BLS
-```
-Please refer to [the tutorial](https://github.com/bio-brillouin/HDF5_BLS/blob/v-1.0.0/guides/Tutorial/Tutorial.pdf) for more information.
 
 ### Documentation
 
