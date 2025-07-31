@@ -72,19 +72,20 @@ data = wrp["Brillouin/path/in/file/Raw data"]
 
 ## GUI
 
-The GUI is now capable of:
-- Creating new HDF5 files following the structure of v1.0.0:
+To faciliate the use of the package, we have interfaced it with a GUI also accessible in this repository. The GUI is now capable of:
+- Creating HDF5 files following the structure of v1.0.0:
     - Structure the file in a hierarchical way
     - Import measure data (drag and drop functionality implemented)
     - Import attributes from a CSV or Excel spreadsheet file (drag and drop functionality implemented)
     - Modify parameters of data both by group and individually from the GUI
+- Inspect existing HDF5 files and in particular, ones made with the HDF5_BLS package
 - Export sub-HDF5 files from meta files
-- Export Python code to access individual datasets
+- Export Python or Matlab code to access individual datasets
 - Visualize 2D arrays as images
 - Analyze raw spectra obtained with a VIPA spectrometer
+- Develop new algorithms for the analysis of raw spectra
 
 ## Library 
-
 
 ### Documentation
 
