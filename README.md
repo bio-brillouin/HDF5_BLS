@@ -1,6 +1,6 @@
 # HDF5_BLS
 
-**HDF5_BLS** is a Python library for handling Brillouin Light Scattering (BLS) data and converting it into a standardized HDF5 format. The library provides functions to open raw data files, define and import abscissa, add metadata, and save the organized data in HDF5 files.
+**HDF5_BLS** is a Python library for storing Brillouin Light Scattering (BLS) data into a standardized HDF5 file format. The library provides functions to open raw data files, define and import abscissa, add metadata, and save the organized data in HDF5 files.
 The library is currently compatible with the following file formats:
 - "*.dat" files: dat spectra obtained with:
     - [GHOST](https://tablestable.com/en/downloads/) software 
@@ -9,16 +9,66 @@ The library is currently compatible with the following file formats:
 - "*.sif" files: image files obtained with [Andor](https://andor.oxinst.com) cameras
 - All image files supported by the Pillow library (see [this link](https://pillow.readthedocs.io/en/stable/handbook/image-file-formats.html#write-only-formats))
 
+## Quickstart: Integration to workflow
+
+Once the package is installed, you can use it in your Python scripts as follows:
+
+```python
+import HDF5_BLS as bls
+
+# Create a HDF5 file
+wrp = bls.Wrapper(filepath = "path/to/file.h5")
+
+###############################################################################
+# Existing code to extract data from a file
+###############################################################################
+# Storing the data in the HDF5 file (for this example we use a random array)
+data = np.random.random((50, 50, 512))
+wrp.add_raw_data(data = data, parent_group = "Brillouin", name = "Raw data")
+
+###############################################################################
+# Existing code to convert the data to a PSD
+###############################################################################
+# Storing the Power Spectral Density in the HDF5 file together with the associated frequency array (for this example we use random arrays)
+PSD = np.random.random((50, 50, 512))
+frequency = np.arange(512)
+wrp.add_PSD(data = PSD, parent_group = "Brillouin", name = "Power Spectral Density")
+wrp.add_frequency(data = frequency, parent_group = "Brillouin", name = "Frequency")
+
+###############################################################################
+# Existing code to fit the PSD to extract shift and linewidth arrays
+###############################################################################
+# Storing the Power Spectral Density in the HDF5 file together with the associated frequency array (for this example we use random arrays)
+shift = np.random.random((50, 50))
+linewidth = np.random.random((50, 50))
+wrp.add_treated_data(parent_group = "Brillouin", name_group = "Treat_0", shift = shift, linewidth = linewidth)
+```
+
+## Quickstart: Extracting the data from the HDF5 file
+
+Once the data is stored in the HDF5 file, you can extract it as follows:
+
+```python
+import HDF5_BLS as bls
+
+# Open the file
+wrp = bls.Wrapper(filepath = "path/to/file.h5")
+
+# Extract the data
+data = wrp["Brillouin/path/in/file/Raw data"]
+```
+
 ## GUI
 
 The GUI is now capable of:
-- Create new HDF5 files following the structure of v1.0.0:
+- Creating new HDF5 files following the structure of v1.0.0:
     - Structure the file in a hierarchical way
     - Import measure data (drag and drop functionality implemented)
-    - Import measure data from a CSV file (drag and drop functionality implemented)
+    - Import attributes from a CSV or Excel spreadsheet file (drag and drop functionality implemented)
     - Modify parameters of data both by group and individually from the GUI
 - Export sub-HDF5 files from meta files
 - Export Python code to access individual datasets
+- Visualize 2D arrays as images
 - Analyze raw spectra obtained with a VIPA spectrometer
 
 ## Library 
