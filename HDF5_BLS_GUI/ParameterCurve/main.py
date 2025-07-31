@@ -455,9 +455,9 @@ class ar_BLS_VIPA_treat(ParameterCurve):
         def update_wrapper(wrp,dic):
             if "Popt" in dic.keys():
                 data = {"Shift" : dic["Popt"][:,-2],
-                        "Shift_std" : dic["Std"][:,-2],
+                        "Shift_err" : dic["Std"][:,-2],
                         "Linewidth" : dic["Popt"][:,-1], 
-                        "Linewidth_std" : dic["Std"][:,-1]}
+                        "Linewidth_err" : dic["Std"][:,-1]}
                 i = 0
                 while f"Treat_{i}" in wrp.data.keys(): i += 1
                 wrp.data[f"Treat_{i}"] = wrapper.Wrapper(data = data,

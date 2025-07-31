@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: HDF5_BLS
-Version: 0.1.0
+Version: 0.1.1
 Summary: A package to convert Brillouin spectra to a HDF5 file and use them
 Home-page: https://github.com/bio-brillouin/HDF5_BLS
 Author: Pierre Bouvet
@@ -21,6 +21,7 @@ Requires-Dist: wheel
 Requires-Dist: openpyxl
 Requires-Dist: pyperclip
 Requires-Dist: pandas>=2.0.3
+Requires-Dist: HDF5_BLS_treat
 Dynamic: author
 Dynamic: author-email
 Dynamic: classifier

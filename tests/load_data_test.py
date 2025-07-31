@@ -19,16 +19,16 @@ def test_load_dat_file():
     except LoadError_parameters as e: pass
 
     dic = load_dat_file(filepath, creator = "GHOST")
-    assert list(dic.keys()) == ["PSD", "Frequency", "Attributes"], "FAIL - test_load_dat_file - Structure of the dictionary is not correct"
-    assert dic["PSD"]["Data"].shape == (512,), "FAIL - test_load_dat_file - PSD data shape is not correct"
+    assert list(dic.keys()) == ["Raw_data", "Attributes"], "FAIL - test_load_dat_file - Structure of the dictionary is not correct"
+    assert dic["Raw_data"]["Data"].shape == (512,), "FAIL - test_load_dat_file - PSD data shape is not correct"
 
 def test_load_image():
     filepath = os.path.join(os.path.dirname(__file__), "test_data", "example_image.tif")
 
     dic = load_image_file(filepath)
 
-    assert list(dic.keys()) == ["Other", "Attributes"], "FAIL - test_load_dat_file - Structure of the dictionary is not correct"
-    assert dic["Other"]["Data"].shape == (512,512), "FAIL - test_load_tiff_file - data shape is not correct"
+    assert list(dic.keys()) == ["Raw_data", "Attributes"], "FAIL - test_load_dat_file - Structure of the dictionary is not correct"
+    assert dic["Raw_data"]["Data"].shape == (512,512), "FAIL - test_load_tiff_file - data shape is not correct"
     dic_verif = {'FILEPROP.Name': 'example_image'}
     assert dic["Attributes"] == dic_verif, "FAIL - test_load_tiff_file - Attributes are not correct"
 
@@ -66,3 +66,9 @@ def test_load_general():
             name = ".".join(os.path.basename(fp).split(".")[:-1])
             assert dic["Attributes"]['FILEPROP.Name'] == name
 
+if __name__ == "__main__":
+    test_load_dat_file()
+    test_load_image()
+    test_load_npy_file()
+    test_load_sif_file()
+    test_load_general()

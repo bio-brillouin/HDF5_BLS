@@ -17,15 +17,6 @@ HDF5_BLS_Version = "1.0"
 class Wrapper:
     """
     This object is used to store data and attributes in a unified structure.
-
-    Attributes
-    ----------
-    attributes: dic
-        The attributes of the data
-    data: dic
-        The data arrays (raw data, treated data, abscissa, other measures)
-    data_attributes: dic
-        The attributes specific to an array
     """
     BRILLOUIN_TYPES_DATASETS = ["Abscissa", 
                                 "Amplitude", 

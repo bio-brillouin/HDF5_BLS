@@ -126,8 +126,8 @@ def treat_TFP(parent, wrp, path):
                     if "Treat" in e: i+=1
                 wrp_loc.data[f"Treat_{i}"] = wrapper.Wrapper(data = {"Shift" : np.array(popt[-2]),
                                                                      "Linewidth" : np.array(popt[-1]),
-                                                                     "Shift_std" : np.array(std[-2]),
-                                                                     "Linewidth_std" : np.array(std[-1])},
+                                                                     "Shift_err" : np.array(std[-2]),
+                                                                     "Linewidth_err" : np.array(std[-1])},
                                                              data_attributes = {},
                                                              attributes = {"FILEPROP.Name": f"Treat_{i}",
                                                                            "TREAT.Process": steps})
@@ -157,8 +157,8 @@ def treat_TFP(parent, wrp, path):
                     if "Treat" in e: i+=1
                 wrp_loc.data[f"Treat_{i}"] = wrapper.Wrapper(data = {"Shift" : np.array(popt[-2]),
                                                                      "Linewidth" : np.array(popt[-1]),
-                                                                     "Shift_std" : np.array(std[-2]),
-                                                                     "Linewidth_std" : np.array(std[-1])},
+                                                                     "Shift_err" : np.array(std[-2]),
+                                                                     "Linewidth_err" : np.array(std[-1])},
                                                              data_attributes = {},
                                                              attributes = {"FILEPROP.Name": f"Treat_{i}",
                                                                            "TREAT.Process": steps})

@@ -191,11 +191,11 @@ class Treat_backend:
     - PSD_sample: A 1-D sampled PSD array
     - offset_sample: A list of offset values obtained on the sampled PSD array (size of lists corresponds to number of peaks analyzed)
     - shift_sample: A list of shift values obtained on the sampled PSD array(size of lists corresponds to number of peaks analyzed)
-    - shift_std_sample: A list of the standard deviation on the shift values obtained on the sampled PSD array(size of lists corresponds to number of peaks analyzed)
+    - shift_err_sample: A list of the standard deviation on the shift values obtained on the sampled PSD array(size of lists corresponds to number of peaks analyzed)
     - linewidth_sample: A list of linewidth values obtained on the sampled PSD array(size of lists corresponds to number of peaks analyzed)
-    - linewidth_std_sample: A list of the standard deviation on the linewidth values obtained on the sampled PSD array(size of lists corresponds to number of peaks analyzed)
+    - linewidth_err_sample: A list of the standard deviation on the linewidth values obtained on the sampled PSD array(size of lists corresponds to number of peaks analyzed)
     - amplitude_sample: A list of amplitude values obtained on the sampled PSD array  (size of lists corresponds to number of peaks analyzed)  
-    - amplitude_std_sample: A list of the standard deviation on the amplitude values obtained on the sampled PSD array(size of lists corresponds to number of peaks analyzed)
+    - amplitude_err_sample: A list of the standard deviation on the amplitude values obtained on the sampled PSD array(size of lists corresponds to number of peaks analyzed)
     For treating these samples, the class offers an argument to store the steps of the treatment. This is stored in the _history attribute.
     - _history: a list that stores the evolution of the attributes 
     
@@ -263,11 +263,11 @@ class Treat_backend:
 
         # Initializing the attributes that will store the fitted values on sample arrays.
         self.shift_sample = []
-        self.shift_std_sample = []
+        self.shift_err_sample = []
         self.linewidth_sample = []
-        self.linewidth_std_sample = []
+        self.linewidth_err_sample = []
         self.amplitude_sample = []
-        self.amplitude_std_sample = []
+        self.amplitude_err_sample = []
         self.offset_sample = []
         self.slope_sample = []
 
@@ -934,10 +934,10 @@ class Treat(Treat_backend):
             self.offset[tuple(PSD_i)] = self.offset_sample
             self.shift[tuple(PSD_i)] = self.shift_sample
             self.linewidth[tuple(PSD_i)] = self.linewidth_sample
-            self.shift_var[tuple(PSD_i)] = self.shift_std_sample
-            self.linewidth_var[tuple(PSD_i)] = self.linewidth_std_sample
+            self.shift_var[tuple(PSD_i)] = self.shift_err_sample
+            self.linewidth_var[tuple(PSD_i)] = self.linewidth_err_sample
             self.amplitude[tuple(PSD_i)] = self.amplitude_sample
-            self.amplitude_var[tuple(PSD_i)] = self.amplitude_std_sample
+            self.amplitude_var[tuple(PSD_i)] = self.amplitude_err_sample
 
             if np.all(np.isnan(self.shift[tuple(PSD_i)])):
                 self.point_error.append(PSD_i.copy())
@@ -1073,11 +1073,11 @@ class Treat(Treat_backend):
         """
         def reinitialize_fitted_list():
             self.shift_sample = []
-            self.shift_std_sample = []
+            self.shift_err_sample = []
             self.linewidth_sample = []
-            self.linewidth_std_sample = []
+            self.linewidth_err_sample = []
             self.amplitude_sample = []
-            self.amplitude_std_sample = []
+            self.amplitude_err_sample = []
             self.offset_sample = []
             self.slope_sample = []
         
@@ -1132,9 +1132,9 @@ class Treat(Treat_backend):
                 self.slope_sample.append(popt[4])
 
             # Save the standard deviation of the fitted parameters in the corresponding sample lists
-            self.amplitude_std_sample.append(np.sqrt(pcov[1][1]))
-            self.shift_std_sample.append(np.sqrt(pcov[2][2]))
-            self.linewidth_std_sample.append(np.sqrt(pcov[3][3]))
+            self.amplitude_err_sample.append(np.sqrt(pcov[1][1]))
+            self.shift_err_sample.append(np.sqrt(pcov[2][2]))
+            self.linewidth_err_sample.append(np.sqrt(pcov[3][3]))
 
         # Initializes the list of fitted parameters 
         reinitialize_fitted_list()
@@ -1260,11 +1260,11 @@ class Treat(Treat_backend):
         """
         def reinitialize_fitted_list():
             self.shift_sample = []
-            self.shift_std_sample = []
+            self.shift_err_sample = []
             self.linewidth_sample = []
-            self.linewidth_std_sample = []
+            self.linewidth_err_sample = []
             self.amplitude_sample = []
-            self.amplitude_std_sample = []
+            self.amplitude_err_sample = []
             self.offset_sample = []
             self.slope_sample = []
         
@@ -1320,9 +1320,9 @@ class Treat(Treat_backend):
             self.linewidth_sample = np.abs(popt[:, 3]).tolist()
 
             # Save the standard deviation of the fitted parameters in the corresponding sample lists
-            self.amplitude_std_sample = std[:, 1].tolist()
-            self.shift_std_sample = std[:, 2].tolist()
-            self.linewidth_std_sample = std[:, 3].tolist()
+            self.amplitude_err_sample = std[:, 1].tolist()
+            self.shift_err_sample = std[:, 2].tolist()
+            self.linewidth_err_sample = std[:, 3].tolist()
 
         # Initializes the list of fitted parameters 
         reinitialize_fitted_list()
@@ -1459,11 +1459,11 @@ class Treat(Treat_backend):
         """
         def reinitialize_fitted_list():
             self.shift_sample = []
-            self.shift_std_sample = []
+            self.shift_err_sample = []
             self.linewidth_sample = []
-            self.linewidth_std_sample = []
+            self.linewidth_err_sample = []
             self.amplitude_sample = []
-            self.amplitude_std_sample = []
+            self.amplitude_err_sample = []
             self.offset_sample = []
             self.slope_sample = []
         
@@ -1490,9 +1490,9 @@ class Treat(Treat_backend):
             if "elastic" in self.fit_model:
                 self.slope_sample.append(popt[4])
 
-            self.amplitude_std_sample.append(np.sqrt(pcov[1][1]))
-            self.shift_std_sample.append(np.sqrt(pcov[2][2]))
-            self.linewidth_std_sample.append(np.sqrt(pcov[3][3]))
+            self.amplitude_err_sample.append(np.sqrt(pcov[1][1]))
+            self.shift_err_sample.append(np.sqrt(pcov[2][2]))
+            self.linewidth_err_sample.append(np.sqrt(pcov[3][3]))
 
         # Initializes the list of fitted parameters 
         reinitialize_fitted_list()
@@ -1621,7 +1621,7 @@ class Treat(Treat_backend):
         self.linewidth = self.linewidth-default_width
         self.BLT = self.linewidth/self.shift
 
-    def combine_results_FSR(self, FSR: float = 15, keep_max_amplitude: bool = False, amplitude_weight: bool = False, shift_std_weight: bool = False, position: list = None):
+    def combine_results_FSR(self, FSR: float = 15, keep_max_amplitude: bool = False, amplitude_weight: bool = False, shift_err_weight: bool = False, position: list = None):
         """
         Combines the results of the algorithm to have a value for frequency shift based on a known Free Spectral Range (FSR) value. The end shift value is obtained by "moving" the peak by a FSR value until the peak is within the [-FSR/2, FSR/2] range. Then the absolute value of the shift is taken as the end shift value.
         The combination of the result is done by taking the average of all the values by default. Alternatively, the user can choose to keep the maximum of the amplitude of the peak by setting the "keep_max_amplitude" parameter to True. The user can also choose to weight the shift and linewidth by the amplitude of the peak by setting the "amplitude_weight" parameter to True. Note that in the latter case, the precise knowledge of the frequency axis is a must as averaging slightly uncentered peaks will lead to a wrong result.
@@ -1634,7 +1634,7 @@ class Treat(Treat_backend):
             If True, the maximum of the peak amplitude is stored in the amplitude array. If False, an average of all the amplitudes is stored. Default is False.
         amplitude_weight : bool, optional    
             If True, the amplitude of the spectra is used to weight the shift and linewidth. If set to false, a simple average is performed. Default is False.
-        shift_std_weight : bool, optional
+        shift_err_weight : bool, optional
             If True, the inverse of the standard deviation of the shift is used to weight the shift and linewidth. If set to false, a simple average is performed. Default is False.
         position: list, optional
             The position of the spectrum to be updated in case we combine the sampled results. This is used to update the values of a spectrum that has been re-fitted.  
@@ -1688,9 +1688,9 @@ class Treat(Treat_backend):
             shift_sample = np.array(self.shift_sample)
             linewidth_sample = np.array(self.linewidth_sample)
             amplitude_sample = np.array(self.amplitude_sample)
-            shift_std_sample = np.array(self.shift_std_sample)
-            linewidth_std_sample = np.array(self.linewidth_std_sample)
-            amplitude_std_sample = np.array(self.amplitude_std_sample)
+            shift_err_sample = np.array(self.shift_err_sample)
+            linewidth_err_sample = np.array(self.linewidth_err_sample)
+            amplitude_err_sample = np.array(self.amplitude_err_sample)
 
 
         # If keep_max_amplitude is set to True, we select only the shift corresponding to the maximum amplitude
@@ -1711,10 +1711,10 @@ class Treat(Treat_backend):
                 self.offset[tuple(position)] = offset_sample[pos]
                 self.shift[tuple(position)] = shift_sample[pos]
                 self.linewidth[tuple(position)] = linewidth_sample[pos]
-                self.shift_var[tuple(position)] = shift_std_sample[pos]
-                self.linewidth_var[tuple(position)] = linewidth_std_sample[pos]
+                self.shift_var[tuple(position)] = shift_err_sample[pos]
+                self.linewidth_var[tuple(position)] = linewidth_err_sample[pos]
                 self.amplitude[tuple(position)] = amplitude_sample[pos]
-                self.amplitude_var[tuple(position)] = amplitude_std_sample[pos]
+                self.amplitude_var[tuple(position)] = amplitude_err_sample[pos]
         
         elif amplitude_weight:
             if position is None:
@@ -1730,12 +1730,12 @@ class Treat(Treat_backend):
                 self.offset[tuple(position)] = np.average(offset_sample)
                 self.shift[tuple(position)] = np.average(shift_sample)
                 self.linewidth[tuple(position)] = np.average(linewidth_sample)
-                self.shift_var[tuple(position)] = np.sum(shift_std_sample**2 * amplitude_sample**2) / np.sum(amplitude_sample**2, axis=-1)
-                self.linewidth_var[tuple(position)] = np.sum(linewidth_std_sample**2 * amplitude_sample**2) / np.sum(amplitude_sample**2, axis=-1)
+                self.shift_var[tuple(position)] = np.sum(shift_err_sample**2 * amplitude_sample**2) / np.sum(amplitude_sample**2, axis=-1)
+                self.linewidth_var[tuple(position)] = np.sum(linewidth_err_sample**2 * amplitude_sample**2) / np.sum(amplitude_sample**2, axis=-1)
                 self.amplitude[tuple(position)] = np.average(amplitude_sample)
-                self.amplitude_var[tuple(position)] = np.sum(amplitude_std_sample**4) / np.sum(amplitude_sample**2, axis=-1)
+                self.amplitude_var[tuple(position)] = np.sum(amplitude_err_sample**4) / np.sum(amplitude_sample**2, axis=-1)
 
-        elif shift_std_weight:
+        elif shift_err_weight:
             if position is None:
                 # For each set of amplitudes along the last axis, calculate the weighted average of the shift and linewidth
                 self.offset = np.average(self.offset, axis=-1, weights=1/self.shift_var)
@@ -1746,13 +1746,13 @@ class Treat(Treat_backend):
                 self.amplitude_var = np.sum(self.amplitude_var**2 / self.shift_var**2, axis = -1) / np.sum(1/self.shift_var**2, axis=-1)
                 self.shift_var = self.shift_var.shape[-1] / np.sum(1/self.shift_var**2, axis=-1)
             else:
-                self.offset[tuple(position)] = np.average(offset_sample, weights=1/shift_std_sample)
-                self.shift[tuple(position)] = np.average(shift_sample, weights=1/shift_std_sample)
-                self.linewidth[tuple(position)] = np.average(linewidth_sample, weights=1/shift_std_sample)
-                self.amplitude[tuple(position)] = np.average(amplitude_sample, weights=1/shift_std_sample)
-                self.shift_var[tuple(position)] = len(shift_std_sample) / np.sum(1/shift_std_sample**2)
-                self.linewidth_var[tuple(position)] = np.sum(linewidth_std_sample**2 / shift_std_sample**2) / np.sum(1 / shift_std_sample**2)
-                self.amplitude_var[tuple(position)] = np.sum(amplitude_std_sample**2 / shift_std_sample**2) / np.sum(1 / shift_std_sample**2)
+                self.offset[tuple(position)] = np.average(offset_sample, weights=1/shift_err_sample)
+                self.shift[tuple(position)] = np.average(shift_sample, weights=1/shift_err_sample)
+                self.linewidth[tuple(position)] = np.average(linewidth_sample, weights=1/shift_err_sample)
+                self.amplitude[tuple(position)] = np.average(amplitude_sample, weights=1/shift_err_sample)
+                self.shift_var[tuple(position)] = len(shift_err_sample) / np.sum(1/shift_err_sample**2)
+                self.linewidth_var[tuple(position)] = np.sum(linewidth_err_sample**2 / shift_err_sample**2) / np.sum(1 / shift_err_sample**2)
+                self.amplitude_var[tuple(position)] = np.sum(amplitude_err_sample**2 / shift_err_sample**2) / np.sum(1 / shift_err_sample**2)
         
         else:
             if position is None:
@@ -1768,9 +1768,9 @@ class Treat(Treat_backend):
                 self.shift[tuple(position)] = np.nanmean(shift_sample)
                 self.linewidth[tuple(position)] = np.nanmean(linewidth_sample)
                 self.amplitude[tuple(position)] = np.nanmean(amplitude_sample)
-                self.linewidth_var[tuple(position)] = np.nanmean(linewidth_std_sample**2)
-                self.amplitude_var[tuple(position)] = np.nanmean(amplitude_std_sample**2)
-                self.shift_var[tuple(position)] = np.nanmean(shift_std_sample**2)
+                self.linewidth_var[tuple(position)] = np.nanmean(linewidth_err_sample**2)
+                self.amplitude_var[tuple(position)] = np.nanmean(amplitude_err_sample**2)
+                self.shift_var[tuple(position)] = np.nanmean(shift_err_sample**2)
         
         if position is None:
             self.BLT = self.linewidth / self.shift 
@@ -1826,7 +1826,7 @@ class Treat(Treat_backend):
 
         Parameters
         ----------
-        max_error_shift_std : float, optional
+        max_error_shift_err : float, optional
             The threshold above which the shift is marked as an error , by default 5MHz
         """
         positions = np.where(self.shift_var > max_error_shift_variance)
@@ -1952,7 +1952,7 @@ class Treat(Treat_backend):
 
         Parameters
         ----------
-        max_error_shift_std : float, optional
+        max_error_shift_err : float, optional
             The threshold above which the shift is marked as an error , by default 5MHz
         """
         positions = np.where(self.BLT_var > max_error_BLT_variance)

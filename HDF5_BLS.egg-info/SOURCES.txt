@@ -7,8 +7,8 @@ HDF5_BLS/__init__.py
 HDF5_BLS/analyze.py
 HDF5_BLS/conversion_PSD.py
 HDF5_BLS/load_data.py
-HDF5_BLS/treat.py
 HDF5_BLS/wrapper.py
+HDF5_BLS/wrapper_compatibility.py
 HDF5_BLS.egg-info/PKG-INFO
 HDF5_BLS.egg-info/SOURCES.txt
 HDF5_BLS.egg-info/dependency_links.txt

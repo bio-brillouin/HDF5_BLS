@@ -6,20 +6,20 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to HDF5_BLS’s documentation! &mdash; HDF5_BLS v0.1 documentation</title>
+  <title>Welcome to HDF5_BLS’s documentation! &mdash; HDF5_BLS v0.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=34cd777e"></script>
+      <script src="_static/documentation_options.js?v=5e3f2911"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="HDF5_BLS" href="modules.html" /> 
+    <link rel="next" title="HDF5_BLS" href="source/modules.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,7 +43,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">HDF5_BLS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/modules.html">HDF5_BLS</a></li>
 </ul>
 
         </div>
@@ -72,7 +72,67 @@
              
   <section id="welcome-to-hdf5-bls-s-documentation">
 <h1>Welcome to HDF5_BLS’s documentation!<a class="headerlink" href="#welcome-to-hdf5-bls-s-documentation" title="Link to this heading"></a></h1>
-<p>This is the main page for the <cite>HDF5_BLS</cite> documentation. Use the links below to navigate the documentation:</p>
+<p>The <cite>HDF5_BLS</cite> project is a Python package allowing users to easily store Brillouin Light Scattering relevant data in a single HDF5 file. The package is designed to integrate in existing Python workflows and to be as easy to use as possible.</p>
+<section id="quick-start">
+<h2>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading"></a></h2>
+<section id="installation">
+<h3>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h3>
+<p>To install the package, you can use pip:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>HDF5_BLS
+</pre></div>
+</div>
+</section>
+<section id="usage">
+<h3>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h3>
+<section id="integration-to-workflow">
+<h4>Integration to workflow<a class="headerlink" href="#integration-to-workflow" title="Link to this heading"></a></h4>
+<p>Once the package is installed, you can use it in your Python scripts as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">HDF5_BLS</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">bls</span>
+
+<span class="c1"># Create a HDF5 file</span>
+<span class="n">wrp</span> <span class="o">=</span> <span class="n">bls</span><span class="o">.</span><span class="n">Wrapper</span><span class="p">(</span><span class="n">filepath</span> <span class="o">=</span> <span class="s2">&quot;path/to/file.h5&quot;</span><span class="p">)</span>
+
+<span class="c1">###############################################################################</span>
+<span class="c1"># Existing code to extract data from a file</span>
+<span class="c1">###############################################################################</span>
+<span class="c1"># Storing the data in the HDF5 file (for this example we use a random array)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">512</span><span class="p">))</span>
+<span class="n">wrp</span><span class="o">.</span><span class="n">add_raw_data</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">,</span> <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin&quot;</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Raw data&quot;</span><span class="p">)</span>
+
+<span class="c1">###############################################################################</span>
+<span class="c1"># Existing code to convert the data to a PSD</span>
+<span class="c1">###############################################################################</span>
+<span class="c1"># Storing the Power Spectral Density in the HDF5 file together with the associated frequency array (for this example we use random arrays)</span>
+<span class="n">PSD</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">512</span><span class="p">))</span>
+<span class="n">frequency</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">512</span><span class="p">)</span>
+<span class="n">wrp</span><span class="o">.</span><span class="n">add_PSD</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">,</span> <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin&quot;</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Power Spectral Density&quot;</span><span class="p">)</span>
+<span class="n">wrp</span><span class="o">.</span><span class="n">add_frequency</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">frequency</span><span class="p">,</span> <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin&quot;</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Frequency&quot;</span><span class="p">)</span>
+
+<span class="c1">###############################################################################</span>
+<span class="c1"># Existing code to fit the PSD to extract shift and linewidth arrays</span>
+<span class="c1">###############################################################################</span>
+<span class="c1"># Storing the Power Spectral Density in the HDF5 file together with the associated frequency array (for this example we use random arrays)</span>
+<span class="n">shift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span>
+<span class="n">linewidth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span>
+<span class="n">wrp</span><span class="o">.</span><span class="n">add_treated_data</span><span class="p">(</span><span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin&quot;</span><span class="p">,</span> <span class="n">name_group</span> <span class="o">=</span> <span class="s2">&quot;Treat_0&quot;</span><span class="p">,</span> <span class="n">shift</span> <span class="o">=</span> <span class="n">shift</span><span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="n">linewidth</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="extracting-the-data-from-the-hdf5-file">
+<h4>Extracting the data from the HDF5 file<a class="headerlink" href="#extracting-the-data-from-the-hdf5-file" title="Link to this heading"></a></h4>
+<p>Once the data is stored in the HDF5 file, you can extract it as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">HDF5_BLS</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">bls</span>
+
+<span class="c1"># Open the file</span>
+<span class="n">wrp</span> <span class="o">=</span> <span class="n">bls</span><span class="o">.</span><span class="n">Wrapper</span><span class="p">(</span><span class="n">filepath</span> <span class="o">=</span> <span class="s2">&quot;path/to/file.h5&quot;</span><span class="p">)</span>
+
+<span class="c1"># Extract the data</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">wrp</span><span class="p">[</span><span class="s2">&quot;Brillouin/path/in/file/Raw data&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
 <section id="contents">
 <h2>Contents:<a class="headerlink" href="#contents" title="Link to this heading"></a></h2>
 <ul class="simple">
@@ -81,8 +141,45 @@
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">HDF5_BLS</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="HDF5_BLS.html">HDF5_BLS package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/modules.html">HDF5_BLS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="source/HDF5_BLS.html">HDF5_BLS.WrapperError module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="source/HDF5_BLS.html#HDF5_BLS.WrapperError.WrapperError"><code class="docutils literal notranslate"><span class="pre">WrapperError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="source/HDF5_BLS.html#HDF5_BLS.WrapperError.WrapperError_ArgumentType"><code class="docutils literal notranslate"><span class="pre">WrapperError_ArgumentType</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="source/HDF5_BLS.html#HDF5_BLS.WrapperError.WrapperError_FileNotFound"><code class="docutils literal notranslate"><span class="pre">WrapperError_FileNotFound</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="source/HDF5_BLS.html#HDF5_BLS.WrapperError.WrapperError_Overwrite"><code class="docutils literal notranslate"><span class="pre">WrapperError_Overwrite</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="source/HDF5_BLS.html#HDF5_BLS.WrapperError.WrapperError_Save"><code class="docutils literal notranslate"><span class="pre">WrapperError_Save</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="source/HDF5_BLS.html#HDF5_BLS.WrapperError.WrapperError_StructureError"><code class="docutils literal notranslate"><span class="pre">WrapperError_StructureError</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="source/HDF5_BLS.html#module-HDF5_BLS.analyze">HDF5_BLS.analyze module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="source/HDF5_BLS.html#HDF5_BLS.analyze.Analyze"><code class="docutils literal notranslate"><span class="pre">Analyze</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="source/HDF5_BLS.html#HDF5_BLS.analyze.Analyze_VIPA"><code class="docutils literal notranslate"><span class="pre">Analyze_VIPA</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="source/HDF5_BLS.html#HDF5_BLS.analyze.Analyze_general"><code class="docutils literal notranslate"><span class="pre">Analyze_general</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="source/HDF5_BLS.html#module-HDF5_BLS.conversion_PSD">HDF5_BLS.conversion_PSD module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="source/HDF5_BLS.html#HDF5_BLS.conversion_PSD.check_conversion_Streak_VIPA"><code class="docutils literal notranslate"><span class="pre">check_conversion_Streak_VIPA()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="source/HDF5_BLS.html#HDF5_BLS.conversion_PSD.check_conversion_VIPA"><code class="docutils literal notranslate"><span class="pre">check_conversion_VIPA()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="source/HDF5_BLS.html#HDF5_BLS.conversion_PSD.check_conversion_ar_BLS_VIPA"><code class="docutils literal notranslate"><span class="pre">check_conversion_ar_BLS_VIPA()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="source/HDF5_BLS.html#module-HDF5_BLS.load_data">HDF5_BLS.load_data module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="source/HDF5_BLS.html#HDF5_BLS.load_data.load_dat_file"><code class="docutils literal notranslate"><span class="pre">load_dat_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="source/HDF5_BLS.html#HDF5_BLS.load_data.load_general"><code class="docutils literal notranslate"><span class="pre">load_general()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="source/HDF5_BLS.html#HDF5_BLS.load_data.load_image_file"><code class="docutils literal notranslate"><span class="pre">load_image_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="source/HDF5_BLS.html#HDF5_BLS.load_data.load_npy_file"><code class="docutils literal notranslate"><span class="pre">load_npy_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="source/HDF5_BLS.html#HDF5_BLS.load_data.load_sif_file"><code class="docutils literal notranslate"><span class="pre">load_sif_file()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="source/HDF5_BLS.html#module-HDF5_BLS.wrapper">HDF5_BLS.wrapper module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="source/HDF5_BLS.html#HDF5_BLS.wrapper.Wrapper"><code class="docutils literal notranslate"><span class="pre">Wrapper</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="source/HDF5_BLS.html#module-HDF5_BLS.wrapper_compatibility">HDF5_BLS.wrapper_compatibility module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="source/HDF5_BLS.html#HDF5_BLS.wrapper_compatibility.brillouin_type_update"><code class="docutils literal notranslate"><span class="pre">brillouin_type_update()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="source/HDF5_BLS.html#module-HDF5_BLS">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -102,7 +199,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="modules.html" class="btn btn-neutral float-right" title="HDF5_BLS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="source/modules.html" class="btn btn-neutral float-right" title="HDF5_BLS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

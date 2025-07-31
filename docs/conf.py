@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.abspath('../HDF5_BLS'))
 project = 'HDF5_BLS'
 copyright = '2025, Pierre Bouvet'
 author = 'Pierre Bouvet'
-release = 'v0.1'
+release = 'v0.1.1'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

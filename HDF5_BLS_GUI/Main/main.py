@@ -17,15 +17,12 @@ from ProgressBar.main import ProgressBar
 from TreatWindow.main import TreatWindow
 from _customWidgets import CheckableComboBox
 
-current_dir = os.path.abspath(os.path.dirname(__file__))
-relative_path_libs = os.path.join(current_dir, "..", "..", "..")
-absolute_path_libs = os.path.abspath(relative_path_libs)
-sys.path.append(absolute_path_libs)
-
 from HDF5_BLS.load_formats.errors import LoadError_creator, LoadError_parameters
 from HDF5_BLS import wrapper, load_data, conversion_PSD
 from HDF5_BLS.WrapperError import WrapperError_Save, WrapperError_Overwrite, WrapperError_ArgumentType
 import conversion_ui, treat_ui
+
+current_dir = os.path.abspath(os.path.dirname(__file__))
 
 class MyStandardItemModel(qtg.QStandardItemModel):
     def mimeData(self, indexes):
@@ -127,7 +124,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
 
             # Adds a CheckableCombobox to the f_SelectionPlots frame
             self.cb_SelectionPlots = CheckableComboBox()
-            self.cb_SelectionPlots.addItems(["Amplitude", "Amplitude Variance", "Shift", "Shift Variance", "Linewidth", "Linewidth Variance", "BLT", "BLT Variance"])
+            self.cb_SelectionPlots.addItems(["Amplitude", "Amplitude Error", "Shift", "Shift Error", "Linewidth", "Linewidth Error", "BLT", "BLT Error"])
             self.cb_SelectionPlots.setObjectName(u"cb_SelectionPlots")
             self.horizontalLayout.addWidget(self.cb_SelectionPlots)
 
@@ -290,6 +287,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
 
         def get_dictionnary(file, creator = None, parameters = None):
             # First we try adding the data based on the file extension
+            dic = load_data.load_general(file)
             try: 
                 dic = load_data.load_general(file)
             # If it does not work, it might be that the file extension is not supported, in that case display a warning window
@@ -638,9 +636,20 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             qtw.QMessageBox.warning(self, "Warning", "The selected path is not a dataset. Please select a dataset.")
             return
 
-        text = "import h5py as h5\nimport numpy as np\n\n"
-        text += f'with h5.File("{self.filepath}", "r") as f:\n'
-        text += f'\tdata = np.array(f["{self.treeview_selected}"])\n'
+        languages = ["Python", "Matlab"]
+        dialog = ComboboxChoose(text = "Choose the language in which to export the code",
+                                list_choices = languages, 
+                                parent = self)
+        if dialog.exec_() == qtw.QDialog.Rejected:
+            return
+        language = dialog.get_selected_structure()
+
+        if language == "Python":
+            text = "from HDF5_BLS import Wrapper\n"
+            text += f'wrp = Wrapper("{self.filepath}")\n'
+            text += f'data = wrp["{self.treeview_selected}"]\n'
+        elif language == "Matlab":
+            text = f'data = h5read("{self.filepath}", "{self.treeview_selected}");'
         
         pyperclip.copy(text)
 
@@ -1133,12 +1142,12 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                 shift = qtg.QAction("Shift", self)
                 shift.triggered.connect(lambda: apply_change(value="Shift"))
                 actions.append(shift)
-                linewidth_std = qtg.QAction("Linewidth Standard Deviation", self)
-                linewidth_std.triggered.connect(lambda: apply_change(value="Linewidth_std"))
-                actions.append(linewidth_std)
-                shift_std = qtg.QAction("Shift Standard Deviation", self)
-                shift_std.triggered.connect(lambda: apply_change(value="Shift_std"))
-                actions.append(shift_std)
+                linewidth_err = qtg.QAction("Linewidth Standard Deviation", self)
+                linewidth_err.triggered.connect(lambda: apply_change(value="Linewidth_err"))
+                actions.append(linewidth_err)
+                shift_err = qtg.QAction("Shift Standard Deviation", self)
+                shift_err.triggered.connect(lambda: apply_change(value="Shift_err"))
+                actions.append(shift_err)
             
             for action in actions:
                 edit_Brillouin_type.addAction(action)    
@@ -1160,7 +1169,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             export.clear()
             actions = []
 
-            export_Python = qtg.QAction("Generate Python code to access data", self)
+            export_Python = qtg.QAction("Generate code to access data", self)
             export_Python.triggered.connect(self.export_code_line)
             actions.append(export_Python)
             export_CSV = qtg.QAction("Export attributes to CSV", self)
@@ -1542,7 +1551,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                 ax.set_yticks([])
             
             # Get the correspondance between the type of elements to plot and the indexes in cols and lines
-            plots_correspondance = ["Shift", "Linewidth", "BLT", "Amplitude", "Shift Variance", "Linewidth Variance", "BLT Variance", "Amplitude Variance"]
+            plots_correspondance = ["Shift", "Linewidth", "BLT", "Amplitude", "Shift Error", "Linewidth Error", "BLT Error", "Amplitude Error"]
             indexes_correspondance = [[0,0],[1,0],[2,0],[3,0],[0,1],[1,1],[2,1],[3,1]]
 
             # Get the position of the plot
@@ -1564,8 +1573,8 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             childs = self.wrapper.get_children_elements(parent_path)
 
             # Adjust the value selected in the combobox to the Brillouin type of the element
-            if " Variance" in element: 
-                element = element.replace(" Variance", "_std")
+            if " Error" in element: 
+                element = element.replace(" Error", "_err")
             elif "Loss Tangent" in element:
                 element = element.replace("Loss Tangent", "BLT")
 
@@ -1601,17 +1610,17 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
 
         # Get the number of plots ond their position from the selected plots.
         col_Shift, col_Linewidth, col_Amplitude, col_BLT = 0,0,0,0
-        line_Plain, line_Variance = 0, 0
+        line_Plain, line_Error = 0, 0
         for k in selected_plots:
             if "Shift" in k: col_Shift = 1
             elif "Linewidth" in k: col_Linewidth = 1
             elif "BLT" in k: col_BLT = 1
             elif "Amplitude" in k: col_Amplitude = 1
 
-            if "Variance" in k: line_Variance = 1
+            if "Error" in k: line_Error = 1
             else: line_Plain = 1
 
-        nb_lines = line_Plain + line_Variance
+        nb_lines = line_Plain + line_Error
         nb_cols = col_Shift + col_Linewidth + col_Amplitude + col_BLT
 
         # Assign columns and lines in the subplots to the 8 possible plots
@@ -1623,7 +1632,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                 cols.append(count)
             else: cols.append(None)
         count = 0
-        for line in line_Plain, line_Variance:
+        for line in line_Plain, line_Error:
             if line == 1: 
                 count+=1
                 lines.append(count)
@@ -1845,15 +1854,15 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                 item.setIcon(qtg.QIcon(f"{directory}/Abscissa.png"))
             if brillouin_type == "Amplitude":
                 item.setIcon(qtg.QIcon(f"{directory}/Amplitude.png"))
-            if brillouin_type == "Amplitude_std": 
+            if brillouin_type == "Amplitude_err": 
                 item.setIcon(qtg.QIcon(f"{directory}/Amplitude_error.png"))
             if brillouin_type == "BLT":
                 item.setIcon(qtg.QIcon(f"{directory}/BLT.png"))
-            if brillouin_type == "BLT_std": 
+            if brillouin_type == "BLT_err": 
                 item.setIcon(qtg.QIcon(f"{directory}/BLT_error.png"))
             elif brillouin_type == "Frequency": 
                 item.setIcon(qtg.QIcon(f"{directory}/Frequency.png"))
-            elif brillouin_type == "Linewidth_std": 
+            elif brillouin_type == "Linewidth_err": 
                 item.setIcon(qtg.QIcon(f"{directory}/Gamma_error.png"))
             elif brillouin_type == "Linewidth": 
                 item.setIcon(qtg.QIcon(f"{directory}/Gamma.png")) 
@@ -1861,7 +1870,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
                 item.setIcon(qtg.QIcon(f"{directory}/PSD.png"))    
             elif brillouin_type == "Raw_data": 
                 item.setIcon(qtg.QIcon(f"{directory}/Raw_data.png")) 
-            elif brillouin_type == "Shift_std": 
+            elif brillouin_type == "Shift_err": 
                 item.setIcon(qtg.QIcon(f"{directory}/Nu_error.png"))  
             elif brillouin_type == "Shift": 
                 item.setIcon(qtg.QIcon(f"{directory}/Nu.png"))  
