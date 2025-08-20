@@ -101,41 +101,55 @@ def test_add_hdf5():
     directory=os.path.dirname(os.path.abspath(__file__))
     w = Wrapper()
     # Trying to add a file that does not exist
-    try: w.add_hdf5(filepath = "Wrong_path", parent_group="Brillouin", overwrite=True), f"The add_hdf5 method failed"
-    except WrapperError_FileNotFound: pass 
+    try: 
+        w.add_hdf5(filepath = "Wrong_path", parent_group="Brillouin", overwrite=True)
+    except WrapperError_FileNotFound: 
+        pass 
+
     # Creating a temporary file
     w1 = Wrapper(filepath=directory+"/test_1.h5")
     dic = {"Raw_data": {"Name": "Measure_1",
                         "Data": np.random.random((50,50,100))}}
     w1.add_dictionnary(dic, parent_group="Brillouin", name_group="Group1")
+    w1.add_attributes({"Attribute1": "Value1"})
+
     # Adding the new file to the original wrapper without parent group
     w.add_hdf5(filepath = w1.filepath)
     with h5py.File(w.filepath, 'r') as file:
         assert "test_1" in file["Brillouin"], f"The group storing the added file does not exist in the file"
         assert "Group1" in file["Brillouin/test_1"], f"The group 'Group1' does not exist in the file"
         assert "Measure_1" in file["Brillouin/test_1/Group1"], f"The dataset 'Measure_1' does not exist in the file"
-    # Adding the new file to the original wrapper with parent group
-    try: w.add_hdf5(filepath = w1.filepath, parent_group="Brillouin/Group")    
-    except WrapperError_StructureError: pass
-    w.create_group("Group")
+        assert "Attribute1" in file["Brillouin/test_1"].attrs.keys(), f"The attribute 'Attribute1' does not exist in the file"
+        assert file["Brillouin/test_1"].attrs["Attribute1"] == "Value1", f"The attribute 'Attribute1' does not have the expected value"
+
+    # Adding the new file to the original wrapper with parent group checking that the parent group exists
     w.add_hdf5(filepath = w1.filepath, parent_group="Brillouin/Group")  
     with h5py.File(w.filepath, 'r') as file:
         assert "Group" in file["Brillouin"], f"The group storing the added file does not exist in the file"
         assert "test_1" in file["Brillouin/Group"], f"The group storing the added file does not exist in the file"
         assert "Group1" in file["Brillouin/Group/test_1"], f"The group 'Group1' does not exist in the file"
         assert "Measure_1" in file["Brillouin/Group/test_1/Group1"], f"The dataset 'Measure_1' does not exist in the file"
+
     # Adding the new file to a group already contining a group of same name
-    try: w.add_hdf5(filepath = w1.filepath, parent_group="Brillouin/Group")  
-    except WrapperError_Overwrite: pass
+    try: 
+        w.add_hdf5(filepath = w1.filepath, parent_group="Brillouin/Group")  
+    except WrapperError_Overwrite: 
+        pass
+
     # Removing temporary file
     os.remove(w1.filepath)
     os.remove(w.filepath)
 
 def test_add_dictionary():
+    # Remove any temporary file 
     directory = os.path.dirname(os.path.realpath(__file__))
     try: os.remove(directory+"/test_1.h5")
     except: pass
+
+    # Create a blank file
     w = Wrapper(filepath=directory+"/test_1.h5")
+
+    # Create a demo dictionary
     dic = {"Raw_data": {"Name": "Measure Water raw",
                         "Data": np.random.random((50,50,100))},
            "PSD": {"Name": "Measure Water PSD",
@@ -232,6 +246,62 @@ def test_add_dictionary():
         assert "Treatment" in file["Brillouin/Measure"].keys()
         assert "Shift" in file["Brillouin/Measure/Treatment"].keys()
     
+    # Removing temporary file
+    os.remove(directory+"/test_1.h5")
+
+def test_change_brillouin_type():
+    # Initialize the wrapper
+    directory = os.path.dirname(os.path.realpath(__file__))
+    try: 
+        os.remove(directory+"/test_1.h5")
+    except: pass
+
+    # Create the wrapper
+    w = Wrapper(filepath=directory+"/test_1.h5")
+
+    # Create a demo dictionary
+    dic = {"Raw_data": {"Name": "Measure Water raw",
+                        "Data": np.random.random((50,50,100))}
+            }
+
+    # Add the dictionary to the wrapper
+    w.add_dictionary(dic, parent_group="Brillouin/Measure", create_group=True, brillouin_type_parent_group="Measure")
+
+    # Change the Brillouin type of the Measure group
+    w.change_brillouin_type(path="Brillouin/Measure", brillouin_type="Calibration_spectrum")
+
+    # Check that the Brillouin type has been changed
+    with h5py.File(directory+"/test_1.h5", 'r') as file:
+        assert file["Brillouin/Measure"].attrs["Brillouin_type"] == "Calibration_spectrum", f"The Brillouin type of the group 'Brillouin/Measure' has not been changed"
+    
+    # Removing temporary file
+    os.remove(directory+"/test_1.h5")
+
+def test_change_name():
+    # Initialize the wrapper
+    directory = os.path.dirname(os.path.realpath(__file__))
+    try: 
+        os.remove(directory+"/test_1.h5")
+    except: pass
+
+    # Create the wrapper
+    w = Wrapper(filepath=directory+"/test_1.h5")
+
+    # Create a demo dictionary
+    dic = {"Raw_data": {"Name": "Measure Water raw",
+                        "Data": np.random.random((50,50,100))}
+            }
+
+    # Add the dictionary to the wrapper
+    w.add_dictionary(dic, parent_group="Brillouin/Measure", create_group=True, brillouin_type_parent_group="Measure")
+
+    # Change name of the raw data
+    w.change_name(path="Brillouin/Measure/Measure Water raw", name="New name")
+
+    # Check that the element "New name" is inside the file
+    with h5py.File(directory+"/test_1.h5", 'r') as file:
+        assert "New name" in file["Brillouin/Measure"].keys(), f"The element 'New name' does not exist"
+
     # Removing temporary file
     os.remove(directory+"/test_1.h5")
 
@@ -430,7 +500,77 @@ def test_combine_datasets():
 
     # Combine datasets
     wrp.combine_datasets(datasets = ["Brillouin/Measure/x1/Raw data", "Brillouin/Measure/x2/Raw data", "Brillouin/Measure/x3/Raw data", "Brillouin/Measure/x4/Raw data"], parent_group = "Brillouin/Measure", name = "Combined")
+    def test_add_dictionnary():
+        # Remove any temporary file 
+        directory = os.path.dirname(os.path.realpath(__file__))
+        try: os.remove(directory+"/test_1.h5")
+        except: pass
 
+        # Create a blank file
+        w = Wrapper(filepath=directory+"/test_1.h5")
+
+        # Create a demo dictionary
+        dic = {"Raw_data": {"Name": "Measure Water raw",
+                            "Data": np.random.random((50,50,100))},
+               "PSD": {"Name": "Measure Water PSD",
+                            "Data": np.random.random((50,50,100))},
+               "Frequency": {"Name": "Frequency",
+                            "Data": np.random.random((50,50,100))},
+               "Abscissa_x": {"Name":"x", 
+                              "Data":np.linspace(0,10,50), 
+                              "Unit":"um",
+                              "Dim_start":0, 
+                              "Dim_end":1},
+               "Abscissa_y": {"Name":"y", 
+                              "Data":np.linspace(0,10,50), 
+                              "Unit":"um",
+                              "Dim_start":0, 
+                              "Dim_end":1},
+               "Attributes": {"SPECTROMETER.Type": "TFP",
+                              "SAMPLE.Name": "Water"}}
+        # Testing adding data without specifying parent group or name_group
+        w.add_dictionnary(dic)
+        with h5py.File(directory+"/test_1.h5", 'r') as file:
+            # Should create Data_0 group under Brillouin
+            assert "Data_0" in file["Brillouin"], f"Data_0 group not created"
+            assert "Measure Water raw" in file["Brillouin/Data_0"], f"Raw_data not added"
+            assert "Measure Water PSD" in file["Brillouin/Data_0"], f"PSD not added"
+            assert "Frequency" in file["Brillouin/Data_0"], f"Frequency not added"
+            assert "x" in file["Brillouin/Data_0"], f"Abscissa_x not added"
+            assert "y" in file["Brillouin/Data_0"], f"Abscissa_y not added"
+            assert file["Brillouin/Data_0"].attrs["SPECTROMETER.Type"] == "TFP", f"Attribute SPECTROMETER.Type not set"
+            assert file["Brillouin/Data_0"].attrs["SAMPLE.Name"] == "Water", f"Attribute SAMPLE.Name not set"
+
+        # Test overwrite protection for Raw_data
+        dic2 = {"Raw_data": {"Name": "Measure Water raw",
+                            "Data": np.random.random((50,50,100))}}
+        try:
+            w.add_dictionnary(dic2, parent_group="Brillouin", name_group="Data_0")
+        except WrapperError_Overwrite:
+            pass
+
+        # Test overwrite protection for dataset name
+        dic3 = {"PSD": {"Name": "Measure Water PSD",
+                            "Data": np.random.random((50,50,100))}}
+        try:
+            w.add_dictionnary(dic3, parent_group="Brillouin", name_group="Data_0")
+        except WrapperError_Overwrite:
+            pass
+
+        # Test overwrite True allows replacement
+        w.add_dictionnary(dic2, parent_group="Brillouin", name_group="Data_0", overwrite=True)
+        with h5py.File(directory+"/test_1.h5", 'r') as file:
+            assert "Measure Water raw" in file["Brillouin/Data_0"], f"Raw_data not overwritten"
+
+        # Test abscissa format error
+        dic_bad = {"Abscissa_z": {"Name":"z", "Data":np.linspace(0,10,50), "Unit":"um", "Dim_start":0}}
+        try:
+            w.add_dictionnary(dic_bad, parent_group="Brillouin", name_group="Data_1")
+        except WrapperError_ArgumentType:
+            pass
+
+        # Remove temp file
+        os.remove(directory+"/test_1.h5")
 
 
 # def test_get_attributes():
@@ -504,16 +644,18 @@ if __name__ == "__main__":
     test_add_()
     test_add_hdf5()
     test_add_dictionary()
-    test_add_abscissa()
-    test_add_attributes()
-    test_add_raw_data()
-    test_add_PSD()
-    test_add_frequency()
-    test_add_treated_data()
-    test_create_group()
-    test_delete_element()
-    test_combine_datasets()
-    test_import_raw_data()
+    test_change_brillouin_type()
+    test_change_name()
+    # test_add_abscissa()
+    # test_add_attributes()
+    # test_add_raw_data()
+    # test_add_PSD()
+    # test_add_frequency()
+    # test_add_treated_data()
+    # test_create_group()
+    # test_delete_element()
+    # test_combine_datasets()
+    # test_import_raw_data()
 
 #     # test_set_attributes()
 #     # test_get_attributes()
