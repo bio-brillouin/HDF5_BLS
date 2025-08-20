@@ -18,7 +18,7 @@ You can install **HDF5_BLS** directly from PyPI:
 ```bash
 pip install HDF5_BLS
 ```
-Please refer to [the tutorial](https://github.com/bio-brillouin/HDF5_BLS/blob/v-1.0.0/guides/Tutorial/Tutorial.pdf) for more information.
+Please refer to [the tutorial](https://github.com/bio-brillouin/HDF5_BLS/blob/main/guides/Tutorial/Tutorial.pdf) for more information.
 
 
 ### Integration to workflow
@@ -89,12 +89,12 @@ To faciliate the use of the package, we have interfaced it with a GUI also acces
 
 ### Documentation
 
-You can access the documentation of the project at [this link](https://github.com/bio-brillouin/HDF5_BLS/blob/v-1.0.0/guides/Tutorial/Tutorial.pdf).
+You can access the documentation of the project at [this link](https://github.com/bio-brillouin/HDF5_BLS/blob/main/guides/Tutorial/Tutorial.pdf).
 Additionnally, a ReadTheDocs documentation for the library is accessible at [this link](https://hdf5-bls.readthedocs.io/en/latest/).
 
 ## Contributing
 
-A Developper Guide is accessible at [this link](https://github.com/bio-brillouin/HDF5_BLS/blob/v-1.0.0/guides/Tutorial/Tutorial.pdf). This guide is meant to be used by researchers who want to expand the project to their own devices while keeping the compatibility with all the existing functionalities. 
+A Developper Guide is accessible at [this link](https://github.com/bio-brillouin/HDF5_BLS/blob/main/guides/Tutorial/Tutorial.pdf). This guide is meant to be used by researchers who want to expand the project to their own devices while keeping the compatibility with all the existing functionalities. 
 
 For changes that might affect the compatibility of the project with existing devices, please open an issue first to discuss what you would like to change. For more information, please refer to [CONTRIBUTING.md](https://github.com/bio-brillouin/HDF5_BLS/blob/main/CONTRIBUTING.md).
 
