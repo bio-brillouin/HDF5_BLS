@@ -1653,12 +1653,15 @@ class Treat(Treat_backend):
         # Check if the user has set both combining methods to True, if so raise an error
         if keep_max_amplitude and amplitude_weight:
             raise ValueError("The parameters 'keep_max_amplitude' and 'amplitude_weight' cannot be both set to True.")
-        
+
         if position is None:
-            # Average the values of shift on all the PSDs 
-            shift = np.nanmean(self.shift, axis = 0)
-            while shift.ndim > 1:
-                shift = np.mean(shift, axis = 0)
+            if len(self.shift.shape) == 1:
+                shift = self.shift
+            else:
+                # Average the values of shift on all the points taken for the PSD. This is to only have the values of the shift of the interesting peaks.
+                shift = np.nanmean(self.shift, axis = 0)
+                while shift.ndim > 1:
+                    shift = np.mean(shift, axis = 0)
         else:
             shift = self.shift_sample
         
@@ -1673,12 +1676,18 @@ class Treat(Treat_backend):
 
         if position is None:
             # Realign the shift values
-            self.shift = np.moveaxis(self.shift, [0, -1], [-1, 0])
-            for i in range(len(k)):
-                self.shift[i] += k[i] * FSR
-                if nature[i] == "Anti-Stokes":
-                    self.shift[i] = -self.shift[i]
-            self.shift = np.moveaxis(self.shift, [-1, 0], [0, -1])
+            if len(self.shift.shape) > 1:
+                self.shift = np.moveaxis(self.shift, [0, -1], [-1, 0])
+                for i in range(len(k)):
+                    self.shift[i] += k[i] * FSR
+                    if nature[i] == "Anti-Stokes":
+                        self.shift[i] = -self.shift[i]
+                self.shift = np.moveaxis(self.shift, [-1, 0], [0, -1])
+            else:
+                for i in range(len(k)):
+                    self.shift[i] += k[i] * FSR
+                    if nature[i] == "Anti-Stokes":
+                        self.shift[i] = -self.shift[i]
         else:
             for i in range(len(k)):
                 self.shift_sample[i] += k[i] * FSR
