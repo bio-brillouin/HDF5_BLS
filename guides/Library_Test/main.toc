@@ -1,0 +1,11 @@
+\contentsline {section}{\numberline {1}Installation of the HDF5\_BLS package}{1}{section..section.1}%
+\contentsline {section}{\numberline {2}An example}{2}{section..section.2}%
+\contentsline {subsection}{\numberline {2.1}Creating the data}{2}{subsection..section.2.1}%
+\contentsline {subsection}{\numberline {2.2}Adding the data to a BrimX file}{3}{subsection..section.2.2}%
+\contentsline {subsection}{\numberline {2.3}Adding metadata to the BrimX file}{4}{subsection..section.2.3}%
+\contentsline {section}{\numberline {3}Template for integrating BrimX files to your workflow}{5}{section..section.3}%
+\contentsline {section}{\numberline {4}Visualizing the BrimX file}{5}{section..section.4}%
+\contentsline {subsection}{\numberline {4.1}Online}{5}{subsection..section.4.1}%
+\contentsline {subsection}{\numberline {4.2}Using Panoply}{8}{subsection..section.4.2}%
+\contentsline {section}{\numberline {5}The HDF5\_BLS\_GUI}{9}{section..section.5}%
+\contentsline {section}{\numberline {6}Ending remarks}{10}{section..section.6}%

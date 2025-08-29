@@ -70,13 +70,21 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
     def __init__(self):
         def initialize_buttons(self):
             self.b_NewHDF5.clicked.connect(self.new_hdf5)
+            self.b_NewHDF5.setToolTip("Create a new HDF5 file")
             self.b_OpenHDF5.clicked.connect(self.open_hdf5)
+            self.b_OpenHDF5.setToolTip("Open an existing HDF5 file")
             self.b_Save.clicked.connect(self.save_hdf5)
+            self.b_Save.setToolTip("Save the current HDF5 file")
             self.b_AddData.clicked.connect(self.add_data)
+            self.b_AddData.setToolTip("Add data to the current HDF5 file")
             self.b_RemoveData.clicked.connect(self.remove_data)
+            self.b_RemoveData.setToolTip("Remove data from the current HDF5 file")
             self.b_ExportCodeLine.clicked.connect(self.export_code_line)
+            self.b_ExportCodeLine.setToolTip("Export a code line to access the dataset")
             self.b_ConvertCSV.clicked.connect(self.convert_csv)
+            self.b_ConvertCSV.setToolTip("Export the properties of the selected element to a CSV file")
             self.b_Close.clicked.connect(self.closeEvent)
+            self.b_Close.setToolTip("Close the application")
 
         def initialize_menu(self):
             # File menu
@@ -287,7 +295,6 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
 
         def get_dictionnary(file, creator = None, parameters = None):
             # First we try adding the data based on the file extension
-            dic = load_data.load_general(file)
             try: 
                 dic = load_data.load_general(file)
             # If it does not work, it might be that the file extension is not supported, in that case display a warning window
@@ -396,7 +403,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         if filepath is None: 
             filepath = qtw.QFileDialog.getOpenFileNames(self, "Open File", "", "All Files (*)")[0]
             if filepath is None: return
-        if type(filepath) == str :  
+        if type(filepath) == str :
             filepath = [filepath]
 
         # Set parent path to the selected element if it is None
@@ -455,6 +462,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
         file = filepath.pop(0)
         path_parent = path_from_parent.pop(0)
         creator, parameters, dic = get_dictionnary(file, creator = None, parameters = None)
+        
         name_group = os.path.basename(file).split(".")[0]
         name_group = name_group.replace("  ", " ")
         if path_parent == "":
@@ -1228,7 +1236,7 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             action = menu.exec_(self.treeView.viewport().mapToGlobal(position))
 
             if action == add_action:
-                self.add_data()
+                self.treeview_handle_drops_files()
             elif action == remove_action:
                 self.remove_data()
             elif action == add_group_action:
@@ -1456,21 +1464,30 @@ class MainWindow(qtw.QMainWindow, Ui_w_Main):
             self.update_parameters()
 
     @qtc.Slot()
-    def treeview_handle_drops_files(self, filepaths, parent_path):
+    def treeview_handle_drops_files(self, filepaths = None, parent_path = None):
         """
         Handle the drop action for the tree view.
 
         Parameters
         ----------
-        filepaths : list
+        filepaths : list, optional
             List of file paths that are to be added to the wrapper.
-        parent_path : str
+        parent_path : str, optional
             The parent path of the added data. If None, the data will be added to the root of the HDF5 file.
 
         Returns
         -------
         None
         """
+        # If no filepaths were given
+        if filepaths is None: 
+            filepaths = qtw.QFileDialog.getOpenFileNames(self, "Open File", "", "All Files (*)")[0]
+            if filepaths is None: return
+        
+        # If no parent path is given
+        if parent_path is None:
+            parent_path = self.treeview_selected
+
         # Start by making sure that file having only one kind of extension are added.
         temp = [os.path.splitext(filepath)[1] for filepath in filepaths]
         extensions = []
