@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.10.24)  29 AUG 2025 13:22
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.10.24)  29 AUG 2025 13:33
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -621,77 +621,77 @@ File: t1cmtt.fd 2023/04/13 v2.5m Standard LaTeX font definitions
 ) [1
 
 {/usr/local/texlive/2024/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}] [2{/usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}] [3]
-<img/Excel_attributes.png, id=157, 1630.09pt x 977.6525pt>
+<img/Excel_attributes.png, id=162, 1630.09pt x 977.6525pt>
 File: img/Excel_attributes.png Graphic file (type png)
 <use img/Excel_attributes.png>
 Package pdftex.def Info: img/Excel_attributes.png  used on input line 279.
 (pdftex.def)             Requested size: 469.75502pt x 281.73676pt.
- [4 <./img/Excel_attributes.png>]
-<img/MyHDF5_welcome_window.png, id=177, 1517.67pt x 948.54375pt>
+ [4 <./img/Excel_attributes.png>] [5]
+<img/MyHDF5_welcome_window.png, id=220, 1517.67pt x 948.54375pt>
 File: img/MyHDF5_welcome_window.png Graphic file (type png)
 <use img/MyHDF5_welcome_window.png>
-Package pdftex.def Info: img/MyHDF5_welcome_window.png  used on input line 346.
+Package pdftex.def Info: img/MyHDF5_welcome_window.png  used on input line 360.
 (pdftex.def)             Requested size: 375.80544pt x 234.87747pt.
- [5]
-<img/MyHDF5_Developped structure.png, id=214, 1517.67pt x 948.54375pt>
+<img/MyHDF5_Developped structure.png, id=222, 1517.67pt x 948.54375pt>
 File: img/MyHDF5_Developped structure.png Graphic file (type png)
 <use img/MyHDF5_Developped structure.png>
-Package pdftex.def Info: img/MyHDF5_Developped structure.png  used on input line 355.
+Package pdftex.def Info: img/MyHDF5_Developped structure.png  used on input line 369.
 (pdftex.def)             Requested size: 375.80544pt x 234.87747pt.
-<img/My_HDF5_attributes.png, id=217, 1517.67pt x 948.54375pt>
+ [6 <./img/MyHDF5_welcome_window.png>]
+<img/My_HDF5_attributes.png, id=232, 1517.67pt x 948.54375pt>
 File: img/My_HDF5_attributes.png Graphic file (type png)
 <use img/My_HDF5_attributes.png>
-Package pdftex.def Info: img/My_HDF5_attributes.png  used on input line 364.
+Package pdftex.def Info: img/My_HDF5_attributes.png  used on input line 378.
 (pdftex.def)             Requested size: 375.80544pt x 234.87747pt.
- [6 <./img/MyHDF5_welcome_window.png> <./img/MyHDF5_Developped structure.png>]
-<img/MyHDF5_visualizer.png, id=227, 512.08456pt x 320.05286pt>
+<img/MyHDF5_visualizer.png, id=233, 512.08456pt x 320.05286pt>
 File: img/MyHDF5_visualizer.png Graphic file (type png)
 <use img/MyHDF5_visualizer.png>
-Package pdftex.def Info: img/MyHDF5_visualizer.png  used on input line 371.
+Package pdftex.def Info: img/MyHDF5_visualizer.png  used on input line 385.
 (pdftex.def)             Requested size: 469.75502pt x 293.60733pt.
- [7 <./img/My_HDF5_attributes.png> <./img/MyHDF5_visualizer.png>]
-<img/Panoply_developed_structure.png, id=236, 714.67pt x 962.59625pt>
+ [7 <./img/MyHDF5_Developped structure.png> <./img/My_HDF5_attributes.png>]
+<img/Panoply_developed_structure.png, id=244, 714.67pt x 962.59625pt>
 File: img/Panoply_developed_structure.png Graphic file (type png)
 <use img/Panoply_developed_structure.png>
-Package pdftex.def Info: img/Panoply_developed_structure.png  used on input line 384.
+Package pdftex.def Info: img/Panoply_developed_structure.png  used on input line 398.
 (pdftex.def)             Requested size: 187.89914pt x 253.07452pt.
-<img/Panoply_viewer.png, id=237, 512.1534pt x 370.5042pt>
+ [8 <./img/MyHDF5_visualizer.png>]
+<img/Panoply_viewer.png, id=250, 512.1534pt x 370.5042pt>
 File: img/Panoply_viewer.png Graphic file (type png)
 <use img/Panoply_viewer.png>
-Package pdftex.def Info: img/Panoply_viewer.png  used on input line 391.
+Package pdftex.def Info: img/Panoply_viewer.png  used on input line 405.
 (pdftex.def)             Requested size: 328.82707pt x 237.89073pt.
- [8 <./img/Panoply_developed_structure.png> <./img/Panoply_viewer.png>]
-<img/HDF5_BLS_GUI_welcome.png, id=247, 965.6075pt x 742.775pt>
+ [9 <./img/Panoply_developed_structure.png> <./img/Panoply_viewer.png>]
+<img/HDF5_BLS_GUI_welcome.png, id=261, 965.6075pt x 742.775pt>
 File: img/HDF5_BLS_GUI_welcome.png Graphic file (type png)
 <use img/HDF5_BLS_GUI_welcome.png>
-Package pdftex.def Info: img/HDF5_BLS_GUI_welcome.png  used on input line 414.
+Package pdftex.def Info: img/HDF5_BLS_GUI_welcome.png  used on input line 428.
 (pdftex.def)             Requested size: 375.80544pt x 289.08038pt.
-<img/HDF5_BLS_GUI_BrimX_structure.png, id=249, 965.6075pt x 742.775pt>
+<img/HDF5_BLS_GUI_BrimX_structure.png, id=263, 965.6075pt x 742.775pt>
 File: img/HDF5_BLS_GUI_BrimX_structure.png Graphic file (type png)
 <use img/HDF5_BLS_GUI_BrimX_structure.png>
-Package pdftex.def Info: img/HDF5_BLS_GUI_BrimX_structure.png  used on input line 429.
+Package pdftex.def Info: img/HDF5_BLS_GUI_BrimX_structure.png  used on input line 443.
 (pdftex.def)             Requested size: 375.80544pt x 289.08038pt.
- [9 <./img/HDF5_BLS_GUI_welcome.png>] [10 <./img/HDF5_BLS_GUI_BrimX_structure.png>] (./main.aux)
+ [10 <./img/HDF5_BLS_GUI_welcome.png>] [11 <./img/HDF5_BLS_GUI_BrimX_structure.png>] (./main.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-02-20>
  ***********
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 01BA658134812DF06043A7B2702AA6AB;2066.
+(rerunfilecheck)             Checksum: AEB48AA814C6766311C7C5671780AE5E;2309.
  ) 
 Here is how much of TeX's memory you used:
- 25491 strings out of 474116
- 481740 string characters out of 5743681
- 2324187 words of memory out of 5000000
- 47330 multiletter control sequences out of 15000+600000
+ 25500 strings out of 474116
+ 481863 string characters out of 5743681
+ 2325187 words of memory out of 5000000
+ 47333 multiletter control sequences out of 15000+600000
  569815 words of font info for 62 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  83i,7n,93p,498b,2101s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfbx1000.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfrm0500.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfrm1728.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sftt0900.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb>
-Output written on main.pdf (10 pages, 3860020 bytes).
+Output written on main.pdf (11 pages, 3861507 bytes).
 PDF statistics:
- 338 PDF objects out of 1000 (max. 8388607)
- 286 compressed objects within 3 object streams
- 137 named destinations out of 1000 (max. 500000)
- 146 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 352 PDF objects out of 1000 (max. 8388607)
+ 299 compressed objects within 3 object streams
+ 143 named destinations out of 1000 (max. 500000)
+ 154 words of extra memory for PDF output out of 10000 (max. 10000000)
 

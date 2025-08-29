@@ -333,6 +333,20 @@ linewidth = np.random.random((50, 50))
 wrp.add_treated_data(parent_group = "Brillouin", name_group = "Treat_0", shift = shift, linewidth = linewidth)
 \end{lstlisting}
 
+\section{Extracting data from the BrimX file}
+
+You can now interact directly with the BrimX file as any other file storing data. To extract a dataset located at a known path in the file, you can use the following line of code:
+\begin{lstlisting}
+dataset = wrp["path/to/dataset/in/the/file"][:]
+\end{lstlisting}
+
+For example, using the example BrimX file we created in this tutorial, you can extract the PSD of the first spectrum using the following code:
+\begin{lstlisting}
+psd = wrp["Brillouin/A single spectrum/PSD"][:]
+\end{lstlisting}
+
+The paths can be obtained by visualizing the file as explained in the next section.
+
 \section{Visualizing the BrimX file}
 
 \subsection{Online}
