@@ -4,6 +4,7 @@
 \usepackage{amsmath}
 \usepackage{array}
 \usepackage{enumitem}
+\usepackage{cprotect}
 \usepackage{float}
 \usepackage[T1]{fontenc}
 \usepackage{geometry}
@@ -313,9 +314,10 @@ f.close()
 \end{lstlisting}
 
 \section{HDF5\_BLS package}
-\subsection{Installation}
 
-The HDF5\_BLS package is a Python package for creating BrimX files. It is compatible with Python 3.10 and above. 
+The HDF5\_BLS package is a Python package for creating BrimX files, a file format based on HDF5, designed to support all Brillouin-related data in a human-readable way, and be integrated to all existing workflows of the community. It is compatible with Python 3.10 and above. 
+
+\subsection{Installation}
 
 We recommend setting up a virtual environment to install the package. This can be done using the following command:
 
@@ -353,28 +355,28 @@ Here we propose to create a synthetic Brillouin dataset that we'll store in a Br
 
 \subsubsection{Creating the data}
 
-We define a DHO function to create the Brillouin spectra.
+Let's define a general DHO function to create the Brillouin spectra.
 
 \begin{lstlisting}
 def DHO(nu, nu0, gamma, a, b):
     return b + a * (gamma*nu0)**2/((nu**2-nu0**2)**2+(gamma*nu)**2)
 \end{lstlisting}
 
-We define a frequency axis to create the spectra.
+Let's now define a frequency axis to create the spectra.
 
 \begin{lstlisting}
 nu = np.linspace(-15, 15, 1024)
 \end{lstlisting}
 
-We define the values of shift and linewidth for the different datasets to create:
+Let's now build synthetic datasets to image different scenarios:
 \begin{itemize}
-    \item For the single spectrum, we set shift to 5 GHz and linewidth to 1 GHz, with an amplitude of 1 and no offset.
+    \item 0D: Let's say we have a single spectrum, with a Brillouin shift of 5 GHz and linewidth of 1 GHz. Let's give the spectrum an amplitude of 1 and no offset.
 \begin{lstlisting}
 shift_0D = 5
 linewidth_0D = 1
 PSD_0D = DHO(nu, shift_0D, linewidth_0D, 1, 0)
 \end{lstlisting}
-    \item For the synthetic time evolution spectrum, we consider a shift rising quadratically from 5 to 6 GHz over time, a linewidth raising from 1 to 2 GHz linearly, and an amplitude of 1 with no offset.
+    \item 1D: Let's do the same for a 1D dataset now, let's think about a simple time evolution of a sample, where the shift rises quadratically from 5 to 6 GHz over time, and the linewidth from 1 to 2 GHz linearly. Here again, let's keep an amplitude of 1 with no offset.
 \begin{lstlisting}
 time_1D = np.linspace(0, 10, 100)
 shift_1D = 5 + time**2/100
@@ -382,7 +384,7 @@ linewidth_1D = np.linspace(1, 2, 100)
 for s, l in zip(shift_1D, linewidth_1D):
     PSD_1D = DHO(nu, s, l, 1, 0)
 \end{lstlisting}
-    \item For the synthetic spatial mapping, we consider a diagonal shift gradient from 5 to 6 GHz over time, and a diagonal linewidth gradient from 1 to 2 GHz, and an amplitude of 1 with no offset.
+    \item 2D: Let's consider a mapping showing a diagonal shift gradient from 5 to 6 GHz, and a diagonal linewidth gradient from 1 to 2 GHz. We keep an amplitude of 1 with no offset.
 \begin{lstlisting}
 gradient_x = np.linspace(0, 1, 50)
 gradient_y = np.linspace(0, 1, 50)
@@ -394,7 +396,7 @@ for i in range(50):
     for j in range(50):
         PSD_2D[i, j] = DHO(nu, shift_2D[i, j], linewidth_2D[i, j], 1, 0) 
 \end{lstlisting}
-    \item For the synthetic z-stack mapping, we consider a sphere with a shift of 6GHz and linewidth 2GHz in a solution of shift 5GHz and linewidth 1GHz, with an amplitude for all spectra of 1 and an offset of 0. The z-stack is made of 50 slices 
+    \item 3D: Let's now think about a z-stack. In this example we'll do a z-stack of a sphere embedded in a solution. The solution will have a shift of 5GHz and linewidth 1GHz, while the sphere will have a shift of 6GHz and linewidth 2GHz. Again, we'll keep an amplitude of 1 with no offset. Again, we have an amplitude of 1 and an offset of 0 for all spectra.
 \begin{lstlisting}
 x = np.linspace(-1, 1, 50)
 y = np.linspace(-1, 1, 50)
@@ -415,11 +417,11 @@ for i in range(50):
 \end{lstlisting}
 \end{itemize}
 
-We have provided in the joined Python script, options to visualize the created datasets.
+You can of course look at the PSD, shift and linewidth arrays with your favorite visualization tools (e.g. matplotlib).
 
 \subsubsection{Adding the data to a BrimX file}
 
-Here we're going to structure our file to store the four different datasets we've created. Each dataset will be stored in a separate group, and the group will be named with example names.
+Here we're going to structure our file to store the four different datasets we've created. Each dataset will be stored in a separate group that we'll name with example names.
 
 First we create the BrimX file at a given path, and define an object "wrp" to interact with it.
 \begin{lstlisting}
@@ -436,7 +438,23 @@ file.h5
 |  |- A z-stack
 \end{verbatim}
 
-In each of these groups, we will store the corresponding Power spectral density datasets, frequency array and shift and linewidth arrays. To do so, we will use the following code:
+In each of these groups, we'll store the corresponding Power spectral density datasets, frequency array and shift and linewidth arrays. To do so, we will use the three following functions:
+\begin{itemize}
+    \item "add\_frequency": to store the frequency array
+    \item "add\_PSD": to store the Power spectral density array
+    \item "add\_treated\_data": to store the shift and linewidth arrays
+\end{itemize}
+Each of these functions work the same way:
+\begin{enumerate}
+    \item You indicate the dataset to add.
+    \item You specify where the dataset will be stored in the file (argument "parent\_group").
+    \item You provide a name for the dataset (argument "name").
+\end{enumerate}
+
+Because you might need in the future to add other treatment modalities, we have made it so that all the datasets obtained after treatment are added in a same group. Therefore instead of "name" the "add\_treated\_data" function takes "name\_group" as argument, which is the name of the group where all the treated datasets will be stored. The names of the datasets themselves will be the type of data by default (e.g. "Shift" for the shift array, "Linewidth" for the linewidth array, etc.).
+
+With the provided code, this gives us:
+
 \begin{lstlisting}
 # Adding the 0D datasets
 wrp.add_frequency(data=nu, parent_group="Brillouin/A single spectrum", name = "Frequency")
@@ -461,6 +479,35 @@ wrp.add_treated_data(parent_group="Brillouin/A z-stack", name_group = "Treated D
 
 You are now the proud owner of a BrimX file containing synthetic Brillouin datasets!
 
+Note: you can add other types of datasets to the BrimX file. The available types are:
+
+\begin{itemize}
+    \item "Frequency" with the function "add\_frequency"
+    \item "PSD" with the function "add\_PSD"
+    \item "Other" with the function "add\_other", this can be anything you want to store (grayscale images, Raman spectra, fluorescence maps...)
+    \item "Raw Data" with the function "add\_raw\_data", where you can store your data "as is" (what the spectrometer returns).
+    \item "Abscissa" with the function "add\_abscissa" to add abscissa for your axis. Please refer to footnote \cprotect\footnote{In that case, you need to provide, aside from the dataset itself, the place where to store it and its name, the units of the abscissa (attribute "unit" given as a string, for example "mm" or "K"), the first dimension of the PSD it applies to and the last dimension of the PSD it applies to (attributes "dim\_strart" and "dim\_end" respectively, given as integers and with the usual convention: starting from 0, starting index included, ending index excluded). For example:
+\begin{lstlisting}
+    t = np.linspace(0,10,100) # 100 values of time ranging from 0 to 10s
+    PSD = np.random.random((100,512)) # 100 PSD associated to the time array
+    wrp.add_PSD(data = PSD, parent_group = "Brillouin/A new time series", name = "PSD")
+    wrp.add_abscissa(data = t, parent_group = "Brillouin/A new time series", name = "Time", unit = "s", dim_start = 0, dim_end = 1)
+\end{lstlisting}}
+\end{itemize}
+
+You can also add other types of datasets after treatment, in that case you will use the "add\_treated\_data" function and just specify the datasets you want to add from this list:
+\begin{itemize}
+    \item A record of shift values -> argument "shift"
+    \item A record of linewidth values -> argument "linewidth"
+    \item A record of the values of amplitude -> argument "amplitude"
+    \item Values for the loss tangent -> argument "BLT" 
+    \item A record for the errors on the shift values -> argument "shift\_err"
+    \item A record for the errors on the linewidth values -> argument "linewidth\_err"
+    \item A record for the errors on the amplitude values -> argument "amplitude\_err"
+    \item A record for the errors on the BLT values -> argument "BLT\_err"
+\end{itemize}
+
+
 \subsubsection{Adding metadata to the BrimX file}
 
 To add metadata to the BrimX file, we will choose the easy way for this example, and just edit the standard spreadsheet given with the package and downloadable at this link: \url{https://github.com/bio-brillouin/HDF5_BLS/blob/main/spreadsheets/attributes_v1.0.xlsx}.
@@ -473,18 +520,18 @@ A list of established parameters is given, their name, units and definition is w
     \label{fig:excel_attributes}
 \end{figure}
 
-You can of course play with this file, add your own parameters, change the values for the ones given, add values for the ones not given, etc. We recommend however not changing the name of the parameters so that all the community calls the same parameters the same way.
+You can of course play with this file, add your own parameters, change the values for the ones given, add values for the ones not given, etc. We recommend however not changing the names of the existing parameters so that all the community calls the same parameters the same way.
 
 You can then save the file at your prefered location, and apply it to the BrimX file you just created. To do so, you can use the following code:
 
 \begin{lstlisting}
-wrp.import_properties_data(filepath='local_use/example_attributes.xlsx')
+wrp.import_properties_data(filepath='path/to/attributes.xlsx')
 \end{lstlisting}
 
-This line of code applies the metadata to the whole BrimX file. You can also apply metadata to a specific group by adding the argument "parent\_group" to the function:
+This line of code applies the metadata to the whole BrimX file. You can also add metadata only to a specific group by adding the argument "path" to the function:
 
 \begin{lstlisting}
-wrp.import_properties_data(filepath='local_use/example_attributes.xlsx', path = "Brillouin/A z-stack")
+wrp.import_properties_data(filepath='path/to/attributes.xlsx', path = "Brillouin/A z-stack")
 \end{lstlisting}
 
 
@@ -537,6 +584,12 @@ For example, using the example BrimX file we created in this tutorial, you can e
 psd = wrp["Brillouin/A single spectrum/PSD"][:]
 \end{lstlisting}
 
+To extract the metadata that is applied to an element of the file, you can use the following code:
+\begin{lstlisting}
+metadata = wrp.get_attributes("Brillouin/A single spectrum/PSD")
+\end{lstlisting}
+This will list all the metadata applied to the dataset located at the given path (in that case the PSD of the single spectrum).
+
 The paths can be obtained by visualizing the file as explained in the next section.
 
 \subsection{Visualizing the BrimX file}
@@ -545,7 +598,7 @@ The paths can be obtained by visualizing the file as explained in the next secti
 
 You can visualize the BrimX file online using the myhdf5 web application: \url{https://myhdf5.hdfgroup.org}. This application runs locally in your web browser so you can use it safely even to observe sensitive data.
 
-When you open the application, you can upload your BrimX file and explore its contents either by clicking the "Select HDF5 File" button or by dragging and dropping your file in the window (figure \ref{fig:my_hdf5_welcome}). 
+When you open the application, you can upload your BrimX file and explore its contents either by clicking the "Select HDF5 File" button or by dragging and dropping your file in the window (figure \ref{fig:my_hdf5_welcome}). Let's try with the example file we created in this tutorial.
 
 \begin{figure}[H]
     \centering
@@ -581,7 +634,7 @@ From there you can explore the file, visualize attributes (figure \ref{fig:my_hd
 
 \subsubsection{Using Panoply}
 
-Panoply is an application developed by NASA to visualize geo-referenced data and more generally HDF5 files. It can be downloaded for free at this link: \url{https://www.giss.nasa.gov/tools/panoply/}. 
+Panoply is an application developed by NASA to visualize geo-referenced data and more generally HDF5 files (thank you NASA!). It can be downloaded for free at this link: \url{https://www.giss.nasa.gov/tools/panoply/}. 
 
 Here are some screenshots of the application with the example file we created in this tutorial: 
 
@@ -608,7 +661,6 @@ To use the GUI, you need to install the package. Follow the instructions below:
 \begin{itemize}
     \item Clone the repository: \texttt{git clone https://github.com/yourusername/HDF5\_BLS.git}
     \item Navigate to the directory: \texttt{cd HDF5\_BLS}
-    \item Install the packages for the library: \texttt{pip install -r requirements\_library.txt}
     \item Install the packages for the GUI: \texttt{pip install -r requirements\_GUI.txt}
     \item Run the GUI: \texttt{python HDF5\_BLS\_GUI/main.py}
 \end{itemize}
