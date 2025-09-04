@@ -111,8 +111,8 @@
 \newcommand{\mypart}[1]{\setcounter{chapter}{0} \part{#1}}
 \renewcommand{\theHsection}{\thepart.section.\thesection}
 
-\title{Testing the HDF5\_BLS package for creating BrimX files}
-\author{Pierre Bouvet}
+\title{Standardization of Brillouin data storage and processing}
+\author{Pierre Bouvet \and Carlo Bevilacqua \and Sebastian Hambura}
 \date{2025}
 
 \begin{document}
@@ -121,7 +121,199 @@
 
 \tableofcontents
 
-\section{Installation of the HDF5\_BLS package}
+\section{BrimView web app}
+
+You can navigate to https://biobrillouin.org/brimview/ and the webapp should load directly from the browser. We currently only support the latest version of Chrome and Egde. Firefox can be used as well by activating JSPI (a page explaining how to do should automatically show on Firefox).
+
+\subsection{Loading sample data}
+Once the page finishes loading (it might take a few moments), you can load sample data using the dedicated widget, as highlighted in figure \ref{fig:brimview-sampledata}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{img/brimview-load_sample_data.png}
+    \caption{BrimView GUI. The widget to load sample data is encircled in red.}
+    \label{fig:brimview-sampledata}
+\end{figure}
+
+\subsection{Exploring the data}
+
+Once the image is loaded you can click on any pixel and the corresponding spectrum will show on the right, including a table with the numerical values of the fitted parameters below (figure \ref{fig:brimview-spectrum}).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{img/brimview-spectrum.png}
+    \caption{The spectrum and the corresponding fitted parameters can be displayed for each pixel in the image.}
+    \label{fig:brimview-spectrum}
+\end{figure}
+
+You can select which quantity (i.e. shift, linewidth, amplitude, ...), peak (i.e. Stokes, anti-Stokes, average), axis (x, y,z) and color range from the widgets below the image (figure \ref{fig:brimview-parameters}).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{img/brimview-parameters.png}
+    \caption{Different settings for displaying the image can be selected from the widgets below the images.}
+    \label{fig:brimview-parameters}
+\end{figure}
+
+\section{Brimfile}
+
+\subsection{The brim file format}
+
+We defined a new file format - brimfile (= Brillouin imaging) - with the intent of associating spatial maps to their corresponding spectral information and metadata in a well-defined yet general and flexible fashion. More information about the brimfile format can be found \href{https://github.com/prevedel-lab/Brillouin-standard-file}{here}.
+
+\subsection{The brimfile Python package}
+
+To easily save data to the brim file format or read from it, we developed a Python library called \href{https://pypi.org/project/brimfile/}{brimfile}. The full documentation of the library can be found at https://prevedel-lab.github.io/brimfile/brimfile.html.
+
+\subsubsection{Installing brimfile}
+We recommend installing brimfile in a \href{https://docs.python.org/3/library/venv.html}{virtual environment}.
+
+After activating the new environment, simply run:
+\begin{lstlisting}
+pip install brimfile
+\end{lstlisting}
+If you also need the support for exporting the analyzed data to OME-Tiff files, you can install the optional dependencies with:
+\begin{lstlisting}
+pip install "brimfile[export-tiff]"
+\end{lstlisting}
+
+\subsubsection{Writing to a brimfile}
+
+Let's first of all create a function that generate sample data:
+\begin{lstlisting}
+import numpy as np
+
+def generate_data():
+    def lorentzian(x, x0, w):
+        return 1/(1+((x-x0)/(w/2))**2)
+    Nx, Ny, Nz = (7, 5, 3) # Number of points in x,y,z
+    dx, dy, dz = (0.4, 0.5, 2) # Stepsizes (in um)
+    n_points = Nx*Ny*Nz  # total number of points
+
+    width_GHz = 0.4
+    width_GHz_arr = np.full((Nz, Ny, Nx), width_GHz)
+    shift_GHz_arr = np.empty((Nz, Ny, Nx))
+    freq_GHz = np.linspace(6, 9, 151)  # 151 frequency points
+    PSD = np.empty((Nz, Ny, Nx, len(freq_GHz)))
+    for i in range(Nz):
+        for j in range(Ny):
+            for k in range(Nx):
+                index = k + Nx*j + Ny*Nx*i
+                #let's increase the shift linearly to have a readout 
+                shift_GHz = freq_GHz[0] + (freq_GHz[-1]-freq_GHz[0]) * index/n_points
+                spectrum = lorentzian(freq_GHz, shift_GHz, width_GHz)
+                shift_GHz_arr[i,j,k] = shift_GHz 
+                PSD[i, j, k,:] = spectrum
+
+    return PSD, freq_GHz, (dz,dy,dx), shift_GHz_arr, width_GHz_arr
+\end{lstlisting}
+
+We can create a brimfile by doing: 
+\begin{lstlisting}
+from brimfile import File, Data, Metadata, StoreType
+from datetime import datetime
+
+filename = 'path/to/your/file.brim.zip' 
+
+f = File.create(filename, store_type=StoreType.AUTO)
+\end{lstlisting}
+We can then add the spectral data:
+\begin{lstlisting}
+PSD, freq_GHz, (dz,dy,dx), shift_GHz, width_GHz = generate_data()
+
+d0 = f.create_data_group(PSD, freq_GHz, (dz,dy,dx), name='test1')
+\end{lstlisting}
+and the metadata:
+\begin{lstlisting}
+Attr = Metadata.Item
+datetime_now = datetime.now().isoformat()
+temp = Attr(22.0, 'C')
+md = d0.get_metadata()
+
+md.add(Metadata.Type.Experiment, {'Datetime':datetime_now, 'Temperature':temp})
+md.add(Metadata.Type.Optics, {'Wavelength':Attr(660, 'nm')})
+# Add some metadata to the local data group   
+temp = Attr(37.0, 'C')
+md.add(Metadata.Type.Experiment, {'Temperature':temp}, local=True)
+\end{lstlisting}
+We can also add the result of the fit:
+\begin{lstlisting}
+ar = d0.create_analysis_results_group({'shift':shift_GHz, 'shift_units': 'GHz',
+                                             'width': width_GHz, 'width_units': 'Hz'},
+                                             {'shift':shift_GHz, 'shift_units': 'GHz',
+                                             'width': width_GHz, 'width_units': 'Hz'},
+                                             name = 'test1_analysis')
+\end{lstlisting}
+We can finally close the file:
+\begin{lstlisting}
+f.close()
+\end{lstlisting}
+
+\subsubsection{Reading a brimfile}
+Reading from a brimfile follows a very similar logic as writing.
+
+We first open the file:
+\begin{lstlisting}
+from brimfile import File, Data, Metadata
+
+filename = 'path/to/your/file.brim.zip' 
+
+f = File(filename)
+\end{lstlisting}
+We can list all the data group in the file and open the first one:
+\begin{lstlisting}
+#list all the data groups in the file
+data_groups = f.list_data_groups(retrieve_custom_name=True)
+
+# get the first data group in the file
+d = f.get_data()
+\end{lstlisting}
+
+We can read the metadata:
+\begin{lstlisting}
+# get the metadata 
+md = d.get_metadata()
+all_metadata = md.all_to_dict()
+# the list of metadata is defined here https://github.com/prevedel-lab/Brillouin-standard-file/blob/main/docs/brim_file_metadata.md
+time = md['Experiment.Datetime']
+time.value
+time.units
+temp = md['Experiment.Temperature']
+md_dict = md.to_dict(Metadata.Type.Experiment)
+\end{lstlisting}
+
+We can get the results of the analysis:
+\begin{lstlisting}
+#get the list of analysis results in the data group
+ar_list = d.list_AnalysisResults(retrieve_custom_name=True)
+# get the first analysis results in the data group
+ar = d.get_analysis_results()
+\end{lstlisting}
+and the corresponding image: 
+\begin{lstlisting}
+# get the image of the shift quantity for the average of the Stokes and anti-Stokes peaks
+img, px_size = ar.get_image(Data.AnalysisResults.Quantity.Shift, Data.AnalysisResults.PeakType.average)
+# get the units of the shift quantity
+u = ar.get_units(Data.AnalysisResults.Quantity.Shift)
+\end{lstlisting}
+We can save the image as a TIFF: 
+\begin{lstlisting}
+ar_cls = Data.AnalysisResults
+ar.save_image_to_OMETiff(ar_cls.Quantity.Shift, ar_cls.PeakType.average, filename='path/to/your/exported_tiff' )
+\end{lstlisting}
+We can also get the spectrum corresponding to a specific pixel:
+\begin{lstlisting}
+coord = (1,3,4)
+PSD, frequency, PSD_units, frequency_units = d.get_spectrum_in_image(coord)
+\end{lstlisting}
+
+We can finally close the file:
+\begin{lstlisting}
+f.close()
+\end{lstlisting}
+
+\section{HDF5\_BLS package}
+\subsection{Installation}
 
 The HDF5\_BLS package is a Python package for creating BrimX files. It is compatible with Python 3.10 and above. 
 
@@ -149,7 +341,7 @@ pip install HDF5_BLS
 \end{lstlisting}
 
 
-\section{An example}
+\subsection{An example}
 
 Here we propose to create a synthetic Brillouin dataset that we'll store in a BrimX file. We will store 3 different types of synthetic data:
 \begin{itemize}
@@ -159,7 +351,7 @@ Here we propose to create a synthetic Brillouin dataset that we'll store in a Br
     \item A z-stack of a sphere
 \end{itemize}
 
-\subsection{Creating the data}
+\subsubsection{Creating the data}
 
 We define a DHO function to create the Brillouin spectra.
 
@@ -225,7 +417,7 @@ for i in range(50):
 
 We have provided in the joined Python script, options to visualize the created datasets.
 
-\subsection{Adding the data to a BrimX file}
+\subsubsection{Adding the data to a BrimX file}
 
 Here we're going to structure our file to store the four different datasets we've created. Each dataset will be stored in a separate group, and the group will be named with example names.
 
@@ -269,7 +461,7 @@ wrp.add_treated_data(parent_group="Brillouin/A z-stack", name_group = "Treated D
 
 You are now the proud owner of a BrimX file containing synthetic Brillouin datasets!
 
-\subsection{Adding metadata to the BrimX file}
+\subsubsection{Adding metadata to the BrimX file}
 
 To add metadata to the BrimX file, we will choose the easy way for this example, and just edit the standard spreadsheet given with the package and downloadable at this link: \url{https://github.com/bio-brillouin/HDF5_BLS/blob/main/spreadsheets/attributes_v1.0.xlsx}.
 
@@ -296,7 +488,7 @@ wrp.import_properties_data(filepath='local_use/example_attributes.xlsx', path = 
 \end{lstlisting}
 
 
-\section{Template for integrating BrimX files to your workflow}
+\subsection{Template for integrating BrimX files to your workflow}
 
 You can now try integrating the use of BrimX files in your workflow. Note that the example we showed above is limited to 4 kinds of datasets (frequency, PSD, shift and linewidth). The format can handle a total of 13 different kinds of datasets that are defined in the documentation of the package: \url{https://github.com/bio-brillouin/HDF5_BLS/blob/main/guides/Tutorial/Tutorial.pdf}.
 
@@ -333,7 +525,7 @@ linewidth = np.random.random((50, 50))
 wrp.add_treated_data(parent_group = "Brillouin", name_group = "Treat_0", shift = shift, linewidth = linewidth)
 \end{lstlisting}
 
-\section{Extracting data from the BrimX file}
+\subsection{Extracting data from the BrimX file}
 
 You can now interact directly with the BrimX file as any other file storing data. To extract a dataset located at a known path in the file, you can use the following line of code:
 \begin{lstlisting}
@@ -347,9 +539,9 @@ psd = wrp["Brillouin/A single spectrum/PSD"][:]
 
 The paths can be obtained by visualizing the file as explained in the next section.
 
-\section{Visualizing the BrimX file}
+\subsection{Visualizing the BrimX file}
 
-\subsection{Online}
+\subsubsection{Online}
 
 You can visualize the BrimX file online using the myhdf5 web application: \url{https://myhdf5.hdfgroup.org}. This application runs locally in your web browser so you can use it safely even to observe sensitive data.
 
@@ -387,7 +579,7 @@ From there you can explore the file, visualize attributes (figure \ref{fig:my_hd
     \label{fig:my_hdf5_datasets}
 \end{figure}
 
-\subsection{Using Panoply}
+\subsubsection{Using Panoply}
 
 Panoply is an application developed by NASA to visualize geo-referenced data and more generally HDF5 files. It can be downloaded for free at this link: \url{https://www.giss.nasa.gov/tools/panoply/}. 
 
@@ -407,7 +599,7 @@ Here are some screenshots of the application with the example file we created in
     \label{fig:panoply_viewer}
 \end{figure}
 
-\section{The HDF5\_BLS\_GUI}
+\subsection{The HDF5\_BLS\_GUI}
 
 The HDF5\_BLS\_GUI is a graphical user interface for the HDF5\_BLS package, designed to facilitate the exploration and analysis of HDF5 files. It provides a user-friendly environment for users to create and interact with their data. The GUI is meant to evolve to allow users to treat their data from it, but these developments are still in a beta phase. 
 
@@ -447,7 +639,7 @@ You can of course drag and drop the BrimX file we have created in this tutorial 
 
 This GUI is still in development, so don't hesitate to report bugs or suggest features on the GitHub repository: \url{https://github.com/bio-brillouin/HDF5_BLS/issues}.
 
-\section{Ending remarks}
+\subsection{Ending remarks}
 
 In this tutorial, we have covered the basics of using the HDF5\_BLS\_GUI for exploring and managing HDF5 files. We encourage you to experiment with the GUI and provide feedback to help us improve it. You can directly contact me at \href{mailto:pierre.bouvet@meduniwien.ac.at}{pierre.bouvet@meduniwien.ac.at} !
 
