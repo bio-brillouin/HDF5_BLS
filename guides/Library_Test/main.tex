@@ -697,6 +697,203 @@ In this tutorial, we have covered the basics of using the HDF5\_BLS\_GUI for exp
 
 \vspace{5\baselineskip}
 
+\section{HDF5\_BLS\_treat package}
+
+The HDF5\_BLS\_treat package is a Python library designed to standardize the treatment and analysis of Brillouin data stored in HDF5 format. It provides a set of tools and functions to process Brillouin data and comes with a built-in recording tool to store the steps of the analysis for easy replication and storage.
+
+\subsection{Installation}
+
+We recommend setting up a virtual environment to install the package. This can be done using the following command:
+
+\begin{tcolorbox}[colback=blue!5, colframe=blue!40!black, boxrule=0.5mm, sharp corners, left=2mm, right=2mm, top=1mm, bottom=1mm]
+- On Mac terminal
+\begin{lstlisting}
+python -m venv HDF5_BLS_venv
+source HDF5_BLS_venv/bin/activate 
+\end{lstlisting}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=yellow!5, colframe=yellow!40!black, boxrule=0.5mm, sharp corners, left=2mm, right=2mm, top=1mm, bottom=1mm]
+- On Windows terminal
+\begin{lstlisting}
+python -m venv HDF5_BLS_venv
+HDF5_BLS_venv\Scripts\activate
+\end{lstlisting}
+\end{tcolorbox}
+
+On both OS, the package can be installed using pip:
+\begin{lstlisting}
+pip install HDF5_BLS_treat
+\end{lstlisting}
+
+\subsection{An example}
+
+\subsubsection{Creating a synthetic spectrum}
+
+Let's first create a synthetic spectrum, with a shift of 5GHz and a linewidth of 1GHz, an amplitude of 10 and an offset of 1:
+\begin{lstlisting}
+nu = np.linspace(-15, 15, 1024)
+PSD = DHO(nu, 5, 1, 10, 1)
+\end{lstlisting}
+
+
+\subsubsection{Initialization}
+
+The treatment will be performed on these two arrays. Let's thus initialize our treatment object:
+\begin{lstlisting}
+from HDF5_BLS_treat.treat import Treat
+treat = Treat(frequency=nu, PSD=PSD)
+\end{lstlisting}
+
+
+\subsubsection{Normalization of the spectra}
+
+A good practice is to normalize the data before applying the treatment. This can be done using the \texttt{normalize} function, after having defined one of multiple peaks to be considered as the norm (ie: the average of their amplitude is set to 1). To do so, we start by identifying the peaks to normalize. Here let's take only the Stokes peak. We select the peak by providing an approximation of its position (attribute "position\_center\_window") and a window size where to search for it  (attribute "window\_width"). We can also indicate the nature of this peak (attribute "type\_pnt" that can be set to "Stokes", "Anti-Stokes" or "Other"), although in this case, this doesn't matter much since we are averaging amplitudes regardless of the nature of the peak.
+\begin{lstlisting}
+treat.add_point(position_center_window = 5, type_pnt = "Other", window_width = 3)
+\end{lstlisting}
+
+Now we can normalize the data. This function identifies the noise level in the spectrum, averages it, substracts it from the data, and then divides the data by the average of the amplitude of all peaks that have been given with the "add\_point" function. To identify the noise level, we use the "threshold\_noise" attribute. This attribute defines the highest possible value of the noise level, given as a ratio of the difference of the maximum and minimum of the data. By default, this value is set to 1\%. Let's set it here to 5\%.
+\begin{lstlisting}
+treat.normalize(threshold_noise = 0.05)
+\end{lstlisting}
+
+\subsubsection{Identification of the points to fit}
+
+Here we can start the fitting procedure. We first need to identify the peaks we want to fit. As before, we use the "add\_point" function to do so. In this case, we will fit the Stokes peak and the Anti-Stokes peak. Here it is important to indicate the nature of the peaks (attribute "type\_pnt" that can be set to "Stokes", "Anti-Stokes" or "Other") as we'll need to know that parameter to obtain a unique value of shift and linewidth to describe the spectrum.
+\begin{lstlisting}
+treat.add_point(position_center_window = -5, type_pnt = "Anti-Stokes", window_width = 3)
+treat.add_point(position_center_window = 5, type_pnt = "Stokes", window_width = 3)
+\end{lstlisting}
+
+\subsubsection{Definition of the lineshape to use for the fit}
+
+Different models are given to fit the data. You can for example decide to fit your peaks with a Lorentzian or a DHO lineshape. To tell the treatment which lineshape to use, you can use the "define\_model" function with the name of the model given in the "name" argument. You can also indicate if a line should also be fitted. This is a simple yet effective way to reduce the effect of a possible badly attenuated elastic peak. This is done by setting the "elastic\_correction" argument to True. Here let's use a DHO lineshape with no elastic correction:
+\begin{lstlisting}
+treat.define_model(name = "DHO", elastic_correction = False)
+\end{lstlisting}
+
+\subsubsection{Initial parameters}
+
+A crucial step of any fitting procedure is the definition of the initial parameters. We have normalized the spectra so we have an initial guess for the amplitude of 1, and for the offset of 0. We have also defined the position of our peaks, so this value is also initialized. We haven't however defined the initial guess for the linewidth. The easiest way to estimate the width is to use the "estimate\_width\_inelastic\_peaks" function. Given the amplitude of the peak, this function takes the points of the curve that are approximately at the half height and deduces a value for the linewidth. To prevent aberrant values, we can provide a maximum value for the width (attribute "max\_width\_guess"). Here let's set it to 2GHz:
+
+\begin{lstlisting}
+treat.estimate_width_inelastic_peaks(max_width_guess = 2)
+\end{lstlisting}
+
+\subsubsection{Fitting the data}
+
+Everything is setup now to fit the spectra. You can perform this fit one of two ways: either you fit each peak individually or fit all the peaks at once. To choose between the two methods, you can use the "single\_fit\_all\_inelastic" (fits every peak invidually) or the "multi\_fit\_all\_inelastic" (fits all the peaks at once) function. Both function have the same parameters:
+\begin{itemize}
+    \item "guess\_offset": a boolean that indicates whether the offset should be guessed or not. It might be interesting to force the offset to 0 if you know there's no offset in your data after normalization.
+    \item "update\_point\_position": a boolean that indicates whether the position of the points should be updated during the fit. This is interesting if you're looping the fitting over a large number of spectra, as the position of the peak might change from one spectrum to another due to linear effects (temperature for example). 
+    \item "bound\_shift": a tuple that defines the lower and upper bounds for the shift parameter.
+    \item "bound\_linewidth": a tuple that defines the lower and upper bounds for the linewidth parameter.
+\end{itemize}
+To define the bounds for the shift and linewidth parameters, you can simply give a list (or tuple) of the lower and upper bounds for each fitted peak. For example, in this example, it would be weird to get values of shift lower than -5.5GHz and higher than -4.5GHz for the anti-Stokes peak, lower than 4.5GHz and higher than 5.5GHz for the Stokes peak, and linewidths lower than 0.9Ghz and higher than 1.1GHz. We can thus define the bounds and indicate the fitting as follows:
+
+\begin{lstlisting}
+bound_shift = [(-5.5, -4.5), (4.5, 5.5)]
+bound_linewidth = [(0.9, 1.1), (0.9, 1.1)]
+treat.multi_fit_all_inelastic(guess_offset=True, update_point_position=True, bound_shift= bound_shift, bound_linewidth=bound_linewidth)  
+\end{lstlisting}
+
+Note that at this step, an error on the value of the shift and linewidth is also obtained by estimating the Hessian matrix from the extrapolated Jacobian matrix.
+
+\subsubsection{Applying the treatment to a multidimensional PSD dataset}
+
+Up to here, we were working with a single spectrum. However, you'll often have a PSD dataset that stores multiple spectra. To apply the treatment to a multidimensional PSD dataset, you can use the "apply\_algorithm\_on\_all" function. This function takes no arguments, it simply runs all the steps sequentially on each spectrum of the dataset, considering that the last dimension is the one of the channels.
+
+\begin{lstlisting}
+treat.apply_algorithm_on_all()
+\end{lstlisting}
+
+\subsubsection{Combining fits}
+
+In most cases, you'll want to combine the results of fits performed on a series of peaks. Under the hypothesis of symmetry, you can do that using the "combine\_results\_FSR" function. This function considers the type of the peaks, and given a FSR (Free Spectral Range), for the spectrometer, it combines the results of the fits of the peaks. If order N is centered on the 0 of the frequency axis, then it will automatically subtract to the shift of the peaks of order N+1 and N-1 the corresponding FSR offset to get a shift value contained in [-FSR/2, FSR/2]. The function then extracts a single value for the shift and linewidth of all the peaks. It can do so by either considering only the peak of highest amplitude (attribute "keep\_max\_amplitude" set to True), by averaging the values of all the peaks weighing them by their amplitude (attribute "amplitude\_weight" set to True), by averaging the values of all the peaks weighing them by the error on the shift (attribute "shift\_err\_weight" set to True), or by simply averaging the values of all the peaks (all attributes set to False). Here let's consider a spectrometer with a FSR of 15GHz, and let's combine the results by weighing them by their error on the shift:
+
+\begin{lstlisting}
+treat.combine_results_FSR(FSR = 15, keep_max_amplitude = False, amplitude_weight = False, shift_err_weight= True)
+\end{lstlisting}
+
+\subsubsection{Getting the results}
+
+Your fit is over! You can now get the results of the treatment. These are stored in the attributes of the "treat" object. The main attributes are:
+\begin{itemize}
+    \item "shift" -> where the shift is stored
+    \item "linewidth" -> where the linewidth is stored
+    \item "amplitude" -> where the amplitude is stored
+    \item "offset" -> where the offset is stored
+    \item "shift\_var" -> where the variance on the fitted shift is stored
+    \item "linewidth\_var" -> where the variance on the fitted linewidth is stored
+    \item "amplitude\_var" -> where the variance on the fitted amplitude is stored
+\end{itemize}
+
+\begin{lstlisting}
+shift = treat.shift
+linewidth = treat.linewidth
+amplitude = treat.amplitude
+\end{lstlisting}
+
+\subsection{A code to try}
+
+If you don't want to read the last section, you can directly try the following code:
+
+\begin{lstlisting}
+
+from HDF5_BLS_treat.treat import Treat, Models
+import sys
+
+nu=np.linspace(-15, 15, 1024)
+gradient_x=np.linspace(0, 1, 50)
+gradient_y=np.linspace(0, 1, 50)
+temp=(np.outer(gradient_y, gradient_x) + np.outer(gradient_y, gradient_x))/2
+shift_2D=temp + 5
+linewidth_2D=temp + 1 
+PSD_2D=np.zeros((50, 50, 1024))
+for i in range(50):
+    for j in range(50):
+        PSD_2D[i, j]=DHO(nu, shift_2D[i, j], linewidth_2D[i, j], 1, 0) 
+
+treat=Treat(frequency=nu, PSD=PSD_2D)
+
+treat.add_point(position_center_window=5.5, type_pnt="Stokes", window_width=1)
+treat.normalize_data(threshold_noise=0.05)
+
+treat.add_point(position_center_window=-5, type_pnt="Anti-Stokes", window_width=3)
+treat.add_point(position_center_window=5, type_pnt="Stokes", window_width=3)
+
+treat.define_model(model="DHO", elastic_correction=False)
+
+treat.estimate_width_inelastic_peaks(max_width_guess=1)
+
+bound_shift=[(-6.5, -4.5), (4.5, 6.5)]
+bound_linewidth=[(0.9, 2.1), (0.9, 2.1)]
+treat.multi_fit_all_inelastic(guess_offset=True, update_point_position=True, bound_shift= bound_shift, bound_linewidth=bound_linewidth)  
+
+treat.apply_algorithm_on_all()
+treat.combine_results_FSR(FSR=15, keep_max_amplitude=False, amplitude_weight=False, shift_err_weight= True)
+
+plt.figure()
+plt.subplot(131)
+plt.imshow(treat.shift)
+plt.title('Brillouin Shift (GHz)')
+plt.colorbar()
+
+plt.subplot(132)
+plt.imshow(treat.linewidth)
+plt.title('Line Width (GHz)')
+plt.colorbar()
+
+plt.subplot(133)
+plt.imshow(treat.amplitude)
+plt.title('Amplitude (a.u.)')
+plt.colorbar()
+
+plt.tight_layout()
+plt.show()
+\end{lstlisting}
+
 \begin{center}
 \textbf{Thank you for your help! Happy Brillouin data handling!}
 \end{center}

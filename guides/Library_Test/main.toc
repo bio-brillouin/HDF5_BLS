@@ -1,18 +1,18 @@
-\contentsline {section}{\numberline {1}BrimView web app}{1}{section..section.1}%
-\contentsline {subsection}{\numberline {1.1}Loading sample data}{1}{subsection..section.1.1}%
+\contentsline {section}{\numberline {1}BrimView web app}{2}{section..section.1}%
+\contentsline {subsection}{\numberline {1.1}Loading sample data}{2}{subsection..section.1.1}%
 \contentsline {subsection}{\numberline {1.2}Exploring the data}{2}{subsection..section.1.2}%
 \contentsline {section}{\numberline {2}Brimfile}{3}{section..section.2}%
 \contentsline {subsection}{\numberline {2.1}The brim file format}{3}{subsection..section.2.1}%
-\contentsline {subsection}{\numberline {2.2}The brimfile Python package}{3}{subsection..section.2.2}%
-\contentsline {subsubsection}{\numberline {2.2.1}Installing brimfile}{3}{subsubsection..section.2.2.1}%
-\contentsline {subsubsection}{\numberline {2.2.2}Writing to a brimfile}{3}{subsubsection..section.2.2.2}%
+\contentsline {subsection}{\numberline {2.2}The brimfile Python package}{4}{subsection..section.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}Installing brimfile}{4}{subsubsection..section.2.2.1}%
+\contentsline {subsubsection}{\numberline {2.2.2}Writing to a brimfile}{4}{subsubsection..section.2.2.2}%
 \contentsline {subsubsection}{\numberline {2.2.3}Reading a brimfile}{5}{subsubsection..section.2.2.3}%
 \contentsline {section}{\numberline {3}HDF5\_BLS package}{6}{section..section.3}%
 \contentsline {subsection}{\numberline {3.1}Installation}{6}{subsection..section.3.1}%
 \contentsline {subsection}{\numberline {3.2}An example}{6}{subsection..section.3.2}%
-\contentsline {subsubsection}{\numberline {3.2.1}Creating the data}{6}{subsubsection..section.3.2.1}%
-\contentsline {subsubsection}{\numberline {3.2.2}Adding the data to a BrimX file}{7}{subsubsection..section.3.2.2}%
-\contentsline {subsubsection}{\numberline {3.2.3}Adding metadata to the BrimX file}{9}{subsubsection..section.3.2.3}%
+\contentsline {subsubsection}{\numberline {3.2.1}Creating the data}{7}{subsubsection..section.3.2.1}%
+\contentsline {subsubsection}{\numberline {3.2.2}Adding the data to a BrimX file}{8}{subsubsection..section.3.2.2}%
+\contentsline {subsubsection}{\numberline {3.2.3}Adding metadata to the BrimX file}{10}{subsubsection..section.3.2.3}%
 \contentsline {subsection}{\numberline {3.3}Template for integrating BrimX files to your workflow}{10}{subsection..section.3.3}%
 \contentsline {subsection}{\numberline {3.4}Extracting data from the BrimX file}{11}{subsection..section.3.4}%
 \contentsline {subsection}{\numberline {3.5}Visualizing the BrimX file}{11}{subsection..section.3.5}%
@@ -20,3 +20,17 @@
 \contentsline {subsubsection}{\numberline {3.5.2}Using Panoply}{14}{subsubsection..section.3.5.2}%
 \contentsline {subsection}{\numberline {3.6}The HDF5\_BLS\_GUI}{15}{subsection..section.3.6}%
 \contentsline {subsection}{\numberline {3.7}Ending remarks}{16}{subsection..section.3.7}%
+\contentsline {section}{\numberline {4}HDF5\_BLS\_treat package}{16}{section..section.4}%
+\contentsline {subsection}{\numberline {4.1}Installation}{16}{subsection..section.4.1}%
+\contentsline {subsection}{\numberline {4.2}An example}{17}{subsection..section.4.2}%
+\contentsline {subsubsection}{\numberline {4.2.1}Creating a synthetic spectrum}{17}{subsubsection..section.4.2.1}%
+\contentsline {subsubsection}{\numberline {4.2.2}Initialization}{17}{subsubsection..section.4.2.2}%
+\contentsline {subsubsection}{\numberline {4.2.3}Normalization of the spectra}{17}{subsubsection..section.4.2.3}%
+\contentsline {subsubsection}{\numberline {4.2.4}Identification of the points to fit}{18}{subsubsection..section.4.2.4}%
+\contentsline {subsubsection}{\numberline {4.2.5}Definition of the lineshape to use for the fit}{18}{subsubsection..section.4.2.5}%
+\contentsline {subsubsection}{\numberline {4.2.6}Initial parameters}{18}{subsubsection..section.4.2.6}%
+\contentsline {subsubsection}{\numberline {4.2.7}Fitting the data}{18}{subsubsection..section.4.2.7}%
+\contentsline {subsubsection}{\numberline {4.2.8}Applying the treatment to a multidimensional PSD dataset}{19}{subsubsection..section.4.2.8}%
+\contentsline {subsubsection}{\numberline {4.2.9}Combining fits}{19}{subsubsection..section.4.2.9}%
+\contentsline {subsubsection}{\numberline {4.2.10}Getting the results}{19}{subsubsection..section.4.2.10}%
+\contentsline {subsection}{\numberline {4.3}A code to try}{20}{subsection..section.4.3}%
