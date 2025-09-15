@@ -75,6 +75,50 @@
 <p>The <cite>HDF5_BLS</cite> project is a Python package allowing users to easily store Brillouin Light Scattering relevant data in a single HDF5 file. The package is designed to integrate in existing Python workflows and to be as easy to use as possible.</p>
 <section id="quick-start">
 <h2>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading"></a></h2>
+<section id="spirit-of-the-project">
+<h3>Spirit of the project<a class="headerlink" href="#spirit-of-the-project" title="Link to this heading"></a></h3>
+<p>The idea of the package is to provide a simple way to store and retrieve data relevant to Brillouin Light Scattering experiments together with the metadata associated to the data. The file we propose to use is the HDF5 file format (standing for “Hierarchical Data Format version 5”). The idea of this project is to use this file format to reproduce the structure of a filesystem within a single file, storing all files corresponding to a given expoeriment in a single “group”. For example, a typical structure of the HDF5 file could be:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>file.h5
+└──<span class="w"> </span>Brillouin
+<span class="w">    </span>├──<span class="w"> </span>Measure<span class="w"> </span>of<span class="w"> </span>water
+<span class="w">    </span>│<span class="w">   </span>├──<span class="w"> </span>Image<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>power<span class="w"> </span>spectral<span class="w"> </span>density
+<span class="w">    </span>│<span class="w">   </span>├──<span class="w"> </span>Channels<span class="w"> </span>associated<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>power<span class="w"> </span>spectral<span class="w"> </span>density
+<span class="w">    </span>│<span class="w">   </span>├──<span class="w"> </span>Results<span class="w"> </span>after<span class="w"> </span>data<span class="w"> </span>processing
+<span class="w">    </span>│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>Shift
+<span class="w">    </span>│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>Shift<span class="w"> </span>variance
+<span class="w">    </span>│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>Linewidth
+<span class="w">    </span>│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>Linewidth<span class="w"> </span>variance
+<span class="w">    </span>│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>Amplitude
+<span class="w">    </span>│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>Amplitude<span class="w"> </span>variance
+<span class="w">    </span>│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>...
+<span class="w">    </span>├──<span class="w"> </span>Measure<span class="w"> </span>of<span class="w"> </span>methanol
+<span class="w">    </span>│<span class="w">   </span>├──<span class="w"> </span>...
+</pre></div>
+</div>
+<p>To allow this file format to be used with other modalities (e.g. electrophoresis assays to complement a Brillouin experiment), we propose to use a top-level group corresponding a minima to the modality (e.g. “Brillouin”). We also propose to add to each element of the HDF5 file, a “Brillouin_type” attribute that will allow to know the type of the element. For datasets, these types are:</p>
+<ul class="simple">
+<li><p>Raw_data: the raw data</p></li>
+<li><p>PSD: a power spectral density array</p></li>
+<li><p>Frequency: a frequency array associated to the power spectral density</p></li>
+<li><p>Abscissa_x: an abscissa array for the measures where the name is written after the underscore.</p></li>
+<li><p>Shift: the shift array obtained after the treatment</p></li>
+<li><p>Shift_err: the array of errors on the shift array obtained after the treatment</p></li>
+<li><p>Linewidth: the linewidth array obtained after the treatment</p></li>
+<li><p>Linewidth_err: the array of errors on the linewidth array obtained after the treatment</p></li>
+<li><p>Amplitude: the amplitude array obtained after the treatment</p></li>
+<li><p>Amplitude_err: the array of errors on the amplitude array obtained after the treatment</p></li>
+<li><p>BLT: the Loss Tangent array obtained after the treatment</p></li>
+<li><p>BLT_err: the array of errors on the Loss Tangent array obtained after the treatment</p></li>
+</ul>
+<p>For groups, these types are:</p>
+<ul class="simple">
+<li><p>Calibration_spectrum: the calibration spectrum</p></li>
+<li><p>Impulse_response: the impulse response</p></li>
+<li><p>Measure: the measure</p></li>
+<li><p>Root: the root group</p></li>
+<li><p>Treatment: the treatment</p></li>
+</ul>
+</section>
 <section id="installation">
 <h3>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h3>
 <p>To install the package, you can use pip:</p>
@@ -135,9 +179,6 @@
 </section>
 <section id="contents">
 <h2>Contents:<a class="headerlink" href="#contents" title="Link to this heading"></a></h2>
-<ul class="simple">
-<li><p><a class="reference external" href="modules.html">Modules</a></p></li>
-</ul>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>

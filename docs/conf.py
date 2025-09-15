@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.abspath('../HDF5_BLS'))
 project = 'HDF5_BLS'
 copyright = '2025, Pierre Bouvet'
 author = 'Pierre Bouvet'
-release = 'v0.1.1'
+release = 'v1.0.0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -28,9 +28,9 @@ extensions = [
 ]
 
 templates_path = ['_templates']
+master_doc = 'index'
+language = 'en'
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
-
-
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
