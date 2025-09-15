@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HDF5_BLS.conversion_PSD &mdash; HDF5_BLS v0.1.1 documentation</title>
+  <title>HDF5_BLS.conversion_PSD &mdash; HDF5_BLS v1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=5e3f2911"></script>
+      <script src="../../_static/documentation_options.js?v=76e2d817"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -41,7 +41,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">HDF5_BLS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/modules.html">HDF5_BLS</a></li>
 </ul>
 
         </div>
@@ -71,12 +71,12 @@
   <h1>Source code for HDF5_BLS.conversion_PSD</h1><div class="highlight"><pre>
 <div class="viewcode-block" id="check_conversion_ar_BLS_VIPA">
 <a class="viewcode-back" href="../../source/HDF5_BLS.html#HDF5_BLS.conversion_PSD.check_conversion_ar_BLS_VIPA">[docs]</a>
-<span></span><span class="k">def</span><span class="w"> </span><span class="nf">check_conversion_ar_BLS_VIPA</span><span class="p">(</span><span class="n">wrapper</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+<span></span><span class="k">def</span><span class="w"> </span><span class="nf">check_conversion_ar_BLS_VIPA</span><span class="p">(</span><span class="n">wrp</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This function checks if without any additional information, the data can be converted to a PSD. For an ar-BLS VIPA spectrometer, this can be the case if the center of center of the beam is known and a frequency array exists on the parent of the data.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    wrapper : wrapper.Wrapper</span>
+<span class="sd">    wrp : wrapper.Wrapper</span>
 <span class="sd">        The wrapper object leading to the data to be converted.</span>
 <span class="sd">    path : str</span>
 <span class="sd">        The path to the data to be converted.</span>
@@ -86,7 +86,7 @@
 <span class="sd">    bool</span>
 <span class="sd">        True if the data can be converted to a PSD, False otherwise.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">attributes</span> <span class="o">=</span> <span class="n">wrapper</span><span class="o">.</span><span class="n">get_attributes_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">attributes</span> <span class="o">=</span> <span class="n">wrp</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
     <span class="k">if</span> <span class="s2">&quot;TREAT.Center&quot;</span> <span class="ow">in</span> <span class="n">attributes</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
         <span class="k">return</span> <span class="kc">True</span>
     <span class="k">else</span><span class="p">:</span>

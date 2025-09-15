@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HDF5_BLS.wrapper &mdash; HDF5_BLS v0.1.1 documentation</title>
+  <title>HDF5_BLS.wrapper &mdash; HDF5_BLS v1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=5e3f2911"></script>
+      <script src="../../_static/documentation_options.js?v=76e2d817"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -41,7 +41,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">HDF5_BLS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/modules.html">HDF5_BLS</a></li>
 </ul>
 
         </div>
@@ -71,6 +71,7 @@
   <h1>Source code for HDF5_BLS.wrapper</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">h5py</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">csv</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
@@ -84,18 +85,39 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">HDF5_BLS.wrapper_compatibility</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">compat</span>
 <span class="n">HDF5_BLS_Version</span> <span class="o">=</span> <span class="s2">&quot;1.0&quot;</span>
 
+<div class="viewcode-block" id="is_tempfile">
+<a class="viewcode-back" href="../../source/HDF5_BLS.html#HDF5_BLS.wrapper.is_tempfile">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_tempfile</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+    <span class="n">tempdir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">gettempdir</span><span class="p">()</span>
+    <span class="c1"># Normalize paths for comparison</span>
+    <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+    <span class="n">tempdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">tempdir</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">commonpath</span><span class="p">([</span><span class="n">filepath</span><span class="p">,</span> <span class="n">tempdir</span><span class="p">])</span> <span class="o">==</span> <span class="n">tempdir</span></div>
+
 
 <div class="viewcode-block" id="Wrapper">
 <a class="viewcode-back" href="../../source/HDF5_BLS.html#HDF5_BLS.wrapper.Wrapper">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Wrapper</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This object is used to store data and attributes in a unified structure.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filepath: str</span>
+<span class="sd">        The path to the HDF5 file</span>
+<span class="sd">    need_for_repack: bool</span>
+<span class="sd">        A flag to check wether elements were deleted in the file using the &quot;del&quot; method. If so, a repacking of the file is needed to optimize memory usage.</span>
+<span class="sd">    save: bool</span>
+<span class="sd">        A flag to check wether the file needs to be saved or not. If the file needs to be saved, it means that the user has worked on a temporary file located in the module directory, that will be deleted when the class is closed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">###############################</span>
+    <span class="c1">#     General attributes      #</span>
+    <span class="c1">###############################</span>
     <span class="n">BRILLOUIN_TYPES_DATASETS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Abscissa&quot;</span><span class="p">,</span> 
                                 <span class="s2">&quot;Amplitude&quot;</span><span class="p">,</span> 
                                 <span class="s2">&quot;Amplitude_err&quot;</span><span class="p">,</span> 
                                 <span class="s2">&quot;BLT&quot;</span><span class="p">,</span> 
-                                <span class="s2">&quot;BLT_std&quot;</span><span class="p">,</span> 
+                                <span class="s2">&quot;BLT_err&quot;</span><span class="p">,</span> 
                                 <span class="s2">&quot;Frequency&quot;</span><span class="p">,</span> 
                                 <span class="s2">&quot;Linewidth&quot;</span><span class="p">,</span> 
                                 <span class="s2">&quot;Linewidth_err&quot;</span><span class="p">,</span> 
@@ -119,23 +141,54 @@
 <span class="sd">        filepath : str, optional</span>
 <span class="sd">            The filepath of the HDF5 file to load, by default None means that a temporary file is created.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># If no file are given, create a temporary HDF5 file with a single group &quot;Brillouin&quot;</span>
-        <span class="k">if</span> <span class="n">filepath</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;/temp.h5&quot;</span>
-            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">no_filepath</span><span class="p">():</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Function to run to initialize the class when no filepath is given. A temporary HDF5 file is created in the directory of the library. A parent &quot;Brillouin&quot; group is then created with the current version of the library. </span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="c1"># Create a temporary file</span>
+            <span class="n">fd</span><span class="p">,</span> <span class="n">filepath</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.h5&quot;</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>  <span class="c1"># Close the file descriptor</span>
+
+            <span class="c1"># Create an HDF5 file with the base attributes at the temporary path</span>
+            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
                 <span class="n">group</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;Brillouin&quot;</span><span class="p">)</span>
                 <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;HDF5_BLS_version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">HDF5_BLS_Version</span>
                 <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;Brillouin_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Root&quot;</span>
+            <span class="k">return</span> <span class="n">filepath</span>
+        
+        <span class="k">def</span><span class="w"> </span><span class="nf">create_at_filepath</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Function to run to initialize the class when a filepath is given. The HDF5 file is created at the given filepath. A parent &quot;Brillouin&quot; group is then created with the current version of the library. </span>
+
+<span class="sd">            Parameters</span>
+<span class="sd">            ----------</span>
+<span class="sd">            filepath : str</span>
+<span class="sd">                The path to the location of the file</span>
+
+<span class="sd">            Returns</span>
+<span class="sd">            -------</span>
+<span class="sd">            str</span>
+<span class="sd">                The path to the location of the file</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+                <span class="n">group</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;Brillouin&quot;</span><span class="p">)</span>
+                <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;Brillouin_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Root&quot;</span>
+                <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;HDF5_BLS_version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">HDF5_BLS_Version</span>
+            <span class="k">return</span> <span class="n">filepath</span>
+
+        <span class="c1"># If no file are given, create a temporary HDF5 file with a single group &quot;Brillouin&quot;</span>
+        <span class="k">if</span> <span class="n">filepath</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="n">no_filepath</span><span class="p">()</span>
         <span class="c1"># Opens the given file</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># If not already existing, creates it</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
-                <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-                    <span class="n">group</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;Brillouin&quot;</span><span class="p">)</span>
-                    <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;Brillouin_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Root&quot;</span>
-                    <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;HDF5_BLS_version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">HDF5_BLS_Version</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="n">create_at_filepath</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+            <span class="c1"># else check for compatibility with current version of the module.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="n">filepath</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">compatibility_changes</span><span class="p">()</span>
+        <span class="c1"># Initializes saving flag</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="c1"># Initializes repacking flag</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">need_for_repack</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span> <span class="c1"># Test made, Dev guide made</span>
@@ -167,10 +220,10 @@
                     <span class="n">shape</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">shape</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span> <span class="o">+</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
                     <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
                 <span class="k">except</span><span class="p">:</span>
+                    <span class="c1"># It would be better to return a new wrapper with only the selected group. But in this case we need to make sure that we will not overwrite temp.h5 by mistake.</span>
                     <span class="k">return</span> <span class="n">data</span>
             <span class="k">return</span> <span class="n">item</span>
-        <span class="c1"># It would be better to return a new wrapper with only the selected group. But in this case we need to make sure that we will not overwrite temp.h5 by mistake.</span>
-
+        
     <span class="k">def</span><span class="w"> </span><span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="c1"># Test made, Dev guide made</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Magic method to add two wrappers together</span>
 
@@ -281,15 +334,15 @@
 
 <div class="viewcode-block" id="Wrapper.add_hdf5">
 <a class="viewcode-back" href="../../source/HDF5_BLS.html#HDF5_BLS.wrapper.Wrapper.add_hdf5">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_hdf5</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">parent_group</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span> <span class="c1"># Test made</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds an HDF5 file to the wrapper by specifying in which group the data have to be stored. Default is the &quot;Brillouin&quot; group. When adding the data, the attributes of the HDF5 file are only added to the created group if they are different from the parent&#39;s attribute.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_hdf5</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin&quot;</span><span class="p">,</span> <span class="n">overwrite</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span> <span class="c1"># Test made 18.08.25</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds an HDF5 file to the wrapper by specifying in which group the data have to be stored. Default is the &quot;Brillouin&quot; group. If the specified group does not exist, it will be created.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        filepath : str</span>
 <span class="sd">            The filepath of the hdf5 file to add.</span>
 <span class="sd">        parent_group : str, optional</span>
-<span class="sd">            The parent group where to store the data of the HDF5 file, by default the parent group is the top group &quot;Data&quot;. The format of this group should be &quot;Data.Data_0.Data_0_0&quot;</span>
+<span class="sd">            The parent group where to store the data of the HDF5 file, by default the parent group is the top group &quot;Brillouin&quot;. The format of this group should be &quot;Brillouin/Group/...&quot;</span>
 <span class="sd">        overwrite : bool, optional</span>
 <span class="sd">            A boolean that indicates whether the data should be overwritten if it already exists, by default False</span>
 <span class="sd">        </span>
@@ -307,23 +360,19 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">WrapperError_FileNotFound</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The file &#39;</span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2">&#39; does not exist.&quot;</span><span class="p">)</span>
         
-        <span class="c1"># Extract the name of the h5 file that we want to add</span>
+        <span class="c1"># Extract the name of the h5 file that we want to add from its filepath</span>
         <span class="n">name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
-        <span class="c1"># Initialize parent_group and checks to avoid overwriting the data</span>
-        <span class="k">if</span> <span class="n">parent_group</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> 
-            <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin&quot;</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-                <span class="c1"># Check if the parent group exists</span>
-                <span class="k">if</span> <span class="n">parent_group</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">WrapperError_StructureError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The parent group &#39;</span><span class="si">{</span><span class="n">parent_group</span><span class="si">}</span><span class="s2">&#39; does not exist in the HDF5 file.&quot;</span><span class="p">)</span>
-                <span class="c1"># Check if the path leads to a group, if not, we go up one level</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file</span><span class="p">[</span><span class="n">parent_group</span><span class="p">],</span> <span class="n">h5py</span><span class="o">.</span><span class="n">_hl</span><span class="o">.</span><span class="n">group</span><span class="o">.</span><span class="n">Group</span><span class="p">):</span>
-                    <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parent_group</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="c1"># Checks if the &quot;parent_group&quot; path exists in the file and if not choose the first parent group.</span>
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="c1"># Check if the parent group exists</span>
+            <span class="k">if</span> <span class="n">parent_group</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
+                <span class="n">file</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="n">parent_group</span><span class="p">)</span>
+            <span class="c1"># Check if the path leads to a group, if not, we go up one level</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file</span><span class="p">[</span><span class="n">parent_group</span><span class="p">],</span> <span class="n">h5py</span><span class="o">.</span><span class="n">_hl</span><span class="o">.</span><span class="n">group</span><span class="o">.</span><span class="n">Group</span><span class="p">):</span>
+                <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parent_group</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
                     
-        <span class="c1"># If there are no risks of overwriting the data, we can add the data associated to the Brillouin group to the file</span>
-        
+        <span class="c1"># Checks if the name of the HDF5 file we want to add is not already in the selected group. If so, check if overwrite is set to True. If so, overwrite. </span>
         <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
             <span class="n">group</span> <span class="o">=</span> <span class="n">file</span><span class="p">[</span><span class="n">parent_group</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">file</span><span class="p">[</span><span class="n">parent_group</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">overwrite</span><span class="p">:</span>
@@ -337,9 +386,12 @@
                 <span class="k">raise</span> <span class="n">WrapperError_Overwrite</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;A group with the name &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; already exists in the parent group &#39;</span><span class="si">{</span><span class="n">parent_group</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
             
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">file</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="n">new_group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+                <span class="c1"># Open the HDF5 file to add and copy all the elements located under the &quot;Brillouin&quot; group.</span>
                 <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file_copy</span><span class="p">:</span>
+                    <span class="c1"># Try copying all the attributes of the HDF5 file to add to the group.</span>
+                    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">file_copy</span><span class="p">[</span><span class="s2">&quot;Brillouin&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="n">new_group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
                     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">file_copy</span><span class="p">[</span><span class="s2">&quot;Brillouin&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file_copy</span><span class="p">[</span><span class="s2">&quot;Brillouin&quot;</span><span class="p">][</span><span class="n">key</span><span class="p">],</span> <span class="n">h5py</span><span class="o">.</span><span class="n">Group</span><span class="p">):</span>
                             <span class="n">file</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">file_copy</span><span class="p">[</span><span class="s2">&quot;Brillouin&quot;</span><span class="p">][</span><span class="n">key</span><span class="p">],</span> <span class="n">new_group</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
@@ -348,7 +400,8 @@
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">WrapperError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;A problem occured when adding the data to the file &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="si">}</span><span class="s2">&#39;. Error message: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span> <span class="o">==</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;/temp.h5&quot;</span><span class="p">:</span>
+        <span class="c1"># If the file was added to a temporary save, set the saving flag to True.</span>
+        <span class="k">if</span> <span class="n">is_tempfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">save</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 
@@ -389,7 +442,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">only_parent</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="c1"># If the parent group is not specified, we set it to &quot;Brillouin&quot;, which is the top group of the file for Brillouin spectra</span>
-        <span class="k">if</span> <span class="n">parent_group</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin&quot;</span>
+        <span class="k">if</span> <span class="n">parent_group</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> 
+            <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin&quot;</span>
         <span class="c1"># If the parent group is specified, we perform checks to avoid overwriting the data</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">parent_group</span> <span class="o">==</span> <span class="n">name_group</span><span class="p">:</span>
@@ -469,14 +523,14 @@
                             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error while adding the attribute </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> with value </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="n">WrapperError_ArgumentType</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The key &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; is not recognized.&quot;</span><span class="p">)</span>
-        
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span> <span class="o">==</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;/temp.h5&quot;</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">is_tempfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">save</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 
 <div class="viewcode-block" id="Wrapper.add_dictionary">
 <a class="viewcode-back" href="../../source/HDF5_BLS.html#HDF5_BLS.wrapper.Wrapper.add_dictionary">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_dictionary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dic</span><span class="p">,</span> <span class="n">parent_group</span><span class="p">,</span> <span class="n">create_group</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">brillouin_type_parent_group</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span> <span class="c1"># Test made</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_dictionary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dic</span><span class="p">,</span> <span class="n">parent_group</span><span class="p">,</span> <span class="n">create_group</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">brillouin_type_parent_group</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span> <span class="c1"># Test made 19.08.25</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds a data dictionary to the wrapper. This is the preferred way to add data using the GUI.</span>
 
 <span class="sd">        Parameters</span>
@@ -562,7 +616,7 @@
                     <span class="k">if</span> <span class="n">elt</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;Brillouin_type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Raw_data&quot;</span><span class="p">:</span>
                         <span class="k">if</span> <span class="s2">&quot;Raw_data&quot;</span> <span class="ow">in</span> <span class="n">dic</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                             <span class="k">if</span> <span class="n">overwrite</span><span class="p">:</span>
-                                <span class="k">del</span> <span class="n">group</span><span class="p">[</span><span class="n">elt</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">delete_element</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">parent_group</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">elt</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                             <span class="k">else</span><span class="p">:</span>
                                 <span class="k">raise</span> <span class="n">WrapperError_Overwrite</span><span class="p">(</span><span class="s2">&quot;You cannot add another raw data to a group with an existing raw data&quot;</span><span class="p">)</span>
 
@@ -572,7 +626,7 @@
                 <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">dic</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                     <span class="k">if</span> <span class="s2">&quot;Attribute&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">key</span> <span class="ow">and</span> <span class="n">dic</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;Name&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">group</span><span class="p">:</span>
                         <span class="k">if</span> <span class="n">overwrite</span><span class="p">:</span>
-                            <span class="k">del</span> <span class="n">group</span><span class="p">[</span><span class="n">dic</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;Name&quot;</span><span class="p">]]</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">delete_element</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">parent_group</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">dic</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;Name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="k">raise</span> <span class="n">WrapperError_Overwrite</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The name </span><span class="si">{</span><span class="n">dic</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;Name&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2"> is already used in the group </span><span class="si">{</span><span class="n">parent_group</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -594,26 +648,38 @@
         <span class="c1"># Add the data and the attributes to the file</span>
         <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
             <span class="n">group</span> <span class="o">=</span> <span class="n">file</span><span class="p">[</span><span class="n">parent_group</span><span class="p">]</span>
+            <span class="c1"># Go through the dictionary</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">dic</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="c1"># If the key is a dataset type</span>
                 <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">BRILLOUIN_TYPES_DATASETS</span> <span class="ow">and</span> <span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;Abscissa&quot;</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Amplitude&quot;</span><span class="p">,</span> <span class="s2">&quot;Amplitude_err&quot;</span><span class="p">,</span> <span class="s2">&quot;BLT&quot;</span><span class="p">,</span> <span class="s2">&quot;BLT_std&quot;</span><span class="p">,</span> <span class="s2">&quot;Linewidth&quot;</span><span class="p">,</span> <span class="s2">&quot;Linewidth_err&quot;</span><span class="p">,</span> <span class="s2">&quot;Shift&quot;</span><span class="p">,</span> <span class="s2">&quot;Shift_err&quot;</span><span class="p">]:</span>
+                    <span class="c1"># If the key corresponds to a dataset that should be stored under a treatment group, check that the parent group as a Brillouin type &quot;Treatment&quot;</span>
+                    <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Amplitude&quot;</span><span class="p">,</span> <span class="s2">&quot;Amplitude_err&quot;</span><span class="p">,</span> <span class="s2">&quot;BLT&quot;</span><span class="p">,</span> <span class="s2">&quot;BLT_err&quot;</span><span class="p">,</span> <span class="s2">&quot;Linewidth&quot;</span><span class="p">,</span> <span class="s2">&quot;Linewidth_err&quot;</span><span class="p">,</span> <span class="s2">&quot;Shift&quot;</span><span class="p">,</span> <span class="s2">&quot;Shift_err&quot;</span><span class="p">]:</span>
                         <span class="k">if</span> <span class="ow">not</span> <span class="n">brillouin_type_parent_group</span> <span class="o">==</span> <span class="s2">&quot;Treatment&quot;</span><span class="p">:</span>
                             <span class="k">raise</span> <span class="n">WrapperError_StructureError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The brillouin_type &#39;</span><span class="si">{</span><span class="n">brillouin_type_parent_group</span><span class="si">}</span><span class="s2">&#39; should be &#39;Treatment&#39; if you want to add a dataset with type &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+                    <span class="c1"># If the key corresponds to a dataset that should be stored under a measurement group, check that the parent group as a Brillouin type &quot;Measure&quot;, &quot;Calibration_spectrum&quot; or &quot;Impulse_response&quot;</span>
                     <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Frequency&quot;</span><span class="p">,</span> <span class="s2">&quot;PSD&quot;</span><span class="p">,</span> <span class="s2">&quot;Raw_data&quot;</span><span class="p">]:</span>
                         <span class="k">if</span> <span class="ow">not</span> <span class="n">brillouin_type_parent_group</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Calibration_spectrum&quot;</span><span class="p">,</span> <span class="s2">&quot;Impulse_response&quot;</span><span class="p">,</span> <span class="s2">&quot;Measure&quot;</span><span class="p">]:</span>
                             <span class="k">raise</span> <span class="n">WrapperError_StructureError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The brillouin_type &#39;</span><span class="si">{</span><span class="n">brillouin_type_parent_group</span><span class="si">}</span><span class="s2">&#39; should be &#39;Calibration_spectrum&#39;, &#39;Impulse_response&#39; or &#39;Measure&#39; if you want to add a dataset with type &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
+                    <span class="c1"># If everything is OK, create the dataset with the right Brillouin type</span>
                     <span class="n">dataset</span> <span class="o">=</span> <span class="n">group</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s2">&quot;Name&quot;</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="n">value</span><span class="p">[</span><span class="s2">&quot;Data&quot;</span><span class="p">])</span>
                     <span class="n">dataset</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;Brillouin_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">key</span>
+                <span class="c1"># If the key is an attribute type</span>
                 <span class="k">elif</span> <span class="s2">&quot;Attribute&quot;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+                    <span class="c1"># Go through the attributes</span>
                     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="c1"># If the attribute already exists and overwrite is set to True, modify it, if False, don&#39;t do anything</span>
                         <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                             <span class="k">if</span> <span class="n">overwrite</span> <span class="ow">and</span> <span class="n">v</span><span class="p">:</span>
                                 <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">modify</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+                        <span class="c1"># Else create the attribute</span>
                         <span class="k">elif</span> <span class="n">v</span><span class="p">:</span>
                             <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+                <span class="c1"># If the key is an abscissa type</span>
                 <span class="k">elif</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Abscissa&quot;</span><span class="p">:</span>
+                    <span class="c1"># Create the dataset and give it the right Brillouin type</span>
                     <span class="n">dataset</span> <span class="o">=</span> <span class="n">group</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s2">&quot;Name&quot;</span><span class="p">],</span> <span class="n">data</span><span class="o">=</span><span class="n">value</span><span class="p">[</span><span class="s2">&quot;Data&quot;</span><span class="p">])</span>
                     <span class="n">dataset</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;Brillouin_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Abscissa_</span><span class="si">{</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;Dim_start&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;Dim_end&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="c1"># Add the units as attribute</span>
                     <span class="k">if</span> <span class="s2">&quot;Units&quot;</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                         <span class="n">dataset</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;Units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;Units&quot;</span><span class="p">]</span>
                     <span class="k">else</span><span class="p">:</span>
@@ -622,7 +688,7 @@
                     
 <div class="viewcode-block" id="Wrapper.change_brillouin_type">
 <a class="viewcode-back" href="../../source/HDF5_BLS.html#HDF5_BLS.wrapper.Wrapper.change_brillouin_type">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">change_brillouin_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">brillouin_type</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">change_brillouin_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">brillouin_type</span><span class="p">):</span> <span class="c1"># Test made 19.08.25</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Changes the brillouin type of an element in the HDF5 file.</span>
 
 <span class="sd">        Parameters</span>
@@ -666,7 +732,7 @@
 
 <div class="viewcode-block" id="Wrapper.change_name">
 <a class="viewcode-back" href="../../source/HDF5_BLS.html#HDF5_BLS.wrapper.Wrapper.change_name">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">change_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">change_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span> <span class="c1"># Test made 20.08.25</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Changes the name of an element in the HDF5 file.</span>
 
 <span class="sd">        Parameters</span>
@@ -686,25 +752,29 @@
                 <span class="k">raise</span> <span class="n">WrapperError_StructureError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The path &#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&#39; does not exist in the file.&quot;</span><span class="p">)</span>
             <span class="n">new_path</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">name</span>
             <span class="n">file</span><span class="p">[</span><span class="n">new_path</span><span class="p">]</span> <span class="o">=</span> <span class="n">file</span><span class="p">[</span><span class="n">path</span><span class="p">]</span>
-            <span class="k">del</span> <span class="n">file</span><span class="p">[</span><span class="n">path</span><span class="p">]</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delete_element</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>   </div>
 
 
 <div class="viewcode-block" id="Wrapper.close">
 <a class="viewcode-back" href="../../source/HDF5_BLS.html#HDF5_BLS.wrapper.Wrapper.close">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delete_temp_file</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Closes the wrapper and deletes the temporary file if it exists</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># If there is no need to save the wrapper, delete the temporary file (created by default when the wrapper is created)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">save</span> <span class="ow">or</span> <span class="n">delete_temp_file</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span> <span class="o">==</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;/temp.h5&quot;</span><span class="p">:</span>
+        <span class="c1"># If the save flag is raised</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">:</span>
+            <span class="c1"># If delete_temp_file is set to True and the file is temporary, the user wants to delete the temporary file without saving</span>
+            <span class="k">if</span> <span class="n">delete_temp_file</span> <span class="ow">and</span> <span class="n">is_tempfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">):</span>
                     <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">need_for_repack</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">repack</span><span class="p">()</span>
+                    <span class="k">return</span>
+            <span class="c1"># If the user has not expressly said he wanted to not to save the file, we raise an error</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">WrapperError_Save</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The wrapper has not been saved yet.&quot;</span><span class="p">)</span>
 
-        <span class="c1"># If the wrapper has to be saved, raise an error to prevent the user from closing the wrapper without saving it</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">WrapperError_Save</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The wrapper has not been saved yet.&quot;</span><span class="p">)</span></div>
+        <span class="c1"># If the save flag is down but the need_for_repack is up, repack</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">need_for_repack</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">repack</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="Wrapper.combine_datasets">
@@ -753,7 +823,7 @@
 <a class="viewcode-back" href="../../source/HDF5_BLS.html#HDF5_BLS.wrapper.Wrapper.compatibility_changes">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compatibility_changes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Applies changes from previous versions of the wrapper to newest versions</span>
+<span class="sd">        Applies changes from previous versions of the wrapper to newest versions using the compat module.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="c1"># Update the Brillouin_type attribute</span>
@@ -766,38 +836,38 @@
 <div class="viewcode-block" id="Wrapper.copy_dataset">
 <a class="viewcode-back" href="../../source/HDF5_BLS.html#HDF5_BLS.wrapper.Wrapper.copy_dataset">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">copy_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">copy_path</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Copies the dataset at the given path to the given path.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This function allows to copy a dataset from the file to a different location while keeping the last location.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        path : str</span>
 <span class="sd">            The path to the dataset to copy.</span>
 <span class="sd">        copy_path : str</span>
-<span class="sd">            The path to the dataset to copy to.</span>
+<span class="sd">            The path to the group where the dataset is to be copied to.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Checks that both the path to the dataset and the path to the group where to place the dataset are in the file</span>
         <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">WrapperError_StructureError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The path &#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&#39; does not exist in the file.&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">copy_path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">WrapperError_StructureError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The path &#39;</span><span class="si">{</span><span class="n">copy_path</span><span class="si">}</span><span class="s2">&#39; does not exist in the file.&quot;</span><span class="p">)</span>
         
+        <span class="c1"># Copies the dataset to the desired location</span>
         <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
             <span class="n">new_name</span> <span class="o">=</span> <span class="n">file</span><span class="p">[</span><span class="n">path</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="n">file</span><span class="p">[</span><span class="n">copy_path</span><span class="p">]</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="n">new_name</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">file</span><span class="p">[</span><span class="n">path</span><span class="p">][()])</span>
             <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">file</span><span class="p">[</span><span class="n">path</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">file</span><span class="p">[</span><span class="n">path</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">e</span><span class="p">])</span>
                 <span class="n">file</span><span class="p">[</span><span class="n">copy_path</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">new_name</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="n">file</span><span class="p">[</span><span class="n">path</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">e</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="Wrapper.create_group">
 <a class="viewcode-back" href="../../source/HDF5_BLS.html#HDF5_BLS.wrapper.Wrapper.create_group">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">create_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">parent_group</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">brillouin_type</span> <span class="o">=</span> <span class="s2">&quot;Root&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span> <span class="c1"># Test made</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a group in the HDF5 file</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a group in the file under the given parent group with the given name and Brillouin type. If overwrite is set to True, if a group with the same name exists in the selected parent group, the previous element is removed.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -816,30 +886,34 @@
 <span class="sd">            If the group already exists</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># If the path is not specified, we set it to the root of the file</span>
-        <span class="k">if</span> <span class="n">parent_group</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin&quot;</span>
+        <span class="k">if</span> <span class="n">parent_group</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> 
+            <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin&quot;</span>
 
         <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="c1"># Check if the parent group exists</span>
             <span class="k">if</span> <span class="n">parent_group</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">WrapperError_StructureError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The parent group &#39;</span><span class="si">{</span><span class="n">parent_group</span><span class="si">}</span><span class="s2">&#39; does not exist in the HDF5 file.&quot;</span><span class="p">)</span>
+            <span class="c1"># Check if a group of same name already exists</span>
             <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">file</span><span class="p">[</span><span class="n">parent_group</span><span class="p">]:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="n">WrapperError_Overwrite</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;A group with the name &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; already exists in the parent group &#39;</span><span class="si">{</span><span class="n">parent_group</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">delete_element</span><span class="p">(</span><span class="n">parent_group</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">name</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">delete_element</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">parent_group</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="n">group</span> <span class="o">=</span> <span class="n">file</span><span class="p">[</span><span class="n">parent_group</span><span class="p">]</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
                     <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;Brillouin_type&quot;</span><span class="p">,</span> <span class="n">brillouin_type</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">group</span> <span class="o">=</span> <span class="n">file</span><span class="p">[</span><span class="n">parent_group</span><span class="p">]</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
                 <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;Brillouin_type&quot;</span><span class="p">,</span> <span class="n">brillouin_type</span><span class="p">)</span>
-        
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span> <span class="o">==</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;/temp.h5&quot;</span><span class="p">:</span>
+
+        <span class="c1"># If the file was temporary, we set the save flag to True</span>
+        <span class="k">if</span> <span class="n">is_tempfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">save</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 
 <div class="viewcode-block" id="Wrapper.delete_element">
 <a class="viewcode-back" href="../../source/HDF5_BLS.html#HDF5_BLS.wrapper.Wrapper.delete_element">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">delete_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span> <span class="c1"># Test made</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Deletes an element from the file</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Deletes an element from the file and sets the need_for_repack flag to True.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -851,7 +925,7 @@
 <span class="sd">        WrapperError</span>
 <span class="sd">            Raises an error if the path does not lead to an element.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># If the path is not specified, we set it to the root of the file</span>
+        <span class="c1"># If the path is not specified, we delete every element of the file and then create a new root Brillouin group.</span>
         <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> 
             <span class="n">paths</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
@@ -877,12 +951,14 @@
                     <span class="k">del</span> <span class="n">file</span><span class="p">[</span><span class="n">path</span><span class="p">]</span>
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="n">WrapperError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occured while deleting the element &#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&#39;. Error message: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Set the need_for_repack flag to True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">need_for_repack</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 
 <div class="viewcode-block" id="Wrapper.export_dataset">
 <a class="viewcode-back" href="../../source/HDF5_BLS.html#HDF5_BLS.wrapper.Wrapper.export_dataset">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">export_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">export_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">export_type</span> <span class="o">=</span> <span class="s2">&quot;.npy&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Exports the dataset at the given path as a numpy array.</span>
 
@@ -892,13 +968,20 @@
 <span class="sd">            The path to the dataset to export.</span>
 <span class="sd">        filepath : str</span>
 <span class="sd">            The path to the numpy array to export to.</span>
+<span class="sd">        export_type : str</span>
+<span class="sd">            The type of export to perform (e.g. &quot;.npy&quot;, &quot;.csv&quot;).</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">file</span><span class="p">[</span><span class="n">path</span><span class="p">][()])</span></div>
+            <span class="n">dataset</span> <span class="o">=</span> <span class="n">file</span><span class="p">[</span><span class="n">path</span><span class="p">][()]</span>
+        
+        <span class="k">if</span> <span class="n">export_type</span> <span class="o">==</span> <span class="s2">&quot;.npy&quot;</span><span class="p">:</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">dataset</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">export_type</span> <span class="o">==</span> <span class="s2">&quot;.csv&quot;</span><span class="p">:</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Wrapper.export_group">
@@ -1210,7 +1293,7 @@
             <span class="n">group</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="n">name_group</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">file</span><span class="p">[</span><span class="n">path</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="n">file</span><span class="p">[</span><span class="n">new_path</span><span class="p">][</span><span class="n">name_group</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">file</span><span class="p">[</span><span class="n">path</span><span class="p">][</span><span class="n">key</span><span class="p">],</span> <span class="n">key</span><span class="p">)</span>
-            <span class="k">del</span> <span class="n">file</span><span class="p">[</span><span class="n">path</span><span class="p">]</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delete_element</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Wrapper.repack">
@@ -1301,7 +1384,7 @@
         <span class="c1"># Replace the dataset, starting by extracting all its attributes, deleting the dataset and creating a new one</span>
         <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
             <span class="n">attributes</span> <span class="o">=</span> <span class="n">file</span><span class="p">[</span><span class="n">path</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span>
-            <span class="k">del</span> <span class="n">file</span><span class="p">[</span><span class="n">path</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delete_element</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
             <span class="n">file</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">attributes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">file</span><span class="p">[</span><span class="n">path</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span></div>
@@ -1412,7 +1495,7 @@
             <span class="k">except</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">WrapperError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occured while updating the metadata of the HDF5 file.&quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span> <span class="o">==</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;/temp.h5&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">is_tempfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">save</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 
@@ -1466,7 +1549,7 @@
 
 <div class="viewcode-block" id="Wrapper.add_attributes">
 <a class="viewcode-back" href="../../source/HDF5_BLS.html#HDF5_BLS.wrapper.Wrapper.add_attributes">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="p">,</span> <span class="n">parent_group</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span> <span class="c1"># Test made</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="p">,</span> <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span> <span class="c1"># Test made</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds attributes to the wrapper.</span>
 
 <span class="sd">        Parameters</span>
@@ -1474,7 +1557,7 @@
 <span class="sd">        attributes : dict</span>
 <span class="sd">            The attributes to add to the wrapper. The keys of the dictionary should be the name of the attributes, and the values should be the values of the attributes.</span>
 <span class="sd">        parent_group : str, optional</span>
-<span class="sd">            The parent group where to store the attributes of the HDF5 file. The format of this group should be &quot;Brillouin/Measure&quot;.</span>
+<span class="sd">            The parent group where to store the attributes of the HDF5 file. The format of this group should be &quot;Brillouin/Measure&quot;. By default parent_group is set to &quot;Brillouin&quot;.</span>
 <span class="sd">        overwrite : bool, optional</span>
 <span class="sd">            If True, the attributes will be overwritten if they already exist.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1638,7 +1721,7 @@
         <span class="n">amplitude_err</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;amplitude_err&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">amplitude_err</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;Amplitude_err&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Amplitude error&quot;</span><span class="p">,</span> <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="n">amplitude_err</span><span class="p">}</span>
         <span class="n">blt_std</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;blt_std&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">blt_std</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;BLT_std&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;BLT error&quot;</span><span class="p">,</span> <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="n">blt_std</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">blt_std</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;BLT_err&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;BLT error&quot;</span><span class="p">,</span> <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="n">blt_std</span><span class="p">}</span>
         
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dic</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">return</span>
 

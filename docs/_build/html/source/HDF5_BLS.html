@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HDF5_BLS.WrapperError module &mdash; HDF5_BLS v0.1.1 documentation</title>
+  <title>HDF5_BLS.WrapperError module &mdash; HDF5_BLS v1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=5e3f2911"></script>
+      <script src="../_static/documentation_options.js?v=76e2d817"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -82,6 +82,9 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-HDF5_BLS.wrapper">HDF5_BLS.wrapper module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper"><code class="docutils literal notranslate"><span class="pre">Wrapper</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.filepath"><code class="docutils literal notranslate"><span class="pre">Wrapper.filepath</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.need_for_repack"><code class="docutils literal notranslate"><span class="pre">Wrapper.need_for_repack</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.save"><code class="docutils literal notranslate"><span class="pre">Wrapper.save</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.BRILLOUIN_TYPES_DATASETS"><code class="docutils literal notranslate"><span class="pre">Wrapper.BRILLOUIN_TYPES_DATASETS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.BRILLOUIN_TYPES_GROUPS"><code class="docutils literal notranslate"><span class="pre">Wrapper.BRILLOUIN_TYPES_GROUPS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.add_PSD"><code class="docutils literal notranslate"><span class="pre">Wrapper.add_PSD()</span></code></a></li>
@@ -124,6 +127,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.update_property"><code class="docutils literal notranslate"><span class="pre">Wrapper.update_property()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.is_tempfile"><code class="docutils literal notranslate"><span class="pre">is_tempfile()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-HDF5_BLS.wrapper_compatibility">HDF5_BLS.wrapper_compatibility module</a><ul>
@@ -356,12 +360,12 @@ The “position_center_window” parameter is the center of the window surroundi
 
 <dl class="py function">
 <dt class="sig sig-object py" id="HDF5_BLS.conversion_PSD.check_conversion_ar_BLS_VIPA">
-<span class="sig-prename descclassname"><span class="pre">HDF5_BLS.conversion_PSD.</span></span><span class="sig-name descname"><span class="pre">check_conversion_ar_BLS_VIPA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wrapper</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HDF5_BLS/conversion_PSD.html#check_conversion_ar_BLS_VIPA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.conversion_PSD.check_conversion_ar_BLS_VIPA" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">HDF5_BLS.conversion_PSD.</span></span><span class="sig-name descname"><span class="pre">check_conversion_ar_BLS_VIPA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wrp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HDF5_BLS/conversion_PSD.html#check_conversion_ar_BLS_VIPA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.conversion_PSD.check_conversion_ar_BLS_VIPA" title="Link to this definition"></a></dt>
 <dd><p>This function checks if without any additional information, the data can be converted to a PSD. For an ar-BLS VIPA spectrometer, this can be the case if the center of center of the beam is known and a frequency array exists on the parent of the data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>wrapper</strong> (<a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper" title="HDF5_BLS.wrapper.Wrapper"><em>wrapper.Wrapper</em></a>) – The wrapper object leading to the data to be converted.</p></li>
+<li><p><strong>wrp</strong> (<a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper" title="HDF5_BLS.wrapper.Wrapper"><em>wrapper.Wrapper</em></a>) – The wrapper object leading to the data to be converted.</p></li>
 <li><p><strong>path</strong> (<em>str</em>) – The path to the data to be converted.</p></li>
 </ul>
 </dd>
@@ -502,8 +506,41 @@ The “position_center_window” parameter is the center of the window surroundi
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This object is used to store data and attributes in a unified structure.</p>
 <dl class="py attribute">
+<dt class="sig sig-object py" id="HDF5_BLS.wrapper.Wrapper.filepath">
+<span class="sig-name descname"><span class="pre">filepath</span></span><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.filepath" title="Link to this definition"></a></dt>
+<dd><p>The path to the HDF5 file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HDF5_BLS.wrapper.Wrapper.need_for_repack">
+<span class="sig-name descname"><span class="pre">need_for_repack</span></span><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.need_for_repack" title="Link to this definition"></a></dt>
+<dd><p>A flag to check wether elements were deleted in the file using the “del” method. If so, a repacking of the file is needed to optimize memory usage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HDF5_BLS.wrapper.Wrapper.save">
+<span class="sig-name descname"><span class="pre">save</span></span><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.save" title="Link to this definition"></a></dt>
+<dd><p>A flag to check wether the file needs to be saved or not. If the file needs to be saved, it means that the user has worked on a temporary file located in the module directory, that will be deleted when the class is closed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="HDF5_BLS.wrapper.Wrapper.BRILLOUIN_TYPES_DATASETS">
-<span class="sig-name descname"><span class="pre">BRILLOUIN_TYPES_DATASETS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['Abscissa',</span> <span class="pre">'Amplitude',</span> <span class="pre">'Amplitude_err',</span> <span class="pre">'BLT',</span> <span class="pre">'BLT_std',</span> <span class="pre">'Frequency',</span> <span class="pre">'Linewidth',</span> <span class="pre">'Linewidth_err',</span> <span class="pre">'Other',</span> <span class="pre">'PSD',</span> <span class="pre">'Raw_data',</span> <span class="pre">'Shift',</span> <span class="pre">'Shift_err']</span></em><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.BRILLOUIN_TYPES_DATASETS" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">BRILLOUIN_TYPES_DATASETS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['Abscissa',</span> <span class="pre">'Amplitude',</span> <span class="pre">'Amplitude_err',</span> <span class="pre">'BLT',</span> <span class="pre">'BLT_err',</span> <span class="pre">'Frequency',</span> <span class="pre">'Linewidth',</span> <span class="pre">'Linewidth_err',</span> <span class="pre">'Other',</span> <span class="pre">'PSD',</span> <span class="pre">'Raw_data',</span> <span class="pre">'Shift',</span> <span class="pre">'Shift_err']</span></em><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.BRILLOUIN_TYPES_DATASETS" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -554,13 +591,13 @@ The “position_center_window” parameter is the center of the window surroundi
 
 <dl class="py method">
 <dt class="sig sig-object py" id="HDF5_BLS.wrapper.Wrapper.add_attributes">
-<span class="sig-name descname"><span class="pre">add_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attributes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HDF5_BLS/wrapper.html#Wrapper.add_attributes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.add_attributes" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attributes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Brillouin'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HDF5_BLS/wrapper.html#Wrapper.add_attributes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.add_attributes" title="Link to this definition"></a></dt>
 <dd><p>Adds attributes to the wrapper.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>attributes</strong> (<em>dict</em>) – The attributes to add to the wrapper. The keys of the dictionary should be the name of the attributes, and the values should be the values of the attributes.</p></li>
-<li><p><strong>parent_group</strong> (<em>str</em><em>, </em><em>optional</em>) – The parent group where to store the attributes of the HDF5 file. The format of this group should be “Brillouin/Measure”.</p></li>
+<li><p><strong>parent_group</strong> (<em>str</em><em>, </em><em>optional</em>) – The parent group where to store the attributes of the HDF5 file. The format of this group should be “Brillouin/Measure”. By default parent_group is set to “Brillouin”.</p></li>
 <li><p><strong>overwrite</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the attributes will be overwritten if they already exist.</p></li>
 </ul>
 </dd>
@@ -645,13 +682,13 @@ The “<a href="#id3"><span class="problematic" id="id4">Abscissa_</span></a>…
 
 <dl class="py method">
 <dt class="sig sig-object py" id="HDF5_BLS.wrapper.Wrapper.add_hdf5">
-<span class="sig-name descname"><span class="pre">add_hdf5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HDF5_BLS/wrapper.html#Wrapper.add_hdf5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.add_hdf5" title="Link to this definition"></a></dt>
-<dd><p>Adds an HDF5 file to the wrapper by specifying in which group the data have to be stored. Default is the “Brillouin” group. When adding the data, the attributes of the HDF5 file are only added to the created group if they are different from the parent’s attribute.</p>
+<span class="sig-name descname"><span class="pre">add_hdf5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Brillouin'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HDF5_BLS/wrapper.html#Wrapper.add_hdf5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.add_hdf5" title="Link to this definition"></a></dt>
+<dd><p>Adds an HDF5 file to the wrapper by specifying in which group the data have to be stored. Default is the “Brillouin” group. If the specified group does not exist, it will be created.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>filepath</strong> (<em>str</em>) – The filepath of the hdf5 file to add.</p></li>
-<li><p><strong>parent_group</strong> (<em>str</em><em>, </em><em>optional</em>) – The parent group where to store the data of the HDF5 file, by default the parent group is the top group “Data”. The format of this group should be “Data.Data_0.Data_0_0”</p></li>
+<li><p><strong>parent_group</strong> (<em>str</em><em>, </em><em>optional</em>) – The parent group where to store the data of the HDF5 file, by default the parent group is the top group “Brillouin”. The format of this group should be “Brillouin/Group/…”</p></li>
 <li><p><strong>overwrite</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean that indicates whether the data should be overwritten if it already exists, by default False</p></li>
 </ul>
 </dd>
@@ -786,18 +823,18 @@ The “<a href="#id3"><span class="problematic" id="id4">Abscissa_</span></a>…
 <dl class="py method">
 <dt class="sig sig-object py" id="HDF5_BLS.wrapper.Wrapper.compatibility_changes">
 <span class="sig-name descname"><span class="pre">compatibility_changes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HDF5_BLS/wrapper.html#Wrapper.compatibility_changes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.compatibility_changes" title="Link to this definition"></a></dt>
-<dd><p>Applies changes from previous versions of the wrapper to newest versions</p>
+<dd><p>Applies changes from previous versions of the wrapper to newest versions using the compat module.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="HDF5_BLS.wrapper.Wrapper.copy_dataset">
 <span class="sig-name descname"><span class="pre">copy_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HDF5_BLS/wrapper.html#Wrapper.copy_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.copy_dataset" title="Link to this definition"></a></dt>
-<dd><p>Copies the dataset at the given path to the given path.</p>
+<dd><p>This function allows to copy a dataset from the file to a different location while keeping the last location.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> (<em>str</em>) – The path to the dataset to copy.</p></li>
-<li><p><strong>copy_path</strong> (<em>str</em>) – The path to the dataset to copy to.</p></li>
+<li><p><strong>copy_path</strong> (<em>str</em>) – The path to the group where the dataset is to be copied to.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -809,7 +846,7 @@ The “<a href="#id3"><span class="problematic" id="id4">Abscissa_</span></a>…
 <dl class="py method">
 <dt class="sig sig-object py" id="HDF5_BLS.wrapper.Wrapper.create_group">
 <span class="sig-name descname"><span class="pre">create_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">brillouin_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Root'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HDF5_BLS/wrapper.html#Wrapper.create_group"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.create_group" title="Link to this definition"></a></dt>
-<dd><p>Creates a group in the HDF5 file</p>
+<dd><p>Creates a group in the file under the given parent group with the given name and Brillouin type. If overwrite is set to True, if a group with the same name exists in the selected parent group, the previous element is removed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -828,7 +865,7 @@ The “<a href="#id3"><span class="problematic" id="id4">Abscissa_</span></a>…
 <dl class="py method">
 <dt class="sig sig-object py" id="HDF5_BLS.wrapper.Wrapper.delete_element">
 <span class="sig-name descname"><span class="pre">delete_element</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HDF5_BLS/wrapper.html#Wrapper.delete_element"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.delete_element" title="Link to this definition"></a></dt>
-<dd><p>Deletes an element from the file</p>
+<dd><p>Deletes an element from the file and sets the need_for_repack flag to True.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – The path to the element to delete</p>
@@ -841,13 +878,14 @@ The “<a href="#id3"><span class="problematic" id="id4">Abscissa_</span></a>…
 
 <dl class="py method">
 <dt class="sig sig-object py" id="HDF5_BLS.wrapper.Wrapper.export_dataset">
-<span class="sig-name descname"><span class="pre">export_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HDF5_BLS/wrapper.html#Wrapper.export_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.export_dataset" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">export_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">export_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.npy'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HDF5_BLS/wrapper.html#Wrapper.export_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.export_dataset" title="Link to this definition"></a></dt>
 <dd><p>Exports the dataset at the given path as a numpy array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> (<em>str</em>) – The path to the dataset to export.</p></li>
 <li><p><strong>filepath</strong> (<em>str</em>) – The path to the numpy array to export to.</p></li>
+<li><p><strong>export_type</strong> (<em>str</em>) – The type of export to perform (e.g. “.npy”, “.csv”).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -1161,6 +1199,11 @@ The “<a href="#id3"><span class="problematic" id="id4">Abscissa_</span></a>…
 </dd></dl>
 
 </dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="HDF5_BLS.wrapper.is_tempfile">
+<span class="sig-prename descclassname"><span class="pre">HDF5_BLS.wrapper.</span></span><span class="sig-name descname"><span class="pre">is_tempfile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HDF5_BLS/wrapper.html#is_tempfile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.is_tempfile" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 </section>
 <section id="module-HDF5_BLS.wrapper_compatibility">

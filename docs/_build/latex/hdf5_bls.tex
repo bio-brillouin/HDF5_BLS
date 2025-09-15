@@ -59,13 +59,13 @@
 \addto\captionsenglish{\renewcommand{\contentsname}{Contents:}}
 
 \usepackage{sphinxmessages}
-\setcounter{tocdepth}{1}
+\setcounter{tocdepth}{2}
 
 
 
 \title{HDF5\_BLS}
-\date{Jan 08, 2025}
-\release{v0.1}
+\date{Sep 15, 2025}
+\release{v1.0.0}
 \author{Pierre Bouvet}
 \newcommand{\sphinxlogo}{\vbox{}}
 \renewcommand{\releasename}{Release}
@@ -86,11 +86,2242 @@
 
 
 \sphinxAtStartPar
-Add your content using \sphinxcode{\sphinxupquote{reStructuredText}} syntax. See the
-\sphinxhref{https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html}{reStructuredText}
-documentation for details.
+The \sphinxtitleref{HDF5\_BLS} project is a Python package allowing users to easily store Brillouin Light Scattering relevant data in a single HDF5 file. The package is designed to integrate in existing Python workflows and to be as easy to use as possible.
 
 
+\chapter{Quick Start}
+\label{\detokenize{index:quick-start}}
+
+\section{Installation}
+\label{\detokenize{index:installation}}
+\sphinxAtStartPar
+To install the package, you can use pip:
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+pip\PYG{+w}{ }install\PYG{+w}{ }HDF5\PYGZus{}BLS
+\end{sphinxVerbatim}
+
+
+\section{Usage}
+\label{\detokenize{index:usage}}
+
+\subsection{Integration to workflow}
+\label{\detokenize{index:integration-to-workflow}}
+\sphinxAtStartPar
+Once the package is installed, you can use it in your Python scripts as follows:
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{HDF5\PYGZus{}BLS}\PYG{+w}{ }\PYG{k}{as}\PYG{+w}{ }\PYG{n+nn}{bls}
+
+\PYG{c+c1}{\PYGZsh{} Create a HDF5 file}
+\PYG{n}{wrp} \PYG{o}{=} \PYG{n}{bls}\PYG{o}{.}\PYG{n}{Wrapper}\PYG{p}{(}\PYG{n}{filepath} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{path/to/file.h5}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}}
+\PYG{c+c1}{\PYGZsh{} Existing code to extract data from a file}
+\PYG{c+c1}{\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}}
+\PYG{c+c1}{\PYGZsh{} Storing the data in the HDF5 file (for this example we use a random array)}
+\PYG{n}{data} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{random}\PYG{o}{.}\PYG{n}{random}\PYG{p}{(}\PYG{p}{(}\PYG{l+m+mi}{50}\PYG{p}{,} \PYG{l+m+mi}{50}\PYG{p}{,} \PYG{l+m+mi}{512}\PYG{p}{)}\PYG{p}{)}
+\PYG{n}{wrp}\PYG{o}{.}\PYG{n}{add\PYGZus{}raw\PYGZus{}data}\PYG{p}{(}\PYG{n}{data} \PYG{o}{=} \PYG{n}{data}\PYG{p}{,} \PYG{n}{parent\PYGZus{}group} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Brillouin}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{n}{name} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Raw data}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}}
+\PYG{c+c1}{\PYGZsh{} Existing code to convert the data to a PSD}
+\PYG{c+c1}{\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}}
+\PYG{c+c1}{\PYGZsh{} Storing the Power Spectral Density in the HDF5 file together with the associated frequency array (for this example we use random arrays)}
+\PYG{n}{PSD} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{random}\PYG{o}{.}\PYG{n}{random}\PYG{p}{(}\PYG{p}{(}\PYG{l+m+mi}{50}\PYG{p}{,} \PYG{l+m+mi}{50}\PYG{p}{,} \PYG{l+m+mi}{512}\PYG{p}{)}\PYG{p}{)}
+\PYG{n}{frequency} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{arange}\PYG{p}{(}\PYG{l+m+mi}{512}\PYG{p}{)}
+\PYG{n}{wrp}\PYG{o}{.}\PYG{n}{add\PYGZus{}PSD}\PYG{p}{(}\PYG{n}{data} \PYG{o}{=} \PYG{n}{PSD}\PYG{p}{,} \PYG{n}{parent\PYGZus{}group} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Brillouin}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{n}{name} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Power Spectral Density}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{wrp}\PYG{o}{.}\PYG{n}{add\PYGZus{}frequency}\PYG{p}{(}\PYG{n}{data} \PYG{o}{=} \PYG{n}{frequency}\PYG{p}{,} \PYG{n}{parent\PYGZus{}group} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Brillouin}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{n}{name} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Frequency}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}}
+\PYG{c+c1}{\PYGZsh{} Existing code to fit the PSD to extract shift and linewidth arrays}
+\PYG{c+c1}{\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}}
+\PYG{c+c1}{\PYGZsh{} Storing the Power Spectral Density in the HDF5 file together with the associated frequency array (for this example we use random arrays)}
+\PYG{n}{shift} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{random}\PYG{o}{.}\PYG{n}{random}\PYG{p}{(}\PYG{p}{(}\PYG{l+m+mi}{50}\PYG{p}{,} \PYG{l+m+mi}{50}\PYG{p}{)}\PYG{p}{)}
+\PYG{n}{linewidth} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{random}\PYG{o}{.}\PYG{n}{random}\PYG{p}{(}\PYG{p}{(}\PYG{l+m+mi}{50}\PYG{p}{,} \PYG{l+m+mi}{50}\PYG{p}{)}\PYG{p}{)}
+\PYG{n}{wrp}\PYG{o}{.}\PYG{n}{add\PYGZus{}treated\PYGZus{}data}\PYG{p}{(}\PYG{n}{parent\PYGZus{}group} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Brillouin}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{n}{name\PYGZus{}group} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Treat\PYGZus{}0}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{n}{shift} \PYG{o}{=} \PYG{n}{shift}\PYG{p}{,} \PYG{n}{linewidth} \PYG{o}{=} \PYG{n}{linewidth}\PYG{p}{)}
+\end{sphinxVerbatim}
+
+
+\subsection{Extracting the data from the HDF5 file}
+\label{\detokenize{index:extracting-the-data-from-the-hdf5-file}}
+\sphinxAtStartPar
+Once the data is stored in the HDF5 file, you can extract it as follows:
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{k+kn}{import}\PYG{+w}{ }\PYG{n+nn}{HDF5\PYGZus{}BLS}\PYG{+w}{ }\PYG{k}{as}\PYG{+w}{ }\PYG{n+nn}{bls}
+
+\PYG{c+c1}{\PYGZsh{} Open the file}
+\PYG{n}{wrp} \PYG{o}{=} \PYG{n}{bls}\PYG{o}{.}\PYG{n}{Wrapper}\PYG{p}{(}\PYG{n}{filepath} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{path/to/file.h5}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} Extract the data}
+\PYG{n}{data} \PYG{o}{=} \PYG{n}{wrp}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Brillouin/path/in/file/Raw data}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}
+\end{sphinxVerbatim}
+
+
+\chapter{Contents:}
+\label{\detokenize{index:contents}}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxhref{modules.html}{Modules}
+
+\end{itemize}
+
+\sphinxstepscope
+
+
+\section{HDF5\_BLS}
+\label{\detokenize{source/modules:hdf5-bls}}\label{\detokenize{source/modules::doc}}
+\sphinxstepscope
+
+
+\subsection{HDF5\_BLS.WrapperError module}
+\label{\detokenize{source/HDF5_BLS:module-HDF5_BLS.WrapperError}}\label{\detokenize{source/HDF5_BLS:hdf5-bls-wrappererror-module}}\label{\detokenize{source/HDF5_BLS::doc}}\index{module@\spxentry{module}!HDF5\_BLS.WrapperError@\spxentry{HDF5\_BLS.WrapperError}}\index{HDF5\_BLS.WrapperError@\spxentry{HDF5\_BLS.WrapperError}!module@\spxentry{module}}\index{WrapperError@\spxentry{WrapperError}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.WrapperError.WrapperError}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{exception\DUrole{w}{ }}}\sphinxcode{\sphinxupquote{HDF5\_BLS.WrapperError.}}\sphinxbfcode{\sphinxupquote{WrapperError}}}
+{\sphinxparam{\DUrole{n}{msg}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Bases: \sphinxcode{\sphinxupquote{Exception}}
+
+\end{fulllineitems}
+
+\index{WrapperError\_ArgumentType@\spxentry{WrapperError\_ArgumentType}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.WrapperError.WrapperError_ArgumentType}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{exception\DUrole{w}{ }}}\sphinxcode{\sphinxupquote{HDF5\_BLS.WrapperError.}}\sphinxbfcode{\sphinxupquote{WrapperError\_ArgumentType}}}
+{\sphinxparam{\DUrole{n}{msg}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Bases: \sphinxcode{\sphinxupquote{Exception}}
+
+\end{fulllineitems}
+
+\index{WrapperError\_FileNotFound@\spxentry{WrapperError\_FileNotFound}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.WrapperError.WrapperError_FileNotFound}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{exception\DUrole{w}{ }}}\sphinxcode{\sphinxupquote{HDF5\_BLS.WrapperError.}}\sphinxbfcode{\sphinxupquote{WrapperError\_FileNotFound}}}
+{\sphinxparam{\DUrole{n}{msg}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Bases: \sphinxcode{\sphinxupquote{Exception}}
+
+\end{fulllineitems}
+
+\index{WrapperError\_Overwrite@\spxentry{WrapperError\_Overwrite}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.WrapperError.WrapperError_Overwrite}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{exception\DUrole{w}{ }}}\sphinxcode{\sphinxupquote{HDF5\_BLS.WrapperError.}}\sphinxbfcode{\sphinxupquote{WrapperError\_Overwrite}}}
+{\sphinxparam{\DUrole{n}{msg}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Bases: \sphinxcode{\sphinxupquote{Exception}}
+
+\end{fulllineitems}
+
+\index{WrapperError\_Save@\spxentry{WrapperError\_Save}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.WrapperError.WrapperError_Save}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{exception\DUrole{w}{ }}}\sphinxcode{\sphinxupquote{HDF5\_BLS.WrapperError.}}\sphinxbfcode{\sphinxupquote{WrapperError\_Save}}}
+{\sphinxparam{\DUrole{n}{msg}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Bases: \sphinxcode{\sphinxupquote{Exception}}
+
+\end{fulllineitems}
+
+\index{WrapperError\_StructureError@\spxentry{WrapperError\_StructureError}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.WrapperError.WrapperError_StructureError}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{exception\DUrole{w}{ }}}\sphinxcode{\sphinxupquote{HDF5\_BLS.WrapperError.}}\sphinxbfcode{\sphinxupquote{WrapperError\_StructureError}}}
+{\sphinxparam{\DUrole{n}{msg}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Bases: \sphinxcode{\sphinxupquote{Exception}}
+
+\end{fulllineitems}
+
+
+
+\subsection{HDF5\_BLS.analyze module}
+\label{\detokenize{source/HDF5_BLS:module-HDF5_BLS.analyze}}\label{\detokenize{source/HDF5_BLS:hdf5-bls-analyze-module}}\index{module@\spxentry{module}!HDF5\_BLS.analyze@\spxentry{HDF5\_BLS.analyze}}\index{HDF5\_BLS.analyze@\spxentry{HDF5\_BLS.analyze}!module@\spxentry{module}}\index{Analyze (class in HDF5\_BLS.analyze)@\spxentry{Analyze}\spxextra{class in HDF5\_BLS.analyze}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.analyze.Analyze}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{class\DUrole{w}{ }}}\sphinxcode{\sphinxupquote{HDF5\_BLS.analyze.}}\sphinxbfcode{\sphinxupquote{Analyze}}}
+{\sphinxparam{\DUrole{n}{y}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{ndarray}}\sphinxparamcomma \sphinxparam{\DUrole{n}{x}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{ndarray}\DUrole{w}{ }\DUrole{o}{=}\DUrole{w}{ }\DUrole{default_value}{None}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Bases: \sphinxcode{\sphinxupquote{object}}
+
+\sphinxAtStartPar
+This class is the base class for all the analyze classes. It provides a common interface for all the classes. Its purpose is to provide the basic silent functions to open, create and save algorithms, and to store the different steps of the analysis and their effects on the data.
+The philosophy of this class is to rely on 4 attributes that will be changed by the different functions of the class:
+\sphinxhyphen{} x: the x\sphinxhyphen{}axis of the data
+\sphinxhyphen{} y: the y\sphinxhyphen{}axis of the data
+\sphinxhyphen{} points: a list of remarkable points in the data where each point is a 2\sphinxhyphen{}list of the form {[}position, type{]}
+\sphinxhyphen{} windows: a list of windows in the data where each window is a 2\sphinxhyphen{}list of the form {[}start, end{]}
+And to store the different steps of the analysis and their effects on the data:
+\sphinxhyphen{} \_algorithm: a dictionary that stores the name of the algorithm, its version, the author, and a description
+\sphinxhyphen{} \_history: a list that stores the evolution of the 4 main attributes of the class with the steps of the analysis.
+The data is defined by 2 1\sphinxhyphen{}D arrays: x and y. Additionally, remarkable points and windows are stored in the points and windows attributes.
+Algorithm steps are stored in 2 attributes: \_algorithm and \_history. The \_algorithm attribute is a dictionary that stores the name of the algorithm, its version, the author, and a description. The \_history attribute is a list that stores the steps of the analysis and their effects on the data.
+The \_execute attribute is a boolean that indicates whether the analysis should be executed or not. It is set to True by default. The \_auto\_run attribute is a boolean that indicates whether the analysis should be executed automatically or not. It is set to False by default.
+As a general rule, we encourage developers not to modify any of the underscore\sphinxhyphen{}prefixed attributes. These attributes are meant to be used internally by the mother class to run, save, and load the analysis and its history.
+All the functions of the class are functions with a zero\sphinxhyphen{}argument call signature that returns None. This means that the parameters of the methods of the children class need to be kew\sphinxhyphen{}word arguments, and that if no value for these arguments are given, the default value of the arguments leads the function to do nothing. This specificality ensures the modulability of the class.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{x}} (\sphinxstyleliteralemphasis{\sphinxupquote{np.ndarray}}) \textendash{} The x\sphinxhyphen{}axis of the data.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{y}} (\sphinxstyleliteralemphasis{\sphinxupquote{np.ndarray}}) \textendash{} The y\sphinxhyphen{}axis of the data.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{points}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}\sphinxstyleliteralemphasis{\sphinxupquote{ of }}\sphinxstyleliteralemphasis{\sphinxupquote{2\sphinxhyphen{}list}}) \textendash{} A list of remarkable points in the data where each point is a 2\sphinxhyphen{}list of the form {[}position, type{]}.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{windows}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}\sphinxstyleliteralemphasis{\sphinxupquote{ of }}\sphinxstyleliteralemphasis{\sphinxupquote{2\sphinxhyphen{}list}}) \textendash{} A list of windows in the data where each window is a 2\sphinxhyphen{}list of the form {[}start, end{]}.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{\_algorithm}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} The algorithm used to analyze the data.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{\_history}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}) \textendash{} The history of the analysis.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{Analyze\_VIPA (class in HDF5\_BLS.analyze)@\spxentry{Analyze\_VIPA}\spxextra{class in HDF5\_BLS.analyze}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.analyze.Analyze_VIPA}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{class\DUrole{w}{ }}}\sphinxcode{\sphinxupquote{HDF5\_BLS.analyze.}}\sphinxbfcode{\sphinxupquote{Analyze\_VIPA}}}
+{\sphinxparam{\DUrole{n}{x}}\sphinxparamcomma \sphinxparam{\DUrole{n}{y}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Bases: {\hyperref[\detokenize{source/HDF5_BLS:HDF5_BLS.analyze.Analyze_general}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{Analyze\_general}}}}}
+
+\sphinxAtStartPar
+This class is a child class of Analyze\_general. It inherits all the methods of the parent class and adds the functions specific to VIPA spectrometers.
+\index{add\_point() (HDF5\_BLS.analyze.Analyze\_VIPA method)@\spxentry{add\_point()}\spxextra{HDF5\_BLS.analyze.Analyze\_VIPA method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.analyze.Analyze_VIPA.add_point}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{add\_point}}}
+{\sphinxparam{\DUrole{n}{position\_center\_window}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{float}\DUrole{w}{ }\DUrole{o}{=}\DUrole{w}{ }\DUrole{default_value}{0}}\sphinxparamcomma \sphinxparam{\DUrole{n}{window\_width}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{float}\DUrole{w}{ }\DUrole{o}{=}\DUrole{w}{ }\DUrole{default_value}{0}}\sphinxparamcomma \sphinxparam{\DUrole{n}{type\_pnt}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{str}\DUrole{w}{ }\DUrole{o}{=}\DUrole{w}{ }\DUrole{default_value}{\textquotesingle{}Elastic\textquotesingle{}}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Adds a single point to the list of points together with a window to the list of windows with its type. Each point is an intensity extremum obtained by fitting a quadratic polynomial to the windowed data.
+The point is given as a value on the x axis (not a position).
+The “position\_center\_window” parameter is the center of the window surrounding the peak. The “window\_width” parameter is the width of the window surrounding the peak (full width). The “type\_pnt” parameter is the type of the peak. It can be either “Stokes”, “Anti\sphinxhyphen{}Stokes” or “Elastic”.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{position\_center\_window}} (\sphinxstyleliteralemphasis{\sphinxupquote{float}}) \textendash{} A value on the self.x axis corresponding to the center of a window surrounding a peak
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{window}} (\sphinxstyleliteralemphasis{\sphinxupquote{float}}) \textendash{} A value on the self.x axis corresponding to the width of a window surrounding a peak
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{type\_pnt}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The nature of the peak. Must be one of the following: “Stokes”, “Anti\sphinxhyphen{}Stokes” or “Elastic”
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{center\_x\_axis() (HDF5\_BLS.analyze.Analyze\_VIPA method)@\spxentry{center\_x\_axis()}\spxextra{HDF5\_BLS.analyze.Analyze\_VIPA method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.analyze.Analyze_VIPA.center_x_axis}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{center\_x\_axis}}}
+{\sphinxparam{\DUrole{n}{center\_type}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{str}\DUrole{w}{ }\DUrole{o}{=}\DUrole{w}{ }\DUrole{default_value}{None}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Centers the x axis using the first points stored in the class. The parameter “center\_type” is used to determine wether to center the axis using the first elastic peak (center\_type = “Elastic”) or the average of two Stokes and Anti\sphinxhyphen{}Stokes peaks (center\_type = “Inelastic”).
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{center\_type}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The type of the peak to center the x axis around. Must be either “Elastic” or “Inelastic”.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{interpolate\_between\_one\_order() (HDF5\_BLS.analyze.Analyze\_VIPA method)@\spxentry{interpolate\_between\_one\_order()}\spxextra{HDF5\_BLS.analyze.Analyze\_VIPA method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.analyze.Analyze_VIPA.interpolate_between_one_order}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{interpolate\_between\_one\_order}}}
+{\sphinxparam{\DUrole{n}{FSR}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{float}\DUrole{w}{ }\DUrole{o}{=}\DUrole{w}{ }\DUrole{default_value}{None}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Creates a frequency axis by using the signal between two elastic peaks included. By imposing that the distance in frequency between two neighboring elastic peaks is one FSR, and that the shift of both stokes and anti\sphinxhyphen{}stokes peaks to their respective elastic peak is the same, we can obtain a frequency axis. The user has to enter a value for the FSR to calibrate the frequency axis.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{FSR}} (\sphinxstyleliteralemphasis{\sphinxupquote{float}}) \textendash{} The free spectral range of the VIPA spectrometer (in GHz).
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{interpolate\_elastic() (HDF5\_BLS.analyze.Analyze\_VIPA method)@\spxentry{interpolate\_elastic()}\spxextra{HDF5\_BLS.analyze.Analyze\_VIPA method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.analyze.Analyze_VIPA.interpolate_elastic}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{interpolate\_elastic}}}
+{\sphinxparam{\DUrole{n}{FSR}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{float}\DUrole{w}{ }\DUrole{o}{=}\DUrole{w}{ }\DUrole{default_value}{None}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Uses positions of the elastic peaks on the different orders, to obtain a frequency axis by interpolating the position of the peaks with a quadratic polynomial. The user has to enter a value for the FSR to calibrate the frequency axis.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{FSR}} (\sphinxstyleliteralemphasis{\sphinxupquote{float}}) \textendash{} The free spectral range of the VIPA spectrometer (in GHz).
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{interpolate\_elastic\_inelastic() (HDF5\_BLS.analyze.Analyze\_VIPA method)@\spxentry{interpolate\_elastic\_inelastic()}\spxextra{HDF5\_BLS.analyze.Analyze\_VIPA method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.analyze.Analyze_VIPA.interpolate_elastic_inelastic}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{interpolate\_elastic\_inelastic}}}
+{\sphinxparam{\DUrole{n}{shift}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{float}\DUrole{w}{ }\DUrole{o}{=}\DUrole{w}{ }\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{FSR}\DUrole{p}{:}\DUrole{w}{ }\DUrole{n}{float}\DUrole{w}{ }\DUrole{o}{=}\DUrole{w}{ }\DUrole{default_value}{None}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Uses the elastic peaks, and the positions of the Brillouin peaks on the different orders to obtain a frequency axis by interpolating the position of the peaks with a quadratic polynomial. The user can either enter a value for the shift or the FSR, or both. The shift value is used to calibrate the frequency axis using known values of shifts when using a calibration sample to obtain the frequency axis. The FSR value is used to calibrate the frequency axis using a known values of FSR for the VIPA.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{shift}} (\sphinxstyleliteralemphasis{\sphinxupquote{float}}) \textendash{} The shift between the elastic and inelastic peaks (in GHz).
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{FSR}} (\sphinxstyleliteralemphasis{\sphinxupquote{float}}) \textendash{} The free spectral range of the VIPA spectrometer (in GHz).
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+
+\end{fulllineitems}
+
+\index{Analyze\_general (class in HDF5\_BLS.analyze)@\spxentry{Analyze\_general}\spxextra{class in HDF5\_BLS.analyze}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.analyze.Analyze_general}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{class\DUrole{w}{ }}}\sphinxcode{\sphinxupquote{HDF5\_BLS.analyze.}}\sphinxbfcode{\sphinxupquote{Analyze\_general}}}
+{\sphinxparam{\DUrole{n}{y}}\sphinxparamcomma \sphinxparam{\DUrole{n}{x}\DUrole{o}{=}\DUrole{default_value}{None}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Bases: {\hyperref[\detokenize{source/HDF5_BLS:HDF5_BLS.analyze.Analyze}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{Analyze}}}}}
+
+\sphinxAtStartPar
+This class is a class inherited from the Analyze class used to store steps of analysis that are not specific to a particular type of spectrometer and that are not interesting to show in an algorithm. For example, the function to add a remarkable point to the data
+
+\end{fulllineitems}
+
+
+
+\subsection{HDF5\_BLS.conversion\_PSD module}
+\label{\detokenize{source/HDF5_BLS:module-HDF5_BLS.conversion_PSD}}\label{\detokenize{source/HDF5_BLS:hdf5-bls-conversion-psd-module}}\index{module@\spxentry{module}!HDF5\_BLS.conversion\_PSD@\spxentry{HDF5\_BLS.conversion\_PSD}}\index{HDF5\_BLS.conversion\_PSD@\spxentry{HDF5\_BLS.conversion\_PSD}!module@\spxentry{module}}\index{check\_conversion\_Streak\_VIPA() (in module HDF5\_BLS.conversion\_PSD)@\spxentry{check\_conversion\_Streak\_VIPA()}\spxextra{in module HDF5\_BLS.conversion\_PSD}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.conversion_PSD.check_conversion_Streak_VIPA}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxcode{\sphinxupquote{HDF5\_BLS.conversion\_PSD.}}\sphinxbfcode{\sphinxupquote{check\_conversion\_Streak\_VIPA}}}
+{\sphinxparam{\DUrole{n}{wrapper}}\sphinxparamcomma \sphinxparam{\DUrole{n}{path}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+This function checks if without any additional information, the data can be converted to a PSD. For a VIPA spectrometer (even one using a Streak camera), this is never the case so the function returns False.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{wrapper}} ({\hyperref[\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{wrapper.Wrapper}}}}}) \textendash{} The wrapper object leading to the data to be converted.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{path}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The path to the data to be converted.
+
+\end{itemize}
+
+\sphinxlineitem{Returns}
+\sphinxAtStartPar
+False, as the user needs to enter additional information to convert the data.
+
+\sphinxlineitem{Return type}
+\sphinxAtStartPar
+bool
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{check\_conversion\_VIPA() (in module HDF5\_BLS.conversion\_PSD)@\spxentry{check\_conversion\_VIPA()}\spxextra{in module HDF5\_BLS.conversion\_PSD}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.conversion_PSD.check_conversion_VIPA}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxcode{\sphinxupquote{HDF5\_BLS.conversion\_PSD.}}\sphinxbfcode{\sphinxupquote{check\_conversion\_VIPA}}}
+{\sphinxparam{\DUrole{n}{wrapper}}\sphinxparamcomma \sphinxparam{\DUrole{n}{path}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+This function checks if without any additional information, the data can be converted to a PSD. For a VIPA spectrometer, this is never the case so the function returns False.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{wrapper}} ({\hyperref[\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{wrapper.Wrapper}}}}}) \textendash{} The wrapper object leading to the data to be converted.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{path}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The path to the data to be converted.
+
+\end{itemize}
+
+\sphinxlineitem{Returns}
+\sphinxAtStartPar
+False, as the user needs to enter additional information to convert the data.
+
+\sphinxlineitem{Return type}
+\sphinxAtStartPar
+bool
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{check\_conversion\_ar\_BLS\_VIPA() (in module HDF5\_BLS.conversion\_PSD)@\spxentry{check\_conversion\_ar\_BLS\_VIPA()}\spxextra{in module HDF5\_BLS.conversion\_PSD}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.conversion_PSD.check_conversion_ar_BLS_VIPA}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxcode{\sphinxupquote{HDF5\_BLS.conversion\_PSD.}}\sphinxbfcode{\sphinxupquote{check\_conversion\_ar\_BLS\_VIPA}}}
+{\sphinxparam{\DUrole{n}{wrp}}\sphinxparamcomma \sphinxparam{\DUrole{n}{path}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+This function checks if without any additional information, the data can be converted to a PSD. For an ar\sphinxhyphen{}BLS VIPA spectrometer, this can be the case if the center of center of the beam is known and a frequency array exists on the parent of the data.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{wrp}} ({\hyperref[\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper}]{\sphinxcrossref{\sphinxstyleliteralemphasis{\sphinxupquote{wrapper.Wrapper}}}}}) \textendash{} The wrapper object leading to the data to be converted.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{path}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The path to the data to be converted.
+
+\end{itemize}
+
+\sphinxlineitem{Returns}
+\sphinxAtStartPar
+True if the data can be converted to a PSD, False otherwise.
+
+\sphinxlineitem{Return type}
+\sphinxAtStartPar
+bool
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+
+
+\subsection{HDF5\_BLS.load\_data module}
+\label{\detokenize{source/HDF5_BLS:module-HDF5_BLS.load_data}}\label{\detokenize{source/HDF5_BLS:hdf5-bls-load-data-module}}\index{module@\spxentry{module}!HDF5\_BLS.load\_data@\spxentry{HDF5\_BLS.load\_data}}\index{HDF5\_BLS.load\_data@\spxentry{HDF5\_BLS.load\_data}!module@\spxentry{module}}\index{load\_dat\_file() (in module HDF5\_BLS.load\_data)@\spxentry{load\_dat\_file()}\spxextra{in module HDF5\_BLS.load\_data}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.load_data.load_dat_file}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxcode{\sphinxupquote{HDF5\_BLS.load\_data.}}\sphinxbfcode{\sphinxupquote{load\_dat\_file}}}
+{\sphinxparam{\DUrole{n}{filepath}}\sphinxparamcomma \sphinxparam{\DUrole{n}{creator}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{parameters}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{brillouin\_type}\DUrole{o}{=}\DUrole{default_value}{None}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Loads DAT files. The DAT files that can be read are obtained from the following configurations:
+\sphinxhyphen{} GHOST software (fixed brillouin type: PSD)
+\sphinxhyphen{} Time Domain measures (fixed brillouin type: Raw\_data)
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{filepath}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The filepath to the GHOST file
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{creator}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The way this dat file has to be loaded. If None, an error is raised. Possible values are:
+\sphinxhyphen{} “GHOST”: the file is assumed to be a GHOST file
+\sphinxhyphen{} “TimeDomain”: the file is assumed to be a TimeDomain file
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{brillouin\_type}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The brillouin type of the file (not relevant for .dat files)
+
+\end{itemize}
+
+\sphinxlineitem{Returns}
+\sphinxAtStartPar
+The dictionary with the data and the attributes of the file stored respectively in the keys “Data” and “Attributes”. For time domain files, the dictionary also contains the time vector in the key “Abscissa\_dt”.
+
+\sphinxlineitem{Return type}
+\sphinxAtStartPar
+dict
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{load\_general() (in module HDF5\_BLS.load\_data)@\spxentry{load\_general()}\spxextra{in module HDF5\_BLS.load\_data}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.load_data.load_general}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxcode{\sphinxupquote{HDF5\_BLS.load\_data.}}\sphinxbfcode{\sphinxupquote{load\_general}}}
+{\sphinxparam{\DUrole{n}{filepath}}\sphinxparamcomma \sphinxparam{\DUrole{n}{creator}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{parameters}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{brillouin\_type}\DUrole{o}{=}\DUrole{default_value}{None}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Loads files based on their extensions
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{filepath}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The filepath to the file
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{creator}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} An argument to specify how the data was created, useful when the extension of the file is not enough to determine the type of data.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{parameters}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} A dictionary containing the parameters to be used to interpret the data, for example when multiple files need to be combined to obtain the dataset to add.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{brillouin\_type}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The brillouin type of the dataset to load. Please refer to the documentation of the Brillouin software for the possible values.
+
+\end{itemize}
+
+\sphinxlineitem{Returns}
+\sphinxAtStartPar
+The dictionary created with the given filepath and eventually parameters.
+
+\sphinxlineitem{Return type}
+\sphinxAtStartPar
+dict
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{load\_image\_file() (in module HDF5\_BLS.load\_data)@\spxentry{load\_image\_file()}\spxextra{in module HDF5\_BLS.load\_data}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.load_data.load_image_file}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxcode{\sphinxupquote{HDF5\_BLS.load\_data.}}\sphinxbfcode{\sphinxupquote{load\_image\_file}}}
+{\sphinxparam{\DUrole{n}{filepath}}\sphinxparamcomma \sphinxparam{\DUrole{n}{parameters}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{brillouin\_type}\DUrole{o}{=}\DUrole{default_value}{None}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Loads image files using Pillow
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{filepath}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The filepath to the image
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{parameters}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} A dictionary with the parameters to load the data, by default None. Please refer to the Note section of this docstring for more information.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{brillouin\_type}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The brillouin type of the file.
+
+\end{itemize}
+
+\sphinxlineitem{Returns}
+\sphinxAtStartPar
+The dictionary with the data and the attributes of the file stored respectively in the keys “Data” and “Attributes”
+
+\sphinxlineitem{Return type}
+\sphinxAtStartPar
+dict
+
+\end{description}\end{quote}
+
+\begin{sphinxadmonition}{note}{Note:}
+\sphinxAtStartPar
+Possible parameters are:
+\sphinxhyphen{} grayscale: bool, optional
+\begin{quote}
+
+\sphinxAtStartPar
+If True, the image is converted to grayscale, by default False
+\end{quote}
+\end{sphinxadmonition}
+
+\end{fulllineitems}
+
+\index{load\_npy\_file() (in module HDF5\_BLS.load\_data)@\spxentry{load\_npy\_file()}\spxextra{in module HDF5\_BLS.load\_data}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.load_data.load_npy_file}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxcode{\sphinxupquote{HDF5\_BLS.load\_data.}}\sphinxbfcode{\sphinxupquote{load\_npy\_file}}}
+{\sphinxparam{\DUrole{n}{filepath}}\sphinxparamcomma \sphinxparam{\DUrole{n}{brillouin\_type}\DUrole{o}{=}\DUrole{default_value}{None}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Loads npy files
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{filepath}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The filepath to the npy file
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{brillouin\_type}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The brillouin type of the file.
+
+\end{itemize}
+
+\sphinxlineitem{Returns}
+\sphinxAtStartPar
+The dictionary with the data and the attributes of the file stored respectively in the keys “Data” and “Attributes”
+
+\sphinxlineitem{Return type}
+\sphinxAtStartPar
+dict
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{load\_sif\_file() (in module HDF5\_BLS.load\_data)@\spxentry{load\_sif\_file()}\spxextra{in module HDF5\_BLS.load\_data}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.load_data.load_sif_file}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxcode{\sphinxupquote{HDF5\_BLS.load\_data.}}\sphinxbfcode{\sphinxupquote{load\_sif\_file}}}
+{\sphinxparam{\DUrole{n}{filepath}}\sphinxparamcomma \sphinxparam{\DUrole{n}{parameters}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{brillouin\_type}\DUrole{o}{=}\DUrole{default_value}{None}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Loads npy files
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{filepath}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The filepath to the npy file
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{brillouin\_type}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The brillouin type of the file. Not relevant for sif files
+
+\end{itemize}
+
+\sphinxlineitem{Returns}
+\sphinxAtStartPar
+The dictionary with the data and the attributes of the file stored respectively in the keys “Data” and “Attributes”
+
+\sphinxlineitem{Return type}
+\sphinxAtStartPar
+dict
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+
+
+\subsection{HDF5\_BLS.wrapper module}
+\label{\detokenize{source/HDF5_BLS:module-HDF5_BLS.wrapper}}\label{\detokenize{source/HDF5_BLS:hdf5-bls-wrapper-module}}\index{module@\spxentry{module}!HDF5\_BLS.wrapper@\spxentry{HDF5\_BLS.wrapper}}\index{HDF5\_BLS.wrapper@\spxentry{HDF5\_BLS.wrapper}!module@\spxentry{module}}\index{Wrapper (class in HDF5\_BLS.wrapper)@\spxentry{Wrapper}\spxextra{class in HDF5\_BLS.wrapper}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{class\DUrole{w}{ }}}\sphinxcode{\sphinxupquote{HDF5\_BLS.wrapper.}}\sphinxbfcode{\sphinxupquote{Wrapper}}}
+{\sphinxparam{\DUrole{n}{filepath}\DUrole{o}{=}\DUrole{default_value}{None}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Bases: \sphinxcode{\sphinxupquote{object}}
+
+\sphinxAtStartPar
+This object is used to store data and attributes in a unified structure.
+\index{filepath (HDF5\_BLS.wrapper.Wrapper attribute)@\spxentry{filepath}\spxextra{HDF5\_BLS.wrapper.Wrapper attribute}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.filepath}}
+\pysigstartsignatures
+\pysigline
+{\sphinxbfcode{\sphinxupquote{filepath}}}
+\pysigstopsignatures
+\sphinxAtStartPar
+The path to the HDF5 file
+\begin{quote}\begin{description}
+\sphinxlineitem{Type}
+\sphinxAtStartPar
+str
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{need\_for\_repack (HDF5\_BLS.wrapper.Wrapper attribute)@\spxentry{need\_for\_repack}\spxextra{HDF5\_BLS.wrapper.Wrapper attribute}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.need_for_repack}}
+\pysigstartsignatures
+\pysigline
+{\sphinxbfcode{\sphinxupquote{need\_for\_repack}}}
+\pysigstopsignatures
+\sphinxAtStartPar
+A flag to check wether elements were deleted in the file using the “del” method. If so, a repacking of the file is needed to optimize memory usage.
+\begin{quote}\begin{description}
+\sphinxlineitem{Type}
+\sphinxAtStartPar
+bool
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{save (HDF5\_BLS.wrapper.Wrapper attribute)@\spxentry{save}\spxextra{HDF5\_BLS.wrapper.Wrapper attribute}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.save}}
+\pysigstartsignatures
+\pysigline
+{\sphinxbfcode{\sphinxupquote{save}}}
+\pysigstopsignatures
+\sphinxAtStartPar
+A flag to check wether the file needs to be saved or not. If the file needs to be saved, it means that the user has worked on a temporary file located in the module directory, that will be deleted when the class is closed.
+\begin{quote}\begin{description}
+\sphinxlineitem{Type}
+\sphinxAtStartPar
+bool
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{BRILLOUIN\_TYPES\_DATASETS (HDF5\_BLS.wrapper.Wrapper attribute)@\spxentry{BRILLOUIN\_TYPES\_DATASETS}\spxextra{HDF5\_BLS.wrapper.Wrapper attribute}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.BRILLOUIN_TYPES_DATASETS}}
+\pysigstartsignatures
+\pysigline
+{\sphinxbfcode{\sphinxupquote{BRILLOUIN\_TYPES\_DATASETS}}\sphinxbfcode{\sphinxupquote{\DUrole{w}{ }\DUrole{p}{=}\DUrole{w}{ }{[}\textquotesingle{}Abscissa\textquotesingle{}, \textquotesingle{}Amplitude\textquotesingle{}, \textquotesingle{}Amplitude\_err\textquotesingle{}, \textquotesingle{}BLT\textquotesingle{}, \textquotesingle{}BLT\_err\textquotesingle{}, \textquotesingle{}Frequency\textquotesingle{}, \textquotesingle{}Linewidth\textquotesingle{}, \textquotesingle{}Linewidth\_err\textquotesingle{}, \textquotesingle{}Other\textquotesingle{}, \textquotesingle{}PSD\textquotesingle{}, \textquotesingle{}Raw\_data\textquotesingle{}, \textquotesingle{}Shift\textquotesingle{}, \textquotesingle{}Shift\_err\textquotesingle{}{]}}}}
+\pysigstopsignatures
+\end{fulllineitems}
+
+\index{BRILLOUIN\_TYPES\_GROUPS (HDF5\_BLS.wrapper.Wrapper attribute)@\spxentry{BRILLOUIN\_TYPES\_GROUPS}\spxextra{HDF5\_BLS.wrapper.Wrapper attribute}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.BRILLOUIN_TYPES_GROUPS}}
+\pysigstartsignatures
+\pysigline
+{\sphinxbfcode{\sphinxupquote{BRILLOUIN\_TYPES\_GROUPS}}\sphinxbfcode{\sphinxupquote{\DUrole{w}{ }\DUrole{p}{=}\DUrole{w}{ }{[}\textquotesingle{}Calibration\_spectrum\textquotesingle{}, \textquotesingle{}Impulse\_response\textquotesingle{}, \textquotesingle{}Measure\textquotesingle{}, \textquotesingle{}Root\textquotesingle{}, \textquotesingle{}Treatment\textquotesingle{}{]}}}}
+\pysigstopsignatures
+\end{fulllineitems}
+
+\index{add\_PSD() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{add\_PSD()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.add_PSD}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{add\_PSD}}}
+{\sphinxparam{\DUrole{n}{data}}\sphinxparamcomma \sphinxparam{\DUrole{n}{parent\_group}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{name}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{overwrite}\DUrole{o}{=}\DUrole{default_value}{False}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Adds a PSD array to the wrapper by creating a new group.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{data}} (\sphinxstyleliteralemphasis{\sphinxupquote{np.ndarray}}) \textendash{} The PSD array to add to the wrapper.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{parent\_group}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The parent group where to store the data of the HDF5 file. The format of this group should be “Brillouin/Measure”.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{name}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The name of the frequency dataset we want to add, and as it will be displayed in the file by any HDF5 viewer. By default the name is “PSD”.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{overwrite}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} A parameter to indicate whether the dataset should be overwritten if a dataset with same name already exist or not, by default False \sphinxhyphen{} not overwritten.
+
+\end{itemize}
+
+\sphinxlineitem{Raises}
+\sphinxAtStartPar
+{\hyperref[\detokenize{source/HDF5_BLS:HDF5_BLS.WrapperError.WrapperError_StructureError}]{\sphinxcrossref{\sphinxstyleliteralstrong{\sphinxupquote{WrapperError\_StructureError}}}}} \textendash{} If the parent group does not exist in the HDF5 file.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{add\_abscissa() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{add\_abscissa()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.add_abscissa}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{add\_abscissa}}}
+{\sphinxparam{\DUrole{n}{data}}\sphinxparamcomma \sphinxparam{\DUrole{n}{parent\_group}}\sphinxparamcomma \sphinxparam{\DUrole{n}{name}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{unit}\DUrole{o}{=}\DUrole{default_value}{\textquotesingle{}AU\textquotesingle{}}}\sphinxparamcomma \sphinxparam{\DUrole{n}{dim\_start}\DUrole{o}{=}\DUrole{default_value}{0}}\sphinxparamcomma \sphinxparam{\DUrole{n}{dim\_end}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{overwrite}\DUrole{o}{=}\DUrole{default_value}{False}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Adds abscissa as a dataset to the “parent\_group” group.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{data}} (\sphinxstyleliteralemphasis{\sphinxupquote{np.ndarray}}) \textendash{} The array corresponding to the abscissa that is to be addedto the wrapper.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{parent\_group}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The parent group where to store the data of the HDF5 file, by default the parent group is the top group “Data”. The format of this group should be “Brillouin/Measure”.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{name}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The name of that is given to the abscissa dataset. If the name is not specified, it is set to “Abscissa\_\{dim\_start\}\_\{dim\_end\}”
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{unit}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The unit of the abscissa array, by default AU for Arbitrary Units
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{dim\_start}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The first dimension of the abscissa array, by default 0
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{dim\_end}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The last dimension of the abscissa array, by default the last number of dimension of the array
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{overwrite}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} A parameter to indicate whether the group should be overwritten if they already exist or not, by default False \sphinxhyphen{} attributes are not overwritten.
+
+\end{itemize}
+
+\sphinxlineitem{Raises}
+\sphinxAtStartPar
+{\hyperref[\detokenize{source/HDF5_BLS:HDF5_BLS.WrapperError.WrapperError_StructureError}]{\sphinxcrossref{\sphinxstyleliteralstrong{\sphinxupquote{WrapperError\_StructureError}}}}} \textendash{} If the parent group does not exist in the HDF5 file.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{add\_attributes() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{add\_attributes()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.add_attributes}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{add\_attributes}}}
+{\sphinxparam{\DUrole{n}{attributes}}\sphinxparamcomma \sphinxparam{\DUrole{n}{parent\_group}\DUrole{o}{=}\DUrole{default_value}{\textquotesingle{}Brillouin\textquotesingle{}}}\sphinxparamcomma \sphinxparam{\DUrole{n}{overwrite}\DUrole{o}{=}\DUrole{default_value}{False}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Adds attributes to the wrapper.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{attributes}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} The attributes to add to the wrapper. The keys of the dictionary should be the name of the attributes, and the values should be the values of the attributes.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{parent\_group}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The parent group where to store the attributes of the HDF5 file. The format of this group should be “Brillouin/Measure”. By default parent\_group is set to “Brillouin”.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{overwrite}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} If True, the attributes will be overwritten if they already exist.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{add\_dictionary() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{add\_dictionary()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.add_dictionary}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{add\_dictionary}}}
+{\sphinxparam{\DUrole{n}{dic}}\sphinxparamcomma \sphinxparam{\DUrole{n}{parent\_group}}\sphinxparamcomma \sphinxparam{\DUrole{n}{create\_group}\DUrole{o}{=}\DUrole{default_value}{False}}\sphinxparamcomma \sphinxparam{\DUrole{n}{brillouin\_type\_parent\_group}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{overwrite}\DUrole{o}{=}\DUrole{default_value}{False}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Adds a data dictionary to the wrapper. This is the preferred way to add data using the GUI.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{dic}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} The data dictionary to add. The accepted keys for this dictionary are either the one given in the self.BRILLOUIN\_TYPES\_DATASET list, a key starting with “Abscissa” or “Attributes”.
+All the element of the dictionary are also dictionnaries.
+Except for attributes, each dictionary has at least two keys: “Name” and “Data”. If an abscissa is to be added, then the keys “Dim\_start”, “Dim\_end” and “Units” need to be populated.
+For attributes, each key is the name of the attribute, and the value is the value of the attribute, which will automatically be converted to string if it is not a string.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{parent\_group}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The path in the file where to store the dataset.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{brillouin\_type\_parent\_group}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The type of the data group where the data are stored. This argument must be given if a new group is being created. If this argument is given and overwrite is set to True, then the brillouin type of the parent group will be overwritten. Otherwise, the original brillouin type of the parent group will be used.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{overwrite}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} If set to True, any element of the file with a name corresponding to a name given in the dictionary will be overwritten. Similarly any existing argument will be overwritten and Brillouin type will be redefined. Default is False
+
+\end{itemize}
+
+\sphinxlineitem{Raises}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+{\hyperref[\detokenize{source/HDF5_BLS:HDF5_BLS.WrapperError.WrapperError_StructureError}]{\sphinxcrossref{\sphinxstyleliteralstrong{\sphinxupquote{WrapperError\_StructureError}}}}} \textendash{} Raises an error if the parent group does not exist in the HDF5 file.
+
+\item {} 
+\sphinxAtStartPar
+{\hyperref[\detokenize{source/HDF5_BLS:HDF5_BLS.WrapperError.WrapperError_Overwrite}]{\sphinxcrossref{\sphinxstyleliteralstrong{\sphinxupquote{WrapperError\_Overwrite}}}}} \textendash{} Raises an error if the group already exists in the parent group.
+
+\item {} 
+\sphinxAtStartPar
+{\hyperref[\detokenize{source/HDF5_BLS:HDF5_BLS.WrapperError.WrapperError_ArgumentType}]{\sphinxcrossref{\sphinxstyleliteralstrong{\sphinxupquote{WrapperError\_ArgumentType}}}}} \textendash{} Raises an error if arguments given to the function do not match the expected type.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{add\_dictionnary() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{add\_dictionnary()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.add_dictionnary}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{add\_dictionnary}}}
+{\sphinxparam{\DUrole{n}{dic}}\sphinxparamcomma \sphinxparam{\DUrole{n}{parent\_group}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{name\_group}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{brillouin\_type}\DUrole{o}{=}\DUrole{default_value}{\textquotesingle{}Measure\textquotesingle{}}}\sphinxparamcomma \sphinxparam{\DUrole{n}{overwrite}\DUrole{o}{=}\DUrole{default_value}{False}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Adds a data dictionnary to the wrapper. This is the preferred way to add data using the GUI.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{dic}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} The data dictionnary. Support for the following keys:
+\sphinxhyphen{} “Raw\_data”: the raw data
+\sphinxhyphen{} “PSD”: a power spectral density array
+\sphinxhyphen{} “Frequency”: a frequency array associated to the power spectral density
+\sphinxhyphen{} “{\color{red}\bfseries{}Abscissa\_}…”: An abscissa array for the measures where the name is written after the underscore.
+Each of these keys can either be a numpy array or a dictionnary with two keys: “Name” and “Data”. The “Name” key is the name that will be given to the dataset, while the “Data” key is the data itself.
+The “{\color{red}\bfseries{}Abscissa\_}…” keys are forced to link to a dictionnary with five keys: “Name”, “Data”, “Unit”, “Dim\_start”, “Dim\_end”. If the abscissa applies to dimension 1 for example, the “Dim\_start” key should be set to 1, and the “Dim\_end” to 2.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{parent\_group}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The path to the parent path, by default None
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{name\_group}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The name of the data group, by default the name is “Data\_i”.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{brillouin\_type}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The type of the data group, by default the type is “Measure”. Other possible types are “Calibration\_spectrum”, “Impulse\_response”, … Please refer to the documentation of the Brillouin software for more information.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{overwrite}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} If set to True, any name in the file corresponding to an element to be added will be overwritten. Default is False
+
+\end{itemize}
+
+\sphinxlineitem{Raises}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+{\hyperref[\detokenize{source/HDF5_BLS:HDF5_BLS.WrapperError.WrapperError_StructureError}]{\sphinxcrossref{\sphinxstyleliteralstrong{\sphinxupquote{WrapperError\_StructureError}}}}} \textendash{} Raises an error if the parent group does not exist in the HDF5 file.
+
+\item {} 
+\sphinxAtStartPar
+{\hyperref[\detokenize{source/HDF5_BLS:HDF5_BLS.WrapperError.WrapperError_Overwrite}]{\sphinxcrossref{\sphinxstyleliteralstrong{\sphinxupquote{WrapperError\_Overwrite}}}}} \textendash{} Raises an error if the group already exists in the parent group.
+
+\item {} 
+\sphinxAtStartPar
+{\hyperref[\detokenize{source/HDF5_BLS:HDF5_BLS.WrapperError.WrapperError_ArgumentType}]{\sphinxcrossref{\sphinxstyleliteralstrong{\sphinxupquote{WrapperError\_ArgumentType}}}}} \textendash{} Raises an error if arguments given to the function do not match the expected type.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{WrapperError\_AttributeError}} \textendash{} Raises an error if the keys of the dictionnary do not match the expected keys.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{add\_frequency() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{add\_frequency()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.add_frequency}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{add\_frequency}}}
+{\sphinxparam{\DUrole{n}{data}}\sphinxparamcomma \sphinxparam{\DUrole{n}{parent\_group}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{name}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{overwrite}\DUrole{o}{=}\DUrole{default_value}{False}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Adds a frequency array to the wrapper by creating a new group.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{data}} (\sphinxstyleliteralemphasis{\sphinxupquote{np.ndarray}}) \textendash{} The frequency array to add to the wrapper.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{parent\_group}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The parent group where to store the data of the HDF5 file. The format of this group should be “Brillouin/Measure”.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{name}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The name of the frequency dataset we want to add, and as it will be displayed in the file by any HDF5 viewer. By default the name is “Frequency”.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{overwrite}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} A parameter to indicate whether the dataset should be overwritten if a dataset with same name already exist or not, by default False \sphinxhyphen{} not overwritten.
+
+\end{itemize}
+
+\sphinxlineitem{Raises}
+\sphinxAtStartPar
+{\hyperref[\detokenize{source/HDF5_BLS:HDF5_BLS.WrapperError.WrapperError_StructureError}]{\sphinxcrossref{\sphinxstyleliteralstrong{\sphinxupquote{WrapperError\_StructureError}}}}} \textendash{} If the parent group does not exist in the HDF5 file.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{add\_hdf5() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{add\_hdf5()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.add_hdf5}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{add\_hdf5}}}
+{\sphinxparam{\DUrole{n}{filepath}}\sphinxparamcomma \sphinxparam{\DUrole{n}{parent\_group}\DUrole{o}{=}\DUrole{default_value}{\textquotesingle{}Brillouin\textquotesingle{}}}\sphinxparamcomma \sphinxparam{\DUrole{n}{overwrite}\DUrole{o}{=}\DUrole{default_value}{False}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Adds an HDF5 file to the wrapper by specifying in which group the data have to be stored. Default is the “Brillouin” group. If the specified group does not exist, it will be created.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{filepath}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The filepath of the hdf5 file to add.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{parent\_group}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The parent group where to store the data of the HDF5 file, by default the parent group is the top group “Brillouin”. The format of this group should be “Brillouin/Group/…”
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{overwrite}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} A boolean that indicates whether the data should be overwritten if it already exists, by default False
+
+\end{itemize}
+
+\sphinxlineitem{Raises}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+{\hyperref[\detokenize{source/HDF5_BLS:HDF5_BLS.WrapperError.WrapperError_FileNotFound}]{\sphinxcrossref{\sphinxstyleliteralstrong{\sphinxupquote{WrapperError\_FileNotFound}}}}} \textendash{} Raises an error if the file could not be found.
+
+\item {} 
+\sphinxAtStartPar
+{\hyperref[\detokenize{source/HDF5_BLS:HDF5_BLS.WrapperError.WrapperError_StructureError}]{\sphinxcrossref{\sphinxstyleliteralstrong{\sphinxupquote{WrapperError\_StructureError}}}}} \textendash{} Raises an error if the parent group does not exist in the HDF5 file.
+
+\item {} 
+\sphinxAtStartPar
+{\hyperref[\detokenize{source/HDF5_BLS:HDF5_BLS.WrapperError.WrapperError_Overwrite}]{\sphinxcrossref{\sphinxstyleliteralstrong{\sphinxupquote{WrapperError\_Overwrite}}}}} \textendash{} Raises an error if the group already exists in the parent group.
+
+\item {} 
+\sphinxAtStartPar
+{\hyperref[\detokenize{source/HDF5_BLS:HDF5_BLS.WrapperError.WrapperError}]{\sphinxcrossref{\sphinxstyleliteralstrong{\sphinxupquote{WrapperError}}}}} \textendash{} Raises an error if the hdf5 file could not be added to the main HDF5 file.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{add\_raw\_data() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{add\_raw\_data()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.add_raw_data}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{add\_raw\_data}}}
+{\sphinxparam{\DUrole{n}{data}}\sphinxparamcomma \sphinxparam{\DUrole{n}{parent\_group}}\sphinxparamcomma \sphinxparam{\DUrole{n}{name}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{overwrite}\DUrole{o}{=}\DUrole{default_value}{False}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Adds a raw data array to the wrapper by creating a new group.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{data}} (\sphinxstyleliteralemphasis{\sphinxupquote{np.ndarray}}) \textendash{} The raw data array to add to the wrapper.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{parent\_group}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The parent group where to store the data of the HDF5 file. The format of this group should be “Brillouin/Measure”.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{name}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The name of the frequency dataset we want to add, and as it will be displayed in the file by any HDF5 viewer. By default the name is “Raw data”.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{overwrite}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} A parameter to indicate whether the dataset should be overwritten if a dataset with same name already exist or not, by default False \sphinxhyphen{} not overwritten.
+
+\end{itemize}
+
+\sphinxlineitem{Raises}
+\sphinxAtStartPar
+{\hyperref[\detokenize{source/HDF5_BLS:HDF5_BLS.WrapperError.WrapperError_StructureError}]{\sphinxcrossref{\sphinxstyleliteralstrong{\sphinxupquote{WrapperError\_StructureError}}}}} \textendash{} If the parent group does not exist in the HDF5 file.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{add\_treated\_data() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{add\_treated\_data()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.add_treated_data}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{add\_treated\_data}}}
+{\sphinxparam{\DUrole{n}{parent\_group}}\sphinxparamcomma \sphinxparam{\DUrole{n}{name\_group}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{overwrite}\DUrole{o}{=}\DUrole{default_value}{False}}\sphinxparamcomma \sphinxparam{\DUrole{o}{**}\DUrole{n}{kwargs}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Adds the arrays resulting from the treatment of the PSD to the wrapper by creating a new group.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{parent\_group}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The parent group where to store the data of the HDF5 file. The format of this group should be “Brillouin/Measure”.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{name\_group}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The name of the group that will be created to store the treated data. By default the name is “Treat\_i” with i the number of the treatment so that the name is unique.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{overwrite}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} A parameter to indicate whether the dataset should be overwritten if a dataset with same name already exist or not, by default False \sphinxhyphen{} not overwritten.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{shift}} (\sphinxstyleliteralemphasis{\sphinxupquote{np.ndarray}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The shift array to add to the wrapper.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{linewidth}} (\sphinxstyleliteralemphasis{\sphinxupquote{np.ndarray}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The linewidth array to add to the wrapper.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{amplitude}} (\sphinxstyleliteralemphasis{\sphinxupquote{np.ndarray}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The amplitude array to add to the wrapper.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{blt}} (\sphinxstyleliteralemphasis{\sphinxupquote{np.ndarray}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The Loss Tangent array to add to the wrapper.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{shift\_err}} (\sphinxstyleliteralemphasis{\sphinxupquote{np.ndarray}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The shift error array to add to the wrapper.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{linewidth\_err}} (\sphinxstyleliteralemphasis{\sphinxupquote{np.ndarray}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The linewidth error array to add to the wrapper.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{amplitude\_err}} (\sphinxstyleliteralemphasis{\sphinxupquote{np.ndarray}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The amplitude error array to add to the wrapper.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{blt\_std}} (\sphinxstyleliteralemphasis{\sphinxupquote{np.ndarray}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The Loss Tangent error array to add to the wrapper.
+
+\end{itemize}
+
+\sphinxlineitem{Raises}
+\sphinxAtStartPar
+{\hyperref[\detokenize{source/HDF5_BLS:HDF5_BLS.WrapperError.WrapperError_StructureError}]{\sphinxcrossref{\sphinxstyleliteralstrong{\sphinxupquote{WrapperError\_StructureError}}}}} \textendash{} If the parent group does not exist in the HDF5 file.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{change\_brillouin\_type() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{change\_brillouin\_type()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.change_brillouin_type}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{change\_brillouin\_type}}}
+{\sphinxparam{\DUrole{n}{path}}\sphinxparamcomma \sphinxparam{\DUrole{n}{brillouin\_type}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Changes the brillouin type of an element in the HDF5 file.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{path}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The path to the element to change the brillouin type of.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{brillouin\_type}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The new brillouin type of the element.
+
+\end{itemize}
+
+\sphinxlineitem{Return type}
+\sphinxAtStartPar
+None
+
+\sphinxlineitem{Raises}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+{\hyperref[\detokenize{source/HDF5_BLS:HDF5_BLS.WrapperError.WrapperError_StructureError}]{\sphinxcrossref{\sphinxstyleliteralstrong{\sphinxupquote{WrapperError\_StructureError}}}}} \textendash{} If the path is not a valid path.
+
+\item {} 
+\sphinxAtStartPar
+{\hyperref[\detokenize{source/HDF5_BLS:HDF5_BLS.WrapperError.WrapperError_ArgumentType}]{\sphinxcrossref{\sphinxstyleliteralstrong{\sphinxupquote{WrapperError\_ArgumentType}}}}} \textendash{} If the type is not valid
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{change\_name() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{change\_name()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.change_name}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{change\_name}}}
+{\sphinxparam{\DUrole{n}{path}}\sphinxparamcomma \sphinxparam{\DUrole{n}{name}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Changes the name of an element in the HDF5 file.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{path}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The path to the element to change the name of.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{name}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The new name of the element.
+
+\end{itemize}
+
+\sphinxlineitem{Raises}
+\sphinxAtStartPar
+{\hyperref[\detokenize{source/HDF5_BLS:HDF5_BLS.WrapperError.WrapperError_StructureError}]{\sphinxcrossref{\sphinxstyleliteralstrong{\sphinxupquote{WrapperError\_StructureError}}}}} \textendash{} If the path does not lead to an element.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{clear\_empty\_attributes() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{clear\_empty\_attributes()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.clear_empty_attributes}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{clear\_empty\_attributes}}}
+{\sphinxparam{\DUrole{n}{path}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Deletes all the attributes that are empty at the given path.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{path}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The path to the element to delete the attributes from.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{close() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{close()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.close}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{close}}}
+{\sphinxparam{\DUrole{n}{delete\_temp\_file}\DUrole{o}{=}\DUrole{default_value}{False}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Closes the wrapper and deletes the temporary file if it exists
+
+\end{fulllineitems}
+
+\index{combine\_datasets() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{combine\_datasets()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.combine_datasets}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{combine\_datasets}}}
+{\sphinxparam{\DUrole{n}{datasets}}\sphinxparamcomma \sphinxparam{\DUrole{n}{parent\_group}}\sphinxparamcomma \sphinxparam{\DUrole{n}{name}}\sphinxparamcomma \sphinxparam{\DUrole{n}{overwrite}\DUrole{o}{=}\DUrole{default_value}{False}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Combines a list of elements into a unique dataset. All the datasets must have the same shape. They are added into a new dataset where the first dimension is the number of datasets, under the group “parent\_group”. If the dataset already exists and overwrite is set to True, it is overwritten.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{datasets}} (\sphinxstyleliteralemphasis{\sphinxupquote{list}}\sphinxstyleliteralemphasis{\sphinxupquote{ of }}\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The list of paths in the file to the datasets to combine
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{name}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The name of the new dataset
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{overwrite}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} If a dataset with the same name already exists, overwrite it, by default False
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{compatibility\_changes() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{compatibility\_changes()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.compatibility_changes}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{compatibility\_changes}}}
+{}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Applies changes from previous versions of the wrapper to newest versions using the compat module.
+
+\end{fulllineitems}
+
+\index{copy\_dataset() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{copy\_dataset()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.copy_dataset}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{copy\_dataset}}}
+{\sphinxparam{\DUrole{n}{path}}\sphinxparamcomma \sphinxparam{\DUrole{n}{copy\_path}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+This function allows to copy a dataset from the file to a different location while keeping the last location.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{path}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The path to the dataset to copy.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{copy\_path}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The path to the group where the dataset is to be copied to.
+
+\end{itemize}
+
+\sphinxlineitem{Return type}
+\sphinxAtStartPar
+None
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{create\_group() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{create\_group()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.create_group}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{create\_group}}}
+{\sphinxparam{\DUrole{n}{name}}\sphinxparamcomma \sphinxparam{\DUrole{n}{parent\_group}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{brillouin\_type}\DUrole{o}{=}\DUrole{default_value}{\textquotesingle{}Root\textquotesingle{}}}\sphinxparamcomma \sphinxparam{\DUrole{n}{overwrite}\DUrole{o}{=}\DUrole{default_value}{False}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Creates a group in the file under the given parent group with the given name and Brillouin type. If overwrite is set to True, if a group with the same name exists in the selected parent group, the previous element is removed.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{name}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The name of the group to create
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{parent\_group}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The parent group where to create the group, by default the parent group is the top group “Data”. The format of this group should be “Brillouin/Data”
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{brillouin\_type}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The type of the group, by default “Root”. Can be “Root”, “Measure”, “Calibration\_spectrum”, “Impulse\_response”, “Treatment”, “Metadata”
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{overwrite}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} If set to True, any name in the file corresponding to an element to be added will be overwritten. Default is False
+
+\end{itemize}
+
+\sphinxlineitem{Raises}
+\sphinxAtStartPar
+{\hyperref[\detokenize{source/HDF5_BLS:HDF5_BLS.WrapperError.WrapperError}]{\sphinxcrossref{\sphinxstyleliteralstrong{\sphinxupquote{WrapperError}}}}} \textendash{} If the group already exists
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{delete\_element() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{delete\_element()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.delete_element}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{delete\_element}}}
+{\sphinxparam{\DUrole{n}{path}\DUrole{o}{=}\DUrole{default_value}{None}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Deletes an element from the file and sets the need\_for\_repack flag to True.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{path}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The path to the element to delete
+
+\sphinxlineitem{Raises}
+\sphinxAtStartPar
+{\hyperref[\detokenize{source/HDF5_BLS:HDF5_BLS.WrapperError.WrapperError}]{\sphinxcrossref{\sphinxstyleliteralstrong{\sphinxupquote{WrapperError}}}}} \textendash{} Raises an error if the path does not lead to an element.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{export\_dataset() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{export\_dataset()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.export_dataset}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{export\_dataset}}}
+{\sphinxparam{\DUrole{n}{path}}\sphinxparamcomma \sphinxparam{\DUrole{n}{filepath}}\sphinxparamcomma \sphinxparam{\DUrole{n}{export\_type}\DUrole{o}{=}\DUrole{default_value}{\textquotesingle{}.npy\textquotesingle{}}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Exports the dataset at the given path as a numpy array.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{path}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The path to the dataset to export.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{filepath}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The path to the numpy array to export to.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{export\_type}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The type of export to perform (e.g. “.npy”, “.csv”).
+
+\end{itemize}
+
+\sphinxlineitem{Return type}
+\sphinxAtStartPar
+None
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{export\_group() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{export\_group()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.export_group}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{export\_group}}}
+{\sphinxparam{\DUrole{n}{path}}\sphinxparamcomma \sphinxparam{\DUrole{n}{filepath}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Exports the group at the given path as a HDF5 file.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{path}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The path to the group to export.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{filepath}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The path to the HDF5 file to export to.
+
+\end{itemize}
+
+\sphinxlineitem{Return type}
+\sphinxAtStartPar
+None
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{export\_image() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{export\_image()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.export_image}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{export\_image}}}
+{\sphinxparam{\DUrole{n}{path}}\sphinxparamcomma \sphinxparam{\DUrole{n}{filepath}}\sphinxparamcomma \sphinxparam{\DUrole{n}{simple\_image}\DUrole{o}{=}\DUrole{default_value}{True}}\sphinxparamcomma \sphinxparam{\DUrole{n}{image\_size}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{cmap}\DUrole{o}{=}\DUrole{default_value}{\textquotesingle{}viridis\textquotesingle{}}}\sphinxparamcomma \sphinxparam{\DUrole{n}{colorbar}\DUrole{o}{=}\DUrole{default_value}{False}}\sphinxparamcomma \sphinxparam{\DUrole{n}{colorbar\_label}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{axis}\DUrole{o}{=}\DUrole{default_value}{False}}\sphinxparamcomma \sphinxparam{\DUrole{n}{xlabel}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{ylabel}\DUrole{o}{=}\DUrole{default_value}{None}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Exports the dataset at the given path as an image.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{path}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The path to the dataset to export.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{filepath}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The path to the image to export to.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{simple\_image}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} If set to True, the image is exported as a simple image with grayscale colormap.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{image\_size}} (\sphinxstyleliteralemphasis{\sphinxupquote{tuple}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The size of the image to export. If None, the size is set to the default figure size.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{cmap}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The colormap to use for the image. Default is ‘viridis’. All the available colormaps can be found here: \sphinxurl{https://matplotlib.org/stable/tutorials/colors/colormaps.html}
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{colorbar}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} If set to True, a colorbar is added to the image.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{axis}} (\sphinxstyleliteralemphasis{\sphinxupquote{boolean}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} If set to True, the image is displayed with an extent given by the “MEASURE.Field\_Of\_View\_(X,Y,Z)\_(um)” attribute. If set to False, the image is displayed without any extent.
+
+\end{itemize}
+
+\sphinxlineitem{Return type}
+\sphinxAtStartPar
+None
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{get\_attributes() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{get\_attributes()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.get_attributes}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{get\_attributes}}}
+{\sphinxparam{\DUrole{n}{path}\DUrole{o}{=}\DUrole{default_value}{None}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Returns the attributes of the file
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{path}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The path to the data, by default None which means the attributes are read from the root of the file (the Brillouin group).
+
+\sphinxlineitem{Returns}
+\sphinxAtStartPar
+\sphinxstylestrong{attr} \textendash{} The attributes of the data
+
+\sphinxlineitem{Return type}
+\sphinxAtStartPar
+dict
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{get\_children\_elements() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{get\_children\_elements()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.get_children_elements}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{get\_children\_elements}}}
+{\sphinxparam{\DUrole{n}{path}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{Brillouin\_type}\DUrole{o}{=}\DUrole{default_value}{None}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Returns the children elements of a given path. If Brillouin\_type is specified, only the children elements with the given Brillouin\_type are returned.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{path}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The path to the element, by default None which means the root of the file (“Brillouin” group)
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{Brillouin\_type}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The type of the element, by default None which means all the elements are returned
+
+\end{itemize}
+
+\sphinxlineitem{Returns}
+\sphinxAtStartPar
+The list of children elements
+
+\sphinxlineitem{Return type}
+\sphinxAtStartPar
+list
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{get\_special\_groups\_hierarchy() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{get\_special\_groups\_hierarchy()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.get_special_groups_hierarchy}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{get\_special\_groups\_hierarchy}}}
+{\sphinxparam{\DUrole{n}{path}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{brillouin\_type}\DUrole{o}{=}\DUrole{default_value}{None}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Get all the groups with desired brillouin type that are hierarchically above a given path.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{path}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The path to the group, by default None which means the root group is used.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{brillouin\_type}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The type of the group, by default None which means “Root” is used
+
+\end{itemize}
+
+\sphinxlineitem{Returns}
+\sphinxAtStartPar
+The list of all the groups with desired brillouin type that are hierarchically above a given path.
+
+\sphinxlineitem{Return type}
+\sphinxAtStartPar
+list
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{get\_structure() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{get\_structure()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.get_structure}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{get\_structure}}}
+{\sphinxparam{\DUrole{n}{filepath}\DUrole{o}{=}\DUrole{default_value}{None}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Returns the structure of the file
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{filepath}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The filepath to the HDF5 file, by default None which means the filepath stored in the object is the one observed.
+
+\sphinxlineitem{Returns}
+\sphinxAtStartPar
+The structure of the file with the types of each element in the “Brillouin\_type” key.
+
+\sphinxlineitem{Return type}
+\sphinxAtStartPar
+dict
+
+\sphinxlineitem{Raises}
+\sphinxAtStartPar
+{\hyperref[\detokenize{source/HDF5_BLS:HDF5_BLS.WrapperError.WrapperError_StructureError}]{\sphinxcrossref{\sphinxstyleliteralstrong{\sphinxupquote{WrapperError\_StructureError}}}}} \textendash{} Raises an error if one of the elements has no
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{get\_type() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{get\_type()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.get_type}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{get\_type}}}
+{\sphinxparam{\DUrole{n}{path}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{return\_Brillouin\_type}\DUrole{o}{=}\DUrole{default_value}{False}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Returns the type of the element
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{path}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The path to the element, by default None which means the root of the file (“Brillouin” group)
+
+\sphinxlineitem{Returns}
+\sphinxAtStartPar
+The type of the element
+
+\sphinxlineitem{Return type}
+\sphinxAtStartPar
+str
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{import\_other() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{import\_other()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.import_other}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{import\_other}}}
+{\sphinxparam{\DUrole{n}{filepath}}\sphinxparamcomma \sphinxparam{\DUrole{n}{parent\_group}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{name}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{creator}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{parameters}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{reshape}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{overwrite}\DUrole{o}{=}\DUrole{default_value}{False}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Adds a raw data array to the wrapper from a file.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{filepath}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The filepath to the raw data file to import.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{parent\_group}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The parent group where to store the data of the HDF5 file. The format of this group should be “Brillouin/Measure”.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{name}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The name of the dataset, by default None.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{creator}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The structure of the file that has to be loaded. If None, a LoadError can be raised.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{parameters}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The parameters that are to be used to import the data correctly.  If None, a LoadError can be raised.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{reshape}} (\sphinxstyleliteralemphasis{\sphinxupquote{tuple}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The new shape of the array, by default None means that the shape is not changed
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{overwrite}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} A parameter to indicate whether the dataset should be overwritten if a dataset with same name already exist or not, by default False \sphinxhyphen{} not overwritten.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{import\_properties\_data() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{import\_properties\_data()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.import_properties_data}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{import\_properties\_data}}}
+{\sphinxparam{\DUrole{n}{filepath}}\sphinxparamcomma \sphinxparam{\DUrole{n}{path}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{overwrite}\DUrole{o}{=}\DUrole{default_value}{False}}\sphinxparamcomma \sphinxparam{\DUrole{n}{delete\_child\_attributes}\DUrole{o}{=}\DUrole{default_value}{False}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Imports properties from an excel or CSV file into a dictionary.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{filepath}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The filepath to the csv storing the properties of the measure. This csv is based on the spreadsheet found in the “spreadsheet” folder of the repository.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{path}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The path to the data in the HDF5 file.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{overwrite}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} A boolean that indicates whether the attributes should be overwritten if they already exist, by default False.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{delete\_child\_attributes}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} If True, all the attributes of the children elements with same name as the ones to be updated are deleted. Default is False.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{import\_raw\_data() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{import\_raw\_data()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.import_raw_data}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{import\_raw\_data}}}
+{\sphinxparam{\DUrole{n}{filepath}}\sphinxparamcomma \sphinxparam{\DUrole{n}{parent\_group}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{name}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{creator}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{parameters}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{reshape}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{overwrite}\DUrole{o}{=}\DUrole{default_value}{False}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Adds a raw data array to the HDF5 file from a file.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{filepath}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The filepath to the raw data file to import.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{parent\_group}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The parent group where to store the data of the HDF5 file. The format of this group should be “Brillouin/Measure”.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{name}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The name of the dataset, by default None.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{creator}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The structure of the file that has to be loaded. If None, a LoadError can be raised.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{parameters}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The parameters that are to be used to import the data correctly.  If None, a LoadError can be raised.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{reshape}} (\sphinxstyleliteralemphasis{\sphinxupquote{tuple}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The new shape of the array, by default None means that the shape is not changed
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{overwrite}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} A parameter to indicate whether the dataset should be overwritten if a dataset with same name already exist or not, by default False \sphinxhyphen{} not overwritten.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{move() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{move()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.move}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{move}}}
+{\sphinxparam{\DUrole{n}{path}}\sphinxparamcomma \sphinxparam{\DUrole{n}{new\_path}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Moves an element from one path to another. If the new group does not exist, it is created.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{path}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The path to the element to move.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{new\_path}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The new path to move the element to.
+
+\end{itemize}
+
+\sphinxlineitem{Raises}
+\sphinxAtStartPar
+{\hyperref[\detokenize{source/HDF5_BLS:HDF5_BLS.WrapperError.WrapperError_StructureError}]{\sphinxcrossref{\sphinxstyleliteralstrong{\sphinxupquote{WrapperError\_StructureError}}}}} \textendash{} If the path does not lead to an element.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{move\_channel\_dimension\_to\_last() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{move\_channel\_dimension\_to\_last()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.move_channel_dimension_to_last}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{move\_channel\_dimension\_to\_last}}}
+{\sphinxparam{\DUrole{n}{path}}\sphinxparamcomma \sphinxparam{\DUrole{n}{channel\_dimension}\DUrole{o}{=}\DUrole{default_value}{None}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Moves the channel dimension to the last dimension of the data to comply with the HDF5\_BLS convention.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{channel\_dimension}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The dimension of the channel. Default is None, which means the channel dimension is the last dimension.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{print\_metadata() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{print\_metadata()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.print_metadata}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{print\_metadata}}}
+{\sphinxparam{\DUrole{n}{path}\DUrole{o}{=}\DUrole{default_value}{None}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Prints the metadata of a group or dataset in the console taking into account the hierarchy of the file.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{lvl}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The level of indentation, by default 0.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{print\_structure() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{print\_structure()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.print_structure}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{print\_structure}}}
+{\sphinxparam{\DUrole{n}{lvl}\DUrole{o}{=}\DUrole{default_value}{0}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Prints the structure of the file in the console
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{lvl}} (\sphinxstyleliteralemphasis{\sphinxupquote{int}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The level of indentation, by default 0.
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{repack() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{repack()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.repack}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{repack}}}
+{\sphinxparam{\DUrole{n}{force\_repack}\DUrole{o}{=}\DUrole{default_value}{False}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Repacks the wrapper to minimize its size.
+
+\end{fulllineitems}
+
+\index{save\_as\_hdf5() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{save\_as\_hdf5()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.save_as_hdf5}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{save\_as\_hdf5}}}
+{\sphinxparam{\DUrole{n}{filepath}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{remove\_old\_file}\DUrole{o}{=}\DUrole{default_value}{True}}\sphinxparamcomma \sphinxparam{\DUrole{n}{overwrite}\DUrole{o}{=}\DUrole{default_value}{False}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Saves the data and attributes to an HDF5 file. In practice, moves the temporary hdf5 file to a new location and removes the old file if specified.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{filepath}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The filepath where to save the hdf5 file. Default is None, which means the file is saved in the same location as the current file.
+
+\sphinxlineitem{Raises}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+{\hyperref[\detokenize{source/HDF5_BLS:HDF5_BLS.WrapperError.WrapperError_Overwrite}]{\sphinxcrossref{\sphinxstyleliteralstrong{\sphinxupquote{WrapperError\_Overwrite}}}}} \textendash{} If the file already exists.
+
+\item {} 
+\sphinxAtStartPar
+{\hyperref[\detokenize{source/HDF5_BLS:HDF5_BLS.WrapperError.WrapperError}]{\sphinxcrossref{\sphinxstyleliteralstrong{\sphinxupquote{WrapperError}}}}} \textendash{} Raises an error if the file could not be saved
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{save\_properties\_csv() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{save\_properties\_csv()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.save_properties_csv}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{save\_properties\_csv}}}
+{\sphinxparam{\DUrole{n}{filepath}}\sphinxparamcomma \sphinxparam{\DUrole{n}{path}\DUrole{o}{=}\DUrole{default_value}{None}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Saves the attributes of the data in the HDF5 file to a CSV file.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{filepath}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The filepath to the csv storing the properties of the measure.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{path}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The path to the data in the HDF5 file, by default None leads to the top group “Brillouin”
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{set\_attributes\_data() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{set\_attributes\_data()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.set_attributes_data}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{set\_attributes\_data}}}
+{\sphinxparam{\DUrole{n}{attributes}}\sphinxparamcomma \sphinxparam{\DUrole{n}{path}\DUrole{o}{=}\DUrole{default_value}{None}}\sphinxparamcomma \sphinxparam{\DUrole{n}{overwrite}\DUrole{o}{=}\DUrole{default_value}{False}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Sets the attributes of the data in the HDF5 file. If the path leads to a dataset, the attributes are added to the group containing the dataset. If overwrite is False, the attributes are not overwritten if they already exist.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{attributes}} (\sphinxstyleliteralemphasis{\sphinxupquote{dict}}) \textendash{} The attributes to be added to the HDF5 file. in the form \{“MEASURE.Sample”: “Water”, …\}
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{path}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The path to the dataset or group in the HDF5 file, by default None leads to the top group “Brillouin”
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{overwrite}} (\sphinxstyleliteralemphasis{\sphinxupquote{bool}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} A parameter to indicate whether the attributes should be overwritten if they already exist or not, by default False \sphinxhyphen{} attributes are not overwritten.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+\index{update\_property() (HDF5\_BLS.wrapper.Wrapper method)@\spxentry{update\_property()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.Wrapper.update_property}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxbfcode{\sphinxupquote{update\_property}}}
+{\sphinxparam{\DUrole{n}{name}}\sphinxparamcomma \sphinxparam{\DUrole{n}{value}}\sphinxparamcomma \sphinxparam{\DUrole{n}{path}}\sphinxparamcomma \sphinxparam{\DUrole{n}{apply\_to\_all}\DUrole{o}{=}\DUrole{default_value}{None}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Updates a property of the HDF5 file given a path to the dataset or group, the name of the property and its value.
+\begin{quote}\begin{description}
+\sphinxlineitem{Parameters}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{name}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The name of the property to update.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{value}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The value of the property to update.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{path}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}) \textendash{} The path of the property to update. Defaults to None sets the property at the root level.
+
+\end{itemize}
+
+\end{description}\end{quote}
+
+\end{fulllineitems}
+
+
+\end{fulllineitems}
+
+\index{is\_tempfile() (in module HDF5\_BLS.wrapper)@\spxentry{is\_tempfile()}\spxextra{in module HDF5\_BLS.wrapper}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper.is_tempfile}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxcode{\sphinxupquote{HDF5\_BLS.wrapper.}}\sphinxbfcode{\sphinxupquote{is\_tempfile}}}
+{\sphinxparam{\DUrole{n}{filepath}}}
+{}
+\pysigstopsignatures
+\end{fulllineitems}
+
+
+
+\subsection{HDF5\_BLS.wrapper\_compatibility module}
+\label{\detokenize{source/HDF5_BLS:module-HDF5_BLS.wrapper_compatibility}}\label{\detokenize{source/HDF5_BLS:hdf5-bls-wrapper-compatibility-module}}\index{module@\spxentry{module}!HDF5\_BLS.wrapper\_compatibility@\spxentry{HDF5\_BLS.wrapper\_compatibility}}\index{HDF5\_BLS.wrapper\_compatibility@\spxentry{HDF5\_BLS.wrapper\_compatibility}!module@\spxentry{module}}\index{brillouin\_type\_update() (in module HDF5\_BLS.wrapper\_compatibility)@\spxentry{brillouin\_type\_update()}\spxextra{in module HDF5\_BLS.wrapper\_compatibility}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{source/HDF5_BLS:HDF5_BLS.wrapper_compatibility.brillouin_type_update}}
+\pysigstartsignatures
+\pysiglinewithargsret
+{\sphinxcode{\sphinxupquote{HDF5\_BLS.wrapper\_compatibility.}}\sphinxbfcode{\sphinxupquote{brillouin\_type\_update}}}
+{\sphinxparam{\DUrole{n}{name}}\sphinxparamcomma \sphinxparam{\DUrole{n}{obj}}}
+{}
+\pysigstopsignatures
+\sphinxAtStartPar
+Updates the Brillouin\_type attribute of an object to comply with the new version.
+
+\end{fulllineitems}
+
+
+
+\subsection{Module contents}
+\label{\detokenize{source/HDF5_BLS:module-HDF5_BLS}}\label{\detokenize{source/HDF5_BLS:module-contents}}\index{module@\spxentry{module}!HDF5\_BLS@\spxentry{HDF5\_BLS}}\index{HDF5\_BLS@\spxentry{HDF5\_BLS}!module@\spxentry{module}}
+
+\chapter{Indices and tables}
+\label{\detokenize{index:indices-and-tables}}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\DUrole{xref}{\DUrole{std}{\DUrole{std-ref}{genindex}}}
+
+\item {} 
+\sphinxAtStartPar
+\DUrole{xref}{\DUrole{std}{\DUrole{std-ref}{modindex}}}
+
+\item {} 
+\sphinxAtStartPar
+\DUrole{xref}{\DUrole{std}{\DUrole{std-ref}{search}}}
+
+\end{itemize}
+
+
+\renewcommand{\indexname}{Python Module Index}
+\begin{sphinxtheindex}
+\let\bigletter\sphinxstyleindexlettergroup
+\bigletter{h}
+\item\relax\sphinxstyleindexentry{HDF5\_BLS}\sphinxstyleindexpageref{source/HDF5_BLS:\detokenize{module-HDF5_BLS}}
+\item\relax\sphinxstyleindexentry{HDF5\_BLS.analyze}\sphinxstyleindexpageref{source/HDF5_BLS:\detokenize{module-HDF5_BLS.analyze}}
+\item\relax\sphinxstyleindexentry{HDF5\_BLS.conversion\_PSD}\sphinxstyleindexpageref{source/HDF5_BLS:\detokenize{module-HDF5_BLS.conversion_PSD}}
+\item\relax\sphinxstyleindexentry{HDF5\_BLS.load\_data}\sphinxstyleindexpageref{source/HDF5_BLS:\detokenize{module-HDF5_BLS.load_data}}
+\item\relax\sphinxstyleindexentry{HDF5\_BLS.wrapper}\sphinxstyleindexpageref{source/HDF5_BLS:\detokenize{module-HDF5_BLS.wrapper}}
+\item\relax\sphinxstyleindexentry{HDF5\_BLS.wrapper\_compatibility}\sphinxstyleindexpageref{source/HDF5_BLS:\detokenize{module-HDF5_BLS.wrapper_compatibility}}
+\item\relax\sphinxstyleindexentry{HDF5\_BLS.WrapperError}\sphinxstyleindexpageref{source/HDF5_BLS:\detokenize{module-HDF5_BLS.WrapperError}}
+\end{sphinxtheindex}
 
 \renewcommand{\indexname}{Index}
 \printindex
