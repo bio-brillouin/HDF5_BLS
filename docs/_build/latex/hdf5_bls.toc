@@ -6,19 +6,38 @@
 \contentsline {subsection}{\numberline {1.3.1}Integration to workflow}{4}{subsection.1.3.1}%
 \contentsline {subsection}{\numberline {1.3.2}Extracting the data from the HDF5 file}{5}{subsection.1.3.2}%
 \contentsline {chapter}{\numberline {2}Contents:}{7}{chapter.2}%
-\contentsline {chapter}{\numberline {3}API Reference}{9}{chapter.3}%
-\contentsline {section}{\numberline {3.1}HDF5\_BLS}{9}{section.3.1}%
-\contentsline {subsection}{\numberline {3.1.1}HDF5\_BLS.WrapperError}{9}{subsection.3.1.1}%
-\contentsline {subsection}{\numberline {3.1.2}HDF5\_BLS.analyze}{9}{subsection.3.1.2}%
-\contentsline {subsection}{\numberline {3.1.3}HDF5\_BLS.conversion\_PSD}{11}{subsection.3.1.3}%
-\contentsline {subsection}{\numberline {3.1.4}HDF5\_BLS.load\_data}{13}{subsection.3.1.4}%
-\contentsline {subsection}{\numberline {3.1.5}HDF5\_BLS.load\_formats}{14}{subsection.3.1.5}%
-\contentsline {subsubsection}{HDF5\_BLS.load\_formats.errors}{15}{subsubsection*.20}%
-\contentsline {subsubsection}{HDF5\_BLS.load\_formats.load\_dat}{15}{subsubsection*.24}%
-\contentsline {subsubsection}{HDF5\_BLS.load\_formats.load\_image}{17}{subsubsection*.40}%
-\contentsline {subsubsection}{HDF5\_BLS.load\_formats.load\_npy}{17}{subsubsection*.42}%
-\contentsline {subsubsection}{HDF5\_BLS.load\_formats.load\_sif}{18}{subsubsection*.44}%
-\contentsline {subsection}{\numberline {3.1.6}HDF5\_BLS.wrapper}{18}{subsection.3.1.6}%
-\contentsline {subsection}{\numberline {3.1.7}HDF5\_BLS.wrapper\_compatibility}{29}{subsection.3.1.7}%
-\contentsline {chapter}{Python Module Index}{31}{section*.92}%
-\contentsline {chapter}{Index}{33}{section*.93}%
+\contentsline {section}{\numberline {2.1}The file format}{7}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}Basic file structure}{7}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.1.2}Meta\sphinxhyphen {}files}{7}{subsection.2.1.2}%
+\contentsline {subsection}{\numberline {2.1.3}Attributes}{8}{subsection.2.1.3}%
+\contentsline {subsubsection}{Storing the attributes of the data in its metadata}{8}{subsubsection*.3}%
+\contentsline {subsubsection}{Types of attributes}{8}{subsubsection*.4}%
+\contentsline {subsubsection}{Organization of the attributes}{8}{subsubsection*.5}%
+\contentsline {paragraph}{Prefix}{8}{paragraph*.6}%
+\contentsline {paragraph}{Units}{9}{paragraph*.7}%
+\contentsline {subsubsection}{Unification and Versioning of attributes}{9}{subsubsection*.8}%
+\contentsline {subsubsection}{Storing analysis and treatment processes}{9}{subsubsection*.9}%
+\contentsline {section}{\numberline {2.2}The HDF5\_BLS package}{10}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}Installation and presentation}{10}{subsection.2.2.1}%
+\contentsline {subsubsection}{Installation}{10}{subsubsection*.10}%
+\contentsline {subsubsection}{Presentation}{10}{subsubsection*.11}%
+\contentsline {subsubsection}{Module structure}{11}{subsubsection*.12}%
+\contentsline {subsection}{\numberline {2.2.2}The Wrapper object}{12}{subsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.2.3}Adding data to the HDF5 file (from script)}{12}{subsection.2.2.3}%
+\contentsline {subsubsection}{General approach to adding data to the HDF5 file}{13}{subsubsection*.13}%
+\contentsline {chapter}{\numberline {3}API}{15}{chapter.3}%
+\contentsline {section}{\numberline {3.1}HDF5\_BLS}{15}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}HDF5\_BLS.WrapperError}{15}{subsection.3.1.1}%
+\contentsline {subsection}{\numberline {3.1.2}HDF5\_BLS.analyze}{15}{subsection.3.1.2}%
+\contentsline {subsection}{\numberline {3.1.3}HDF5\_BLS.conversion\_PSD}{17}{subsection.3.1.3}%
+\contentsline {subsection}{\numberline {3.1.4}HDF5\_BLS.load\_data}{19}{subsection.3.1.4}%
+\contentsline {subsection}{\numberline {3.1.5}HDF5\_BLS.load\_formats}{20}{subsection.3.1.5}%
+\contentsline {subsubsection}{HDF5\_BLS.load\_formats.errors}{21}{subsubsection*.31}%
+\contentsline {subsubsection}{HDF5\_BLS.load\_formats.load\_dat}{21}{subsubsection*.35}%
+\contentsline {subsubsection}{HDF5\_BLS.load\_formats.load\_image}{23}{subsubsection*.51}%
+\contentsline {subsubsection}{HDF5\_BLS.load\_formats.load\_npy}{23}{subsubsection*.53}%
+\contentsline {subsubsection}{HDF5\_BLS.load\_formats.load\_sif}{24}{subsubsection*.55}%
+\contentsline {subsection}{\numberline {3.1.6}HDF5\_BLS.wrapper}{24}{subsection.3.1.6}%
+\contentsline {subsection}{\numberline {3.1.7}HDF5\_BLS.wrapper\_compatibility}{36}{subsection.3.1.7}%
+\contentsline {chapter}{Python Module Index}{37}{section*.103}%
+\contentsline {chapter}{Index}{39}{section*.104}%

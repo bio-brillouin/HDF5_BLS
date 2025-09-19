@@ -59,7 +59,7 @@
 \addto\captionsenglish{\renewcommand{\contentsname}{Contents:}}
 
 \usepackage{sphinxmessages}
-\setcounter{tocdepth}{2}
+\setcounter{tocdepth}{1}
 
 
 
@@ -86,7 +86,21 @@
 
 
 \sphinxAtStartPar
-The \sphinxtitleref{HDF5\_BLS} project is a Python package allowing users to easily store Brillouin Light Scattering relevant data in a single HDF5 file. The package is designed to integrate in existing Python workflows and to be as easy to use as possible.
+The \sphinxtitleref{HDF5\_BLS} project is a Python package allowing users to easily store Brillouin Light Scattering relevant data in a single HDF5 file. The package is designed to integrate in existing Python workflows and to be as easy to use as possible. The package is a solution for unifying the data storage of Brillouin Light Scattering experiments, with three main goals:
+\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstylestrong{Simplicity}: Make it easy to store and retrieve data from a single file.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstylestrong{Universality}: Allow all modalities to be stored in a single file, while unifying the metadata associated to the data.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstylestrong{Expandability}: Allow the format to grow with the needs of the community.
+
+\end{itemize}
 
 
 \chapter{Quick Start}
@@ -262,9 +276,536 @@ Once the data is stored in the HDF5 file, you can extract it as follows:
 
 \chapter{Contents:}
 \label{\detokenize{index:contents}}
+\sphinxstepscope
 
-\chapter{API Reference}
-\label{\detokenize{index:api-reference}}
+
+\section{The file format}
+\label{\detokenize{source/file_format:the-file-format}}\label{\detokenize{source/file_format::doc}}
+
+\subsection{Basic file structure}
+\label{\detokenize{source/file_format:basic-file-structure}}
+\sphinxAtStartPar
+This project aims at defining a standard for storing Brillouin Light Scattering measures and associated treatment in a HDF5 file.
+
+\sphinxAtStartPar
+HDF5 stands for “Hierarchical Data Format” and is a file format that allows the storage of data in a hierarchical structure. This structure allows to store data in a way that is both human and machine readable. The structure of the file is based on the following base structure, which corresponds to the structure of a file containing a single measure (\sphinxstyleemphasis{Measure}) where no parameters have been stored:
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+file.h5
+└──\PYG{+w}{ }Brillouin\PYG{+w}{ }\PYG{o}{(}group\PYG{o}{)}
+\PYG{+w}{    }├──\PYG{+w}{ }Measure\PYG{+w}{ }\PYG{o}{(}group\PYG{o}{)}
+\PYG{+w}{        }└──\PYG{+w}{ }Measure\PYG{+w}{ }\PYG{o}{(}dataset\PYG{o}{)}
+\end{sphinxVerbatim}
+
+\sphinxAtStartPar
+The dimensionality of the dataset is free, there are therefore by design virtually no restrictions on the data that can be stored in this format.
+
+\sphinxAtStartPar
+The organization of the file is based on the following principles:
+\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+The file is organized in groups and datasets, which allows to store data in a hierarchical structure.
+
+\item {} 
+\sphinxAtStartPar
+Only one dataset corresponding to a measure can be stored per group.
+
+\item {} 
+\sphinxAtStartPar
+The groups are used to organize the file and store metadata and parameters related to the measure, and the datasets are used to store the actual data.
+
+\end{itemize}
+
+
+\subsection{Meta\sphinxhyphen{}files}
+\label{\detokenize{source/file_format:meta-files}}
+\sphinxAtStartPar
+The Hierarchical Data Format (HDF5) finds its interest in storage for our community, of different measures. These result in “meta\sphinxhyphen{}files” where data corresponding to different experiments can be found. The organization of such a file will follow a structure similar to this one:
+
+\sphinxAtStartPar
+Although no rules are imposed on the way to organize the file, we propose to associate a hierarchical level to an hyperparameter that has been varied for the experiment. In the given example:
+\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+The first hierarchical level is associated to the cell line that is observed
+
+\item {} 
+\sphinxAtStartPar
+The second hierarchical level is associated to the day of the experiment
+
+\item {} 
+\sphinxAtStartPar
+The third hierarchical level is associated to the sample that was measured
+
+\end{itemize}
+
+\sphinxAtStartPar
+Note that the format does not impose any restriction on the names of the groups nor the measures. This choice allows you to create user\sphinxhyphen{}friendly files that can be opened with any software that can read HDF5 files (e.g. HDFView, HDFCompass, Fiji, H5Web, Panoply, etc.).
+
+
+\subsection{Attributes}
+\label{\detokenize{source/file_format:attributes}}
+
+\subsubsection{Storing the attributes of the data in its metadata}
+\label{\detokenize{source/file_format:storing-the-attributes-of-the-data-in-its-metadata}}
+\sphinxAtStartPar
+HDF5 file format allows the storage of attributes in the metadata of the groups and datasets. We therefore propose to store all the attributes concerning an experiment in the metadata of its parent group:
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+file.h5
+└──\PYG{+w}{ }Brillouin\PYG{+w}{ }\PYG{o}{(}group\PYG{o}{)}
+\PYG{+w}{    }├──\PYG{+w}{ }Measure\PYG{+w}{ }\PYG{o}{(}group\PYG{o}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{}\PYG{+w}{ }attributes\PYG{+w}{ }of\PYG{+w}{ }the\PYG{+w}{ }measure
+\PYG{+w}{        }└──\PYG{+w}{ }Measure\PYG{+w}{ }\PYG{o}{(}dataset\PYG{o}{)}
+\end{sphinxVerbatim}
+
+\sphinxAtStartPar
+Being a hierarchical format, we also propose to store attributes hierarchically: all attributes of parent group apply to childre groups (if not redefined in children groups). Storing attributes in large files can therefore be done the following way:
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+file.h5
+└──\PYG{+w}{ }Brillouin\PYG{+w}{ }\PYG{o}{(}group\PYG{o}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{}\PYG{+w}{ }attributes\PYG{+w}{ }shared\PYG{+w}{ }by\PYG{+w}{ }Measure\PYG{+w}{ }\PYG{l+m}{0}\PYG{+w}{ }and\PYG{+w}{ }Measure\PYG{+w}{ }\PYG{l+m}{1}
+\PYG{+w}{    }├──\PYG{+w}{ }Measure\PYG{+w}{ }\PYG{l+m}{0}\PYG{+w}{ }\PYG{o}{(}group\PYG{o}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{}\PYG{+w}{ }other\PYG{+w}{ }attributes\PYG{+w}{ }specific\PYG{+w}{ }to\PYG{+w}{ }Measure\PYG{+w}{ }\PYG{l+m}{0}
+\PYG{+w}{    }│\PYG{+w}{   }└──\PYG{+w}{ }Measure\PYG{+w}{ }\PYG{o}{(}dataset\PYG{o}{)}
+\PYG{+w}{    }├──\PYG{+w}{ }Measure\PYG{+w}{ }\PYG{l+m}{1}\PYG{+w}{ }\PYG{o}{(}group\PYG{o}{)}\PYG{+w}{ }\PYGZhy{}\PYGZgt{}\PYG{+w}{ }other\PYG{+w}{ }attributes\PYG{+w}{ }specific\PYG{+w}{ }to\PYG{+w}{ }Measure\PYG{+w}{ }\PYG{l+m}{1}
+\PYG{+w}{        }└──\PYG{+w}{ }Measure\PYG{+w}{ }\PYG{o}{(}dataset\PYG{o}{)}
+\end{sphinxVerbatim}
+
+\sphinxAtStartPar
+Note that the access to the whole list of attributes applying to a group or dataset will be possible with the HDF5\_BLS package (see \sphinxstyleemphasis{Wrapper.get\_attributes}).
+
+
+\subsubsection{Types of attributes}
+\label{\detokenize{source/file_format:types-of-attributes}}
+\sphinxAtStartPar
+In an effort to avoid any incompatibility, we propose to store the values of the attributes as ascii\sphinxhyphen{}encoded text. The library will then convert the strings to the appropriate type (e.g. float, int, etc.).
+
+
+\subsubsection{Organization of the attributes}
+\label{\detokenize{source/file_format:organization-of-the-attributes}}
+
+\paragraph{Prefix}
+\label{\detokenize{source/file_format:prefix}}
+\sphinxAtStartPar
+We differentiate 5 types of attributes, that we differentiate using the following prefixes:
+\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+SPECTROMETER \sphinxhyphen{} Attributes that are specific to the spectrometer used, such as the wavelength of the laser, the type of laser, the type of detector, etc. These attributes are recognized by the capital letter word “SPECTROMETER” in the name of the attribute.
+
+\item {} 
+\sphinxAtStartPar
+MEASURE \sphinxhyphen{} Attributes that are specific to the sample, such as the date of the measure, the name of the sample, etc. These attributes are recognized by the capital letter word “MEASURE” in the name of the attribute.
+
+\item {} 
+\sphinxAtStartPar
+FILEPROP \sphinxhyphen{} Attributes that are specific to the original file format, such as the name of the file, the date of the file, the version of the file, the precision used on the storage of the data, etc. These attributes are recognized by the capital letter word “FILEPROP” in the name of the attribute.
+
+\item {} 
+\sphinxAtStartPar
+PROCESS \sphinxhyphen{} Attributes that are specific to the storage of algorithms. These attributes are recognized by the capital letter word “PROCESS” in the name of the attribute.
+
+\item {} 
+\sphinxAtStartPar
+Attributes that are used inside the HDF5 file, such as the “Brillouin\_type” attribute. These attributes are the only ones without a prefix.
+
+\end{itemize}
+
+
+\paragraph{Units}
+\label{\detokenize{source/file_format:units}}
+\sphinxAtStartPar
+The name of the attributes contains the unit of the attribute if it has units, in the shape of an underscore followed by the unit in parenthesis. Some parameters will also be given following a given norm, such as the ISO8601 for dates. These norms are not specified in the name of the attribute. Here are some examples of attributes:
+\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+“SPECTROMETER.Detector\_Type” is the type of the detector used.
+
+\item {} 
+\sphinxAtStartPar
+“MEASURE.Sample” is the name of the sample.
+
+\item {} 
+\sphinxAtStartPar
+“MEASURE.Exposure\_(s)” is the exposure of the sample given in seconds
+
+\item {} 
+\sphinxAtStartPar
+“MEASURE.Date\_of\_measurement” is the date of the measurement, stored following the ISO8601 norm.
+
+\item {} 
+\sphinxAtStartPar
+“FILEPROP.Name” is the name of the file.
+
+\end{itemize}
+
+
+\subsubsection{Unification and Versioning of attributes}
+\label{\detokenize{source/file_format:unification-and-versioning-of-attributes}}
+\sphinxAtStartPar
+To unify the name of attributes between laboratories, we propose to use a spreadsheet that contains the list of attributes, their definition, their unit and an example of value. This spreadsheet is available on the project repository and is updated as new attributes are added to the project. Each attribute has a version number that is also stored in the attributes of each data attribute (under FILEPROP.version).
+
+\sphinxAtStartPar
+This spreadsheet will also be the preferred way to define attributes for the measures and the HDF5\_BLS package allows to read and import the attributes directly from this spreadsheet (see \sphinxstyleemphasis{Wrapper.import\_properties\_data}).
+
+
+\subsubsection{Storing analysis and treatment processes}
+\label{\detokenize{source/file_format:storing-analysis-and-treatment-processes}}
+\sphinxAtStartPar
+Analysis and treatment processes are stored in the “PROCESS” attribute of the treatment groups. This attribute is a JSON file converted to a string, which contains the list of treatment steps performed on the data. This JSON file has the following structure:
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{o}{\PYGZob{}}
+\PYG{+w}{    }\PYG{l+s+s2}{\PYGZdq{}name\PYGZdq{}}:\PYG{+w}{ }\PYG{l+s+s2}{\PYGZdq{}The name of the algorithm\PYGZdq{}},
+\PYG{+w}{    }\PYG{l+s+s2}{\PYGZdq{}version\PYGZdq{}}:\PYG{+w}{ }\PYG{l+s+s2}{\PYGZdq{}v 0.1\PYGZdq{}},
+\PYG{+w}{    }\PYG{l+s+s2}{\PYGZdq{}author\PYGZdq{}}:\PYG{+w}{ }\PYG{l+s+s2}{\PYGZdq{}Author name and affiliation\PYGZdq{}},
+\PYG{+w}{    }\PYG{l+s+s2}{\PYGZdq{}description\PYGZdq{}}:\PYG{+w}{ }\PYG{l+s+s2}{\PYGZdq{}The description of the algorithm\PYGZdq{}},
+\PYG{+w}{    }\PYG{l+s+s2}{\PYGZdq{}functions\PYGZdq{}}:\PYG{+w}{ }\PYG{o}{[}
+\PYG{+w}{    }\PYG{o}{\PYGZob{}}
+\PYG{+w}{        }\PYG{l+s+s2}{\PYGZdq{}function\PYGZdq{}}:\PYG{+w}{ }\PYG{l+s+s2}{\PYGZdq{}The 1st function name in the class\PYGZdq{}},
+\PYG{+w}{        }\PYG{l+s+s2}{\PYGZdq{}parameters\PYGZdq{}}:\PYG{+w}{ }\PYG{o}{\PYGZob{}}
+\PYG{+w}{            }\PYG{l+s+s2}{\PYGZdq{}parameter\PYGZus{}1\PYGZdq{}}:\PYG{+w}{ }value,
+\PYG{+w}{            }\PYG{l+s+s2}{\PYGZdq{}parameter\PYGZus{}2\PYGZdq{}}:\PYG{+w}{ }value,
+\PYG{+w}{            }...
+\PYG{+w}{        }\PYG{o}{\PYGZcb{}},
+\PYG{+w}{        }\PYG{l+s+s2}{\PYGZdq{}description\PYGZdq{}}:\PYG{+w}{ }\PYG{l+s+s2}{\PYGZdq{}The description of the function\PYGZdq{}}
+\PYG{+w}{    }\PYG{o}{\PYGZcb{}},
+\PYG{+w}{    }\PYG{o}{\PYGZob{}}
+\PYG{+w}{        }\PYG{l+s+s2}{\PYGZdq{}function\PYGZdq{}}:\PYG{+w}{ }\PYG{l+s+s2}{\PYGZdq{}The 2nd function name in the class\PYGZdq{}},
+\PYG{+w}{        }\PYG{l+s+s2}{\PYGZdq{}parameters\PYGZdq{}}:\PYG{+w}{ }\PYG{o}{\PYGZob{}}
+\PYG{+w}{            }\PYG{l+s+s2}{\PYGZdq{}parameter\PYGZus{}1\PYGZdq{}}:\PYG{+w}{ }value,
+\PYG{+w}{            }\PYG{l+s+s2}{\PYGZdq{}parameter\PYGZus{}2\PYGZdq{}}:\PYG{+w}{ }value,
+\PYG{+w}{            }...
+\PYG{+w}{        }\PYG{o}{\PYGZcb{}},
+\PYG{+w}{        }\PYG{l+s+s2}{\PYGZdq{}description\PYGZdq{}}:\PYG{+w}{ }\PYG{l+s+s2}{\PYGZdq{}The description of the function\PYGZdq{}}
+\PYG{+w}{    }\PYG{o}{\PYGZcb{}},
+\PYG{+w}{    }...
+\PYG{+w}{    }\PYG{o}{]}
+\PYG{o}{\PYGZcb{}}
+\end{sphinxVerbatim}
+
+\sphinxAtStartPar
+When the treatment is performed using the modules of the HDF5\_BLS package, this attribute is automatically updated. Note that custom treatments can also be stored in this attribute by the user.
+
+\sphinxAtStartPar
+This attribute can be exported to a standalone JSON file using the library. This attribute also allows the library to re\sphinxhyphen{}apply the treatment to the data, and modify steps of the treatment if needed.
+
+\sphinxstepscope
+
+
+\section{The HDF5\_BLS package}
+\label{\detokenize{source/hdf5_bls_package:the-hdf5-bls-package}}\label{\detokenize{source/hdf5_bls_package::doc}}
+
+\subsection{Installation and presentation}
+\label{\detokenize{source/hdf5_bls_package:installation-and-presentation}}
+
+\subsubsection{Installation}
+\label{\detokenize{source/hdf5_bls_package:installation}}
+\sphinxAtStartPar
+To install the package, you can either download the source code from the GitHub repository or use pip to install the package. We recommend using pip for users who do not intend on working on the package as it is the easiest way to install the package.
+
+\sphinxAtStartPar
+\sphinxstylestrong{Using pip}
+
+\sphinxAtStartPar
+To install the package using pip, run the following command:
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+pip\PYG{+w}{ }install\PYG{+w}{ }HDF5\PYGZus{}BLS
+\end{sphinxVerbatim}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Downloading the source code}
+
+\sphinxAtStartPar
+The source code can be downloaded from the ‘GitHub repository \textless{}\sphinxurl{https://github.com/bio-brillouin/HDF5\_BLS}\textgreater{}’\_\_. To download the source code, click on the green button “Code” and then click on the “Download ZIP” button. Once the download is complete, unzip the file and open a terminal in the folder where the code is stored. To install the package, run the following command:
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+python\PYG{+w}{ }setup.py\PYG{+w}{ }install
+\end{sphinxVerbatim}
+
+\sphinxAtStartPar
+This will install the package and all its dependencies. To check if the package was installed correctly, run the following command:
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+python\PYG{+w}{ }\PYGZhy{}c\PYG{+w}{ }\PYG{l+s+s2}{\PYGZdq{}import HDF5\PYGZus{}BLS\PYGZdq{}}
+\end{sphinxVerbatim}
+
+\sphinxAtStartPar
+If the package was installed correctly, the command will not return any error.
+
+
+\subsubsection{Presentation}
+\label{\detokenize{source/hdf5_bls_package:presentation}}
+\sphinxAtStartPar
+The HDF5\_BLS library is a Python package meant to interface Python code with a HDF5 file.
+
+\sphinxAtStartPar
+The goal of this package is to allow the user to semalessly integrate the proposed standard to their existing code. A detailed description of the package will be given in the later sections of this tutorial. Here is however a quick code example to show the integration of the package in a simple case:
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}}
+\PYG{c+c1}{\PYGZsh{} Existing imports}
+\PYG{c+c1}{\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}}
+\PYG{k+kn}{from}\PYG{+w}{ }\PYG{n+nn}{HDF5\PYGZus{}BLS}\PYG{+w}{ }\PYG{k+kn}{import} \PYG{n}{wrapper}
+
+\PYG{c+c1}{\PYGZsh{} Create a new file}
+\PYG{n}{wrp} \PYG{o}{=} \PYG{n}{wrapper}\PYG{o}{.}\PYG{n}{Wrapper}\PYG{p}{(}\PYG{n}{filepath} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{path/to/the/file.h5}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}}
+\PYG{c+c1}{\PYGZsh{} Existing code extracting data from a file}
+\PYG{c+c1}{\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}}
+
+\PYG{c+c1}{\PYGZsh{} Store the data in the file}
+\PYG{n}{wrp}\PYG{o}{.}\PYG{n}{add\PYGZus{}raw\PYGZus{}data}\PYG{p}{(}\PYG{n}{data} \PYG{o}{=} \PYG{n}{data}\PYG{p}{,} \PYG{n}{parent\PYGZus{}group} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Brillouin/path/in/the/file}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{n}{name} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Name of the dataset}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}}
+\PYG{c+c1}{\PYGZsh{} Existing code extracting a PSD and a frequency vector from the data}
+\PYG{c+c1}{\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}}
+
+\PYG{c+c1}{\PYGZsh{} Store the frequency vector together with the raw data}
+\PYG{n}{wrp}\PYG{o}{.}\PYG{n}{add\PYGZus{}frequency}\PYG{p}{(}\PYG{n}{data} \PYG{o}{=} \PYG{n}{frequnecy}\PYG{p}{,} \PYG{n}{parent\PYGZus{}group} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Brillouin/path/in/the/file}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{n}{name} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Frequency vector}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} Store the PSD dataset together with the raw data}
+\PYG{n}{wrp}\PYG{o}{.}\PYG{n}{add\PYGZus{}PSD}\PYG{p}{(}\PYG{n}{data} \PYG{o}{=} \PYG{n}{PSD}\PYG{p}{,} \PYG{n}{parent\PYGZus{}group} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Brillouin/path/in/the/file}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{n}{name} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{PSD}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}}
+\PYG{c+c1}{\PYGZsh{} Existing code extracting the shift and linewidth of the data}
+\PYG{c+c1}{\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}\PYGZsh{}}
+
+\PYG{c+c1}{\PYGZsh{} Store the PSD dataset together with the raw data}
+\PYG{n}{wrp}\PYG{o}{.}\PYG{n}{add\PYGZus{}treated\PYGZus{}data}\PYG{p}{(}\PYG{n}{shift} \PYG{o}{=} \PYG{n}{shift}\PYG{p}{,} \PYG{n}{linewidth} \PYG{o}{=} \PYG{n}{linewidth}\PYG{p}{,} \PYG{n}{parent\PYGZus{}group} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Brillouin/path/in/the/file}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{n}{name} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{PSD}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\end{sphinxVerbatim}
+
+\sphinxAtStartPar
+This package also aims at unifying both the way to extract PSD from raw data and extract Brillouin shift and linewidth from the PSD. We will describe later how to do this, we encourage interested readers to already try and add the above code to their code and see how it works.
+
+
+\subsubsection{Module structure}
+\label{\detokenize{source/hdf5_bls_package:module-structure}}
+\sphinxAtStartPar
+The HDF5\_BLS package is built around the following different modules:
+\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleemphasis{wrapper}: This module is used to interact with HDF5 files. It is used to read the data, to write the data and to modify any aspect of the HDF5 file (dataset, groups or attributes).
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleemphasis{analyze}: This module is used to convert raw data taken from a spectrometer into a physically meaningful Power Spectral Density (PSD) array. This process is done to be reliable
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleemphasis{treat}: This module is used to extract information from the PSD array, such as the frequency shift and line width of the spectral lines.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleemphasis{load\_data}: This module is used to import data from any formats of interest. This module is an interface between physical files stored on the PC and the wrapper module. It has been designed to be easily extended to any format of data.
+
+\end{itemize}
+
+
+\subsection{The Wrapper object}
+\label{\detokenize{source/hdf5_bls_package:the-wrapper-object}}
+\sphinxAtStartPar
+The “wrapper” module has one main object: \sphinxstyleemphasis{Wrapper}. This object is used to interact with the HDF5 file. It is used to read the data, to write the data and to modify any aspect of the HDF5 file (dataset, groups or attributes). The module also provides different error objects used to recognize errors when using the Wrapper object and raise exceptions.
+
+\sphinxAtStartPar
+The Wrapper object is initialized by running the following command:
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{n}{wrp} \PYG{o}{=} \PYG{n}{Wrapper}\PYG{p}{(}\PYG{p}{)}
+\end{sphinxVerbatim}
+
+\sphinxAtStartPar
+This will create a new Wrapper object with no attributes or data, and with the following structure:
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+file.h5
+\PYG{+w}{ }└──\PYG{+w}{ }Brillouin\PYG{+w}{ }\PYG{o}{(}group\PYG{o}{)}
+\end{sphinxVerbatim}
+
+\sphinxAtStartPar
+By default, the attributes of the “Brillouin” group are the following:
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+file.h5
+└──\PYG{+w}{ }Brillouin\PYG{+w}{ }\PYG{o}{(}group\PYG{o}{)}
+\PYG{+w}{    }├──\PYG{+w}{ }Brillouin\PYGZus{}type\PYG{+w}{ }\PYGZhy{}\PYGZgt{}\PYG{+w}{ }\PYG{l+s+s2}{\PYGZdq{}Root\PYGZdq{}}
+\PYG{+w}{    }└──\PYG{+w}{ }HDF5\PYGZus{}BLS\PYGZus{}version\PYG{+w}{ }\PYGZhy{}\PYGZgt{}\PYG{+w}{ }\PYG{l+s+s2}{\PYGZdq{}0.1\PYGZdq{}}\PYG{+w}{ }\PYG{c+c1}{\PYGZsh{} The version of the HDF5\PYGZus{}BLS package}
+\end{sphinxVerbatim}
+
+\sphinxAtStartPar
+As long as no filepaths are given to the Wrapper object, the file is stored in a temporary folder (the temporary folder of the operating system). Note that this temporary file is deleted either when the Wrapper object is destroyed or when the file is stored elsewhere. It is therefore good practice to specify a non\sphinxhyphen{}temporary filepath to the file when creating a new Wrapper object, with the “filepath” parameter:
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{n}{wrp} \PYG{o}{=} \PYG{n}{Wrapper}\PYG{p}{(}\PYG{n}{filepath} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{path/to/file.h5}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\end{sphinxVerbatim}
+
+\sphinxAtStartPar
+This will create a new Wrapper object with no attributes or data, and with the following structure:
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+path/to/file.h5
+└──\PYG{+w}{ }Brillouin\PYG{+w}{ }\PYG{o}{(}group\PYG{o}{)}
+\end{sphinxVerbatim}
+
+\sphinxAtStartPar
+Note that this works both for new files, and for files that already exist, in the latter case, the wrapper object applies to the file located at “path/to/file.h5”.
+
+
+\subsection{Adding data to the HDF5 file (from script)}
+\label{\detokenize{source/hdf5_bls_package:adding-data-to-the-hdf5-file-from-script}}
+\sphinxAtStartPar
+The addition of any type of data or attribute to the HDF5 file has been centralized in the \sphinxstyleemphasis{Wrapper.add\_ dictionary} method. This method is safe but complex and not user\sphinxhyphen{}friendly. Methods derived from this method are meant to simplify the process of adding data to the HDF5 file, specific to each type of data.
+
+\sphinxAtStartPar
+To add a single dataset to a group, we first need to specify the type of dataset we want to add, which are the following:
+\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+“Abscissa\_…”: An abscissa array for the measures where the dimensions on which the dataset applies are given after the underscore.
+
+\item {} 
+\sphinxAtStartPar
+“Amplitude”: The dataset contains the values of the fitted amplitudes.
+
+\item {} 
+\sphinxAtStartPar
+“Amplitude\_err”: The dataset contains the error of the fitted amplitudes.
+
+\item {} 
+\sphinxAtStartPar
+“BLT”: The dataset contains the values of the fitted amplitudes.
+
+\item {} 
+\sphinxAtStartPar
+“BLT\_err”: The dataset contains the error of the fitted amplitudes.
+
+\item {} 
+\sphinxAtStartPar
+“Frequency”: A frequency array associated to the power spectral density
+
+\item {} 
+\sphinxAtStartPar
+“Linewidth”: The dataset contains the values of the fitted linewidths.
+
+\item {} 
+\sphinxAtStartPar
+“Linewidth\_err”: The dataset contains the error of the fitted linewidths.
+
+\item {} 
+\sphinxAtStartPar
+“PSD”: A power spectral density array
+
+\item {} 
+\sphinxAtStartPar
+“Raw\_data”: The dataset containing the raw data obtained after a BLS experiment.
+
+\item {} 
+\sphinxAtStartPar
+“Shift”: The dataset contains the values of the fitted frequency shifts.
+
+\item {} 
+\sphinxAtStartPar
+“Shift\_err”: The dataset contains the error of the fitted frequency shifts.
+
+\item {} 
+\sphinxAtStartPar
+“Other”: The dataset contains other data that will not be used by the library.
+
+\end{itemize}
+
+\sphinxAtStartPar
+From there, the following functions are available to add the dataset to the HDF5 file:
+\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+add\_raw\_data: To add raw data to a group
+
+\item {} 
+\sphinxAtStartPar
+add\_PSD: To add a PSD to a group
+
+\item {} 
+\sphinxAtStartPar
+add\_frequency: To add a frequency axis to a group
+
+\item {} 
+\sphinxAtStartPar
+add\_abscissa: To add an abscissa to a group
+
+\item {} 
+\sphinxAtStartPar
+add\_treated\_data: To add a shift, linewidth and their respective errors to a dedicated “Treatment” group
+
+\item {} 
+\sphinxAtStartPar
+add\_other: To add a shift, linewidth and their respective errors to a dedicated “Treatment” group
+
+\end{itemize}
+
+
+\subsubsection{General approach to adding data to the HDF5 file}
+\label{\detokenize{source/hdf5_bls_package:general-approach-to-adding-data-to-the-hdf5-file}}
+\sphinxAtStartPar
+Adding a dataset to the file always come with three other pieces of information:
+\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+Where to add the dataset in the file
+
+\item {} 
+\sphinxAtStartPar
+What to call the added dataset
+
+\item {} 
+\sphinxAtStartPar
+What is the type of the dataset we want to add
+
+\end{itemize}
+
+\sphinxAtStartPar
+To add a dataset to the file, we’ll therefore call type\sphinxhyphen{}specific functions with the data to add, the place where to add it and the name to give the dataset as arguments, following a code of line resembling:
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{n}{wrp}\PYG{o}{.}\PYG{n}{add\PYGZus{}raw\PYGZus{}data}\PYG{p}{(}\PYG{n}{data} \PYG{o}{=} \PYG{n}{data}\PYG{p}{,}
+                 \PYG{n}{parent\PYGZus{}group} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Brillouin/Water spectrum}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}
+                 \PYG{n}{name} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Measure of the year}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\end{sphinxVerbatim}
+
+\sphinxAtStartPar
+This approach is the one used for
+* \sphinxstyleemphasis{add\_raw\_data}
+* \sphinxstyleemphasis{add\_PSD}
+* \sphinxstyleemphasis{add\_frequency}
+* \sphinxstyleemphasis{add\_other}
+
+\sphinxAtStartPar
+\sphinxstylestrong{Example}
+Let’s consider the following example: we have just initialized a wrapper object and want to add a spectrum obtained from our spectrometer. We have already converted this spectrum to a numpy array, and named it \sphinxstyleemphasis{data}. Now we want to add this data in a group called “Water spectrum” in the root group of the HDF5 file and call this raw data “Measure of the year”. Then we will write:
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{n}{wrp}\PYG{o}{.}\PYG{n}{add\PYGZus{}raw\PYGZus{}data}\PYG{p}{(}\PYG{n}{data} \PYG{o}{=} \PYG{n}{data}\PYG{p}{,}
+                 \PYG{n}{parent\PYGZus{}group} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Brillouin/Water spectrum}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}
+                 \PYG{n}{name} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Measure of the year}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\end{sphinxVerbatim}
+
+\sphinxAtStartPar
+Now let’s say that we have analyzed this spectrum and obtained a PSD (stored in the variable “psd”) and frequency array (stored in the variable “freq”). We want to add these two arrays in the same group, and call them “PSD” and “Frequency” respectively. We will write:
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{n}{wrp}\PYG{o}{.}\PYG{n}{add\PYGZus{}PSD}\PYG{p}{(}\PYG{n}{data} \PYG{o}{=} \PYG{n}{psd}\PYG{p}{,}
+            \PYG{n}{parent\PYGZus{}group} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Brillouin/Water spectrum}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}
+            \PYG{n}{name} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{PSD}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{wrp}\PYG{o}{.}\PYG{n}{add\PYGZus{}frequency}\PYG{p}{(}\PYG{n}{freq}\PYG{p}{,}
+                  \PYG{n}{parent\PYGZus{}group} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Brillouin/Water spectrum}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,}
+                  \PYG{n}{name} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Frequency}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\end{sphinxVerbatim}
+
+
+\chapter{API}
+\label{\detokenize{index:api}}
 
 \begin{savenotes}\sphinxattablestart
 \sphinxthistablewithglobalstyle
@@ -1994,6 +2535,15 @@ For attributes, each key is the name of the attribute, and the value is the valu
 \end{itemize}
 
 \end{description}\end{quote}
+\subsubsection*{Example}
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{n}{wrp} \PYG{o}{=} \PYG{n}{HDF5\PYGZus{}BLS}\PYG{p}{(}\PYG{p}{)} \PYG{c+c1}{\PYGZsh{} Creates a temporary HDF5 file in the temporary directory of the operating system}
+\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{n}{dic} \PYG{o}{=} \PYG{p}{\PYGZob{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Raw\PYGZus{}data}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{:} \PYG{p}{\PYGZob{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Name}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Raw data}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Data}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{:} \PYG{n}{np}\PYG{o}{.}\PYG{n}{random}\PYG{o}{.}\PYG{n}{random}\PYG{p}{(}\PYG{p}{(}\PYG{l+m+mi}{50}\PYG{p}{,} \PYG{l+m+mi}{50}\PYG{p}{,} \PYG{l+m+mi}{512}\PYG{p}{)}\PYG{p}{)}\PYG{p}{\PYGZcb{}}\PYG{p}{\PYGZcb{}}
+\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{n}{wrp}\PYG{o}{.}\PYG{n}{add\PYGZus{}dictionary}\PYG{p}{(}\PYG{n}{dic}\PYG{p}{,} \PYG{n}{parent\PYGZus{}group} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Brillouin/Group}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{n}{create\PYGZus{}group} \PYG{o}{=} \PYG{k+kc}{True}\PYG{p}{,} \PYG{n}{brillouin\PYGZus{}type\PYGZus{}parent\PYGZus{}group} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Measure}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)} \PYG{c+c1}{\PYGZsh{} Adds the dictionary to the \PYGZdq{}Brillouin/Group\PYGZdq{} group (which is here created with Brillouin\PYGZus{}type \PYGZdq{}Measure\PYGZdq{})}
+\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{n}{dic} \PYG{o}{=} \PYG{p}{\PYGZob{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{PSD}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{:} \PYG{p}{\PYGZob{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Name}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Power Spectral Density}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Data}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{:} \PYG{n}{np}\PYG{o}{.}\PYG{n}{random}\PYG{o}{.}\PYG{n}{random}\PYG{p}{(}\PYG{p}{(}\PYG{l+m+mi}{50}\PYG{p}{,} \PYG{l+m+mi}{50}\PYG{p}{,} \PYG{l+m+mi}{512}\PYG{p}{)}\PYG{p}{)}\PYG{p}{\PYGZcb{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Frequency}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{:} \PYG{p}{\PYGZob{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Name}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Frequency}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Data}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{:} \PYG{n}{np}\PYG{o}{.}\PYG{n}{arange}\PYG{p}{(}\PYG{l+m+mi}{512}\PYG{p}{)}\PYG{p}{\PYGZcb{}}\PYG{p}{\PYGZcb{}}
+\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{n}{wrp}\PYG{o}{.}\PYG{n}{add\PYGZus{}dictionary}\PYG{p}{(}\PYG{n}{dic}\PYG{p}{,} \PYG{n}{parent\PYGZus{}group} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Brillouin/Group}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{n}{create\PYGZus{}group} \PYG{o}{=} \PYG{k+kc}{True}\PYG{p}{,} \PYG{n}{brillouin\PYGZus{}type\PYGZus{}parent\PYGZus{}group} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Measure}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)} \PYG{c+c1}{\PYGZsh{} Adds the PSD and Frequency arrays to \PYGZdq{}Brillouin/Group\PYGZdq{}.}
+\end{sphinxVerbatim}
 
 \end{fulllineitems}
 
@@ -2122,7 +2672,7 @@ Adds an HDF5 file to the wrapper by specifying in which group the data have to b
 
 \item {} 
 \sphinxAtStartPar
-\sphinxstyleliteralstrong{\sphinxupquote{parent\_group}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The parent group where to store the data of the HDF5 file, by default the parent group is the top group “Brillouin”. The format of this group should be “Brillouin/Group/…”
+\sphinxstyleliteralstrong{\sphinxupquote{parent\_group}} (\sphinxstyleliteralemphasis{\sphinxupquote{str}}\sphinxstyleliteralemphasis{\sphinxupquote{, }}\sphinxstyleliteralemphasis{\sphinxupquote{optional}}) \textendash{} The parent group where to store the data of the HDF5 file, by default the parent group is the top group “Brillouin”. The format of this group should be “Brillouin/Group/…”. If the parent group does not exist, it will be created.
 
 \item {} 
 \sphinxAtStartPar
@@ -2150,6 +2700,12 @@ Adds an HDF5 file to the wrapper by specifying in which group the data have to b
 \end{itemize}
 
 \end{description}\end{quote}
+\subsubsection*{Example}
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{n}{wrp} \PYG{o}{=} \PYG{n}{HDF5\PYGZus{}BLS}\PYG{p}{(}\PYG{p}{)} \PYG{c+c1}{\PYGZsh{} Creates a temporary HDF5 file in the temporary directory of the operating system}
+\PYG{g+gp}{\PYGZgt{}\PYGZgt{}\PYGZgt{} }\PYG{n}{wrp}\PYG{o}{.}\PYG{n}{add\PYGZus{}hdf5}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{path/to/file.h5}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{Brillouin/Group}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)} \PYG{c+c1}{\PYGZsh{} Adds the HDF5 file at the given path to the \PYGZdq{}Brillouin/Group\PYGZdq{} group (which is here created)}
+\end{sphinxVerbatim}
 
 \end{fulllineitems}
 

@@ -20,7 +20,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="The file format" href="source/file_format.html" /> 
+    <link rel="next" title="Quick Start" href="source/quickstart.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -33,6 +33,7 @@
           
           <a href="#" class="icon icon-home">
             HDF5_BLS
+              <img src="_static/myicon.svg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -42,9 +43,10 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="source/quickstart.html">Quick Start</a></li>
 <li class="toctree-l1"><a class="reference internal" href="source/file_format.html">The file format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="source/hdf5_bls_package.html">The HDF5_BLS package</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="_autosummary/HDF5_BLS.html">HDF5_BLS</a></li>
@@ -76,125 +78,35 @@
              
   <section id="welcome-to-hdf5-bls-s-documentation">
 <h1>Welcome to HDF5_BLS’s documentation!<a class="headerlink" href="#welcome-to-hdf5-bls-s-documentation" title="Link to this heading"></a></h1>
+<div class="admonition-about-hdf5-bls admonition">
+<p class="admonition-title">About HDF5_BLS</p>
 <p>The <cite>HDF5_BLS</cite> project is a Python package allowing users to easily store Brillouin Light Scattering relevant data in a single HDF5 file. The package is designed to integrate in existing Python workflows and to be as easy to use as possible. The package is a solution for unifying the data storage of Brillouin Light Scattering experiments, with three main goals:</p>
 <ul class="simple">
 <li><p><strong>Simplicity</strong>: Make it easy to store and retrieve data from a single file.</p></li>
 <li><p><strong>Universality</strong>: Allow all modalities to be stored in a single file, while unifying the metadata associated to the data.</p></li>
 <li><p><strong>Expandability</strong>: Allow the format to grow with the needs of the community.</p></li>
 </ul>
-<section id="quick-start">
-<h2>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading"></a></h2>
-<section id="spirit-of-the-project">
-<h3>Spirit of the project<a class="headerlink" href="#spirit-of-the-project" title="Link to this heading"></a></h3>
-<p>The idea of the package is to provide a simple way to store and retrieve data relevant to Brillouin Light Scattering experiments together with the metadata associated to the data. The file we propose to use is the HDF5 file format (standing for “Hierarchical Data Format version 5”). The idea of this project is to use this file format to reproduce the structure of a filesystem within a single file, storing all files corresponding to a given expoeriment in a single “group”. For example, a typical structure of the HDF5 file could be:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>file.h5
-└──<span class="w"> </span>Brillouin
-<span class="w">    </span>├──<span class="w"> </span>Measure<span class="w"> </span>of<span class="w"> </span>water
-<span class="w">    </span>│<span class="w">   </span>├──<span class="w"> </span>Image<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>power<span class="w"> </span>spectral<span class="w"> </span>density
-<span class="w">    </span>│<span class="w">   </span>├──<span class="w"> </span>Channels<span class="w"> </span>associated<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>power<span class="w"> </span>spectral<span class="w"> </span>density
-<span class="w">    </span>│<span class="w">   </span>├──<span class="w"> </span>Results<span class="w"> </span>after<span class="w"> </span>data<span class="w"> </span>processing
-<span class="w">    </span>│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>Shift
-<span class="w">    </span>│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>Shift<span class="w"> </span>variance
-<span class="w">    </span>│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>Linewidth
-<span class="w">    </span>│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>Linewidth<span class="w"> </span>variance
-<span class="w">    </span>│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>Amplitude
-<span class="w">    </span>│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>Amplitude<span class="w"> </span>variance
-<span class="w">    </span>│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>...
-<span class="w">    </span>├──<span class="w"> </span>Measure<span class="w"> </span>of<span class="w"> </span>methanol
-<span class="w">    </span>│<span class="w">   </span>├──<span class="w"> </span>...
-</pre></div>
 </div>
-<p>To allow this file format to be used with other modalities (e.g. electrophoresis assays to complement a Brillouin experiment), we propose to use a top-level group corresponding a minima to the modality (e.g. “Brillouin”). We also propose to add to each element of the HDF5 file, a “Brillouin_type” attribute that will allow to know the type of the element. For datasets, these types are:</p>
-<ul class="simple">
-<li><p>Raw_data: the raw data</p></li>
-<li><p>PSD: a power spectral density array</p></li>
-<li><p>Frequency: a frequency array associated to the power spectral density</p></li>
-<li><p>Abscissa_x: an abscissa array for the measures where the name is written after the underscore.</p></li>
-<li><p>Shift: the shift array obtained after the treatment</p></li>
-<li><p>Shift_err: the array of errors on the shift array obtained after the treatment</p></li>
-<li><p>Linewidth: the linewidth array obtained after the treatment</p></li>
-<li><p>Linewidth_err: the array of errors on the linewidth array obtained after the treatment</p></li>
-<li><p>Amplitude: the amplitude array obtained after the treatment</p></li>
-<li><p>Amplitude_err: the array of errors on the amplitude array obtained after the treatment</p></li>
-<li><p>BLT: the Loss Tangent array obtained after the treatment</p></li>
-<li><p>BLT_err: the array of errors on the Loss Tangent array obtained after the treatment</p></li>
-</ul>
-<p>For groups, these types are:</p>
-<ul class="simple">
-<li><p>Calibration_spectrum: the calibration spectrum</p></li>
-<li><p>Impulse_response: the impulse response</p></li>
-<li><p>Measure: the measure</p></li>
-<li><p>Root: the root group</p></li>
-<li><p>Treatment: the treatment</p></li>
-</ul>
-</section>
-<section id="installation">
-<h3>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h3>
-<p>To install the package, you can use pip:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>HDF5_BLS
-</pre></div>
-</div>
-</section>
-<section id="usage">
-<h3>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h3>
-<section id="integration-to-workflow">
-<h4>Integration to workflow<a class="headerlink" href="#integration-to-workflow" title="Link to this heading"></a></h4>
-<p>Once the package is installed, you can use it in your Python scripts as follows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">HDF5_BLS</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">bls</span>
-
-<span class="c1"># Create a HDF5 file</span>
-<span class="n">wrp</span> <span class="o">=</span> <span class="n">bls</span><span class="o">.</span><span class="n">Wrapper</span><span class="p">(</span><span class="n">filepath</span> <span class="o">=</span> <span class="s2">&quot;path/to/file.h5&quot;</span><span class="p">)</span>
-
-<span class="c1">###############################################################################</span>
-<span class="c1"># Existing code to extract data from a file</span>
-<span class="c1">###############################################################################</span>
-<span class="c1"># Storing the data in the HDF5 file (for this example we use a random array)</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">512</span><span class="p">))</span>
-<span class="n">wrp</span><span class="o">.</span><span class="n">add_raw_data</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">,</span> <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin&quot;</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Raw data&quot;</span><span class="p">)</span>
-
-<span class="c1">###############################################################################</span>
-<span class="c1"># Existing code to convert the data to a PSD</span>
-<span class="c1">###############################################################################</span>
-<span class="c1"># Storing the Power Spectral Density in the HDF5 file together with the associated frequency array (for this example we use random arrays)</span>
-<span class="n">PSD</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">512</span><span class="p">))</span>
-<span class="n">frequency</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">512</span><span class="p">)</span>
-<span class="n">wrp</span><span class="o">.</span><span class="n">add_PSD</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">,</span> <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin&quot;</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Power Spectral Density&quot;</span><span class="p">)</span>
-<span class="n">wrp</span><span class="o">.</span><span class="n">add_frequency</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">frequency</span><span class="p">,</span> <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin&quot;</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Frequency&quot;</span><span class="p">)</span>
-
-<span class="c1">###############################################################################</span>
-<span class="c1"># Existing code to fit the PSD to extract shift and linewidth arrays</span>
-<span class="c1">###############################################################################</span>
-<span class="c1"># Storing the Power Spectral Density in the HDF5 file together with the associated frequency array (for this example we use random arrays)</span>
-<span class="n">shift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span>
-<span class="n">linewidth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span>
-<span class="n">wrp</span><span class="o">.</span><span class="n">add_treated_data</span><span class="p">(</span><span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin&quot;</span><span class="p">,</span> <span class="n">name_group</span> <span class="o">=</span> <span class="s2">&quot;Treat_0&quot;</span><span class="p">,</span> <span class="n">shift</span> <span class="o">=</span> <span class="n">shift</span><span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="n">linewidth</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="extracting-the-data-from-the-hdf5-file">
-<h4>Extracting the data from the HDF5 file<a class="headerlink" href="#extracting-the-data-from-the-hdf5-file" title="Link to this heading"></a></h4>
-<p>Once the data is stored in the HDF5 file, you can extract it as follows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">HDF5_BLS</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">bls</span>
-
-<span class="c1"># Open the file</span>
-<span class="n">wrp</span> <span class="o">=</span> <span class="n">bls</span><span class="o">.</span><span class="n">Wrapper</span><span class="p">(</span><span class="n">filepath</span> <span class="o">=</span> <span class="s2">&quot;path/to/file.h5&quot;</span><span class="p">)</span>
-
-<span class="c1"># Extract the data</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">wrp</span><span class="p">[</span><span class="s2">&quot;Brillouin/path/in/file/Raw data&quot;</span><span class="p">]</span>
-</pre></div>
-</div>
-</section>
-</section>
-</section>
 <section id="contents">
 <h2>Contents:<a class="headerlink" href="#contents" title="Link to this heading"></a></h2>
 <div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="source/quickstart.html">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="source/quickstart.html#spirit-of-the-project">Spirit of the project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/quickstart.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/quickstart.html#usage">Usage</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="source/file_format.html">The file format</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="source/file_format.html#basic-file-structure">Basic file structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="source/file_format.html#meta-files">Meta-files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="source/file_format.html#attributes">Attributes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="source/hdf5_bls_package.html">The HDF5_BLS package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="source/hdf5_bls_package.html#installation-and-presentation">Installation and presentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/hdf5_bls_package.html#the-wrapper-object">The Wrapper object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/hdf5_bls_package.html#adding-data-to-the-hdf5-file-from-script">Adding data to the HDF5 file (from script)</a></li>
 </ul>
 </li>
 </ul>
@@ -216,7 +128,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="source/file_format.html" class="btn btn-neutral float-right" title="The file format" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="source/quickstart.html" class="btn btn-neutral float-right" title="Quick Start" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -1,0 +1,294 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The HDF5_BLS package &mdash; HDF5_BLS v1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+    <link rel="shortcut icon" href="../_static/myicon.svg"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=76e2d817"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="HDF5_BLS" href="../_autosummary/HDF5_BLS.html" />
+    <link rel="prev" title="The file format" href="file_format.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            HDF5_BLS
+              <img src="../_static/myicon.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="file_format.html">The file format</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">The HDF5_BLS package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation-and-presentation">Installation and presentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#presentation">Presentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-structure">Module structure</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#the-wrapper-object">The Wrapper object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#adding-data-to-the-hdf5-file-from-script">Adding data to the HDF5 file (from script)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#general-approach-to-adding-data-to-the-hdf5-file">General approach to adding data to the HDF5 file</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/HDF5_BLS.html">HDF5_BLS</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">HDF5_BLS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">The HDF5_BLS package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/source/hdf5_bls_package.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="the-hdf5-bls-package">
+<h1>The HDF5_BLS package<a class="headerlink" href="#the-hdf5-bls-package" title="Link to this heading"></a></h1>
+<section id="installation-and-presentation">
+<h2>Installation and presentation<a class="headerlink" href="#installation-and-presentation" title="Link to this heading"></a></h2>
+<section id="installation">
+<h3>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h3>
+<p>To install the package, you can either download the source code from the GitHub repository or use pip to install the package. We recommend using pip for users who do not intend on working on the package as it is the easiest way to install the package.</p>
+<p><strong>Using pip</strong></p>
+<p>To install the package using pip, run the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>HDF5_BLS
+</pre></div>
+</div>
+<p><strong>Downloading the source code</strong></p>
+<p>The source code can be downloaded from the ‘GitHub repository &lt;<a class="reference external" href="https://github.com/bio-brillouin/HDF5_BLS">https://github.com/bio-brillouin/HDF5_BLS</a>&gt;’__. To download the source code, click on the green button “Code” and then click on the “Download ZIP” button. Once the download is complete, unzip the file and open a terminal in the folder where the code is stored. To install the package, run the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>setup.py<span class="w"> </span>install
+</pre></div>
+</div>
+<p>This will install the package and all its dependencies. To check if the package was installed correctly, run the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import HDF5_BLS&quot;</span>
+</pre></div>
+</div>
+<p>If the package was installed correctly, the command will not return any error.</p>
+</section>
+<section id="presentation">
+<h3>Presentation<a class="headerlink" href="#presentation" title="Link to this heading"></a></h3>
+<p>The HDF5_BLS library is a Python package meant to interface Python code with a HDF5 file.</p>
+<p>The goal of this package is to allow the user to semalessly integrate the proposed standard to their existing code. A detailed description of the package will be given in the later sections of this tutorial. Here is however a quick code example to show the integration of the package in a simple case:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">###############################################################################</span>
+<span class="c1"># Existing imports</span>
+<span class="c1">###############################################################################</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">HDF5_BLS</span><span class="w"> </span><span class="kn">import</span> <span class="n">wrapper</span>
+
+<span class="c1"># Create a new file</span>
+<span class="n">wrp</span> <span class="o">=</span> <span class="n">wrapper</span><span class="o">.</span><span class="n">Wrapper</span><span class="p">(</span><span class="n">filepath</span> <span class="o">=</span> <span class="s2">&quot;path/to/the/file.h5&quot;</span><span class="p">)</span>
+
+<span class="c1">###############################################################################</span>
+<span class="c1"># Existing code extracting data from a file</span>
+<span class="c1">###############################################################################</span>
+
+<span class="c1"># Store the data in the file</span>
+<span class="n">wrp</span><span class="o">.</span><span class="n">add_raw_data</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">,</span> <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin/path/in/the/file&quot;</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Name of the dataset&quot;</span><span class="p">)</span>
+
+<span class="c1">###############################################################################</span>
+<span class="c1"># Existing code extracting a PSD and a frequency vector from the data</span>
+<span class="c1">###############################################################################</span>
+
+<span class="c1"># Store the frequency vector together with the raw data</span>
+<span class="n">wrp</span><span class="o">.</span><span class="n">add_frequency</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">frequnecy</span><span class="p">,</span> <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin/path/in/the/file&quot;</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Frequency vector&quot;</span><span class="p">)</span>
+
+<span class="c1"># Store the PSD dataset together with the raw data</span>
+<span class="n">wrp</span><span class="o">.</span><span class="n">add_PSD</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">PSD</span><span class="p">,</span> <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin/path/in/the/file&quot;</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;PSD&quot;</span><span class="p">)</span>
+
+<span class="c1">###############################################################################</span>
+<span class="c1"># Existing code extracting the shift and linewidth of the data</span>
+<span class="c1">###############################################################################</span>
+
+<span class="c1"># Store the PSD dataset together with the raw data</span>
+<span class="n">wrp</span><span class="o">.</span><span class="n">add_treated_data</span><span class="p">(</span><span class="n">shift</span> <span class="o">=</span> <span class="n">shift</span><span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="n">linewidth</span><span class="p">,</span> <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin/path/in/the/file&quot;</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;PSD&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This package also aims at unifying both the way to extract PSD from raw data and extract Brillouin shift and linewidth from the PSD. We will describe later how to do this, we encourage interested readers to already try and add the above code to their code and see how it works.</p>
+</section>
+<section id="module-structure">
+<h3>Module structure<a class="headerlink" href="#module-structure" title="Link to this heading"></a></h3>
+<p>The HDF5_BLS package is built around the following different modules:</p>
+<ul class="simple">
+<li><p><em>wrapper</em>: This module is used to interact with HDF5 files. It is used to read the data, to write the data and to modify any aspect of the HDF5 file (dataset, groups or attributes).</p></li>
+<li><p><em>analyze</em>: This module is used to convert raw data taken from a spectrometer into a physically meaningful Power Spectral Density (PSD) array. This process is done to be reliable</p></li>
+<li><p><em>treat</em>: This module is used to extract information from the PSD array, such as the frequency shift and line width of the spectral lines.</p></li>
+<li><p><em>load_data</em>: This module is used to import data from any formats of interest. This module is an interface between physical files stored on the PC and the wrapper module. It has been designed to be easily extended to any format of data.</p></li>
+</ul>
+</section>
+</section>
+<section id="the-wrapper-object">
+<h2>The Wrapper object<a class="headerlink" href="#the-wrapper-object" title="Link to this heading"></a></h2>
+<p>The “wrapper” module has one main object: <em>Wrapper</em>. This object is used to interact with the HDF5 file. It is used to read the data, to write the data and to modify any aspect of the HDF5 file (dataset, groups or attributes). The module also provides different error objects used to recognize errors when using the Wrapper object and raise exceptions.</p>
+<p>The Wrapper object is initialized by running the following command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">wrp</span> <span class="o">=</span> <span class="n">Wrapper</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This will create a new Wrapper object with no attributes or data, and with the following structure:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>file.h5
+<span class="w"> </span>└──<span class="w"> </span>Brillouin<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
+</pre></div>
+</div>
+<p>By default, the attributes of the “Brillouin” group are the following:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>file.h5
+└──<span class="w"> </span>Brillouin<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
+<span class="w">    </span>├──<span class="w"> </span>Brillouin_type<span class="w"> </span>-&gt;<span class="w"> </span><span class="s2">&quot;Root&quot;</span>
+<span class="w">    </span>└──<span class="w"> </span>HDF5_BLS_version<span class="w"> </span>-&gt;<span class="w"> </span><span class="s2">&quot;0.1&quot;</span><span class="w"> </span><span class="c1"># The version of the HDF5_BLS package</span>
+</pre></div>
+</div>
+<p>As long as no filepaths are given to the Wrapper object, the file is stored in a temporary folder (the temporary folder of the operating system). Note that this temporary file is deleted either when the Wrapper object is destroyed or when the file is stored elsewhere. It is therefore good practice to specify a non-temporary filepath to the file when creating a new Wrapper object, with the “filepath” parameter:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">wrp</span> <span class="o">=</span> <span class="n">Wrapper</span><span class="p">(</span><span class="n">filepath</span> <span class="o">=</span> <span class="s2">&quot;path/to/file.h5&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will create a new Wrapper object with no attributes or data, and with the following structure:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>path/to/file.h5
+└──<span class="w"> </span>Brillouin<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
+</pre></div>
+</div>
+<p>Note that this works both for new files, and for files that already exist, in the latter case, the wrapper object applies to the file located at “path/to/file.h5”.</p>
+</section>
+<section id="adding-data-to-the-hdf5-file-from-script">
+<h2>Adding data to the HDF5 file (from script)<a class="headerlink" href="#adding-data-to-the-hdf5-file-from-script" title="Link to this heading"></a></h2>
+<p>The addition of any type of data or attribute to the HDF5 file has been centralized in the <em>Wrapper.add_ dictionary</em> method. This method is safe but complex and not user-friendly. Methods derived from this method are meant to simplify the process of adding data to the HDF5 file, specific to each type of data.</p>
+<p>To add a single dataset to a group, we first need to specify the type of dataset we want to add, which are the following:</p>
+<ul class="simple">
+<li><p>“Abscissa_…”: An abscissa array for the measures where the dimensions on which the dataset applies are given after the underscore.</p></li>
+<li><p>“Amplitude”: The dataset contains the values of the fitted amplitudes.</p></li>
+<li><p>“Amplitude_err”: The dataset contains the error of the fitted amplitudes.</p></li>
+<li><p>“BLT”: The dataset contains the values of the fitted amplitudes.</p></li>
+<li><p>“BLT_err”: The dataset contains the error of the fitted amplitudes.</p></li>
+<li><p>“Frequency”: A frequency array associated to the power spectral density</p></li>
+<li><p>“Linewidth”: The dataset contains the values of the fitted linewidths.</p></li>
+<li><p>“Linewidth_err”: The dataset contains the error of the fitted linewidths.</p></li>
+<li><p>“PSD”: A power spectral density array</p></li>
+<li><p>“Raw_data”: The dataset containing the raw data obtained after a BLS experiment.</p></li>
+<li><p>“Shift”: The dataset contains the values of the fitted frequency shifts.</p></li>
+<li><p>“Shift_err”: The dataset contains the error of the fitted frequency shifts.</p></li>
+<li><p>“Other”: The dataset contains other data that will not be used by the library.</p></li>
+</ul>
+<p>From there, the following functions are available to add the dataset to the HDF5 file:</p>
+<ul class="simple">
+<li><p>add_raw_data: To add raw data to a group</p></li>
+<li><p>add_PSD: To add a PSD to a group</p></li>
+<li><p>add_frequency: To add a frequency axis to a group</p></li>
+<li><p>add_abscissa: To add an abscissa to a group</p></li>
+<li><p>add_treated_data: To add a shift, linewidth and their respective errors to a dedicated “Treatment” group</p></li>
+<li><p>add_other: To add a shift, linewidth and their respective errors to a dedicated “Treatment” group</p></li>
+</ul>
+<section id="general-approach-to-adding-data-to-the-hdf5-file">
+<h3>General approach to adding data to the HDF5 file<a class="headerlink" href="#general-approach-to-adding-data-to-the-hdf5-file" title="Link to this heading"></a></h3>
+<p>Adding a dataset to the file always come with three other pieces of information:</p>
+<ul class="simple">
+<li><p>Where to add the dataset in the file</p></li>
+<li><p>What to call the added dataset</p></li>
+<li><p>What is the type of the dataset we want to add</p></li>
+</ul>
+<p>To add a dataset to the file, we’ll therefore call type-specific functions with the data to add, the place where to add it and the name to give the dataset as arguments, following a code of line resembling:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">wrp</span><span class="o">.</span><span class="n">add_raw_data</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">,</span>
+                 <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin/Water spectrum&quot;</span><span class="p">,</span>
+                 <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Measure of the year&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This approach is the one used for
+* <em>add_raw_data</em>
+* <em>add_PSD</em>
+* <em>add_frequency</em>
+* <em>add_other</em></p>
+<p><strong>Example</strong>
+Let’s consider the following example: we have just initialized a wrapper object and want to add a spectrum obtained from our spectrometer. We have already converted this spectrum to a numpy array, and named it <em>data</em>. Now we want to add this data in a group called “Water spectrum” in the root group of the HDF5 file and call this raw data “Measure of the year”. Then we will write:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">wrp</span><span class="o">.</span><span class="n">add_raw_data</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">,</span>
+                 <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin/Water spectrum&quot;</span><span class="p">,</span>
+                 <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Measure of the year&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now let’s say that we have analyzed this spectrum and obtained a PSD (stored in the variable “psd”) and frequency array (stored in the variable “freq”). We want to add these two arrays in the same group, and call them “PSD” and “Frequency” respectively. We will write:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">wrp</span><span class="o">.</span><span class="n">add_PSD</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">psd</span><span class="p">,</span>
+            <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin/Water spectrum&quot;</span><span class="p">,</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;PSD&quot;</span><span class="p">)</span>
+<span class="n">wrp</span><span class="o">.</span><span class="n">add_frequency</span><span class="p">(</span><span class="n">freq</span><span class="p">,</span>
+                  <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin/Water spectrum&quot;</span><span class="p">,</span>
+                  <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Frequency&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="file_format.html" class="btn btn-neutral float-left" title="The file format" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../_autosummary/HDF5_BLS.html" class="btn btn-neutral float-right" title="HDF5_BLS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Pierre Bouvet.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

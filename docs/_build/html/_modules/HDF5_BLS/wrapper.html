@@ -10,6 +10,7 @@
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
+    <link rel="shortcut icon" href="../../_static/myicon.svg"/>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../_static/documentation_options.js?v=76e2d817"></script>
@@ -30,6 +31,7 @@
           
           <a href="../../index.html" class="icon icon-home">
             HDF5_BLS
+              <img src="../../_static/myicon.svg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -39,7 +41,12 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../source/file_format.html">The file format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/hdf5_bls_package.html">The HDF5_BLS package</a></li>
+</ul>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../_autosummary/HDF5_BLS.html">HDF5_BLS</a></li>
 </ul>
 
@@ -141,6 +148,11 @@
 <span class="sd">        ----------</span>
 <span class="sd">        filepath : str, optional</span>
 <span class="sd">            The filepath of the HDF5 file to load, by default None means that a temporary file is created in the temporary directory of the operating system.</span>
+<span class="sd">        </span>
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        &gt;&gt;&gt; wrp = HDF5_BLS() # Creates a temporary HDF5 file in the temporary directory of the operating system</span>
+<span class="sd">        &gt;&gt;&gt; wrp = HDF5_BLS(&quot;path/to/file.h5&quot;) # Creates a HDF5 file at the given path or opens an existing one at the given path</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">def</span><span class="w"> </span><span class="nf">no_filepath</span><span class="p">():</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
@@ -365,7 +377,7 @@
 <span class="sd">        filepath : str</span>
 <span class="sd">            The filepath of the hdf5 file to add.</span>
 <span class="sd">        parent_group : str, optional</span>
-<span class="sd">            The parent group where to store the data of the HDF5 file, by default the parent group is the top group &quot;Brillouin&quot;. The format of this group should be &quot;Brillouin/Group/...&quot;</span>
+<span class="sd">            The parent group where to store the data of the HDF5 file, by default the parent group is the top group &quot;Brillouin&quot;. The format of this group should be &quot;Brillouin/Group/...&quot;. If the parent group does not exist, it will be created.</span>
 <span class="sd">        overwrite : bool, optional</span>
 <span class="sd">            A boolean that indicates whether the data should be overwritten if it already exists, by default False</span>
 <span class="sd">        </span>
@@ -379,6 +391,11 @@
 <span class="sd">            Raises an error if the group already exists in the parent group.</span>
 <span class="sd">        WrapperError</span>
 <span class="sd">            Raises an error if the hdf5 file could not be added to the main HDF5 file.</span>
+<span class="sd">        </span>
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        &gt;&gt;&gt; wrp = HDF5_BLS() # Creates a temporary HDF5 file in the temporary directory of the operating system</span>
+<span class="sd">        &gt;&gt;&gt; wrp.add_hdf5(&quot;path/to/file.h5&quot;, &quot;Brillouin/Group&quot;) # Adds the HDF5 file at the given path to the &quot;Brillouin/Group&quot; group (which is here created)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">WrapperError_FileNotFound</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The file &#39;</span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2">&#39; does not exist.&quot;</span><span class="p">)</span>
@@ -475,7 +492,7 @@
             <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
                 <span class="c1"># Check if the parent group exists</span>
                 <span class="k">if</span> <span class="n">parent_group</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">WrapperError_StructureError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The parent group &#39;</span><span class="si">{</span><span class="n">parent_group</span><span class="si">}</span><span class="s2">&#39; does not exist in the HDF5 file.&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">WrapperError_StructureError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The parent group &#39;</span><span class="si">{</span><span class="n">parent_group</span><span class="si">}</span><span class="s2">&#39; does not exist in the file.&quot;</span><span class="p">)</span>
                 <span class="c1"># Check if the path leads to a group, if not, we go up one level</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file</span><span class="p">[</span><span class="n">parent_group</span><span class="p">],</span> <span class="n">h5py</span><span class="o">.</span><span class="n">_hl</span><span class="o">.</span><span class="n">group</span><span class="o">.</span><span class="n">Group</span><span class="p">):</span>
                     <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parent_group</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
@@ -578,6 +595,14 @@
 <span class="sd">            Raises an error if the group already exists in the parent group.</span>
 <span class="sd">        WrapperError_ArgumentType</span>
 <span class="sd">            Raises an error if arguments given to the function do not match the expected type.</span>
+<span class="sd">        </span>
+<span class="sd">        Example</span>
+<span class="sd">        -------</span>
+<span class="sd">        &gt;&gt;&gt; wrp = HDF5_BLS() # Creates a temporary HDF5 file in the temporary directory of the operating system</span>
+<span class="sd">        &gt;&gt;&gt; dic = {&quot;Raw_data&quot;: {&quot;Name&quot;: &quot;Raw data&quot;, &quot;Data&quot;: np.random.random((50, 50, 512))}}</span>
+<span class="sd">        &gt;&gt;&gt; wrp.add_dictionary(dic, parent_group = &quot;Brillouin/Group&quot;, create_group = True, brillouin_type_parent_group = &quot;Measure&quot;) # Adds the dictionary to the &quot;Brillouin/Group&quot; group (which is here created with Brillouin_type &quot;Measure&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; dic = {&quot;PSD&quot;: {&quot;Name&quot;: &quot;Power Spectral Density&quot;, &quot;Data&quot;: np.random.random((50, 50, 512))}, &quot;Frequency&quot;: {&quot;Name&quot;: &quot;Frequency&quot;, &quot;Data&quot;: np.arange(512)}}</span>
+<span class="sd">        &gt;&gt;&gt; wrp.add_dictionary(dic, parent_group = &quot;Brillouin/Group&quot;, create_group = True, brillouin_type_parent_group = &quot;Measure&quot;) # Adds the PSD and Frequency arrays to &quot;Brillouin/Group&quot;.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">def</span><span class="w"> </span><span class="nf">check_parent_group</span><span class="p">(</span><span class="n">parent_group</span><span class="p">):</span>
             <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>

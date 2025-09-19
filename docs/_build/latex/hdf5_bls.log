@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.10.24)  19 SEP 2025 10:58
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.10.24)  19 SEP 2025 21:09
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -869,40 +869,40 @@ al/texlive/2024/texmf-dist/fonts/enc/dvips/tex-gyre/q-ec.enc}] [2
 ]
 [2
 
-] [1] [2
+]
+LaTeX Font Info:    Trying to load font information for TS1+qtm on input line 9
+1.
+ (/usr/local/texlive/2024/texmf-dist/tex/latex/tex-gyre/ts1qtm.fd
+File: ts1qtm.fd 2009/09/25 v1.2 font definition file for TS1/qtm
+) [1{/usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/tex-gyre/q-ts1.enc}] [2
 
 ]
 Chapter 1.
 LaTeX Font Info:    Trying to load font information for T1+txtt on input line 1
-00.
+14.
 (/usr/local/texlive/2024/texmf-dist/tex/latex/txfonts/t1txtt.fd
 File: t1txtt.fd 2000/12/15 v3.1
-)
-LaTeX Font Info:    Trying to load font information for TS1+qtm on input line 1
-21.
-
-(/usr/local/texlive/2024/texmf-dist/tex/latex/tex-gyre/ts1qtm.fd
-File: ts1qtm.fd 2009/09/25 v1.2 font definition file for TS1/qtm
-) [3{/usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/tex-gyre/q-ts1.enc}]
+) [3]
 LaTeX Font Info:    Font shape `T1/txtt/b/n' in size <10> not available
-(Font)              Font shape `T1/txtt/bx/n' tried instead on input line 216.
+(Font)              Font shape `T1/txtt/bx/n' tried instead on input line 230.
 LaTeX Font Info:    Font shape `T1/txtt/m/it' in size <10> not available
-(Font)              Font shape `T1/txtt/m/sl' tried instead on input line 218.
- [4] [5] [6
+(Font)              Font shape `T1/txtt/m/sl' tried instead on input line 232.
+ [4]
+[5] [6
 
 ]
 Chapter 2.
-[7] [8
+[7] [8] [9] [10] [11] [12] [13] [14
 
 ]
 Chapter 3.
-[9] [10] [11] [12] [13]
+[15] [16] [17] [18] [19]
 LaTeX Font Info:    Trying to load font information for U+fontawesomefree1 on i
-nput line 959.
+nput line 1500.
 
 (/usr/local/texlive/2024/texmf-dist/tex/latex/fontawesome5/ufontawesomefree1.fd
-) [14{/usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/fontawesome5/fa5free1.
-enc}] [15] [16] [17] [18]
+) [20{/usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/fontawesome5/fa5free1.
+enc}] [21] [22] [23] [24]
 LaTeX Font Info:    Trying to load font information for TS1+txtt on input line 
 1.
 
@@ -911,20 +911,19 @@ File: ts1txtt.fd 2000/12/15 v3.1
 )
 LaTeX Font Info:    Font shape `TS1/txtt/b/n' in size <10> not available
 (Font)              Font shape `TS1/txtt/bx/n' tried instead on input line 1.
- [19] [20]
-[21]
+ [25] [26]
+[27]
 LaTeX Font Info:    Font shape `T1/txtt/b/it' in size <10> not available
-(Font)              Font shape `T1/txtt/bx/it' tried instead on input line 2148
+(Font)              Font shape `T1/txtt/bx/it' tried instead on input line 2698
 .
 LaTeX Font Info:    Font shape `T1/txtt/bx/it' in size <10> not available
-(Font)              Font shape `T1/txtt/bx/sl' tried instead on input line 2148
+(Font)              Font shape `T1/txtt/bx/sl' tried instead on input line 2698
 .
- [22] [23] [24] [25] [26] [27] [28] [29] [30
-
-] [31
+ [28] [29] [30] [31] [32] [33] [34] [35] [36] [37
 
 
-] (./hdf5_bls.ind [32
+
+] (./hdf5_bls.ind [38
 
 
 ]
@@ -1132,7 +1131,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 75--76
 pper.Wrapper
  []
 
-[33
+[39
 
 ]
 Underfull \hbox (badness 10000) in paragraph at lines 76--78
@@ -1284,7 +1283,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 169--171
 ,
  []
 
-[34]
+[40]
 Underfull \hbox (badness 10000) in paragraph at lines 174--175
 []\T1/txtt/m/n/10 need_for_repack \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.wrap
 per.Wrapper
@@ -1371,7 +1370,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 210--211
 apper.Wrapper
  []
 
-[35
+[41
 
 ]) (./hdf5_bls.aux)
  ***********
@@ -1379,16 +1378,16 @@ LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-02-20>
  ***********
 Package rerunfilecheck Info: File `hdf5_bls.out' has not changed.
-(rerunfilecheck)             Checksum: 1A40A4547703BF91E7991E6C80D3FACC;3751.
+(rerunfilecheck)             Checksum: 3B69A4767823E9E57ABE2507FDC884D7;7275.
  ) 
 Here is how much of TeX's memory you used:
- 20205 strings out of 474116
- 366344 string characters out of 5743681
- 2018187 words of memory out of 5000000
- 42006 multiletter control sequences out of 15000+600000
+ 20273 strings out of 474116
+ 367999 string characters out of 5743681
+ 2017187 words of memory out of 5000000
+ 42049 multiletter control sequences out of 15000+600000
  616448 words of font info for 83 fonts, out of 8000000 for 9000
  1142 hyphenation exceptions out of 8191
- 72i,11n,83p,1494b,830s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 72i,11n,83p,1494b,832s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2024/texmf-dist/fonts/type1/public/fontawesome5/FontAweso
 me5Free-Solid.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfon
 ts/cm/cmmi5.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts
@@ -1403,10 +1402,10 @@ texmf-dist/fonts/type1/public/txfonts/t1xbtt.pfb></usr/local/texlive/2024/texmf
 -dist/fonts/type1/public/txfonts/t1xtt.pfb></usr/local/texlive/2024/texmf-dist/
 fonts/type1/public/txfonts/t1xtt.pfb></usr/local/texlive/2024/texmf-dist/fonts/
 type1/public/txfonts/tcxbtt.pfb>
-Output written on hdf5_bls.pdf (39 pages, 272671 bytes).
+Output written on hdf5_bls.pdf (45 pages, 297389 bytes).
 PDF statistics:
- 681 PDF objects out of 1000 (max. 8388607)
- 574 compressed objects within 6 object streams
- 147 named destinations out of 1000 (max. 500000)
- 205 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 781 PDF objects out of 1000 (max. 8388607)
+ 667 compressed objects within 7 object streams
+ 172 named destinations out of 1000 (max. 500000)
+ 357 words of extra memory for PDF output out of 10000 (max. 10000000)
 
