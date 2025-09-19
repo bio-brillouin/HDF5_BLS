@@ -16,6 +16,7 @@ project = 'HDF5_BLS'
 copyright = '2025, Pierre Bouvet'
 author = 'Pierre Bouvet'
 release = 'v1.0.0'
+html_favicon = '_static/myicon.svg'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
