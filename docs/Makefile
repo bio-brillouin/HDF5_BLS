@@ -11,3 +11,9 @@ clean:
 
 html:
 	$(SPHINXBUILD) -b html $(SOURCEDIR) $(BUILDDIR)/html
+
+latex:
+	$(SPHINXBUILD) -b latex $(SOURCEDIR) $(BUILDDIR)/latex
+
+latexpdf: latex
+	$(MAKE) -C $(BUILDDIR)/latex all-pdf

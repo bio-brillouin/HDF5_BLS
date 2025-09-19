@@ -6,7 +6,10 @@
 Welcome to HDF5_BLS's documentation!
 ====================================
 
-The `HDF5_BLS` project is a Python package allowing users to easily store Brillouin Light Scattering relevant data in a single HDF5 file. The package is designed to integrate in existing Python workflows and to be as easy to use as possible. 
+The `HDF5_BLS` project is a Python package allowing users to easily store Brillouin Light Scattering relevant data in a single HDF5 file. The package is designed to integrate in existing Python workflows and to be as easy to use as possible. The package is a solution for unifying the data storage of Brillouin Light Scattering experiments, with three main goals:
+- Simplicity: Make it easy to store and retrieve data from a single file.
+- Universality: Allow all modalities to be stored in a single file, while unifying the metadata associated to the data.
+- Expandability: Allow the format to grow with the needs of the community.
 
 Quick Start
 -----------

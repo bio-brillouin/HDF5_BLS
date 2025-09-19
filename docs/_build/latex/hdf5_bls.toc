@@ -1,0 +1,24 @@
+\babel@toc {english}{}\relax 
+\contentsline {chapter}{\numberline {1}Quick Start}{3}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Spirit of the project}{3}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Installation}{4}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Usage}{4}{section.1.3}%
+\contentsline {subsection}{\numberline {1.3.1}Integration to workflow}{4}{subsection.1.3.1}%
+\contentsline {subsection}{\numberline {1.3.2}Extracting the data from the HDF5 file}{5}{subsection.1.3.2}%
+\contentsline {chapter}{\numberline {2}Contents:}{7}{chapter.2}%
+\contentsline {chapter}{\numberline {3}API Reference}{9}{chapter.3}%
+\contentsline {section}{\numberline {3.1}HDF5\_BLS}{9}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}HDF5\_BLS.WrapperError}{9}{subsection.3.1.1}%
+\contentsline {subsection}{\numberline {3.1.2}HDF5\_BLS.analyze}{9}{subsection.3.1.2}%
+\contentsline {subsection}{\numberline {3.1.3}HDF5\_BLS.conversion\_PSD}{11}{subsection.3.1.3}%
+\contentsline {subsection}{\numberline {3.1.4}HDF5\_BLS.load\_data}{13}{subsection.3.1.4}%
+\contentsline {subsection}{\numberline {3.1.5}HDF5\_BLS.load\_formats}{14}{subsection.3.1.5}%
+\contentsline {subsubsection}{HDF5\_BLS.load\_formats.errors}{15}{subsubsection*.20}%
+\contentsline {subsubsection}{HDF5\_BLS.load\_formats.load\_dat}{15}{subsubsection*.24}%
+\contentsline {subsubsection}{HDF5\_BLS.load\_formats.load\_image}{17}{subsubsection*.40}%
+\contentsline {subsubsection}{HDF5\_BLS.load\_formats.load\_npy}{17}{subsubsection*.42}%
+\contentsline {subsubsection}{HDF5\_BLS.load\_formats.load\_sif}{18}{subsubsection*.44}%
+\contentsline {subsection}{\numberline {3.1.6}HDF5\_BLS.wrapper}{18}{subsection.3.1.6}%
+\contentsline {subsection}{\numberline {3.1.7}HDF5\_BLS.wrapper\_compatibility}{29}{subsection.3.1.7}%
+\contentsline {chapter}{Python Module Index}{31}{section*.92}%
+\contentsline {chapter}{Index}{33}{section*.93}%

@@ -1,0 +1,217 @@
+\begin{sphinxtheindex}
+\let\bigletter\sphinxstyleindexlettergroup
+\let\spxpagem \sphinxstyleindexpagemain
+\let\spxentry \sphinxstyleindexentry
+\let\spxextra \sphinxstyleindexextra
+
+  \bigletter A
+  \item \spxentry{add\_abscissa()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, \hyperpage{19}
+  \item \spxentry{add\_attributes()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, \hyperpage{20}
+  \item \spxentry{add\_dictionary()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, \hyperpage{20}
+  \item \spxentry{add\_dictionnary()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, \hyperpage{20}
+  \item \spxentry{add\_frequency()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, \hyperpage{21}
+  \item \spxentry{add\_hdf5()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, \hyperpage{21}
+  \item \spxentry{add\_point()}\spxextra{HDF5\_BLS.analyze.Analyze\_VIPA method}, \hyperpage{10}
+  \item \spxentry{add\_PSD()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, \hyperpage{19}
+  \item \spxentry{add\_raw\_data()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, \hyperpage{22}
+  \item \spxentry{add\_treated\_data()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, \hyperpage{22}
+  \item \spxentry{Analyze}\spxextra{class in HDF5\_BLS.analyze}, \hyperpage{10}
+  \item \spxentry{Analyze\_general}\spxextra{class in HDF5\_BLS.analyze}, \hyperpage{11}
+  \item \spxentry{Analyze\_VIPA}\spxextra{class in HDF5\_BLS.analyze}, \hyperpage{10}
+
+  \indexspace
+  \bigletter B
+  \item \spxentry{basic\_process()}\spxextra{HDF5\_BLS.load\_formats.load\_dat.TimeDomain method}, 
+		\hyperpage{16}
+  \item \spxentry{brillouin\_type\_update()}\spxextra{in module HDF5\_BLS.wrapper\_compatibility}, 
+		\hyperpage{29}
+  \item \spxentry{BRILLOUIN\_TYPES\_DATASETS}\spxextra{HDF5\_BLS.wrapper.Wrapper attribute}, 
+		\hyperpage{19}
+  \item \spxentry{BRILLOUIN\_TYPES\_GROUPS}\spxextra{HDF5\_BLS.wrapper.Wrapper attribute}, 
+		\hyperpage{19}
+
+  \indexspace
+  \bigletter C
+  \item \spxentry{center\_x\_axis()}\spxextra{HDF5\_BLS.analyze.Analyze\_VIPA method}, 
+		\hyperpage{11}
+  \item \spxentry{change\_brillouin\_type()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, 
+		\hyperpage{23}
+  \item \spxentry{change\_name()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, \hyperpage{23}
+  \item \spxentry{check\_conversion\_ar\_BLS\_VIPA()}\spxextra{in module HDF5\_BLS.conversion\_PSD}, 
+		\hyperpage{12}
+  \item \spxentry{check\_conversion\_Streak\_VIPA()}\spxextra{in module HDF5\_BLS.conversion\_PSD}, 
+		\hyperpage{12}
+  \item \spxentry{check\_conversion\_VIPA()}\spxextra{in module HDF5\_BLS.conversion\_PSD}, 
+		\hyperpage{12}
+  \item \spxentry{clear\_empty\_attributes()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, 
+		\hyperpage{23}
+  \item \spxentry{close()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, \hyperpage{23}
+  \item \spxentry{combine\_datasets()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, \hyperpage{23}
+  \item \spxentry{compatibility\_changes()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, 
+		\hyperpage{24}
+  \item \spxentry{copy\_dataset()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, \hyperpage{24}
+  \item \spxentry{create\_group()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, \hyperpage{24}
+
+  \indexspace
+  \bigletter D
+  \item \spxentry{delete\_element()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, \hyperpage{24}
+
+  \indexspace
+  \bigletter E
+  \item \spxentry{emit()}\spxextra{HDF5\_BLS.load\_formats.load\_dat.PipelineLogger method}, 
+		\hyperpage{15}
+  \item \spxentry{export\_dataset()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, \hyperpage{24}
+  \item \spxentry{export\_group()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, \hyperpage{25}
+  \item \spxentry{export\_image()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, \hyperpage{25}
+
+  \indexspace
+  \bigletter F
+  \item \spxentry{filepath}\spxextra{HDF5\_BLS.wrapper.Wrapper attribute}, \hyperpage{18}
+  \item \spxentry{find\_copeaks()}\spxextra{HDF5\_BLS.load\_formats.load\_dat.TimeDomain method}, 
+		\hyperpage{16}
+
+  \indexspace
+  \bigletter G
+  \item \spxentry{get\_attributes()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, \hyperpage{25}
+  \item \spxentry{get\_children\_elements()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, 
+		\hyperpage{26}
+  \item \spxentry{get\_special\_groups\_hierarchy()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, 
+		\hyperpage{26}
+  \item \spxentry{get\_structure()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, \hyperpage{26}
+  \item \spxentry{get\_type()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, \hyperpage{27}
+
+  \indexspace
+  \bigletter H
+  \item \spxentry{HDF5\_BLS}
+    \subitem \spxentry{module}, \hyperpage{9}
+  \item \spxentry{HDF5\_BLS.analyze}
+    \subitem \spxentry{module}, \hyperpage{9}
+  \item \spxentry{HDF5\_BLS.conversion\_PSD}
+    \subitem \spxentry{module}, \hyperpage{11}
+  \item \spxentry{HDF5\_BLS.load\_data}
+    \subitem \spxentry{module}, \hyperpage{13}
+  \item \spxentry{HDF5\_BLS.load\_formats}
+    \subitem \spxentry{module}, \hyperpage{14}
+  \item \spxentry{HDF5\_BLS.load\_formats.errors}
+    \subitem \spxentry{module}, \hyperpage{15}
+  \item \spxentry{HDF5\_BLS.load\_formats.load\_dat}
+    \subitem \spxentry{module}, \hyperpage{15}
+  \item \spxentry{HDF5\_BLS.load\_formats.load\_image}
+    \subitem \spxentry{module}, \hyperpage{17}
+  \item \spxentry{HDF5\_BLS.load\_formats.load\_npy}
+    \subitem \spxentry{module}, \hyperpage{17}
+  \item \spxentry{HDF5\_BLS.load\_formats.load\_sif}
+    \subitem \spxentry{module}, \hyperpage{18}
+  \item \spxentry{HDF5\_BLS.wrapper}
+    \subitem \spxentry{module}, \hyperpage{18}
+  \item \spxentry{HDF5\_BLS.wrapper\_compatibility}
+    \subitem \spxentry{module}, \hyperpage{29}
+  \item \spxentry{HPfilter()}\spxextra{HDF5\_BLS.load\_formats.load\_dat.TimeDomain method}, 
+		\hyperpage{16}
+
+  \indexspace
+  \bigletter I
+  \item \spxentry{import\_other()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, \hyperpage{27}
+  \item \spxentry{import\_properties\_data()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, 
+		\hyperpage{27}
+  \item \spxentry{import\_raw\_data()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, \hyperpage{27}
+  \item \spxentry{interpolate\_between\_one\_order()}\spxextra{HDF5\_BLS.analyze.Analyze\_VIPA method}, 
+		\hyperpage{11}
+  \item \spxentry{interpolate\_elastic()}\spxextra{HDF5\_BLS.analyze.Analyze\_VIPA method}, 
+		\hyperpage{11}
+  \item \spxentry{interpolate\_elastic\_inelastic()}\spxextra{HDF5\_BLS.analyze.Analyze\_VIPA method}, 
+		\hyperpage{11}
+  \item \spxentry{is\_tempfile()}\spxextra{in module HDF5\_BLS.wrapper}, \hyperpage{29}
+
+  \indexspace
+  \bigletter L
+  \item \spxentry{load\_dat\_file()}\spxextra{in module HDF5\_BLS.load\_data}, \hyperpage{13}
+  \item \spxentry{load\_dat\_GHOST()}\spxextra{in module HDF5\_BLS.load\_formats.load\_dat}, 
+		\hyperpage{16}
+  \item \spxentry{load\_dat\_TimeDomain()}\spxextra{in module HDF5\_BLS.load\_formats.load\_dat}, 
+		\hyperpage{16}
+  \item \spxentry{load\_dc()}\spxextra{HDF5\_BLS.load\_formats.load\_dat.TimeDomain method}, 
+		\hyperpage{16}
+  \item \spxentry{load\_general()}\spxextra{in module HDF5\_BLS.load\_data}, \hyperpage{13}
+  \item \spxentry{load\_image\_base()}\spxextra{in module HDF5\_BLS.load\_formats.load\_image}, 
+		\hyperpage{17}
+  \item \spxentry{load\_image\_file()}\spxextra{in module HDF5\_BLS.load\_data}, \hyperpage{13}
+  \item \spxentry{load\_npy\_base()}\spxextra{in module HDF5\_BLS.load\_formats.load\_npy}, 
+		\hyperpage{17}
+  \item \spxentry{load\_npy\_file()}\spxextra{in module HDF5\_BLS.load\_data}, \hyperpage{14}
+  \item \spxentry{load\_sif\_base()}\spxextra{in module HDF5\_BLS.load\_formats.load\_sif}, 
+		\hyperpage{18}
+  \item \spxentry{load\_sif\_file()}\spxextra{in module HDF5\_BLS.load\_data}, \hyperpage{14}
+  \item \spxentry{LoadError}, \hyperpage{15}
+  \item \spxentry{LoadError\_creator}, \hyperpage{15}
+  \item \spxentry{LoadError\_parameters}, \hyperpage{15}
+  \item \spxentry{LPfilter()}\spxextra{HDF5\_BLS.load\_formats.load\_dat.TimeDomain method}, 
+		\hyperpage{16}
+
+  \indexspace
+  \bigletter M
+  \item \spxentry{make\_time()}\spxextra{HDF5\_BLS.load\_formats.load\_dat.TimeDomain method}, 
+		\hyperpage{16}
+  \item \spxentry{module}
+    \subitem \spxentry{HDF5\_BLS}, \hyperpage{9}
+    \subitem \spxentry{HDF5\_BLS.analyze}, \hyperpage{9}
+    \subitem \spxentry{HDF5\_BLS.conversion\_PSD}, \hyperpage{11}
+    \subitem \spxentry{HDF5\_BLS.load\_data}, \hyperpage{13}
+    \subitem \spxentry{HDF5\_BLS.load\_formats}, \hyperpage{14}
+    \subitem \spxentry{HDF5\_BLS.load\_formats.errors}, \hyperpage{15}
+    \subitem \spxentry{HDF5\_BLS.load\_formats.load\_dat}, \hyperpage{15}
+    \subitem \spxentry{HDF5\_BLS.load\_formats.load\_image}, \hyperpage{17}
+    \subitem \spxentry{HDF5\_BLS.load\_formats.load\_npy}, \hyperpage{17}
+    \subitem \spxentry{HDF5\_BLS.load\_formats.load\_sif}, \hyperpage{18}
+    \subitem \spxentry{HDF5\_BLS.wrapper}, \hyperpage{18}
+    \subitem \spxentry{HDF5\_BLS.wrapper\_compatibility}, \hyperpage{29}
+  \item \spxentry{move()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, \hyperpage{28}
+  \item \spxentry{move\_channel\_dimension\_to\_last()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, 
+		\hyperpage{28}
+
+  \indexspace
+  \bigletter N
+  \item \spxentry{need\_for\_repack}\spxextra{HDF5\_BLS.wrapper.Wrapper attribute}, \hyperpage{19}
+
+  \indexspace
+  \bigletter P
+  \item \spxentry{PipelineLogger}\spxextra{class in HDF5\_BLS.load\_formats.load\_dat}, 
+		\hyperpage{15}
+  \item \spxentry{polyfit\_removal()}\spxextra{HDF5\_BLS.load\_formats.load\_dat.TimeDomain method}, 
+		\hyperpage{16}
+  \item \spxentry{print\_metadata()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, \hyperpage{28}
+  \item \spxentry{print\_structure()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, \hyperpage{28}
+
+  \indexspace
+  \bigletter R
+  \item \spxentry{repack()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, \hyperpage{28}
+
+  \indexspace
+  \bigletter S
+  \item \spxentry{save}\spxextra{HDF5\_BLS.wrapper.Wrapper attribute}, \hyperpage{19}
+  \item \spxentry{save\_as\_hdf5()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, \hyperpage{28}
+  \item \spxentry{save\_properties\_csv()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, 
+		\hyperpage{29}
+  \item \spxentry{scrape\_con\_file()}\spxextra{HDF5\_BLS.load\_formats.load\_dat.TimeDomain method}, 
+		\hyperpage{16}
+  \item \spxentry{scrape\_m\_file()}\spxextra{HDF5\_BLS.load\_formats.load\_dat.TimeDomain method}, 
+		\hyperpage{16}
+  \item \spxentry{set\_attributes\_data()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, 
+		\hyperpage{29}
+
+  \indexspace
+  \bigletter T
+  \item \spxentry{take\_FFT()}\spxextra{HDF5\_BLS.load\_formats.load\_dat.TimeDomain method}, 
+		\hyperpage{16}
+  \item \spxentry{TimeDomain}\spxextra{class in HDF5\_BLS.load\_formats.load\_dat}, \hyperpage{16}
+
+  \indexspace
+  \bigletter U
+  \item \spxentry{update\_property()}\spxextra{HDF5\_BLS.wrapper.Wrapper method}, \hyperpage{29}
+
+  \indexspace
+  \bigletter W
+  \item \spxentry{Wrapper}\spxextra{class in HDF5\_BLS.wrapper}, \hyperpage{18}
+  \item \spxentry{WrapperError}, \hyperpage{9}
+
+\end{sphinxtheindex}
