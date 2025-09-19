@@ -134,8 +134,8 @@ Contents:
    source/modules
    
 
-Module Reference
-================
+API Reference
+=============
 
 .. autosummary::
    :toctree: _autosummary
