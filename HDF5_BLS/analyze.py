@@ -1,7 +1,6 @@
 import json
 import inspect
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy.optimize import minimize
 
 class Analyze:
@@ -806,6 +805,7 @@ class Analyze_VIPA(Analyze_general):
 # Example Usage
 if __name__ == "__main__":
     import h5py
+    import matplotlib.pyplot as plt
 
     with h5py.File("/Users/pierrebouvet/Documents/Databases/2504 - Measures fixed cells/Test.h5", "r") as f:
         data = np.array(f["Brillouin/HCU29/HCU29 - 1/Acq 1/Raw data"][()])
