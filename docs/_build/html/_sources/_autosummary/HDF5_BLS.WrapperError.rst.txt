@@ -1,4 +1,4 @@
-HDF5\_BLS.WrapperError
+﻿HDF5\_BLS.WrapperError
 ======================
 
 .. currentmodule:: HDF5_BLS

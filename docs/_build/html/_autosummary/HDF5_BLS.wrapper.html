@@ -11,6 +11,7 @@
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
+    <link rel="shortcut icon" href="../_static/myicon.svg"/>
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../_static/documentation_options.js?v=76e2d817"></script>
@@ -18,9 +19,7 @@
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="HDF5_BLS.wrapper_compatibility" href="HDF5_BLS.wrapper_compatibility.html" />
-    <link rel="prev" title="HDF5_BLS.load_formats.load_sif" href="HDF5_BLS.load_formats.load_sif.html" /> 
+    <link rel="search" title="Search" href="../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -42,66 +41,9 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="HDF5_BLS.html">HDF5_BLS</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="HDF5_BLS.WrapperError.html">HDF5_BLS.WrapperError</a></li>
-<li class="toctree-l2"><a class="reference internal" href="HDF5_BLS.analyze.html">HDF5_BLS.analyze</a></li>
-<li class="toctree-l2"><a class="reference internal" href="HDF5_BLS.conversion_PSD.html">HDF5_BLS.conversion_PSD</a></li>
-<li class="toctree-l2"><a class="reference internal" href="HDF5_BLS.load_data.html">HDF5_BLS.load_data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="HDF5_BLS.load_formats.html">HDF5_BLS.load_formats</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">HDF5_BLS.wrapper</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper"><code class="docutils literal notranslate"><span class="pre">Wrapper</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.filepath"><code class="docutils literal notranslate"><span class="pre">Wrapper.filepath</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.need_for_repack"><code class="docutils literal notranslate"><span class="pre">Wrapper.need_for_repack</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.save"><code class="docutils literal notranslate"><span class="pre">Wrapper.save</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.BRILLOUIN_TYPES_DATASETS"><code class="docutils literal notranslate"><span class="pre">Wrapper.BRILLOUIN_TYPES_DATASETS</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.BRILLOUIN_TYPES_GROUPS"><code class="docutils literal notranslate"><span class="pre">Wrapper.BRILLOUIN_TYPES_GROUPS</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.add_PSD"><code class="docutils literal notranslate"><span class="pre">Wrapper.add_PSD()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.add_abscissa"><code class="docutils literal notranslate"><span class="pre">Wrapper.add_abscissa()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.add_attributes"><code class="docutils literal notranslate"><span class="pre">Wrapper.add_attributes()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.add_dictionary"><code class="docutils literal notranslate"><span class="pre">Wrapper.add_dictionary()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.add_dictionnary"><code class="docutils literal notranslate"><span class="pre">Wrapper.add_dictionnary()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.add_frequency"><code class="docutils literal notranslate"><span class="pre">Wrapper.add_frequency()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.add_hdf5"><code class="docutils literal notranslate"><span class="pre">Wrapper.add_hdf5()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.add_raw_data"><code class="docutils literal notranslate"><span class="pre">Wrapper.add_raw_data()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.add_treated_data"><code class="docutils literal notranslate"><span class="pre">Wrapper.add_treated_data()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.change_brillouin_type"><code class="docutils literal notranslate"><span class="pre">Wrapper.change_brillouin_type()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.change_name"><code class="docutils literal notranslate"><span class="pre">Wrapper.change_name()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.clear_empty_attributes"><code class="docutils literal notranslate"><span class="pre">Wrapper.clear_empty_attributes()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.close"><code class="docutils literal notranslate"><span class="pre">Wrapper.close()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.combine_datasets"><code class="docutils literal notranslate"><span class="pre">Wrapper.combine_datasets()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.compatibility_changes"><code class="docutils literal notranslate"><span class="pre">Wrapper.compatibility_changes()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.copy_dataset"><code class="docutils literal notranslate"><span class="pre">Wrapper.copy_dataset()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.create_group"><code class="docutils literal notranslate"><span class="pre">Wrapper.create_group()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.delete_element"><code class="docutils literal notranslate"><span class="pre">Wrapper.delete_element()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.export_dataset"><code class="docutils literal notranslate"><span class="pre">Wrapper.export_dataset()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.export_group"><code class="docutils literal notranslate"><span class="pre">Wrapper.export_group()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.export_image"><code class="docutils literal notranslate"><span class="pre">Wrapper.export_image()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.get_attributes"><code class="docutils literal notranslate"><span class="pre">Wrapper.get_attributes()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.get_children_elements"><code class="docutils literal notranslate"><span class="pre">Wrapper.get_children_elements()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.get_special_groups_hierarchy"><code class="docutils literal notranslate"><span class="pre">Wrapper.get_special_groups_hierarchy()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.get_structure"><code class="docutils literal notranslate"><span class="pre">Wrapper.get_structure()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.get_type"><code class="docutils literal notranslate"><span class="pre">Wrapper.get_type()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.import_other"><code class="docutils literal notranslate"><span class="pre">Wrapper.import_other()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.import_properties_data"><code class="docutils literal notranslate"><span class="pre">Wrapper.import_properties_data()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.import_raw_data"><code class="docutils literal notranslate"><span class="pre">Wrapper.import_raw_data()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.move"><code class="docutils literal notranslate"><span class="pre">Wrapper.move()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.move_channel_dimension_to_last"><code class="docutils literal notranslate"><span class="pre">Wrapper.move_channel_dimension_to_last()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.print_metadata"><code class="docutils literal notranslate"><span class="pre">Wrapper.print_metadata()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.print_structure"><code class="docutils literal notranslate"><span class="pre">Wrapper.print_structure()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.repack"><code class="docutils literal notranslate"><span class="pre">Wrapper.repack()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.save_as_hdf5"><code class="docutils literal notranslate"><span class="pre">Wrapper.save_as_hdf5()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.save_properties_csv"><code class="docutils literal notranslate"><span class="pre">Wrapper.save_properties_csv()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.set_attributes_data"><code class="docutils literal notranslate"><span class="pre">Wrapper.set_attributes_data()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.update_property"><code class="docutils literal notranslate"><span class="pre">Wrapper.update_property()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.is_tempfile"><code class="docutils literal notranslate"><span class="pre">is_tempfile()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="HDF5_BLS.wrapper_compatibility.html">HDF5_BLS.wrapper_compatibility</a></li>
-</ul>
-</li>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../source/file_format.html">The file format</a></li>
 </ul>
 
         </div>
@@ -118,7 +60,6 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="HDF5_BLS.html">HDF5_BLS</a></li>
       <li class="breadcrumb-item active">HDF5_BLS.wrapper</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/_autosummary/HDF5_BLS.wrapper.rst.txt" rel="nofollow"> View page source</a>
@@ -209,7 +150,7 @@
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>WrapperError_StructureError</strong> – If the parent group does not exist in the HDF5 file.</p>
+<dd class="field-even"><p><a class="reference internal" href="HDF5_BLS.WrapperError.html#HDF5_BLS.WrapperError.WrapperError_StructureError" title="HDF5_BLS.WrapperError.WrapperError_StructureError"><strong>WrapperError_StructureError</strong></a> – If the parent group does not exist in the HDF5 file.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -231,7 +172,7 @@
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>WrapperError_StructureError</strong> – If the parent group does not exist in the HDF5 file.</p>
+<dd class="field-even"><p><a class="reference internal" href="HDF5_BLS.WrapperError.html#HDF5_BLS.WrapperError.WrapperError_StructureError" title="HDF5_BLS.WrapperError.WrapperError_StructureError"><strong>WrapperError_StructureError</strong></a> – If the parent group does not exist in the HDF5 file.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -269,9 +210,9 @@ For attributes, each key is the name of the attribute, and the value is the valu
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>WrapperError_StructureError</strong> – Raises an error if the parent group does not exist in the HDF5 file.</p></li>
-<li><p><strong>WrapperError_Overwrite</strong> – Raises an error if the group already exists in the parent group.</p></li>
-<li><p><strong>WrapperError_ArgumentType</strong> – Raises an error if arguments given to the function do not match the expected type.</p></li>
+<li><p><a class="reference internal" href="HDF5_BLS.WrapperError.html#HDF5_BLS.WrapperError.WrapperError_StructureError" title="HDF5_BLS.WrapperError.WrapperError_StructureError"><strong>WrapperError_StructureError</strong></a> – Raises an error if the parent group does not exist in the HDF5 file.</p></li>
+<li><p><a class="reference internal" href="HDF5_BLS.WrapperError.html#HDF5_BLS.WrapperError.WrapperError_Overwrite" title="HDF5_BLS.WrapperError.WrapperError_Overwrite"><strong>WrapperError_Overwrite</strong></a> – Raises an error if the group already exists in the parent group.</p></li>
+<li><p><a class="reference internal" href="HDF5_BLS.WrapperError.html#HDF5_BLS.WrapperError.WrapperError_ArgumentType" title="HDF5_BLS.WrapperError.WrapperError_ArgumentType"><strong>WrapperError_ArgumentType</strong></a> – Raises an error if arguments given to the function do not match the expected type.</p></li>
 </ul>
 </dd>
 </dl>
@@ -299,9 +240,9 @@ The “<a href="#id3"><span class="problematic" id="id4">Abscissa_</span></a>…
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>WrapperError_StructureError</strong> – Raises an error if the parent group does not exist in the HDF5 file.</p></li>
-<li><p><strong>WrapperError_Overwrite</strong> – Raises an error if the group already exists in the parent group.</p></li>
-<li><p><strong>WrapperError_ArgumentType</strong> – Raises an error if arguments given to the function do not match the expected type.</p></li>
+<li><p><a class="reference internal" href="HDF5_BLS.WrapperError.html#HDF5_BLS.WrapperError.WrapperError_StructureError" title="HDF5_BLS.WrapperError.WrapperError_StructureError"><strong>WrapperError_StructureError</strong></a> – Raises an error if the parent group does not exist in the HDF5 file.</p></li>
+<li><p><a class="reference internal" href="HDF5_BLS.WrapperError.html#HDF5_BLS.WrapperError.WrapperError_Overwrite" title="HDF5_BLS.WrapperError.WrapperError_Overwrite"><strong>WrapperError_Overwrite</strong></a> – Raises an error if the group already exists in the parent group.</p></li>
+<li><p><a class="reference internal" href="HDF5_BLS.WrapperError.html#HDF5_BLS.WrapperError.WrapperError_ArgumentType" title="HDF5_BLS.WrapperError.WrapperError_ArgumentType"><strong>WrapperError_ArgumentType</strong></a> – Raises an error if arguments given to the function do not match the expected type.</p></li>
 <li><p><strong>WrapperError_AttributeError</strong> – Raises an error if the keys of the dictionnary do not match the expected keys.</p></li>
 </ul>
 </dd>
@@ -322,7 +263,7 @@ The “<a href="#id3"><span class="problematic" id="id4">Abscissa_</span></a>…
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>WrapperError_StructureError</strong> – If the parent group does not exist in the HDF5 file.</p>
+<dd class="field-even"><p><a class="reference internal" href="HDF5_BLS.WrapperError.html#HDF5_BLS.WrapperError.WrapperError_StructureError" title="HDF5_BLS.WrapperError.WrapperError_StructureError"><strong>WrapperError_StructureError</strong></a> – If the parent group does not exist in the HDF5 file.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -341,10 +282,10 @@ The “<a href="#id3"><span class="problematic" id="id4">Abscissa_</span></a>…
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>WrapperError_FileNotFound</strong> – Raises an error if the file could not be found.</p></li>
-<li><p><strong>WrapperError_StructureError</strong> – Raises an error if the parent group does not exist in the HDF5 file.</p></li>
-<li><p><strong>WrapperError_Overwrite</strong> – Raises an error if the group already exists in the parent group.</p></li>
-<li><p><a class="reference internal" href="HDF5_BLS.WrapperError.html#HDF5_BLS.WrapperError" title="HDF5_BLS.WrapperError"><strong>WrapperError</strong></a> – Raises an error if the hdf5 file could not be added to the main HDF5 file.</p></li>
+<li><p><a class="reference internal" href="HDF5_BLS.WrapperError.html#HDF5_BLS.WrapperError.WrapperError_FileNotFound" title="HDF5_BLS.WrapperError.WrapperError_FileNotFound"><strong>WrapperError_FileNotFound</strong></a> – Raises an error if the file could not be found.</p></li>
+<li><p><a class="reference internal" href="HDF5_BLS.WrapperError.html#HDF5_BLS.WrapperError.WrapperError_StructureError" title="HDF5_BLS.WrapperError.WrapperError_StructureError"><strong>WrapperError_StructureError</strong></a> – Raises an error if the parent group does not exist in the HDF5 file.</p></li>
+<li><p><a class="reference internal" href="HDF5_BLS.WrapperError.html#HDF5_BLS.WrapperError.WrapperError_Overwrite" title="HDF5_BLS.WrapperError.WrapperError_Overwrite"><strong>WrapperError_Overwrite</strong></a> – Raises an error if the group already exists in the parent group.</p></li>
+<li><p><a class="reference internal" href="HDF5_BLS.WrapperError.html#HDF5_BLS.WrapperError.WrapperError" title="HDF5_BLS.WrapperError.WrapperError"><strong>WrapperError</strong></a> – Raises an error if the hdf5 file could not be added to the main HDF5 file.</p></li>
 </ul>
 </dd>
 </dl>
@@ -364,7 +305,7 @@ The “<a href="#id3"><span class="problematic" id="id4">Abscissa_</span></a>…
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>WrapperError_StructureError</strong> – If the parent group does not exist in the HDF5 file.</p>
+<dd class="field-even"><p><a class="reference internal" href="HDF5_BLS.WrapperError.html#HDF5_BLS.WrapperError.WrapperError_StructureError" title="HDF5_BLS.WrapperError.WrapperError_StructureError"><strong>WrapperError_StructureError</strong></a> – If the parent group does not exist in the HDF5 file.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -390,7 +331,7 @@ The “<a href="#id3"><span class="problematic" id="id4">Abscissa_</span></a>…
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>WrapperError_StructureError</strong> – If the parent group does not exist in the HDF5 file.</p>
+<dd class="field-even"><p><a class="reference internal" href="HDF5_BLS.WrapperError.html#HDF5_BLS.WrapperError.WrapperError_StructureError" title="HDF5_BLS.WrapperError.WrapperError_StructureError"><strong>WrapperError_StructureError</strong></a> – If the parent group does not exist in the HDF5 file.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -411,8 +352,8 @@ The “<a href="#id3"><span class="problematic" id="id4">Abscissa_</span></a>…
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>WrapperError_StructureError</strong> – If the path is not a valid path.</p></li>
-<li><p><strong>WrapperError_ArgumentType</strong> – If the type is not valid</p></li>
+<li><p><a class="reference internal" href="HDF5_BLS.WrapperError.html#HDF5_BLS.WrapperError.WrapperError_StructureError" title="HDF5_BLS.WrapperError.WrapperError_StructureError"><strong>WrapperError_StructureError</strong></a> – If the path is not a valid path.</p></li>
+<li><p><a class="reference internal" href="HDF5_BLS.WrapperError.html#HDF5_BLS.WrapperError.WrapperError_ArgumentType" title="HDF5_BLS.WrapperError.WrapperError_ArgumentType"><strong>WrapperError_ArgumentType</strong></a> – If the type is not valid</p></li>
 </ul>
 </dd>
 </dl>
@@ -430,7 +371,7 @@ The “<a href="#id3"><span class="problematic" id="id4">Abscissa_</span></a>…
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>WrapperError_StructureError</strong> – If the path does not lead to an element.</p>
+<dd class="field-even"><p><a class="reference internal" href="HDF5_BLS.WrapperError.html#HDF5_BLS.WrapperError.WrapperError_StructureError" title="HDF5_BLS.WrapperError.WrapperError_StructureError"><strong>WrapperError_StructureError</strong></a> – If the path does not lead to an element.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -509,7 +450,7 @@ The “<a href="#id3"><span class="problematic" id="id4">Abscissa_</span></a>…
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="HDF5_BLS.WrapperError.html#HDF5_BLS.WrapperError" title="HDF5_BLS.WrapperError"><strong>WrapperError</strong></a> – If the group already exists</p>
+<dd class="field-even"><p><a class="reference internal" href="HDF5_BLS.WrapperError.html#HDF5_BLS.WrapperError.WrapperError" title="HDF5_BLS.WrapperError.WrapperError"><strong>WrapperError</strong></a> – If the group already exists</p>
 </dd>
 </dl>
 </dd></dl>
@@ -523,7 +464,7 @@ The “<a href="#id3"><span class="problematic" id="id4">Abscissa_</span></a>…
 <dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – The path to the element to delete</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="HDF5_BLS.WrapperError.html#HDF5_BLS.WrapperError" title="HDF5_BLS.WrapperError"><strong>WrapperError</strong></a> – Raises an error if the path does not lead to an element.</p>
+<dd class="field-even"><p><a class="reference internal" href="HDF5_BLS.WrapperError.html#HDF5_BLS.WrapperError.WrapperError" title="HDF5_BLS.WrapperError.WrapperError"><strong>WrapperError</strong></a> – Raises an error if the path does not lead to an element.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -658,7 +599,7 @@ The “<a href="#id3"><span class="problematic" id="id4">Abscissa_</span></a>…
 <dd class="field-odd"><p>dict</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>WrapperError_StructureError</strong> – Raises an error if one of the elements has no</p>
+<dd class="field-even"><p><a class="reference internal" href="HDF5_BLS.WrapperError.html#HDF5_BLS.WrapperError.WrapperError_StructureError" title="HDF5_BLS.WrapperError.WrapperError_StructureError"><strong>WrapperError_StructureError</strong></a> – Raises an error if one of the elements has no</p>
 </dd>
 </dl>
 </dd></dl>
@@ -746,7 +687,7 @@ The “<a href="#id3"><span class="problematic" id="id4">Abscissa_</span></a>…
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>WrapperError_StructureError</strong> – If the path does not lead to an element.</p>
+<dd class="field-even"><p><a class="reference internal" href="HDF5_BLS.WrapperError.html#HDF5_BLS.WrapperError.WrapperError_StructureError" title="HDF5_BLS.WrapperError.WrapperError_StructureError"><strong>WrapperError_StructureError</strong></a> – If the path does not lead to an element.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -808,8 +749,8 @@ The “<a href="#id3"><span class="problematic" id="id4">Abscissa_</span></a>…
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>WrapperError_Overwrite</strong> – If the file already exists.</p></li>
-<li><p><a class="reference internal" href="HDF5_BLS.WrapperError.html#HDF5_BLS.WrapperError" title="HDF5_BLS.WrapperError"><strong>WrapperError</strong></a> – Raises an error if the file could not be saved</p></li>
+<li><p><a class="reference internal" href="HDF5_BLS.WrapperError.html#HDF5_BLS.WrapperError.WrapperError_Overwrite" title="HDF5_BLS.WrapperError.WrapperError_Overwrite"><strong>WrapperError_Overwrite</strong></a> – If the file already exists.</p></li>
+<li><p><a class="reference internal" href="HDF5_BLS.WrapperError.html#HDF5_BLS.WrapperError.WrapperError" title="HDF5_BLS.WrapperError.WrapperError"><strong>WrapperError</strong></a> – Raises an error if the file could not be saved</p></li>
 </ul>
 </dd>
 </dl>
@@ -871,10 +812,7 @@ The “<a href="#id3"><span class="problematic" id="id4">Abscissa_</span></a>…
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="HDF5_BLS.load_formats.load_sif.html" class="btn btn-neutral float-left" title="HDF5_BLS.load_formats.load_sif" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="HDF5_BLS.wrapper_compatibility.html" class="btn btn-neutral float-right" title="HDF5_BLS.wrapper_compatibility" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 

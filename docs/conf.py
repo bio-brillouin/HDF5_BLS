@@ -8,7 +8,6 @@ import os
 sys.path.append("../")
 sys.path.insert(0, os.path.abspath('../HDF5_BLS'))
 
-
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 

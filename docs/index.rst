@@ -128,14 +128,14 @@ Contents:
 ---------
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
    :caption: Contents:
    
-   source/modules
+   source/file_format
    
 
-API Reference
-=============
+API
+===
 
 .. autosummary::
    :toctree: _autosummary

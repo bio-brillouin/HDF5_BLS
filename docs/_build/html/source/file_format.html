@@ -1,0 +1,245 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The file format &mdash; HDF5_BLS v1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+    <link rel="shortcut icon" href="../_static/myicon.svg"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=76e2d817"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Welcome to HDF5_BLS’s documentation!" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            HDF5_BLS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">The file format</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#basic-file-structure">Basic file structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#meta-files">Meta-files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#attributes">Attributes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#storing-the-attributes-of-the-data-in-its-metadata">Storing the attributes of the data in its metadata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#types-of-attributes">Types of attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#organization-of-the-attributes">Organization of the attributes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#prefix">Prefix</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#units">Units</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#unification-and-versioning-of-attributes">Unification and Versioning of attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#storing-analysis-and-treatment-processes">Storing analysis and treatment processes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">HDF5_BLS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">The file format</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/source/file_format.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="the-file-format">
+<h1>The file format<a class="headerlink" href="#the-file-format" title="Link to this heading"></a></h1>
+<section id="basic-file-structure">
+<h2>Basic file structure<a class="headerlink" href="#basic-file-structure" title="Link to this heading"></a></h2>
+<p>This project aims at defining a standard for storing Brillouin Light Scattering measures and associated treatment in a HDF5 file.</p>
+<p>HDF5 stands for “Hierarchical Data Format” and is a file format that allows the storage of data in a hierarchical structure. This structure allows to store data in a way that is both human and machine readable. The structure of the file is based on the following base structure, which corresponds to the structure of a file containing a single measure (<em>Measure</em>) where no parameters have been stored:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>file.h5
+└──<span class="w"> </span>Brillouin<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
+<span class="w">    </span>├──<span class="w"> </span>Measure<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
+<span class="w">        </span>└──<span class="w"> </span>Measure<span class="w"> </span><span class="o">(</span>dataset<span class="o">)</span>
+</pre></div>
+</div>
+<p>The dimensionality of the dataset is free, there are therefore by design virtually no restrictions on the data that can be stored in this format.</p>
+<p>The organization of the file is based on the following principles:</p>
+<ul class="simple">
+<li><p>The file is organized in groups and datasets, which allows to store data in a hierarchical structure.</p></li>
+<li><p>Only one dataset corresponding to a measure can be stored per group.</p></li>
+<li><p>The groups are used to organize the file and store metadata and parameters related to the measure, and the datasets are used to store the actual data.</p></li>
+</ul>
+</section>
+<section id="meta-files">
+<h2>Meta-files<a class="headerlink" href="#meta-files" title="Link to this heading"></a></h2>
+<p>The Hierarchical Data Format (HDF5) finds its interest in storage for our community, of different measures. These result in “meta-files” where data corresponding to different experiments can be found. The organization of such a file will follow a structure similar to this one:</p>
+<p>Although no rules are imposed on the way to organize the file, we propose to associate a hierarchical level to an hyperparameter that has been varied for the experiment. In the given example:</p>
+<ul class="simple">
+<li><p>The first hierarchical level is associated to the cell line that is observed</p></li>
+<li><p>The second hierarchical level is associated to the day of the experiment</p></li>
+<li><p>The third hierarchical level is associated to the sample that was measured</p></li>
+</ul>
+<p>Note that the format does not impose any restriction on the names of the groups nor the measures. This choice allows you to create user-friendly files that can be opened with any software that can read HDF5 files (e.g. HDFView, HDFCompass, Fiji, H5Web, Panoply, etc.).</p>
+</section>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<section id="storing-the-attributes-of-the-data-in-its-metadata">
+<h3>Storing the attributes of the data in its metadata<a class="headerlink" href="#storing-the-attributes-of-the-data-in-its-metadata" title="Link to this heading"></a></h3>
+<p>HDF5 file format allows the storage of attributes in the metadata of the groups and datasets. We therefore propose to store all the attributes concerning an experiment in the metadata of its parent group:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>file.h5
+└──<span class="w"> </span>Brillouin<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
+<span class="w">    </span>├──<span class="w"> </span>Measure<span class="w"> </span><span class="o">(</span>group<span class="o">)</span><span class="w"> </span>-&gt;<span class="w"> </span>attributes<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>measure
+<span class="w">        </span>└──<span class="w"> </span>Measure<span class="w"> </span><span class="o">(</span>dataset<span class="o">)</span>
+</pre></div>
+</div>
+<p>Being a hierarchical format, we also propose to store attributes hierarchically: all attributes of parent group apply to childre groups (if not redefined in children groups). Storing attributes in large files can therefore be done the following way:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>file.h5
+└──<span class="w"> </span>Brillouin<span class="w"> </span><span class="o">(</span>group<span class="o">)</span><span class="w"> </span>-&gt;<span class="w"> </span>attributes<span class="w"> </span>shared<span class="w"> </span>by<span class="w"> </span>Measure<span class="w"> </span><span class="m">0</span><span class="w"> </span>and<span class="w"> </span>Measure<span class="w"> </span><span class="m">1</span>
+<span class="w">    </span>├──<span class="w"> </span>Measure<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="o">(</span>group<span class="o">)</span><span class="w"> </span>-&gt;<span class="w"> </span>other<span class="w"> </span>attributes<span class="w"> </span>specific<span class="w"> </span>to<span class="w"> </span>Measure<span class="w"> </span><span class="m">0</span>
+<span class="w">    </span>│<span class="w">   </span>└──<span class="w"> </span>Measure<span class="w"> </span><span class="o">(</span>dataset<span class="o">)</span>
+<span class="w">    </span>├──<span class="w"> </span>Measure<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">(</span>group<span class="o">)</span><span class="w"> </span>-&gt;<span class="w"> </span>other<span class="w"> </span>attributes<span class="w"> </span>specific<span class="w"> </span>to<span class="w"> </span>Measure<span class="w"> </span><span class="m">1</span>
+<span class="w">        </span>└──<span class="w"> </span>Measure<span class="w"> </span><span class="o">(</span>dataset<span class="o">)</span>
+</pre></div>
+</div>
+<p>Note that the access to the whole list of attributes applying to a group or dataset will be possible with the HDF5_BLS package (see <em>Wrapper.get_attributes</em>).</p>
+</section>
+<section id="types-of-attributes">
+<h3>Types of attributes<a class="headerlink" href="#types-of-attributes" title="Link to this heading"></a></h3>
+<p>In an effort to avoid any incompatibility, we propose to store the values of the attributes as ascii-encoded text. The library will then convert the strings to the appropriate type (e.g. float, int, etc.).</p>
+</section>
+<section id="organization-of-the-attributes">
+<h3>Organization of the attributes<a class="headerlink" href="#organization-of-the-attributes" title="Link to this heading"></a></h3>
+<section id="prefix">
+<h4>Prefix<a class="headerlink" href="#prefix" title="Link to this heading"></a></h4>
+<p>We differentiate 5 types of attributes, that we differentiate using the following prefixes:</p>
+<ul class="simple">
+<li><p>SPECTROMETER - Attributes that are specific to the spectrometer used, such as the wavelength of the laser, the type of laser, the type of detector, etc. These attributes are recognized by the capital letter word “SPECTROMETER” in the name of the attribute.</p></li>
+<li><p>MEASURE - Attributes that are specific to the sample, such as the date of the measure, the name of the sample, etc. These attributes are recognized by the capital letter word “MEASURE” in the name of the attribute.</p></li>
+<li><p>FILEPROP - Attributes that are specific to the original file format, such as the name of the file, the date of the file, the version of the file, the precision used on the storage of the data, etc. These attributes are recognized by the capital letter word “FILEPROP” in the name of the attribute.</p></li>
+<li><p>PROCESS - Attributes that are specific to the storage of algorithms. These attributes are recognized by the capital letter word “PROCESS” in the name of the attribute.</p></li>
+<li><p>Attributes that are used inside the HDF5 file, such as the “Brillouin_type” attribute. These attributes are the only ones without a prefix.</p></li>
+</ul>
+</section>
+<section id="units">
+<h4>Units<a class="headerlink" href="#units" title="Link to this heading"></a></h4>
+<p>The name of the attributes contains the unit of the attribute if it has units, in the shape of an underscore followed by the unit in parenthesis. Some parameters will also be given following a given norm, such as the ISO8601 for dates. These norms are not specified in the name of the attribute. Here are some examples of attributes:</p>
+<ul class="simple">
+<li><p>“SPECTROMETER.Detector_Type” is the type of the detector used.</p></li>
+<li><p>“MEASURE.Sample” is the name of the sample.</p></li>
+<li><p>“MEASURE.Exposure_(s)” is the exposure of the sample given in seconds</p></li>
+<li><p>“MEASURE.Date_of_measurement” is the date of the measurement, stored following the ISO8601 norm.</p></li>
+<li><p>“FILEPROP.Name” is the name of the file.</p></li>
+</ul>
+</section>
+</section>
+<section id="unification-and-versioning-of-attributes">
+<h3>Unification and Versioning of attributes<a class="headerlink" href="#unification-and-versioning-of-attributes" title="Link to this heading"></a></h3>
+<p>To unify the name of attributes between laboratories, we propose to use a spreadsheet that contains the list of attributes, their definition, their unit and an example of value. This spreadsheet is available on the project repository and is updated as new attributes are added to the project. Each attribute has a version number that is also stored in the attributes of each data attribute (under FILEPROP.version).</p>
+<p>This spreadsheet will also be the preferred way to define attributes for the measures and the HDF5_BLS package allows to read and import the attributes directly from this spreadsheet (see <em>Wrapper.import_properties_data</em>).</p>
+</section>
+<section id="storing-analysis-and-treatment-processes">
+<h3>Storing analysis and treatment processes<a class="headerlink" href="#storing-analysis-and-treatment-processes" title="Link to this heading"></a></h3>
+<p>Analysis and treatment processes are stored in the “PROCESS” attribute of the treatment groups. This attribute is a JSON file converted to a string, which contains the list of treatment steps performed on the data. This JSON file has the following structure:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;The name of the algorithm&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;version&quot;</span>:<span class="w"> </span><span class="s2">&quot;v 0.1&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;author&quot;</span>:<span class="w"> </span><span class="s2">&quot;Author name and affiliation&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;description&quot;</span>:<span class="w"> </span><span class="s2">&quot;The description of the algorithm&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;functions&quot;</span>:<span class="w"> </span><span class="o">[</span>
+<span class="w">    </span><span class="o">{</span>
+<span class="w">        </span><span class="s2">&quot;function&quot;</span>:<span class="w"> </span><span class="s2">&quot;The 1st function name in the class&quot;</span>,
+<span class="w">        </span><span class="s2">&quot;parameters&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">            </span><span class="s2">&quot;parameter_1&quot;</span>:<span class="w"> </span>value,
+<span class="w">            </span><span class="s2">&quot;parameter_2&quot;</span>:<span class="w"> </span>value,
+<span class="w">            </span>...
+<span class="w">        </span><span class="o">}</span>,
+<span class="w">        </span><span class="s2">&quot;description&quot;</span>:<span class="w"> </span><span class="s2">&quot;The description of the function&quot;</span>
+<span class="w">    </span><span class="o">}</span>,
+<span class="w">    </span><span class="o">{</span>
+<span class="w">        </span><span class="s2">&quot;function&quot;</span>:<span class="w"> </span><span class="s2">&quot;The 2nd function name in the class&quot;</span>,
+<span class="w">        </span><span class="s2">&quot;parameters&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">            </span><span class="s2">&quot;parameter_1&quot;</span>:<span class="w"> </span>value,
+<span class="w">            </span><span class="s2">&quot;parameter_2&quot;</span>:<span class="w"> </span>value,
+<span class="w">            </span>...
+<span class="w">        </span><span class="o">}</span>,
+<span class="w">        </span><span class="s2">&quot;description&quot;</span>:<span class="w"> </span><span class="s2">&quot;The description of the function&quot;</span>
+<span class="w">    </span><span class="o">}</span>,
+<span class="w">    </span>...
+<span class="w">    </span><span class="o">]</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>When the treatment is performed using the modules of the HDF5_BLS package, this attribute is automatically updated. Note that custom treatments can also be stored in this attribute by the user.</p>
+<p>This attribute can be exported to a standalone JSON file using the library. This attribute also allows the library to re-apply the treatment to the data, and modify steps of the treatment if needed.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="Welcome to HDF5_BLS’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Pierre Bouvet.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

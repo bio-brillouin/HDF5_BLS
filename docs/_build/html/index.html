@@ -11,6 +11,7 @@
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
+    <link rel="shortcut icon" href="_static/myicon.svg"/>
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="_static/documentation_options.js?v=76e2d817"></script>
@@ -19,7 +20,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="HDF5_BLS" href="_autosummary/HDF5_BLS.html" /> 
+    <link rel="next" title="The file format" href="source/file_format.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -41,7 +42,11 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="source/file_format.html">The file format</a></li>
+</ul>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="_autosummary/HDF5_BLS.html">HDF5_BLS</a></li>
 </ul>
 
@@ -71,7 +76,12 @@
              
   <section id="welcome-to-hdf5-bls-s-documentation">
 <h1>Welcome to HDF5_BLS’s documentation!<a class="headerlink" href="#welcome-to-hdf5-bls-s-documentation" title="Link to this heading"></a></h1>
-<p>The <cite>HDF5_BLS</cite> project is a Python package allowing users to easily store Brillouin Light Scattering relevant data in a single HDF5 file. The package is designed to integrate in existing Python workflows and to be as easy to use as possible.</p>
+<p>The <cite>HDF5_BLS</cite> project is a Python package allowing users to easily store Brillouin Light Scattering relevant data in a single HDF5 file. The package is designed to integrate in existing Python workflows and to be as easy to use as possible. The package is a solution for unifying the data storage of Brillouin Light Scattering experiments, with three main goals:</p>
+<ul class="simple">
+<li><p><strong>Simplicity</strong>: Make it easy to store and retrieve data from a single file.</p></li>
+<li><p><strong>Universality</strong>: Allow all modalities to be stored in a single file, while unifying the metadata associated to the data.</p></li>
+<li><p><strong>Expandability</strong>: Allow the format to grow with the needs of the community.</p></li>
+</ul>
 <section id="quick-start">
 <h2>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading"></a></h2>
 <section id="spirit-of-the-project">
@@ -179,11 +189,20 @@
 <section id="contents">
 <h2>Contents:<a class="headerlink" href="#contents" title="Link to this heading"></a></h2>
 <div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="source/file_format.html">The file format</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="source/file_format.html#basic-file-structure">Basic file structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/file_format.html#meta-files">Meta-files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/file_format.html#attributes">Attributes</a></li>
+</ul>
+</li>
+</ul>
 </div>
 </section>
 </section>
-<section id="api-reference">
-<h1>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading"></a></h1>
+<section id="api">
+<h1>API<a class="headerlink" href="#api" title="Link to this heading"></a></h1>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/HDF5_BLS.html#module-HDF5_BLS" title="HDF5_BLS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HDF5_BLS</span></code></a></p></td>
@@ -197,7 +216,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="_autosummary/HDF5_BLS.html" class="btn btn-neutral float-right" title="HDF5_BLS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="source/file_format.html" class="btn btn-neutral float-right" title="The file format" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -75,6 +75,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">csv</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 <span class="c1"># from HDF5_BLS.load_data import load_general</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">HDF5_BLS.WrapperError</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
@@ -1488,7 +1489,7 @@
 
 <div class="viewcode-block" id="Wrapper.save_as_hdf5">
 <a class="viewcode-back" href="../../_autosummary/HDF5_BLS.wrapper.html#HDF5_BLS.wrapper.Wrapper.save_as_hdf5">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">save_as_hdf5</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">remove_old_file</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">overwrite</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span> <span class="c1"># Test made</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_as_hdf5</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">remove_old_file</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">overwrite</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span> <span class="c1"># Test made 19.09.25</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Saves the data and attributes to an HDF5 file. In practice, moves the temporary hdf5 file to a new location and removes the old file if specified.</span>
 <span class="sd">    </span>
 <span class="sd">        Parameters</span>
