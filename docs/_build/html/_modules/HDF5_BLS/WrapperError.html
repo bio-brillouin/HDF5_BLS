@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HDF5_BLS.WrapperError &mdash; HDF5_BLS v0.1.1 documentation</title>
+  <title>HDF5_BLS.WrapperError &mdash; HDF5_BLS v1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=5e3f2911"></script>
+      <script src="../../_static/documentation_options.js?v=76e2d817"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -39,9 +39,8 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">HDF5_BLS</a></li>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../_autosummary/HDF5_BLS.html">HDF5_BLS</a></li>
 </ul>
 
         </div>
@@ -70,52 +69,37 @@
              
   <h1>Source code for HDF5_BLS.WrapperError</h1><div class="highlight"><pre>
 <div class="viewcode-block" id="WrapperError">
-<a class="viewcode-back" href="../../source/HDF5_BLS.html#HDF5_BLS.WrapperError.WrapperError">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/HDF5_BLS.WrapperError.html#HDF5_BLS.WrapperError">[docs]</a>
 <span></span><span class="k">class</span><span class="w"> </span><span class="nc">WrapperError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">msg</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="WrapperError_FileNotFound">
-<a class="viewcode-back" href="../../source/HDF5_BLS.html#HDF5_BLS.WrapperError.WrapperError_FileNotFound">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">WrapperError_FileNotFound</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">msg</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
 
-
-<div class="viewcode-block" id="WrapperError_StructureError">
-<a class="viewcode-back" href="../../source/HDF5_BLS.html#HDF5_BLS.WrapperError.WrapperError_StructureError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">WrapperError_StructureError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">msg</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
 
-
-<div class="viewcode-block" id="WrapperError_Overwrite">
-<a class="viewcode-back" href="../../source/HDF5_BLS.html#HDF5_BLS.WrapperError.WrapperError_Overwrite">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">WrapperError_Overwrite</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">msg</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
 
-
-<div class="viewcode-block" id="WrapperError_ArgumentType">
-<a class="viewcode-back" href="../../source/HDF5_BLS.html#HDF5_BLS.WrapperError.WrapperError_ArgumentType">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">WrapperError_ArgumentType</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">msg</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
 
-
-<div class="viewcode-block" id="WrapperError_Save">
-<a class="viewcode-back" href="../../source/HDF5_BLS.html#HDF5_BLS.WrapperError.WrapperError_Save">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">WrapperError_Save</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">msg</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span></div>
-
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
 </pre></div>
 
            </div>

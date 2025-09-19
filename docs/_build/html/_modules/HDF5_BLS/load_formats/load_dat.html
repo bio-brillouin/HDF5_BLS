@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HDF5_BLS.load_formats.load_dat &mdash; HDF5_BLS v0.1.1 documentation</title>
+  <title>HDF5_BLS.load_formats.load_dat &mdash; HDF5_BLS v1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=5e3f2911"></script>
+      <script src="../../../_static/documentation_options.js?v=76e2d817"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -39,9 +39,8 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">HDF5_BLS</a></li>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../_autosummary/HDF5_BLS.html">HDF5_BLS</a></li>
 </ul>
 
         </div>
@@ -79,14 +78,14 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">HDF5_BLS.load_formats.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoadError_parameters</span>
 
 <div class="viewcode-block" id="PipelineLogger">
-<a class="viewcode-back" href="../../../source/HDF5_BLS.load_formats.html#HDF5_BLS.load_formats.load_dat.PipelineLogger">[docs]</a>
+<a class="viewcode-back" href="../../../_autosummary/HDF5_BLS.load_formats.load_dat.html#HDF5_BLS.load_formats.load_dat.PipelineLogger">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PipelineLogger</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Handler</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pipeline</span> <span class="o">=</span> <span class="p">[]</span>
 
 <div class="viewcode-block" id="PipelineLogger.emit">
-<a class="viewcode-back" href="../../../source/HDF5_BLS.load_formats.html#HDF5_BLS.load_formats.load_dat.PipelineLogger.emit">[docs]</a>
+<a class="viewcode-back" href="../../../_autosummary/HDF5_BLS.load_formats.load_dat.html#HDF5_BLS.load_formats.load_dat.PipelineLogger.emit">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">emit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
         <span class="n">message</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">getMessage</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">message</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;Call:&quot;</span><span class="p">):</span>
@@ -100,7 +99,7 @@
 
 
 <div class="viewcode-block" id="TimeDomain">
-<a class="viewcode-back" href="../../../source/HDF5_BLS.load_formats.html#HDF5_BLS.load_formats.load_dat.TimeDomain">[docs]</a>
+<a class="viewcode-back" href="../../../_autosummary/HDF5_BLS.load_formats.load_dat.html#HDF5_BLS.load_formats.load_dat.TimeDomain">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TimeDomain</span><span class="p">():</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">attributes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="n">filepath</span>
@@ -111,7 +110,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="TimeDomain.scrape_m_file">
-<a class="viewcode-back" href="../../../source/HDF5_BLS.load_formats.html#HDF5_BLS.load_formats.load_dat.TimeDomain.scrape_m_file">[docs]</a>
+<a class="viewcode-back" href="../../../_autosummary/HDF5_BLS.load_formats.load_dat.html#HDF5_BLS.load_formats.load_dat.TimeDomain.scrape_m_file">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">scrape_m_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">meta_filebase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">)</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span>
         <span class="n">meta_file</span> <span class="o">=</span> <span class="n">meta_filebase</span> <span class="o">+</span> <span class="s2">&quot;.m&quot;</span>
@@ -143,7 +142,7 @@
 
 
 <div class="viewcode-block" id="TimeDomain.scrape_con_file">
-<a class="viewcode-back" href="../../../source/HDF5_BLS.load_formats.html#HDF5_BLS.load_formats.load_dat.TimeDomain.scrape_con_file">[docs]</a>
+<a class="viewcode-back" href="../../../_autosummary/HDF5_BLS.load_formats.load_dat.html#HDF5_BLS.load_formats.load_dat.TimeDomain.scrape_con_file">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">scrape_con_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">n_traces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;TIMEDOMAIN.n_traces&quot;</span><span class="p">]</span>
         <span class="c1"># Open the file and read its contents as a single string</span>
@@ -195,7 +194,7 @@
 
 
 <div class="viewcode-block" id="TimeDomain.basic_process">
-<a class="viewcode-back" href="../../../source/HDF5_BLS.load_formats.html#HDF5_BLS.load_formats.load_dat.TimeDomain.basic_process">[docs]</a>
+<a class="viewcode-back" href="../../../_autosummary/HDF5_BLS.load_formats.load_dat.html#HDF5_BLS.load_formats.load_dat.TimeDomain.basic_process">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">basic_process</span><span class="p">(</span><span class="n">attributes</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
         <span class="n">n_traces</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;TIMEDOMAIN.n_traces&quot;</span><span class="p">]</span>
         <span class="n">points_per_trace</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;TIMEDOMAIN.points_per_trace&quot;</span><span class="p">]</span>
@@ -232,7 +231,7 @@
 
 
 <div class="viewcode-block" id="TimeDomain.load_dc">
-<a class="viewcode-back" href="../../../source/HDF5_BLS.load_formats.html#HDF5_BLS.load_formats.load_dat.TimeDomain.load_dc">[docs]</a>
+<a class="viewcode-back" href="../../../_autosummary/HDF5_BLS.load_formats.load_dat.html#HDF5_BLS.load_formats.load_dat.TimeDomain.load_dc">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_dc</span><span class="p">(</span><span class="n">attributes</span><span class="p">,</span> <span class="n">data_ac</span><span class="p">,</span> <span class="n">filepath_dc</span><span class="p">):</span>
         <span class="n">Nx_steps</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;TIMEDOMAIN.Nx_steps&quot;</span><span class="p">]</span>
         <span class="n">Ny_steps</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;TIMEDOMAIN.Ny_steps&quot;</span><span class="p">]</span>
@@ -251,7 +250,7 @@
 
 
 <div class="viewcode-block" id="TimeDomain.find_copeaks">
-<a class="viewcode-back" href="../../../source/HDF5_BLS.load_formats.html#HDF5_BLS.load_formats.load_dat.TimeDomain.find_copeaks">[docs]</a>
+<a class="viewcode-back" href="../../../_autosummary/HDF5_BLS.load_formats.load_dat.html#HDF5_BLS.load_formats.load_dat.TimeDomain.find_copeaks">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">find_copeaks</span><span class="p">(</span><span class="n">attributes</span><span class="p">,</span> <span class="n">data_mod</span><span class="p">):</span>
         <span class="n">Nx_steps</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;TIMEDOMAIN.Nx_steps&quot;</span><span class="p">]</span>
         <span class="n">Ny_steps</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;TIMEDOMAIN.Ny_steps&quot;</span><span class="p">]</span>
@@ -285,7 +284,7 @@
 
 
 <div class="viewcode-block" id="TimeDomain.make_time">
-<a class="viewcode-back" href="../../../source/HDF5_BLS.load_formats.html#HDF5_BLS.load_formats.load_dat.TimeDomain.make_time">[docs]</a>
+<a class="viewcode-back" href="../../../_autosummary/HDF5_BLS.load_formats.load_dat.html#HDF5_BLS.load_formats.load_dat.TimeDomain.make_time">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">make_time</span><span class="p">(</span><span class="n">attributes</span><span class="p">):</span>
         <span class="n">points_per_trace</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;TIMEDOMAIN.points_per_trace&quot;</span><span class="p">]</span>
         <span class="n">hint</span> <span class="o">=</span> <span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;TIMEDOMAIN.hint&quot;</span><span class="p">]</span>
@@ -301,7 +300,7 @@
 
 
 <div class="viewcode-block" id="TimeDomain.LPfilter">
-<a class="viewcode-back" href="../../../source/HDF5_BLS.load_formats.html#HDF5_BLS.load_formats.load_dat.TimeDomain.LPfilter">[docs]</a>
+<a class="viewcode-back" href="../../../_autosummary/HDF5_BLS.load_formats.load_dat.html#HDF5_BLS.load_formats.load_dat.TimeDomain.LPfilter">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">LPfilter</span><span class="p">(</span><span class="n">attributes</span><span class="p">,</span> <span class="n">data_in</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
         <span class="c1"># Sampling frequency (Hz) from the time vector</span>
         <span class="n">fs</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">dt</span>
@@ -324,7 +323,7 @@
 
 
 <div class="viewcode-block" id="TimeDomain.polyfit_removal">
-<a class="viewcode-back" href="../../../source/HDF5_BLS.load_formats.html#HDF5_BLS.load_formats.load_dat.TimeDomain.polyfit_removal">[docs]</a>
+<a class="viewcode-back" href="../../../_autosummary/HDF5_BLS.load_formats.load_dat.html#HDF5_BLS.load_formats.load_dat.TimeDomain.polyfit_removal">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">polyfit_removal</span><span class="p">(</span><span class="n">atttributes</span><span class="p">,</span> <span class="n">data_in</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Beginning polynomial fit removal...&#39;</span><span class="p">)</span>
         <span class="c1"># polynomial fit and removal</span>
@@ -350,7 +349,7 @@
 
 
 <div class="viewcode-block" id="TimeDomain.HPfilter">
-<a class="viewcode-back" href="../../../source/HDF5_BLS.load_formats.html#HDF5_BLS.load_formats.load_dat.TimeDomain.HPfilter">[docs]</a>
+<a class="viewcode-back" href="../../../_autosummary/HDF5_BLS.load_formats.load_dat.html#HDF5_BLS.load_formats.load_dat.TimeDomain.HPfilter">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">HPfilter</span><span class="p">(</span><span class="n">attributes</span><span class="p">,</span> <span class="n">data_in</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
         <span class="c1"># Sampling frequency (Hz) from the time vector</span>
         <span class="n">fs</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">dt</span>
@@ -369,7 +368,7 @@
 
 
 <div class="viewcode-block" id="TimeDomain.take_FFT">
-<a class="viewcode-back" href="../../../source/HDF5_BLS.load_formats.html#HDF5_BLS.load_formats.load_dat.TimeDomain.take_FFT">[docs]</a>
+<a class="viewcode-back" href="../../../_autosummary/HDF5_BLS.load_formats.load_dat.html#HDF5_BLS.load_formats.load_dat.TimeDomain.take_FFT">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">take_FFT</span><span class="p">(</span><span class="n">wrp</span><span class="p">,</span> <span class="n">data_in</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Taking the FFT...&#39;</span><span class="p">)</span>
         <span class="n">zp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;TIMEDOMAIN.zp&quot;</span><span class="p">])</span> <span class="c1"># zero padding coefficient</span>
@@ -415,7 +414,7 @@
 
 
 <div class="viewcode-block" id="load_dat_GHOST">
-<a class="viewcode-back" href="../../../source/HDF5_BLS.load_formats.html#HDF5_BLS.load_formats.load_dat.load_dat_GHOST">[docs]</a>
+<a class="viewcode-back" href="../../../_autosummary/HDF5_BLS.load_formats.load_dat.html#HDF5_BLS.load_formats.load_dat.load_dat_GHOST">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">load_dat_GHOST</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads DAT files obtained with the GHOST software</span>
 
@@ -473,7 +472,7 @@
 
 
 <div class="viewcode-block" id="load_dat_TimeDomain">
-<a class="viewcode-back" href="../../../source/HDF5_BLS.load_formats.html#HDF5_BLS.load_formats.load_dat.load_dat_TimeDomain">[docs]</a>
+<a class="viewcode-back" href="../../../_autosummary/HDF5_BLS.load_formats.load_dat.html#HDF5_BLS.load_formats.load_dat.load_dat_TimeDomain">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">load_dat_TimeDomain</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads DAT files obtained with the TimeDomain software</span>
 

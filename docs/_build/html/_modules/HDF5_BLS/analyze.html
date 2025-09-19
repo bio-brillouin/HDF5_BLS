@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HDF5_BLS.analyze &mdash; HDF5_BLS v0.1.1 documentation</title>
+  <title>HDF5_BLS.analyze &mdash; HDF5_BLS v1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=5e3f2911"></script>
+      <script src="../../_static/documentation_options.js?v=76e2d817"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -39,9 +39,8 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">HDF5_BLS</a></li>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../_autosummary/HDF5_BLS.html">HDF5_BLS</a></li>
 </ul>
 
         </div>
@@ -76,7 +75,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">minimize</span>
 
 <div class="viewcode-block" id="Analyze">
-<a class="viewcode-back" href="../../source/HDF5_BLS.html#HDF5_BLS.analyze.Analyze">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/HDF5_BLS.analyze.html#HDF5_BLS.analyze.Analyze">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Analyze</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This class is the base class for all the analyze classes. It provides a common interface for all the classes. Its purpose is to provide the basic silent functions to open, create and save algorithms, and to store the different steps of the analysis and their effects on the data.</span>
 <span class="sd">    The philosophy of this class is to rely on 4 attributes that will be changed by the different functions of the class:</span>
@@ -451,7 +450,7 @@
 
 
 <div class="viewcode-block" id="Analyze_general">
-<a class="viewcode-back" href="../../source/HDF5_BLS.html#HDF5_BLS.analyze.Analyze_general">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/HDF5_BLS.analyze.html#HDF5_BLS.analyze.Analyze_general">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Analyze_general</span><span class="p">(</span><span class="n">Analyze</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This class is a class inherited from the Analyze class used to store steps of analysis that are not specific to a particular type of spectrometer and that are not interesting to show in an algorithm. For example, the function to add a remarkable point to the data</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -534,7 +533,7 @@
 
 
 <div class="viewcode-block" id="Analyze_VIPA">
-<a class="viewcode-back" href="../../source/HDF5_BLS.html#HDF5_BLS.analyze.Analyze_VIPA">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/HDF5_BLS.analyze.html#HDF5_BLS.analyze.Analyze_VIPA">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Analyze_VIPA</span><span class="p">(</span><span class="n">Analyze_general</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This class is a child class of Analyze_general. It inherits all the methods of the parent class and adds the functions specific to VIPA spectrometers.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -551,7 +550,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_history</span> <span class="o">=</span> <span class="p">[]</span>
 
 <div class="viewcode-block" id="Analyze_VIPA.add_point">
-<a class="viewcode-back" href="../../source/HDF5_BLS.html#HDF5_BLS.analyze.Analyze_VIPA.add_point">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/HDF5_BLS.analyze.html#HDF5_BLS.analyze.Analyze_VIPA.add_point">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position_center_window</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">window_width</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">type_pnt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Elastic&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds a single point to the list of points together with a window to the list of windows with its type. Each point is an intensity extremum obtained by fitting a quadratic polynomial to the windowed data.</span>
@@ -593,7 +592,7 @@
 
         
 <div class="viewcode-block" id="Analyze_VIPA.center_x_axis">
-<a class="viewcode-back" href="../../source/HDF5_BLS.html#HDF5_BLS.analyze.Analyze_VIPA.center_x_axis">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/HDF5_BLS.analyze.html#HDF5_BLS.analyze.Analyze_VIPA.center_x_axis">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">center_x_axis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">center_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Centers the x axis using the first points stored in the class. The parameter &quot;center_type&quot; is used to determine wether to center the axis using the first elastic peak (center_type = &quot;Elastic&quot;) or the average of two Stokes and Anti-Stokes peaks (center_type = &quot;Inelastic&quot;).</span>
@@ -650,7 +649,7 @@
 
 
 <div class="viewcode-block" id="Analyze_VIPA.interpolate_elastic_inelastic">
-<a class="viewcode-back" href="../../source/HDF5_BLS.html#HDF5_BLS.analyze.Analyze_VIPA.interpolate_elastic_inelastic">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/HDF5_BLS.analyze.html#HDF5_BLS.analyze.Analyze_VIPA.interpolate_elastic_inelastic">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">interpolate_elastic_inelastic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shift</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">FSR</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Uses the elastic peaks, and the positions of the Brillouin peaks on the different orders to obtain a frequency axis by interpolating the position of the peaks with a quadratic polynomial. The user can either enter a value for the shift or the FSR, or both. The shift value is used to calibrate the frequency axis using known values of shifts when using a calibration sample to obtain the frequency axis. The FSR value is used to calibrate the frequency axis using a known values of FSR for the VIPA.</span>
@@ -781,7 +780,7 @@
 
 
 <div class="viewcode-block" id="Analyze_VIPA.interpolate_between_one_order">
-<a class="viewcode-back" href="../../source/HDF5_BLS.html#HDF5_BLS.analyze.Analyze_VIPA.interpolate_between_one_order">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/HDF5_BLS.analyze.html#HDF5_BLS.analyze.Analyze_VIPA.interpolate_between_one_order">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">interpolate_between_one_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">FSR</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates a frequency axis by using the signal between two elastic peaks included. By imposing that the distance in frequency between two neighboring elastic peaks is one FSR, and that the shift of both stokes and anti-stokes peaks to their respective elastic peak is the same, we can obtain a frequency axis. The user has to enter a value for the FSR to calibrate the frequency axis.</span>
@@ -838,7 +837,7 @@
 
 
 <div class="viewcode-block" id="Analyze_VIPA.interpolate_elastic">
-<a class="viewcode-back" href="../../source/HDF5_BLS.html#HDF5_BLS.analyze.Analyze_VIPA.interpolate_elastic">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/HDF5_BLS.analyze.html#HDF5_BLS.analyze.Analyze_VIPA.interpolate_elastic">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">interpolate_elastic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">FSR</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Uses positions of the elastic peaks on the different orders, to obtain a frequency axis by interpolating the position of the peaks with a quadratic polynomial. The user has to enter a value for the FSR to calibrate the frequency axis.</span>

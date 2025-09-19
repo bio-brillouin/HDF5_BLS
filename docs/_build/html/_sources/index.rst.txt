@@ -130,9 +130,11 @@ Contents:
    source/modules
    
 
-Indices and tables
-==================
+API Reference
+=============
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. autosummary::
+   :toctree: _autosummary
+   :recursive:
+
+   HDF5_BLS

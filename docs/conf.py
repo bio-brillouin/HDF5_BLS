@@ -26,6 +26,13 @@ extensions = [
     'sphinx.ext.viewcode',     # For adding links to the source code
     'sphinx.ext.autosummary',  # For generating summary tables
 ]
+autosummary_generate = True
+
+autodoc_default_options = {
+    'members': True,
+    'undoc-members': True,
+    'show-inheritance': True,
+}
 
 templates_path = ['_templates']
 master_doc = 'index'
