@@ -18,7 +18,7 @@ Contents:
 ---------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    
    source/quickstart
    source/file_format
