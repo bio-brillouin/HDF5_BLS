@@ -32,4 +32,7 @@ API
    :toctree: _autosummary
    :recursive:
 
-   HDF5_BLS
+   HDF5_BLS.wrapper 
+   HDF5_BLS.analyze
+   HDF5_BLS.treat
+   HDF5_BLS.load_data

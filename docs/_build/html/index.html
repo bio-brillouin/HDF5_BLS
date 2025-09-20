@@ -49,7 +49,10 @@
 <li class="toctree-l1"><a class="reference internal" href="source/hdf5_bls_package.html">The HDF5_BLS package</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="_autosummary/HDF5_BLS.html">HDF5_BLS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_autosummary/HDF5_BLS.wrapper.html">HDF5_BLS.wrapper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_autosummary/HDF5_BLS.analyze.html">HDF5_BLS.analyze</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_autosummary/HDF5_BLS.treat.html">HDF5_BLS.treat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_autosummary/HDF5_BLS.load_data.html">HDF5_BLS.load_data</a></li>
 </ul>
 
         </div>
@@ -94,19 +97,45 @@
 <li class="toctree-l1"><a class="reference internal" href="source/quickstart.html">Quick Start</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="source/quickstart.html#spirit-of-the-project">Spirit of the project</a></li>
 <li class="toctree-l2"><a class="reference internal" href="source/quickstart.html#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source/quickstart.html#usage">Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/quickstart.html#usage">Usage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="source/quickstart.html#integration-to-workflow">Integration to workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="source/quickstart.html#extracting-the-data-from-the-hdf5-file">Extracting the data from the HDF5 file</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="source/file_format.html">The file format</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="source/file_format.html#basic-file-structure">Basic file structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="source/file_format.html#meta-files">Meta-files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source/file_format.html#attributes">Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/file_format.html#attributes">Attributes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="source/file_format.html#storing-the-attributes-of-the-data-in-its-metadata">Storing the attributes of the data in its metadata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="source/file_format.html#types-of-attributes">Types of attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="source/file_format.html#organization-of-the-attributes">Organization of the attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="source/file_format.html#unification-and-versioning-of-attributes">Unification and Versioning of attributes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="source/file_format.html#storing-analysis-and-treatment-processes">Storing analysis and treatment processes</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="source/hdf5_bls_package.html">The HDF5_BLS package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="source/hdf5_bls_package.html#installation-and-presentation">Installation and presentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/hdf5_bls_package.html#installation-and-presentation">Installation and presentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="source/hdf5_bls_package.html#installation">Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="source/hdf5_bls_package.html#presentation">Presentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="source/hdf5_bls_package.html#module-structure">Module structure</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="source/hdf5_bls_package.html#the-wrapper-object">The Wrapper object</a></li>
-<li class="toctree-l2"><a class="reference internal" href="source/hdf5_bls_package.html#adding-data-to-the-hdf5-file-from-script">Adding data to the HDF5 file (from script)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source/hdf5_bls_package.html#adding-data-to-the-hdf5-file-from-script">Adding data to the HDF5 file (from script)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="source/hdf5_bls_package.html#general-approach-to-adding-data-to-the-hdf5-file">General approach to adding data to the HDF5 file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="source/hdf5_bls_package.html#exception-1-adding-treated-data">Exception 1: Adding treated data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="source/hdf5_bls_package.html#exception-2-adding-an-abscissa">Exception 2: Adding an abscissa</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="source/hdf5_bls_package.html#importing-data-from-external-files">Importing data from external files</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="source/hdf5_bls_package.html#general-approach-for-importing-data">General approach for importing data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="source/hdf5_bls_package.html#adding-and-merging-hdf5-files">Adding and merging HDF5 files</a></li>
 </ul>
 </li>
 </ul>
@@ -117,7 +146,16 @@
 <h1>API<a class="headerlink" href="#api" title="Link to this heading"></a></h1>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/HDF5_BLS.html#module-HDF5_BLS" title="HDF5_BLS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HDF5_BLS</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/HDF5_BLS.wrapper.html#module-HDF5_BLS.wrapper" title="HDF5_BLS.wrapper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HDF5_BLS.wrapper</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/HDF5_BLS.analyze.html#module-HDF5_BLS.analyze" title="HDF5_BLS.analyze"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HDF5_BLS.analyze</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/HDF5_BLS.treat.html#module-HDF5_BLS.treat" title="HDF5_BLS.treat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HDF5_BLS.treat</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/HDF5_BLS.load_data.html#module-HDF5_BLS.load_data" title="HDF5_BLS.load_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HDF5_BLS.load_data</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 </tbody>

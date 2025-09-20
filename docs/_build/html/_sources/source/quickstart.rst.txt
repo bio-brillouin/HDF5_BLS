@@ -110,3 +110,9 @@ Once the data is stored in the HDF5 file, you can extract it as follows:
 
    # Extract the data
    data = wrp["Brillouin/path/in/file/Raw data"]
+
+To get the path leading to a dataset, you can either use existing software to browse the file (we recommend `Panoply <https://www.giss.nasa.gov/tools/panoply/>`__ and `myHDF5 <https://myhdf5.hdfgroup.org>`__), or you can use the HDF5\_BLS package to display the structure of the file:
+
+.. code-block:: python
+
+    print(wrp)

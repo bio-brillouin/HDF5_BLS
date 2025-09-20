@@ -93,12 +93,13 @@ Adding treated data differs slightly from adding individual datasets as we'll us
 Let's consider the following example: we have treated our data and have obtained a shift array (shift), a linewidth array (linewidth) and their errors (shift\_err and linewidth\_err). We want to add these arrays in the same group as the PSD, that is the group "Test". The treated data are stored in a separate group nested in the "Test" group by the choices made while building the structure of the file. This is so the name of the treatment group can be chosen freely. Let's say that in this case, we have performed a non-negative matrix factorization (NnMF) on the data, and extracted the shift values closest to 5GHz. We will therefore call this treatment "NnMF - 5GHz". We will write:
 
 .. code-block:: python
+
     wrp.add_treated_data(shift = shift,
-                        linewidth = linewidth,
-                        shift_err = shift_err,
-                        linewidth_err = linewidth_err,
-                        parent_group = "Brillouin/Test", 
-                        name_group = "NnMF - 5GHz")
+                         linewidth = linewidth,
+                         shift_err = shift_err,
+                         linewidth_err = linewidth_err,
+                         parent_group = "Brillouin/Test", 
+                         name_group = "NnMF - 5GHz")
 
 Exception 2: Adding an abscissa
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -42,13 +42,16 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../file_format.html">The file format</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../hdf5_bls_package.html">The HDF5_BLS package</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../_autosummary/HDF5_BLS.html">HDF5_BLS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../_autosummary/HDF5_BLS.wrapper.html">HDF5_BLS.wrapper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../_autosummary/HDF5_BLS.analyze.html">HDF5_BLS.analyze</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../_autosummary/HDF5_BLS.treat.html">HDF5_BLS.treat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../_autosummary/HDF5_BLS.load_data.html">HDF5_BLS.load_data</a></li>
 </ul>
 
         </div>
@@ -134,6 +137,54 @@ Let’s consider the following example: we have just initialized a wrapper objec
 <span class="n">wrp</span><span class="o">.</span><span class="n">add_frequency</span><span class="p">(</span><span class="n">freq</span><span class="p">,</span>
                   <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin/Water spectrum&quot;</span><span class="p">,</span>
                   <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Frequency&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="exception-1-adding-treated-data">
+<h1>Exception 1: Adding treated data<a class="headerlink" href="#exception-1-adding-treated-data" title="Link to this heading"></a></h1>
+<p>Adding treated data differs slightly from adding individual datasets as we’ll usually collect a number of different results to store. Therefore, instead of using different functions to store a shift or linewidth array, we have chosen to use a single function to add all the results of treatment, and create the group dedicated to storing the treatment results. As such, the function will have the following attributes:</p>
+<ul class="simple">
+<li><p>parent_group: The parent group where to store the data in the HDF5 file</p></li>
+<li><p>name_group: The name of the group that will contain the treatment results</p></li>
+<li><p>amplitude (optional): The amplitude array to add</p></li>
+<li><p>amplitude_err (optional): The error of the amplitude array</p></li>
+<li><p>blt (optional): The Loss Tangent array to add</p></li>
+<li><p>blt_err (optional): The error of the Loss Tangent array</p></li>
+<li><p>linewidth (optional): The linewidth array to add</p></li>
+<li><p>linewidth_err (optional): The error of the linewidth array</p></li>
+<li><p>shift(optional): The shift array to add</p></li>
+<li><p>shift_err (optional): The error of the shift array</p></li>
+</ul>
+<p><strong>Example</strong></p>
+<p>Let’s consider the following example: we have treated our data and have obtained a shift array (shift), a linewidth array (linewidth) and their errors (shift_err and linewidth_err). We want to add these arrays in the same group as the PSD, that is the group “Test”. The treated data are stored in a separate group nested in the “Test” group by the choices made while building the structure of the file. This is so the name of the treatment group can be chosen freely. Let’s say that in this case, we have performed a non-negative matrix factorization (NnMF) on the data, and extracted the shift values closest to 5GHz. We will therefore call this treatment “NnMF - 5GHz”. We will write:</p>
+</section>
+<section id="exception-2-adding-an-abscissa">
+<h1>Exception 2: Adding an abscissa<a class="headerlink" href="#exception-2-adding-an-abscissa" title="Link to this heading"></a></h1>
+<p>Adding abscissa also differs from the general case as we might want to add an abscissa array that is multi-dimensional and be able to know which dimensions of the PSD the abscissa correspomnds to. The <em>add_abscissa</em> method therefore has the following attributes:</p>
+<ul class="simple">
+<li><p>parent_group: The parent group where to store the data in the HDF5 file</p></li>
+<li><p>name: The name of the abscissa to add</p></li>
+<li><p>unit: The unit of the axis</p></li>
+<li><p>dim_start: The first dimension of the abscissa array, by default 0</p></li>
+<li><p>dim_end: The last dimension of the abscissa array, by default the last number of dimension of the array</p></li>
+</ul>
+<p><strong>Example</strong>
+Let’s consider the following example: we have just initialized a wrapper object and want to add an abscissa axis corresponding to our measures that have been stored in the group “Brillouin/Temp”. Say that this abscissa axis corresponds to temperature values, from 35 to 40 degrees and that there are 10 points in the axis. We will therefore call this abscissa axis “Temperature”. We will write:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">wrp</span><span class="o">.</span><span class="n">add_abscissa</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">35</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+                <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin/Temp&quot;</span><span class="p">,</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Temperature&quot;</span><span class="p">,</span>
+                <span class="n">unit</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span>
+                <span class="n">dim_start</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="n">dim_end</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you now want to use custom values for this axis, you can also specify them directly in the function call:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">wrp</span><span class="o">.</span><span class="n">add_abscissa</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">,</span>
+                <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin/Temp&quot;</span><span class="p">,</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Temperature&quot;</span><span class="p">,</span>
+                <span class="n">unit</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span>
+                <span class="n">dim_start</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="n">dim_end</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>

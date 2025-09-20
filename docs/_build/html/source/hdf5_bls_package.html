@@ -20,7 +20,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="HDF5_BLS" href="../_autosummary/HDF5_BLS.html" />
+    <link rel="next" title="HDF5_BLS.wrapper" href="../_autosummary/HDF5_BLS.wrapper.html" />
     <link rel="prev" title="The file format" href="file_format.html" /> 
 </head>
 
@@ -44,8 +44,8 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start</a></li>
 <li class="toctree-l1"><a class="reference internal" href="file_format.html">The file format</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">The HDF5_BLS package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#installation-and-presentation">Installation and presentation</a><ul>
@@ -57,13 +57,23 @@
 <li class="toctree-l2"><a class="reference internal" href="#the-wrapper-object">The Wrapper object</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#adding-data-to-the-hdf5-file-from-script">Adding data to the HDF5 file (from script)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#general-approach-to-adding-data-to-the-hdf5-file">General approach to adding data to the HDF5 file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exception-1-adding-treated-data">Exception 1: Adding treated data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exception-2-adding-an-abscissa">Exception 2: Adding an abscissa</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#importing-data-from-external-files">Importing data from external files</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#general-approach-for-importing-data">General approach for importing data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#adding-and-merging-hdf5-files">Adding and merging HDF5 files</a></li>
 </ul>
 </li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/HDF5_BLS.html">HDF5_BLS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/HDF5_BLS.wrapper.html">HDF5_BLS.wrapper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/HDF5_BLS.analyze.html">HDF5_BLS.analyze</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/HDF5_BLS.treat.html">HDF5_BLS.treat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_autosummary/HDF5_BLS.load_data.html">HDF5_BLS.load_data</a></li>
 </ul>
 
         </div>
@@ -257,6 +267,183 @@ Let’s consider the following example: we have just initialized a wrapper objec
 </pre></div>
 </div>
 </section>
+<section id="exception-1-adding-treated-data">
+<h3>Exception 1: Adding treated data<a class="headerlink" href="#exception-1-adding-treated-data" title="Link to this heading"></a></h3>
+<p>Adding treated data differs slightly from adding individual datasets as we’ll usually collect a number of different results to store. Therefore, instead of using different functions to store a shift or linewidth array, we have chosen to use a single function to add all the results of treatment, and create the group dedicated to storing the treatment results. As such, the function will have the following attributes:</p>
+<ul class="simple">
+<li><p>parent_group: The parent group where to store the data in the HDF5 file</p></li>
+<li><p>name_group: The name of the group that will contain the treatment results</p></li>
+<li><p>amplitude (optional): The amplitude array to add</p></li>
+<li><p>amplitude_err (optional): The error of the amplitude array</p></li>
+<li><p>blt (optional): The Loss Tangent array to add</p></li>
+<li><p>blt_err (optional): The error of the Loss Tangent array</p></li>
+<li><p>linewidth (optional): The linewidth array to add</p></li>
+<li><p>linewidth_err (optional): The error of the linewidth array</p></li>
+<li><p>shift(optional): The shift array to add</p></li>
+<li><p>shift_err (optional): The error of the shift array</p></li>
+</ul>
+<p><strong>Example</strong></p>
+<p>Let’s consider the following example: we have treated our data and have obtained a shift array (shift), a linewidth array (linewidth) and their errors (shift_err and linewidth_err). We want to add these arrays in the same group as the PSD, that is the group “Test”. The treated data are stored in a separate group nested in the “Test” group by the choices made while building the structure of the file. This is so the name of the treatment group can be chosen freely. Let’s say that in this case, we have performed a non-negative matrix factorization (NnMF) on the data, and extracted the shift values closest to 5GHz. We will therefore call this treatment “NnMF - 5GHz”. We will write:</p>
+</section>
+<section id="exception-2-adding-an-abscissa">
+<h3>Exception 2: Adding an abscissa<a class="headerlink" href="#exception-2-adding-an-abscissa" title="Link to this heading"></a></h3>
+<p>Adding abscissa also differs from the general case as we might want to add an abscissa array that is multi-dimensional and be able to know which dimensions of the PSD the abscissa correspomnds to. The <em>add_abscissa</em> method therefore has the following attributes:</p>
+<ul class="simple">
+<li><p>parent_group: The parent group where to store the data in the HDF5 file</p></li>
+<li><p>name: The name of the abscissa to add</p></li>
+<li><p>unit: The unit of the axis</p></li>
+<li><p>dim_start: The first dimension of the abscissa array, by default 0</p></li>
+<li><p>dim_end: The last dimension of the abscissa array, by default the last number of dimension of the array</p></li>
+</ul>
+<p><strong>Example</strong>
+Let’s consider the following example: we have just initialized a wrapper object and want to add an abscissa axis corresponding to our measures that have been stored in the group “Brillouin/Temp”. Say that this abscissa axis corresponds to temperature values, from 35 to 40 degrees and that there are 10 points in the axis. We will therefore call this abscissa axis “Temperature”. We will write:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">wrp</span><span class="o">.</span><span class="n">add_abscissa</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">35</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+                <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin/Temp&quot;</span><span class="p">,</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Temperature&quot;</span><span class="p">,</span>
+                <span class="n">unit</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span>
+                <span class="n">dim_start</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="n">dim_end</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you now want to use custom values for this axis, you can also specify them directly in the function call:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">wrp</span><span class="o">.</span><span class="n">add_abscissa</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">,</span>
+                <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin/Temp&quot;</span><span class="p">,</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Temperature&quot;</span><span class="p">,</span>
+                <span class="n">unit</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span>
+                <span class="n">dim_start</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="n">dim_end</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="importing-data-from-external-files">
+<h2>Importing data from external files<a class="headerlink" href="#importing-data-from-external-files" title="Link to this heading"></a></h2>
+<p>Importing datasets to the HDF5 file from independent data files, through the HDF5_BLS package, is always done following to successive steps:</p>
+<ol class="arabic simple">
+<li><p>Extracting the data and the metadata that can be extracted from the data files. This can be done using the <em>load_data</em> module.</p></li>
+<li><p>Adding the data and metadata to the HDF5 file. This is done using the <em>Wrapper.add_dictionary</em> method.</p></li>
+</ol>
+<p>To make the process more user friendly, we have developed a set of derived methods that are specific to each type of data that is to be added (Raw data, PSD, Frequency, Abscissa or treated data).</p>
+<p>In this section, we will present these methods. We encourage interested readers to refer to the chapter dedicated to the load_data module for more information on the extraction of the data and the metadata.</p>
+<section id="general-approach-for-importing-data">
+<h3>General approach for importing data<a class="headerlink" href="#general-approach-for-importing-data" title="Link to this heading"></a></h3>
+<p>Much like adding data from a script, we can import data from external files by using type-specific functions. These functions are:</p>
+<ul class="simple">
+<li><p><em>Wrapper.import_abscissa</em>: To import an abscissa array.</p></li>
+<li><p><em>Wrapper.import_frequency</em>: To import a frequency array.</p></li>
+<li><p><em>Wrapper.import_PSD</em>: To import a PSD array.</p></li>
+<li><p><em>Wrapper.import_raw_data</em>: To import raw data.</p></li>
+<li><p><em>Wrapper.import_treated_data</em>: To import the data arrays resulting from a treatment.</p></li>
+</ul>
+<p>These function work a bit differently from the ones used to add data, as we might need parameters to extract the data from the file. Therefore, these functions have the following attributes:</p>
+<ul class="simple">
+<li><p>filepath: The filepath to the file to import the data from.</p></li>
+<li><p>parent_group: The parent group where to store the data in the HDF5 file.</p></li>
+<li><p>name: The name of the dataset to add.</p></li>
+<li><p>creator: An identifier of the creator of the file. This is used to differentiate different structures of files using the same format (for example .dat files).</p></li>
+<li><p>parameters: A dictionary containing the parameters that are needed to extract the data from the file. This is used to either access the data if it is somehow encoded or to interpret the data if a routine pipeline is used to obtain for example a PSD from a time-domain dataset</p></li>
+<li><p>reshape: The new shape of the array, by default None means that the shape is not changed</p></li>
+<li><p>overwrite: A parameter to indicate whether the dataset should be overwritten if it already exists, by default False - attributes are not overwritten.</p></li>
+<li><p><em>all the attributes corresponding to the type of data (abscissa, frequency, PSD, raw data, treated data)</em></p></li>
+</ul>
+<p><strong>Example</strong>
+Let’s consider the following example: we have just initialized a wrapper object and want to import an abscissa axis corresponding to our measures that have been stored in a .npy file (for example if a Python routine has been used to impose conditions for the measure). In that case, the array can be interpreted without any parameters nor specification.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">wrp</span><span class="o">.</span><span class="n">import_abscissa</span><span class="p">(</span><span class="n">filepath</span> <span class="o">=</span> <span class="s2">&quot;path/to/file.npy&quot;</span><span class="p">,</span> <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin/Measure&quot;</span><span class="p">,</span> <span class="n">creator</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Time&quot;</span><span class="p">,</span> <span class="n">unit</span> <span class="o">=</span> <span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="n">dim_start</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dim_end</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">reshape</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="adding-and-merging-hdf5-files">
+<h2>Adding and merging HDF5 files<a class="headerlink" href="#adding-and-merging-hdf5-files" title="Link to this heading"></a></h2>
+<p>Creating a new HDF5 file based on two existing ones can be done one of two ways depending on the desired end result.</p>
+<ul>
+<li><dl>
+<dt>The <em>__add__</em> dunder metthod. If we want to combine two HDF5 files into a single one “plainly”, for example if we are generating a new HDF5 after each measure, with this structure:</dt><dd><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>20250214_HVEC_03.h5
++--<span class="w"> </span>Brillouin<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
+<span class="p">|</span><span class="w">   </span>+--<span class="w"> </span>20250214_HVEC_02
+<span class="p">|</span><span class="w">   </span><span class="p">|</span><span class="w">   </span>+--<span class="w"> </span>Measure<span class="w"> </span><span class="o">(</span>dataset<span class="o">)</span>
+</pre></div>
+</div>
+<p>and we already have a HDF5 file containing the data of the previous experiment:
+.. code-block:: bash</p>
+<blockquote>
+<div><p>20250214_HVEC.h5
++– Brillouin (group)
+|   +– 20250214_HVEC_01
+|   |   +– Measure (dataset)
+|   +– 20250214_HVEC_02
+|   |   +– Measure (dataset)</p>
+</div></blockquote>
+<p>We can simply add the first HDF5 file to the second one with:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">wrp1</span> <span class="o">=</span> <span class="n">Wrapper</span><span class="p">(</span><span class="n">filepath</span> <span class="o">=</span> <span class="s2">&quot;.../20250214_HVEC.h5&quot;</span><span class="p">)</span>
+<span class="n">wrp2</span> <span class="o">=</span> <span class="n">Wrapper</span><span class="p">(</span><span class="n">filepath</span> <span class="o">=</span> <span class="s2">&quot;.../20250214_HVEC_02.h5&quot;</span><span class="p">)</span>
+<span class="n">wrp</span> <span class="o">=</span> <span class="n">wrp1</span> <span class="o">+</span> <span class="n">wrp2</span>
+</pre></div>
+</div>
+<p>This will create a new HDF5 file with the following structure:
+.. code-block:: bash</p>
+<blockquote>
+<div><p>20250214_HVEC.h5
++– Brillouin (group)
+|   +– 20250214_HVEC_01
+|   |   +– Measure (dataset)
+|   +– 20250214_HVEC_02
+|   |   +– Measure (dataset)
+|   +– 20250214_HVEC_03
+|   |   +– Measure (dataset)</p>
+</div></blockquote>
+<p><strong>WARNING:</strong> The new file is a temporary file, it is therefore important to save it after the addition of the two files with:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">wrp</span><span class="o">.</span><span class="n">save_as_hdf5</span><span class="p">(</span><span class="n">filepath</span> <span class="o">=</span> <span class="n">wrp</span><span class="o">.</span><span class="n">filepath</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that from there, wrp1 and wrp will be the same as the wrapper does not store any data in memory but just acts as an access facilitator to the file.</p>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt>The <em>add_hdf5</em> method. If we want to import the HDF5 as a new group, for example if we have this HDF5 file containing the data of a cell study:</dt><dd><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Neuronal_cell_study.h5
++--<span class="w"> </span>Brillouin<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
+<span class="p">|</span><span class="w">   </span>+--<span class="w"> </span>Neuronal<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
+<span class="p">|</span><span class="w">   </span><span class="p">|</span><span class="w">   </span>+--<span class="w"> </span>GT<span class="w"> </span><span class="m">1</span>-7<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
+<span class="p">|</span><span class="w">   </span><span class="p">|</span><span class="w">   </span><span class="p">|</span><span class="w">   </span>+--<span class="w"> </span>...
+<span class="p">|</span><span class="w">   </span><span class="p">|</span><span class="w">   </span>+--<span class="w"> </span>L-fibroblast<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
+<span class="p">|</span><span class="w">   </span><span class="p">|</span><span class="w">   </span><span class="p">|</span><span class="w">   </span>+--<span class="w"> </span>...
+<span class="p">|</span><span class="w">   </span>+--<span class="w"> </span>Skeletal<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
+<span class="p">|</span><span class="w">   </span><span class="p">|</span><span class="w">   </span>+--<span class="w"> </span>...
+</pre></div>
+</div>
+<p>And we want to import data done on another neuronal cell line, say “MOV”, that have been stored in the following HDF5 file:
+.. code-block:: bash</p>
+<blockquote>
+<div><p>MOV.h5
++– Brillouin (group)
+|   +– MOV (group)
+|   |   +– …</p>
+</div></blockquote>
+<p>We can simply add the second HDF5 file to the first one by specifying the path to the second file in the <em>Wrapper.add_hdf5</em> method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">wrp1</span> <span class="o">=</span> <span class="n">Wrapper</span><span class="p">(</span><span class="n">filepath</span> <span class="o">=</span> <span class="s2">&quot;.../Neuronal_cell_study.h5&quot;</span><span class="p">)</span>
+<span class="n">wrp1</span><span class="o">.</span><span class="n">add_hdf5</span><span class="p">(</span><span class="n">filepath</span> <span class="o">=</span> <span class="s2">&quot;.../MOV.h5&quot;</span><span class="p">,</span> <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin/Neuronal&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will create a new HDF5 file with the following structure:
+.. code-block:: bash</p>
+<blockquote>
+<div><p>Neuronal_cell_study.h5
++– Brillouin (group)
+|   +– Neuronal (group)
+|   |   +– GT 1-7 (group)
+|   |   |   +– …
+|   |   +– L-fibroblast (group)
+|   |   |   +– …
+|   |   +– MOV (group)
+|   |   |   +– …
+|   +– Skeletal (group)
+|   |   +– …</p>
+</div></blockquote>
+</dd>
+</dl>
+</li>
+</ul>
 </section>
 </section>
 
@@ -265,7 +452,7 @@ Let’s consider the following example: we have just initialized a wrapper objec
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="file_format.html" class="btn btn-neutral float-left" title="The file format" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../_autosummary/HDF5_BLS.html" class="btn btn-neutral float-right" title="HDF5_BLS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../_autosummary/HDF5_BLS.wrapper.html" class="btn btn-neutral float-right" title="HDF5_BLS.wrapper" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

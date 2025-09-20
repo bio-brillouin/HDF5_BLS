@@ -13,7 +13,7 @@ To install the package using pip, run the following command:
 
 **Downloading the source code**
 
-The source code can be downloaded from the 'GitHub repository <https://github.com/bio-brillouin/HDF5_BLS>'__. To download the source code, click on the green button "Code" and then click on the "Download ZIP" button. Once the download is complete, unzip the file and open a terminal in the folder where the code is stored. To install the package, run the following command:
+The source code can be downloaded from the `GitHub repository <https://github.com/bio-brillouin/HDF5_BLS>`__. To download the source code, click on the green button "Code" and then click on the "Download ZIP" button. Once the download is complete, unzip the file and open a terminal in the folder where the code is stored. To install the package, run the following command:
 
 .. code-block:: bash
 

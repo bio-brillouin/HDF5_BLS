@@ -3,9 +3,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Overview: module code &mdash; HDF5_BLS v1.0.0 documentation</title>
+  <title>HDF5_BLS.treat &mdash; HDF5_BLS v1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
@@ -18,7 +19,9 @@
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="HDF5_BLS.load_data" href="HDF5_BLS.load_data.html" />
+    <link rel="prev" title="HDF5_BLS.analyze" href="HDF5_BLS.analyze.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,11 +49,11 @@
 <li class="toctree-l1"><a class="reference internal" href="../source/file_format.html">The file format</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../source/hdf5_bls_package.html">The HDF5_BLS package</a></li>
 </ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/HDF5_BLS.wrapper.html">HDF5_BLS.wrapper</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/HDF5_BLS.analyze.html">HDF5_BLS.analyze</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/HDF5_BLS.treat.html">HDF5_BLS.treat</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_autosummary/HDF5_BLS.load_data.html">HDF5_BLS.load_data</a></li>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="HDF5_BLS.wrapper.html">HDF5_BLS.wrapper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HDF5_BLS.analyze.html">HDF5_BLS.analyze</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">HDF5_BLS.treat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HDF5_BLS.load_data.html">HDF5_BLS.load_data</a></li>
 </ul>
 
         </div>
@@ -67,8 +70,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Overview: module code</li>
+      <li class="breadcrumb-item active">HDF5_BLS.treat</li>
       <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_autosummary/HDF5_BLS.treat.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -76,23 +80,39 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>All modules for which code is available</h1>
-<ul><li><a href="HDF5_BLS/WrapperError.html">HDF5_BLS.WrapperError</a></li>
-<li><a href="HDF5_BLS/analyze.html">HDF5_BLS.analyze</a></li>
-<li><a href="HDF5_BLS/conversion_PSD.html">HDF5_BLS.conversion_PSD</a></li>
-<li><a href="HDF5_BLS/load_data.html">HDF5_BLS.load_data</a></li>
-<li><a href="HDF5_BLS/load_formats/errors.html">HDF5_BLS.load_formats.errors</a></li>
-<li><a href="HDF5_BLS/load_formats/load_dat.html">HDF5_BLS.load_formats.load_dat</a></li>
-<li><a href="HDF5_BLS/load_formats/load_image.html">HDF5_BLS.load_formats.load_image</a></li>
-<li><a href="HDF5_BLS/load_formats/load_npy.html">HDF5_BLS.load_formats.load_npy</a></li>
-<li><a href="HDF5_BLS/load_formats/load_sif.html">HDF5_BLS.load_formats.load_sif</a></li>
-<li><a href="HDF5_BLS/wrapper.html">HDF5_BLS.wrapper</a></li>
-<li><a href="HDF5_BLS/wrapper_compatibility.html">HDF5_BLS.wrapper_compatibility</a></li>
-</ul>
+  <section id="module-HDF5_BLS.treat">
+<span id="hdf5-bls-treat"></span><h1>HDF5_BLS.treat<a class="headerlink" href="#module-HDF5_BLS.treat" title="Link to this heading"></a></h1>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Models</span></code>()</p></td>
+<td><p>This class repertoriates all the models that can be used for the fit.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Treat</span></code>(frequency, PSD)</p></td>
+<td><p>This class is a class inherited from the Treat_backend class used to define functions to treat the data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Treat_backend</span></code>(frequency, PSD[, ...])</p></td>
+<td><p>This class is the base class for all the treat classes.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Exceptions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">TreatmentError</span></code>(message)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="HDF5_BLS.analyze.html" class="btn btn-neutral float-left" title="HDF5_BLS.analyze" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="HDF5_BLS.load_data.html" class="btn btn-neutral float-right" title="HDF5_BLS.load_data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

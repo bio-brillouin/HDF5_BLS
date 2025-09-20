@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.10.24)  19 SEP 2025 21:09
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.10.24)  20 SEP 2025 16:58
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -723,7 +723,7 @@ Package: sphinxmessages 2019/01/04 v2.0 Localized LaTeX macros (Sphinx team)
 
 
 Writing index file hdf5_bls.idx
-LaTeX Font Info:    Trying to load font information for T1+qtm on input line 73
+LaTeX Font Info:    Trying to load font information for T1+qtm on input line 72
 .
 (/usr/local/texlive/2024/texmf-dist/tex/latex/tex-gyre/t1qtm.fd
 File: t1qtm.fd 2009/09/25 v1.2 font definition file for T1/qtm
@@ -736,24 +736,24 @@ File: l3backend-pdftex.def 2024-02-20 L3 backend support: PDF output (pdfTeX)
 (./hdf5_bls.aux)
 \openout1 = `hdf5_bls.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 73.
-LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 72.
+LaTeX Font Info:    ... okay on input line 72.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 72.
+LaTeX Font Info:    ... okay on input line 72.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 72.
+LaTeX Font Info:    ... okay on input line 72.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 72.
+LaTeX Font Info:    ... okay on input line 72.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 72.
+LaTeX Font Info:    ... okay on input line 72.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 72.
+LaTeX Font Info:    ... okay on input line 72.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 72.
+LaTeX Font Info:    ... okay on input line 72.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 72.
+LaTeX Font Info:    ... okay on input line 72.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 72.
+LaTeX Font Info:    ... okay on input line 72.
 
 (/usr/local/texlive/2024/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
@@ -831,25 +831,25 @@ tawesome5
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-Package hyperref Info: Link coloring ON on input line 73.
+Package hyperref Info: Link coloring ON on input line 72.
 (./hdf5_bls.out) (./hdf5_bls.out)
 \@outlinefile=\write5
 \openout5 = `hdf5_bls.out'.
 
-Package hyperref Info: Option `pageanchor' set `false' on input line 81.
-LaTeX Font Info:    Trying to load font information for T1+qhv on input line 81
+Package hyperref Info: Option `pageanchor' set `false' on input line 80.
+LaTeX Font Info:    Trying to load font information for T1+qhv on input line 80
 .
 
 (/usr/local/texlive/2024/texmf-dist/tex/latex/tex-gyre/t1qhv.fd
 File: t1qhv.fd 2009/09/25 v1.2 font definition file for T1/qhv
 )<<ot1.cmap>><<oml.cmap>><<oms.cmap>><<omx.cmap>>
-LaTeX Font Info:    Trying to load font information for U+msa on input line 81.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 80.
 
 
 (/usr/local/texlive/2024/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 81.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 80.
 
 
 (/usr/local/texlive/2024/texmf-dist/tex/latex/amsfonts/umsb.fd
@@ -870,60 +870,50 @@ al/texlive/2024/texmf-dist/fonts/enc/dvips/tex-gyre/q-ec.enc}] [2
 [2
 
 ]
+LaTeX Font Info:    Trying to load font information for U+fontawesomefree1 on i
+nput line 87.
+
+(/usr/local/texlive/2024/texmf-dist/tex/latex/fontawesome5/ufontawesomefree1.fd
+)
 LaTeX Font Info:    Trying to load font information for TS1+qtm on input line 9
-1.
+2.
  (/usr/local/texlive/2024/texmf-dist/tex/latex/tex-gyre/ts1qtm.fd
 File: ts1qtm.fd 2009/09/25 v1.2 font definition file for TS1/qtm
-) [1{/usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/tex-gyre/q-ts1.enc}] [2
+) [1{/usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/fontawesome5/fa5free1.e
+nc}{/usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/tex-gyre/q-ts1.enc}] [2
 
 ]
 Chapter 1.
 LaTeX Font Info:    Trying to load font information for T1+txtt on input line 1
-14.
+21.
 (/usr/local/texlive/2024/texmf-dist/tex/latex/txfonts/t1txtt.fd
 File: t1txtt.fd 2000/12/15 v3.1
 ) [3]
 LaTeX Font Info:    Font shape `T1/txtt/b/n' in size <10> not available
-(Font)              Font shape `T1/txtt/bx/n' tried instead on input line 230.
+(Font)              Font shape `T1/txtt/bx/n' tried instead on input line 237.
 LaTeX Font Info:    Font shape `T1/txtt/m/it' in size <10> not available
-(Font)              Font shape `T1/txtt/m/sl' tried instead on input line 232.
+(Font)              Font shape `T1/txtt/m/sl' tried instead on input line 239.
  [4]
-[5] [6
+[5] [6] [7] [8] [9] [10] [11] [12] [13] [14] [15] [16
 
 ]
 Chapter 2.
-[7] [8] [9] [10] [11] [12] [13] [14
-
-]
-Chapter 3.
-[15] [16] [17] [18] [19]
-LaTeX Font Info:    Trying to load font information for U+fontawesomefree1 on i
-nput line 1500.
-
-(/usr/local/texlive/2024/texmf-dist/tex/latex/fontawesome5/ufontawesomefree1.fd
-) [20{/usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/fontawesome5/fa5free1.
-enc}] [21] [22] [23] [24]
+[17]
 LaTeX Font Info:    Trying to load font information for TS1+txtt on input line 
 1.
-
-(/usr/local/texlive/2024/texmf-dist/tex/latex/txfonts/ts1txtt.fd
+ (/usr/local/texlive/2024/texmf-dist/tex/latex/txfonts/ts1txtt.fd
 File: ts1txtt.fd 2000/12/15 v3.1
 )
 LaTeX Font Info:    Font shape `TS1/txtt/b/n' in size <10> not available
 (Font)              Font shape `TS1/txtt/bx/n' tried instead on input line 1.
- [25] [26]
-[27]
-LaTeX Font Info:    Font shape `T1/txtt/b/it' in size <10> not available
-(Font)              Font shape `T1/txtt/bx/it' tried instead on input line 2698
-.
-LaTeX Font Info:    Font shape `T1/txtt/bx/it' in size <10> not available
-(Font)              Font shape `T1/txtt/bx/sl' tried instead on input line 2698
-.
- [28] [29] [30] [31] [32] [33] [34] [35] [36] [37
+ [18]
+[19] [20] [21] [22] [23] [24] [25] [26] [27] [28] [29] [30] [31] [32] [33]
+[34
+
+] [35
 
 
-
-] (./hdf5_bls.ind [38
+] (./hdf5_bls.ind [36
 
 
 ]
@@ -975,419 +965,290 @@ rapper.Wrapper
  []
 
 
-Overfull \hbox (49.61223pt too wide) in paragraph at lines 24--26
-[]\T1/txtt/m/n/10 basic_process() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.load
-_formats.load_dat.TimeDomain
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 26--28
-[]\T1/txtt/m/n/10 brillouin_type_update() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 in mo
-d-ule
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 28--30
+Underfull \hbox (badness 10000) in paragraph at lines 24--26
 []\T1/txtt/m/n/10 BRILLOUIN_TYPES_DATASETS
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 28--30
+Underfull \hbox (badness 10000) in paragraph at lines 24--26
 \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.wrapper.Wrapper at-tribute\T1/qtm/m/n/
 10 ),
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 30--32
+Underfull \hbox (badness 10000) in paragraph at lines 26--28
 []\T1/txtt/m/n/10 BRILLOUIN_TYPES_GROUPS
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 30--32
+Underfull \hbox (badness 10000) in paragraph at lines 26--28
 \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.wrapper.Wrapper at-tribute\T1/qtm/m/n/
 10 ),
  []
 
 
-Underfull \hbox (badness 5681) in paragraph at lines 35--37
+Underfull \hbox (badness 5681) in paragraph at lines 31--33
 []\T1/txtt/m/n/10 center_x_axis() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.anal
 yze.Analyze_VIPA
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 37--39
+Underfull \hbox (badness 10000) in paragraph at lines 33--35
 []\T1/txtt/m/n/10 change_brillouin_type()
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 37--39
+Underfull \hbox (badness 10000) in paragraph at lines 33--35
+\T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.wrapper.Wrapper method\T1/qtm/m/n/10 )
+,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 35--36
+[]\T1/txtt/m/n/10 change_name() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.wrappe
+r.Wrapper
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 36--38
+[]\T1/txtt/m/n/10 clear_empty_attributes()
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 36--38
 \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.wrapper.Wrapper method\T1/qtm/m/n/10 )
 ,
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 39--40
-[]\T1/txtt/m/n/10 change_name() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.wrappe
-r.Wrapper
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 40--42
-[]\T1/txtt/m/n/10 check_conversion_ar_BLS_VIPA() \T1/qtm/m/n/10 (\T1/qtm/m/it/1
-0 in mod-ule
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 42--44
-[]\T1/txtt/m/n/10 check_conversion_Streak_VIPA() \T1/qtm/m/n/10 (\T1/qtm/m/it/1
-0 in mod-ule
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 44--46
-[]\T1/txtt/m/n/10 check_conversion_VIPA() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 in mo
-d-ule
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 46--48
-[]\T1/txtt/m/n/10 clear_empty_attributes()
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 46--48
-\T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.wrapper.Wrapper method\T1/qtm/m/n/10 )
-,
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 49--50
 []\T1/txtt/m/n/10 combine_datasets() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.w
 rapper.Wrapper
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 50--52
+Underfull \hbox (badness 10000) in paragraph at lines 40--42
 []\T1/txtt/m/n/10 compatibility_changes()
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 50--52
+Underfull \hbox (badness 10000) in paragraph at lines 40--42
 \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.wrapper.Wrapper method\T1/qtm/m/n/10 )
 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 52--53
+Underfull \hbox (badness 10000) in paragraph at lines 42--43
 []\T1/txtt/m/n/10 copy_dataset() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.wrapp
 er.Wrapper
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 53--54
+Underfull \hbox (badness 10000) in paragraph at lines 43--44
 []\T1/txtt/m/n/10 create_group() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.wrapp
 er.Wrapper
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 57--58
+Underfull \hbox (badness 10000) in paragraph at lines 47--48
 []\T1/txtt/m/n/10 delete_element() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.wra
 pper.Wrapper
  []
 
 
-Overfull \hbox (12.06235pt too wide) in paragraph at lines 61--63
-[]\T1/txtt/m/n/10 emit() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.load_formats.
-load_dat.PipelineLogger
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 63--64
+Underfull \hbox (badness 10000) in paragraph at lines 51--52
 []\T1/txtt/m/n/10 export_dataset() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.wra
 pper.Wrapper
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 64--65
+Underfull \hbox (badness 10000) in paragraph at lines 52--53
 []\T1/txtt/m/n/10 export_group() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.wrapp
 er.Wrapper
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 65--66
+Underfull \hbox (badness 10000) in paragraph at lines 53--54
 []\T1/txtt/m/n/10 export_image() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.wrapp
 er.Wrapper
  []
 
 
-Overfull \hbox (44.36224pt too wide) in paragraph at lines 70--72
-[]\T1/txtt/m/n/10 find_copeaks() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.load_
-formats.load_dat.TimeDomain
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 75--76
+Underfull \hbox (badness 10000) in paragraph at lines 61--62
 []\T1/txtt/m/n/10 get_attributes() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.wra
 pper.Wrapper
  []
 
-[39
 
-]
-Underfull \hbox (badness 10000) in paragraph at lines 76--78
+Underfull \hbox (badness 10000) in paragraph at lines 62--64
 []\T1/txtt/m/n/10 get_children_elements()
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 76--78
+Underfull \hbox (badness 10000) in paragraph at lines 62--64
 \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.wrapper.Wrapper method\T1/qtm/m/n/10 )
 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 78--80
+Underfull \hbox (badness 10000) in paragraph at lines 64--66
 []\T1/txtt/m/n/10 get_special_groups_hierarchy()
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 78--80
+Underfull \hbox (badness 10000) in paragraph at lines 64--66
 \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.wrapper.Wrapper method\T1/qtm/m/n/10 )
 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 80--81
+Underfull \hbox (badness 10000) in paragraph at lines 66--67
 []\T1/txtt/m/n/10 get_structure() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.wrap
 per.Wrapper
  []
 
+[37
 
-Overfull \hbox (23.3623pt too wide) in paragraph at lines 109--111
-[]\T1/txtt/m/n/10 HPfilter() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.load_form
-ats.load_dat.TimeDomain
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 114--115
+]
+Underfull \hbox (badness 10000) in paragraph at lines 82--83
 []\T1/txtt/m/n/10 import_other() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.wrapp
 er.Wrapper
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 115--117
+Underfull \hbox (badness 10000) in paragraph at lines 83--85
 []\T1/txtt/m/n/10 import_properties_data()
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 115--117
+Underfull \hbox (badness 10000) in paragraph at lines 83--85
 \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.wrapper.Wrapper method\T1/qtm/m/n/10 )
 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 117--118
+Underfull \hbox (badness 10000) in paragraph at lines 85--86
 []\T1/txtt/m/n/10 import_raw_data() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.wr
 apper.Wrapper
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 118--120
+Underfull \hbox (badness 10000) in paragraph at lines 86--88
 []\T1/txtt/m/n/10 interpolate_between_one_order()
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 118--120
+Underfull \hbox (badness 10000) in paragraph at lines 86--88
 \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.analyze.Analyze_VIPA method\T1/qtm/m/n
 /10 ),
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 120--122
+Underfull \hbox (badness 10000) in paragraph at lines 88--90
 []\T1/txtt/m/n/10 interpolate_elastic()
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 120--122
+Underfull \hbox (badness 10000) in paragraph at lines 88--90
 \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.analyze.Analyze_VIPA method\T1/qtm/m/n
 /10 ),
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 122--124
+Underfull \hbox (badness 10000) in paragraph at lines 90--92
 []\T1/txtt/m/n/10 interpolate_elastic_inelastic()
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 122--124
+Underfull \hbox (badness 10000) in paragraph at lines 90--92
 \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.analyze.Analyze_VIPA method\T1/qtm/m/n
 /10 ),
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 129--131
-[]\T1/txtt/m/n/10 load_dat_GHOST() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 in mod-ule
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 131--133
-[]\T1/txtt/m/n/10 load_dat_TimeDomain() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 in mod-
-ule
- []
-
-
-Overfull \hbox (18.11232pt too wide) in paragraph at lines 133--135
-[]\T1/txtt/m/n/10 load_dc() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.load_forma
-ts.load_dat.TimeDomain
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 136--138
-[]\T1/txtt/m/n/10 load_image_base() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 in mod-ule
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 138--139
+Underfull \hbox (badness 10000) in paragraph at lines 98--99
 []\T1/txtt/m/n/10 load_image_file() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 in mod-ule
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 139--141
-[]\T1/txtt/m/n/10 load_npy_base() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 in mod-ule
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 142--144
-[]\T1/txtt/m/n/10 load_sif_base() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 in mod-ule
- []
-
-
-Overfull \hbox (23.3623pt too wide) in paragraph at lines 148--150
-[]\T1/txtt/m/n/10 LPfilter() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.load_form
-ats.load_dat.TimeDomain
- []
-
-
-Overfull \hbox (28.61229pt too wide) in paragraph at lines 153--155
-[]\T1/txtt/m/n/10 make_time() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.load_for
-mats.load_dat.TimeDomain
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 169--171
+Underfull \hbox (badness 10000) in paragraph at lines 110--112
 []\T1/txtt/m/n/10 move_channel_dimension_to_last()
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 169--171
+Underfull \hbox (badness 10000) in paragraph at lines 110--112
 \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.wrapper.Wrapper method\T1/qtm/m/n/10 )
 ,
  []
 
-[40]
-Underfull \hbox (badness 10000) in paragraph at lines 174--175
+
+Underfull \hbox (badness 10000) in paragraph at lines 115--116
 []\T1/txtt/m/n/10 need_for_repack \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.wrap
 per.Wrapper
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 178--180
-[]\T1/txtt/m/n/10 PipelineLogger \T1/qtm/m/n/10 (\T1/qtm/m/it/10 class in
- []
-
-
-Overfull \hbox (60.1122pt too wide) in paragraph at lines 180--182
-[]\T1/txtt/m/n/10 polyfit_removal() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.lo
-ad_formats.load_dat.TimeDomain
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 182--183
+Underfull \hbox (badness 10000) in paragraph at lines 119--120
 []\T1/txtt/m/n/10 print_metadata() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.wra
 pper.Wrapper
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 183--184
+Underfull \hbox (badness 10000) in paragraph at lines 120--121
 []\T1/txtt/m/n/10 print_structure() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.wr
 apper.Wrapper
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 192--193
+Underfull \hbox (badness 10000) in paragraph at lines 129--130
 []\T1/txtt/m/n/10 save_as_hdf5() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.wrapp
 er.Wrapper
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 193--195
+Underfull \hbox (badness 10000) in paragraph at lines 130--132
 []\T1/txtt/m/n/10 save_properties_csv()
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 193--195
+Underfull \hbox (badness 10000) in paragraph at lines 130--132
 \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.wrapper.Wrapper method\T1/qtm/m/n/10 )
 ,
  []
 
 
-Overfull \hbox (60.1122pt too wide) in paragraph at lines 195--197
-[]\T1/txtt/m/n/10 scrape_con_file() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.lo
-ad_formats.load_dat.TimeDomain
- []
-
-
-Overfull \hbox (49.61223pt too wide) in paragraph at lines 197--199
-[]\T1/txtt/m/n/10 scrape_m_file() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.load
-_formats.load_dat.TimeDomain
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 199--201
+Underfull \hbox (badness 10000) in paragraph at lines 132--134
 []\T1/txtt/m/n/10 set_attributes_data()
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 199--201
+Underfull \hbox (badness 10000) in paragraph at lines 132--134
 \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.wrapper.Wrapper method\T1/qtm/m/n/10 )
 ,
  []
 
 
-Overfull \hbox (23.3623pt too wide) in paragraph at lines 204--206
-[]\T1/txtt/m/n/10 take_FFT() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.load_form
-ats.load_dat.TimeDomain
- []
-
-
-Overfull \hbox (6.20229pt too wide) in paragraph at lines 206--207
-[]\T1/txtt/m/n/10 TimeDomain \T1/qtm/m/n/10 (\T1/qtm/m/it/10 class in HDF5_BLS.
-load_formats.load_dat\T1/qtm/m/n/10 ),
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 210--211
+Underfull \hbox (badness 10000) in paragraph at lines 137--138
 []\T1/txtt/m/n/10 update_property() \T1/qtm/m/n/10 (\T1/qtm/m/it/10 HDF5_BLS.wr
 apper.Wrapper
  []
 
-[41
-
-]) (./hdf5_bls.aux)
+[38]) (./hdf5_bls.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-02-20>
  ***********
 Package rerunfilecheck Info: File `hdf5_bls.out' has not changed.
-(rerunfilecheck)             Checksum: 3B69A4767823E9E57ABE2507FDC884D7;7275.
+(rerunfilecheck)             Checksum: 6C8306D5768A4A0B6B99444041421631;6643.
  ) 
 Here is how much of TeX's memory you used:
- 20273 strings out of 474116
- 367999 string characters out of 5743681
- 2017187 words of memory out of 5000000
- 42049 multiletter control sequences out of 15000+600000
- 616448 words of font info for 83 fonts, out of 8000000 for 9000
+ 20187 strings out of 474116
+ 363846 string characters out of 5743681
+ 2036187 words of memory out of 5000000
+ 41998 multiletter control sequences out of 15000+600000
+ 613222 words of font info for 81 fonts, out of 8000000 for 9000
  1142 hyphenation exceptions out of 8191
- 72i,11n,83p,1494b,832s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 72i,12n,83p,1494b,855s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2024/texmf-dist/fonts/type1/public/fontawesome5/FontAweso
 me5Free-Solid.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfon
 ts/cm/cmmi5.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts
@@ -1398,14 +1259,13 @@ sr/local/texlive/2024/texmf-dist/fonts/type1/public/tex-gyre/qtmb.pfb></usr/loc
 al/texlive/2024/texmf-dist/fonts/type1/public/tex-gyre/qtmr.pfb></usr/local/tex
 live/2024/texmf-dist/fonts/type1/public/tex-gyre/qtmri.pfb></usr/local/texlive/
 2024/texmf-dist/fonts/type1/public/txfonts/t1xbtt.pfb></usr/local/texlive/2024/
-texmf-dist/fonts/type1/public/txfonts/t1xbtt.pfb></usr/local/texlive/2024/texmf
--dist/fonts/type1/public/txfonts/t1xtt.pfb></usr/local/texlive/2024/texmf-dist/
-fonts/type1/public/txfonts/t1xtt.pfb></usr/local/texlive/2024/texmf-dist/fonts/
-type1/public/txfonts/tcxbtt.pfb>
-Output written on hdf5_bls.pdf (45 pages, 297389 bytes).
+texmf-dist/fonts/type1/public/txfonts/t1xtt.pfb></usr/local/texlive/2024/texmf-
+dist/fonts/type1/public/txfonts/t1xtt.pfb></usr/local/texlive/2024/texmf-dist/f
+onts/type1/public/txfonts/tcxbtt.pfb>
+Output written on hdf5_bls.pdf (42 pages, 295188 bytes).
 PDF statistics:
- 781 PDF objects out of 1000 (max. 8388607)
- 667 compressed objects within 7 object streams
- 172 named destinations out of 1000 (max. 500000)
- 357 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 627 PDF objects out of 1000 (max. 8388607)
+ 541 compressed objects within 6 object streams
+ 141 named destinations out of 1000 (max. 500000)
+ 325 words of extra memory for PDF output out of 10000 (max. 10000000)
 
