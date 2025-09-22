@@ -49,7 +49,7 @@ def conversion_ar_BLS_VIPA(parent, wrp, path):
                 change_names_of_all_arrays(wrp.data[e], name)
 
     # Verify that the FSR can be found in the arguments
-    if not "SPECTROMETER.VIPA_FSR_(GHz)" in wrp.get_attributes_path(path).keys():
+    if not "SPECTROMETER.VIPA_FSR_(GHz)" in wrp.get_attributes(path).keys():
         qtw.QMessageBox.warning(parent, "Warning", "PSD cannot be constructed because the FSR of the VIPA is not defined.")
         return
 
@@ -119,7 +119,7 @@ def conversion_ar_BLS_VIPA(parent, wrp, path):
         # Visualization
         X_grid, Y_grid = np.meshgrid(np.arange(result["data shape"][0]), np.arange(result["data shape"][1]))
         f = lambda X, Y: theta[0] * X**2 + theta[1] * Y**2 + theta[2] * X * Y + theta[3] * X + theta[4] * Y + theta[5]
-        F.append(f(X_grid, Y_grid) * float(wrp.get_attributes_path(path)["SPECTROMETER.VIPA_FSR_(GHz)"]))
+        F.append(f(X_grid, Y_grid) * float(wrp.get_attributes(path)["SPECTROMETER.VIPA_FSR_(GHz)"]))
    
     F = np.array(F)
     freq = np.average(F, axis=0)

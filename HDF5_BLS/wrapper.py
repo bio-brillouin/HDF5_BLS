@@ -1,11 +1,11 @@
 import h5py
 import numpy as np
+import tempfile
 import json
 import csv
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
-# import copy
 
 # from HDF5_BLS.load_data import load_general
 from HDF5_BLS.WrapperError import *
@@ -13,6 +13,12 @@ from HDF5_BLS.load_data import load_general
 import HDF5_BLS.wrapper_compatibility as compat
 HDF5_BLS_Version = "1.0"
 
+def is_tempfile(filepath):
+    tempdir = tempfile.gettempdir()
+    # Normalize paths for comparison
+    filepath = os.path.abspath(filepath)
+    tempdir = os.path.abspath(tempdir)
+    return os.path.commonpath([filepath, tempdir]) == tempdir
 
 class Wrapper:
     """
@@ -50,23 +56,32 @@ class Wrapper:
     #     Magic methods      #
     ##########################
 
-    def __init__(self, filepath = None): # Test made, Dev guide made
-        """Initializes the wrapper
+    def __init__(self, filepath = None): # Test made 15.09.25
+        """Initializes the wrapper. 
+        If no filepath is given, a temporary HDF5 file is created in the temporary directory of the operating system. A parent "Brillouin" group is then created and the attribute "HDF5_BLS_version" is set to the current version of the library.
+        If a filepath is given but the file does not exist, it is created. A parent "Brillouin" group is then created and the attribute "HDF5_BLS_version" is set to the current version of the library.
+        If a filepath is given and the file exists, it is opened and a compatibility check is performed. If the file is not compatible with the current version of the library, a series of changes are applied to make it compatible.
 
         Parameters
         ----------
         filepath : str, optional
-            The filepath of the HDF5 file to load, by default None means that a temporary file is created.
+            The filepath of the HDF5 file to load, by default None means that a temporary file is created in the temporary directory of the operating system.
+        
+        Example
+        -------
+        >>> wrp = HDF5_BLS() # Creates a temporary HDF5 file in the temporary directory of the operating system
+        >>> wrp = HDF5_BLS("path/to/file.h5") # Creates a HDF5 file at the given path or opens an existing one at the given path
         """
         def no_filepath():
             """
             Function to run to initialize the class when no filepath is given. A temporary HDF5 file is created in the directory of the library. A parent "Brillouin" group is then created with the current version of the library. 
             """
-            filepath = os.path.abspath(os.path.dirname(__file__)) + "/temp.h5"
-            with h5py.File(filepath, 'w') as file:
-                group = file.create_group("Brillouin")
-                group.attrs["HDF5_BLS_version"] = HDF5_BLS_Version
-                group.attrs["Brillouin_type"] = "Root"
+            # Create a temporary file
+            fd, filepath = tempfile.mkstemp(suffix=".h5")
+            os.close(fd)  # Close the file descriptor
+
+            # Create an HDF5 file with the base attributes at the temporary path
+            create_at_filepath(filepath)
             return filepath
         
         def create_at_filepath(filepath):
@@ -104,7 +119,7 @@ class Wrapper:
         # Initializes repacking flag
         self.need_for_repack = False
 
-    def __getitem__(self, key): # Test made, Dev guide made
+    def __getitem__(self, key): # Test made 15.09.25
         """Magic method to access the data of the wrapper
 
         Parameters
@@ -137,7 +152,7 @@ class Wrapper:
                     return data
             return item
         
-    def __add__(self, other): # Test made, Dev guide made
+    def __add__(self, other): # Test made 16.09.25
         """Magic method to add two wrappers together
 
         Parameters
@@ -206,46 +221,71 @@ class Wrapper:
                 attr_wrp2[key] = attributes_other[key]
         
         # Creating the new file
-        try:
-            # Combining the wrappers
-            keys1, keys2 = [], []  
-            with h5py.File(new_wrapper.filepath, 'a') as new_file:
-                group = new_file["Brillouin"]
-                with h5py.File(other.filepath, 'r') as file:
-                    for key in file["Brillouin"].keys():
-                        if isinstance(file["Brillouin"][key], h5py.Group):
-                            new_file.copy(file["Brillouin"][key], group, key)
-                            keys2.append(key)
-                        else:
-                            group.create_dataset(key, data=file[key])
-                with h5py.File(self.filepath, 'r') as file:
-                    for key in file["Brillouin"].keys():
-                        if isinstance(file["Brillouin"][key], h5py.Group):
-                            new_file.copy(file["Brillouin"][key], group, key)
-                            keys1.append(key)
-                        else:
-                            group.create_dataset(key, data=file[key])
+        # try:
+        # Combining the wrappers
+        keys1, keys2 = [], []  
+        with h5py.File(new_wrapper.filepath, 'a') as new_file:
+            group = new_file["Brillouin"]
+            with h5py.File(other.filepath, 'r') as file:
+                for key in file["Brillouin"].keys():
+                    if isinstance(file[f"Brillouin/{key}"], h5py.Group):
+                        new_file.copy(file[f"Brillouin/{key}"], group, key)
+                        keys2.append(key)
+                    else:
+                        group.create_dataset(key, data=file[f"Brillouin/{key}"])
+            with h5py.File(self.filepath, 'r') as file:
+                for key in file["Brillouin"].keys():
+                    if isinstance(file[f"Brillouin/{key}"], h5py.Group):
+                        new_file.copy(file[f"Brillouin/{key}"], group, key)
+                        keys1.append(key)
+                    else:
+                        group.create_dataset(key, data=file[f"Brillouin/{key}"])
 
-            # Adding common attributes to root              
-            new_wrapper.set_attributes_data(attributes=attr_combine, path="Brillouin", overwrite=True)
-            # Adding file-specific attributes to the each group that is added
-            for key in keys1:
-                new_wrapper.set_attributes_data(attributes=attr_wrp1, path=f"Brillouin/{key}", overwrite=True)
-            for key in keys2:
-                new_wrapper.set_attributes_data(attributes=attr_wrp2, path=f"Brillouin/{key}", overwrite=True)
+        # Adding common attributes to root              
+        new_wrapper.add_attributes(attributes=attr_combine, parent_group="Brillouin", overwrite=True)
+        # Adding file-specific attributes to the each group that is added
+        for key in keys1:
+            new_wrapper.add_attributes(attributes=attr_wrp1, parent_group=f"Brillouin/{key}", overwrite=True)
+        for key in keys2:
+            new_wrapper.add_attributes(attributes=attr_wrp2, parent_group=f"Brillouin/{key}", overwrite=True)
                     
-        except Exception as e:
-            raise WrapperError(f"A problem occured when adding the data to the file '{self.filepath}'. Error message: {e}")
+        # except Exception as e:
+        #     raise WrapperError(f"A problem occured when adding the data to the file '{self.filepath}'. Error message: {e}")
         
         new_wrapper.save = True
         return new_wrapper
 
+    def __str__(self):
+        """Magic method to print the structure of the wrapper
+        
+        Returns
+        -------
+        str
+            The string representation of the structure of the wrapper
+        """
+        def build_structure(dic, lvl=0):
+            lines = []
+            for k, v in dic.items():
+                if k == "Brillouin_type":
+                    continue
+                if isinstance(v, dict):
+                    tpe = v.get("Brillouin_type", "")
+                    lines.append("|-" * lvl + f"{k} ({tpe})")
+                    lines.extend(build_structure(v, lvl + 1))
+                else:
+                    lines.append("|-" * lvl + str(k))
+            return lines
+
+        structure = self.get_structure()
+        lines = build_structure(structure)
+        return "\n".join(lines)
+        
 
     ##########################
     #     Main methods       # 
     ##########################
 
-    def add_hdf5(self, filepath, parent_group = "Brillouin", overwrite = False): # Test made 18.08.25
+    def add_hdf5(self, filepath, parent_group = "Brillouin", overwrite = False): # Test made 16.09.25
         """Adds an HDF5 file to the wrapper by specifying in which group the data have to be stored. Default is the "Brillouin" group. If the specified group does not exist, it will be created.
 
         Parameters
@@ -253,7 +293,7 @@ class Wrapper:
         filepath : str
             The filepath of the hdf5 file to add.
         parent_group : str, optional
-            The parent group where to store the data of the HDF5 file, by default the parent group is the top group "Brillouin". The format of this group should be "Brillouin/Group/..."
+            The parent group where to store the data of the HDF5 file, by default the parent group is the top group "Brillouin". The format of this group should be "Brillouin/Group/...". If the parent group does not exist, it will be created.
         overwrite : bool, optional
             A boolean that indicates whether the data should be overwritten if it already exists, by default False
         
@@ -267,6 +307,11 @@ class Wrapper:
             Raises an error if the group already exists in the parent group.
         WrapperError
             Raises an error if the hdf5 file could not be added to the main HDF5 file.
+        
+        Example
+        -------
+        >>> wrp = HDF5_BLS() # Creates a temporary HDF5 file in the temporary directory of the operating system
+        >>> wrp.add_hdf5("path/to/file.h5", "Brillouin/Group") # Adds the HDF5 file at the given path to the "Brillouin/Group" group (which is here created)
         """
         if not os.path.isfile(filepath):
             raise WrapperError_FileNotFound(f"The file '{filepath}' does not exist.")
@@ -304,15 +349,15 @@ class Wrapper:
                         new_group.attrs[key] = value
 
                     for key in file_copy["Brillouin"].keys():
-                        if isinstance(file_copy["Brillouin"][key], h5py.Group):
-                            file.copy(file_copy["Brillouin"][key], new_group, key)
+                        if isinstance(file_copy[f"Brillouin/{key}"], h5py.Group):
+                            file.copy(file_copy[f"Brillouin/{key}"], new_group, key)
                         else:
-                            new_group.create_dataset(key, data=file_copy[key])
+                            new_group.create_dataset(key, data=file_copy[f"Brillouin/{key}"])
             except Exception as e:
                 raise WrapperError(f"A problem occured when adding the data to the file '{self.filepath}'. Error message: {e}")
 
         # If the file was added to a temporary save, set the saving flag to True.
-        if self.filepath == os.path.abspath(os.path.dirname(__file__)) + "/temp.h5":
+        if is_tempfile(self.filepath):
             self.save = True
 
     def add_dictionnary(self, dic, parent_group = None, name_group = None, brillouin_type = "Measure", overwrite = False): # Test made
@@ -360,7 +405,7 @@ class Wrapper:
             with h5py.File(self.filepath, 'r') as file:
                 # Check if the parent group exists
                 if parent_group not in file:
-                    raise WrapperError_StructureError(f"The parent group '{parent_group}' does not exist in the HDF5 file.")
+                    raise WrapperError_StructureError(f"The parent group '{parent_group}' does not exist in the file.")
                 # Check if the path leads to a group, if not, we go up one level
                 if not isinstance(file[parent_group], h5py._hl.group.Group):
                     parent_group = "/".join(parent_group.split("/")[:-1])
@@ -431,8 +476,8 @@ class Wrapper:
                             print(f"Error while adding the attribute {k} with value {v}")
                 else:
                     raise WrapperError_ArgumentType(f"The key '{key}' is not recognized.")
-        
-        if self.filepath == os.path.abspath(os.path.dirname(__file__)) + "/temp.h5":
+
+        if is_tempfile(self.filepath):
             self.save = True
 
     def add_dictionary(self, dic, parent_group, create_group = False, brillouin_type_parent_group = None, overwrite = False): # Test made 19.08.25
@@ -447,8 +492,10 @@ class Wrapper:
             For attributes, each key is the name of the attribute, and the value is the value of the attribute, which will automatically be converted to string if it is not a string.
         parent_group : str, optional
             The path in the file where to store the dataset.
+        create_group : bool, optional
+            If set to True, the parent group will be created if it does not exist. If False and the group does not exist, an error will be raised. Default is False.
         brillouin_type_parent_group : str, optional            
-            The type of the data group where the data are stored. This argument must be given if a new group is being created. If this argument is given and overwrite is set to True, then the brillouin type of the parent group will be overwritten. Otherwise, the original brillouin type of the parent group will be used.
+            The type of the data group where the data are stored. This argument must be given if a new group is being created. If this argument is given and overwrite is set to True, then the brillouin type of the parent group will be overwritten. Otherwise, the original brillouin type of the parent group will be used if the group already exists.
         overwrite : bool, optional
             If set to True, any element of the file with a name corresponding to a name given in the dictionary will be overwritten. Similarly any existing argument will be overwritten and Brillouin type will be redefined. Default is False
         
@@ -460,6 +507,14 @@ class Wrapper:
             Raises an error if the group already exists in the parent group.
         WrapperError_ArgumentType
             Raises an error if arguments given to the function do not match the expected type.
+        
+        Example
+        -------
+        >>> wrp = HDF5_BLS() # Creates a temporary HDF5 file in the temporary directory of the operating system
+        >>> dic = {"Raw_data": {"Name": "Raw data", "Data": np.random.random((50, 50, 512))}}
+        >>> wrp.add_dictionary(dic, parent_group = "Brillouin/Group", create_group = True, brillouin_type_parent_group = "Measure") # Adds the dictionary to the "Brillouin/Group" group (which is here created with Brillouin_type "Measure")
+        >>> dic = {"PSD": {"Name": "Power Spectral Density", "Data": np.random.random((50, 50, 512))}, "Frequency": {"Name": "Frequency", "Data": np.arange(512)}}
+        >>> wrp.add_dictionary(dic, parent_group = "Brillouin/Group", create_group = True, brillouin_type_parent_group = "Measure") # Adds the PSD and Frequency arrays to "Brillouin/Group".
         """
         def check_parent_group(parent_group):
             with h5py.File(self.filepath, 'a') as file:
@@ -589,8 +644,12 @@ class Wrapper:
                         dataset.attrs["Units"] = value["Units"]
                     else:
                         dataset.attrs["Units"] = value["Unit"]
+            
+        # If the file is temporary set save flag to True
+        if is_tempfile(self.filepath):
+            self.save = True
                     
-    def change_brillouin_type(self, path, brillouin_type): # Test made 19.08.25
+    def change_brillouin_type(self, path, brillouin_type): # Test made 16.09.25
         """Changes the brillouin type of an element in the HDF5 file.
 
         Parameters
@@ -621,17 +680,17 @@ class Wrapper:
         
         # Check if the type is valid
         if self.get_type(path) == h5py._hl.group.Group:
-            if brillouin_type not in self.BRILLOUIN_TYPES_GROUPS and brillouin_type.split("_")[0] != "Abscissa":
+            if brillouin_type not in self.BRILLOUIN_TYPES_GROUPS:
                 raise WrapperError_ArgumentType(f"The brillouin type '{brillouin_type}' is not valid.")
         else:
-            if brillouin_type not in self.BRILLOUIN_TYPES_DATASETS:
+            if brillouin_type not in self.BRILLOUIN_TYPES_DATASETS and brillouin_type.split("_")[0] != "Abscissa":
                 raise WrapperError_ArgumentType(f"The brillouin type '{brillouin_type}' is not valid.")
         
         # Change the brillouin type
         with h5py.File(self.filepath, 'a') as file:
             file[path].attrs["Brillouin_type"] = brillouin_type
 
-    def change_name(self, path, name): # Test made 20.08.25
+    def change_name(self, path, name): # Test made 16.09.25
         """Changes the name of an element in the HDF5 file.
 
         Parameters
@@ -653,18 +712,22 @@ class Wrapper:
             file[new_path] = file[path]
             self.delete_element(path)   
 
-    def close(self, delete_temp_file = False):
+    def close(self, delete_temp_file = False): # Test made 16.09.25
         """Closes the wrapper and deletes the temporary file if it exists
 
+        Parameters
+        ----------
+        delete_temp_file : bool, optional
+            If True, the temporary file is deleted, by default False
         """
         # If the save flag is raised
         if self.save:
             # If delete_temp_file is set to True and the file is temporary, the user wants to delete the temporary file without saving
-            if delete_temp_file and self.filepath == os.path.abspath(os.path.dirname(__file__)) + "/temp.h5":
+            if delete_temp_file and is_tempfile(self.filepath):
                 if os.path.isfile(self.filepath):
                     os.remove(self.filepath)
                     return
-            # If the user has not expressly said he wanted to not to save the file, we raise an error
+            # If the user has not expressly said he didn't want to save the file, we raise an error
             else:
                 raise WrapperError_Save(f"The wrapper has not been saved yet.")
 
@@ -672,7 +735,7 @@ class Wrapper:
         if self.need_for_repack:
             self.repack()
 
-    def combine_datasets(self, datasets, parent_group, name, overwrite = False):
+    def combine_datasets(self, datasets, parent_group, name, overwrite = False): # Test made 17.09.25
         """Combines a list of elements into a unique dataset. All the datasets must have the same shape. They are added into a new dataset where the first dimension is the number of datasets, under the group "parent_group". If the dataset already exists and overwrite is set to True, it is overwritten.
 
         Parameters
@@ -687,10 +750,14 @@ class Wrapper:
         # Check if the datasets are in the file
         for dataset in datasets:
             if not self.get_type(dataset) == h5py._hl.dataset.Dataset:
-                raise WrapperError_ArgumentType(f"The datasets {dataset} are not in the file.")
+                raise WrapperError_ArgumentType(f"The datasets '{dataset}' are not datasets.")
 
         # Check if the name is not already in use
-        if name in self.get_children_elements(path=parent_group):
+        with h5py.File(self.filepath, 'a') as file:
+            if parent_group not in file:
+                file.create_group(parent_group)
+                file[parent_group].attrs["Brillouin_type"] = "Measure"
+        if name in self.get_children_elements(path = parent_group):
             raise WrapperError_Overwrite(f"A dataset with the name '{name}' already exists.")
         
         # Checks that the datasets have the same shape
@@ -711,7 +778,7 @@ class Wrapper:
         
         self.add_dictionary(dic, parent_group = parent_group)
 
-    def compatibility_changes(self):
+    def compatibility_changes(self): # Test made 17.09.25
         """
         Applies changes from previous versions of the wrapper to newest versions using the compat module.
         """
@@ -722,7 +789,7 @@ class Wrapper:
             # Update the HDF5_BLS_version attribute
             f["Brillouin"].attrs["HDF5_BLS_version"] = HDF5_BLS_Version
 
-    def copy_dataset(self, path, copy_path):
+    def copy_dataset(self, path, copy_path): # Test made 17.09.25
         """This function allows to copy a dataset from the file to a different location while keeping the last location.
 
         Parameters
@@ -750,7 +817,7 @@ class Wrapper:
             for e in file[path].attrs.keys():
                 file[copy_path+"/"+new_name].attrs[e] = file[path].attrs[e]
 
-    def create_group(self, name, parent_group=None, brillouin_type = "Root", overwrite=False): # Test made
+    def create_group(self, name, parent_group=None, brillouin_type = "Root", overwrite=False): # Test made 17.09.25
         """Creates a group in the file under the given parent group with the given name and Brillouin type. If overwrite is set to True, if a group with the same name exists in the selected parent group, the previous element is removed.
 
         Parameters
@@ -790,10 +857,10 @@ class Wrapper:
                 group.attrs.create("Brillouin_type", brillouin_type)
 
         # If the file was temporary, we set the save flag to True
-        if self.filepath == os.path.abspath(os.path.dirname(__file__)) + "/temp.h5":
+        if is_tempfile(self.filepath):
             self.save = True
 
-    def delete_element(self, path = None): # Test made
+    def delete_element(self, path = None): # Test made 17.09.25
         """Deletes an element from the file and sets the need_for_repack flag to True.
 
         Parameters
@@ -836,32 +903,49 @@ class Wrapper:
         # Set the need_for_repack flag to True
         self.need_for_repack = True
 
-    def export_dataset(self, path, filepath, export_type = ".npy"):
+    def export_dataset(self, path, filepath, export_type = ".npy"): # Test made 17.09.25
         """
         Exports the dataset at the given path as a numpy array.
 
         Parameters
         ----------
         path : str
-            The path to the dataset to export.
+            The path to the dataset to export. Warning: only datasets of 2 or less dimensions can be exported to either .csv or .xlsx formats.
         filepath : str
             The path to the numpy array to export to.
         export_type : str
-            The type of export to perform (e.g. ".npy", ".csv").
+            The type of export to perform (currently supported: ".npy", ".csv", ".xlsx).
 
         Returns
         -------
         None
         """
+        assert export_type in [".npy", ".csv", ".xlsx"], WrapperError_ArgumentType(f"The export type '{export_type}' is not supported. Supported types are: '.npy', '.csv', '.xlsx'.")
+
+        # Extract the dataset from the file
         with h5py.File(self.filepath, 'r') as file:
+            assert path in file, WrapperError_StructureError(f"The path '{path}' does not exist in the file.")
+            assert isinstance(file[path], h5py._hl.dataset.Dataset), WrapperError_ArgumentType(f"The path '{path}' does not lead to a dataset.")
             dataset = file[path][()]
         
+        # Ensure the filepath ends with the right extension
+        if not filepath.endswith(export_type):
+            filepath += export_type
+
+        # Export the dataset
         if export_type == ".npy":
             np.save(filepath, dataset)
         elif export_type == ".csv":
+            if len(dataset.shape) > 2:
+                raise WrapperError_ArgumentType(f"The dataset at path '{path}' has more than 2 dimensions. Only datasets of 2 or less dimensions can be exported.")
             np.savetxt(filepath, dataset, delimiter=",")
+        elif export_type == ".xlsx":
+            if len(dataset.shape) > 2:
+                raise WrapperError_ArgumentType(f"The dataset at path '{path}' has more than 2 dimensions. Only datasets of 2 or less dimensions can be exported.")
+            df = pd.DataFrame(dataset)
+            df.to_excel(filepath)
 
-    def export_group(self, path, filepath):
+    def export_group(self, path, filepath, overwrite = False): # Test made 18.09.25
         """
         Exports the group at the given path as a HDF5 file.
 
@@ -871,18 +955,55 @@ class Wrapper:
             The path to the group to export.
         filepath : str
             The path to the HDF5 file to export to.
+        overwrite : bool
+            A boolean to specify if the file we export to needs to be rewritten if it already exists.
 
         Returns
         -------
         None
         """
+        # Ensure the filepath ends with .h5
+        if not filepath.endswith(".h5"):
+            filepath += ".h5"
+        
+        # Ensure the path is a valid path
+        with h5py.File(self.filepath, 'r') as file:
+            if path not in file:
+                raise WrapperError_StructureError(f"The path '{path}' does not exist in the file.")
+
+        # Check we're not trying to export datasets
+        if not self.get_type(path = path) == h5py._hl.group.Group:
+            raise WrapperError_ArgumentType(f"Element at path: {path} is not a group")
+        
+        # Check we're not trying to export a treatment group
+        if self.get_type(path = path, return_Brillouin_type=True) == "Treatment":
+            raise WrapperError_ArgumentType(f"Element at path: {path} is a group of type Treatment.")
+        
+        # If the group to be exported is not of type "Root", make sure to keep the name of the parent to wrap all children.
+        add_parent = False
+        if not self.get_type(path = path, return_Brillouin_type=True) == "Root":
+            add_parent = True
+            parent = path.split("/")[-1]
+            Brillouin_type = self.get_type(path = path, return_Brillouin_type=True)
+        
+        # If the filepath of export leads to an existing file and overwrite is True, delete existing file.
+        if os.path.isfile(filepath):
+            if overwrite:
+                os.remove(filepath)
+            else:
+                raise WrapperError_Overwrite(f"File at path: {filepath} already exists. Set overwrite to True to overwrite.")
+
         with h5py.File(self.filepath, 'r') as file:
             with h5py.File(filepath, 'w') as new_file:
-                new_file.copy(file[path], "Brillouin")
-                group = new_file["Brillouin"]
+                group = new_file.create_group("Brillouin")
                 group.attrs["Brillouin_type"] = "Root"
+                if add_parent:
+                    new_file.copy(file[path], f"Brillouin/{parent}")
+                    new_file[f"Brillouin/{parent}"].attrs["Brillouin_type"] = Brillouin_type
+                else:
+                    new_file.copy(file[path], "Brillouin")
 
-    def export_image(self, path, filepath, simple_image = True, image_size = None, cmap = 'viridis', colorbar = False, colorbar_label = None, axis = False, xlabel = None, ylabel = None):
+    def export_image(self, path, filepath, simple_image = True, image_size = None, cmap = 'viridis', colorbar = False, colorbar_label = None, axis = False, xlabel = None, ylabel = None): # Test made 18.09.25
         """
         Exports the dataset at the given path as an image.
 
@@ -893,7 +1014,7 @@ class Wrapper:
         filepath : str
             The path to the image to export to.
         simple_image : bool, optional
-            If set to True, the image is exported as a simple image with grayscale colormap.
+            If set to True, the image is exported as a simple image with grayscale colormap. If false, the image is exported with the given colormap and options.
         image_size : tuple, optional
             The size of the image to export. If None, the size is set to the default figure size.
         cmap : str, optional
@@ -907,14 +1028,6 @@ class Wrapper:
         -------
         None
         """
-        simple_image = False
-        image_size = (5,5)
-        cmap = 'jet'
-        colorbar = True
-        axis = True
-        xlabel = "x (µm)"
-        ylabel = "y (µm)"
-
         with h5py.File(self.filepath, 'r') as file:
             data = file[path][()]
 
@@ -930,10 +1043,8 @@ class Wrapper:
                     plt.imsave(filepath, data, cmap='gray')
                 else:
                     # Set the figure size
-                    if image_size is None:
-                        plt.figure()
-                    else:
-                        plt.figure(figsize = image_size)
+                    if image_size is None: plt.figure()
+                    else: plt.figure(figsize = image_size)
 
                     # Display the image
                     if axis is False:
@@ -960,8 +1071,8 @@ class Wrapper:
                     # Save the image
                     plt.savefig(filepath)
 
-    def get_attributes(self, path=None): # Test made
-        """Returns the attributes of the file
+    def get_attributes(self, path=None): # Test made 18.09.25
+        """Returns the attributes associated to a given path. The attributes are retireved hierarchically, meaning that the attributes of all the groups above the given path are also retrieved, and their value is only changed if they are redefined at a lower level.
 
         Parameters
         ----------
@@ -995,7 +1106,7 @@ class Wrapper:
                     attr[e] = file[path_temp].attrs[e]
         return attr
 
-    def get_children_elements(self, path=None, Brillouin_type = None):
+    def get_children_elements(self, path=None, Brillouin_type = None): # Test made 18.09.25
         """Returns the children elements of a given path. If Brillouin_type is specified, only the children elements with the given Brillouin_type are returned.
 
         Parameters
@@ -1022,8 +1133,9 @@ class Wrapper:
         else:
             return [e for e in children if self.get_type(path=f"{path}/{e}", return_Brillouin_type=True) == Brillouin_type]
 
-    def get_special_groups_hierarchy(self, path = None, brillouin_type = None):
-        """Get all the groups with desired brillouin type that are hierarchically above a given path.
+    def get_special_groups_hierarchy(self, path = None, brillouin_type = None): # Test made 18.09.25
+        """
+        Get all the groups with desired brillouin type that are hierarchically above a given path.
 
         Parameters
         ----------
@@ -1040,6 +1152,10 @@ class Wrapper:
         if path is None: path = "Brillouin"
         if brillouin_type is None: brillouin_type = "Root"
 
+        with h5py.File(self.filepath, 'r') as file:
+            if path not in file:
+                raise WrapperError_StructureError(f"The path '{path}' does not exist in the file.")
+
         # Split the path into its components
         path_split = path.split("/")
         path_temp = ""
@@ -1054,8 +1170,9 @@ class Wrapper:
                     groups.append(f"{path_temp}/{e}")
         return groups
 
-    def get_structure(self, filepath=None): # Test made
-        """Returns the structure of the file
+    def get_structure(self, filepath=None): # Test made 18.09.25
+        """
+        Returns the structure of an HDF5 file (by default the one stored in the object).
 
         Parameters
         ----------
@@ -1099,7 +1216,7 @@ class Wrapper:
             structure = iteration(file)
             return structure
 
-    def get_type(self, path=None, return_Brillouin_type = False):
+    def get_type(self, path=None, return_Brillouin_type = False): # Test made 18.09.25
         """Returns the type of the element
 
         Parameters
@@ -1121,7 +1238,7 @@ class Wrapper:
             else:
                 return type(file[path])
 
-    def move(self, path, new_path):
+    def move(self, path, new_path): # Test made 19.09.25
         """
         Moves an element from one path to another. If the new group does not exist, it is created.
 
@@ -1145,68 +1262,20 @@ class Wrapper:
             group = file[new_path]
             name_group = path.split("/")[-1]
             group.create_group(name_group)
+            for k,v in file[path].attrs.items():
+                group[name_group].attrs[k] = v
             for key in file[path].keys():
                 file[new_path][name_group].copy(file[path][key], key)
             self.delete_element(path)
 
-    def repack(self, force_repack = False):
-        """Repacks the wrapper to minimize its size.
+    def move_channel_dimension_to_last(self, path, channel_dimension=None): # Test made 19.09.25
         """
-        def copy_group(file, group, new_file, new_group):
-            """Copies a group from one file to another.
-
-            Parameters
-            ----------
-            file : h5py.File
-                The file to copy the group from.
-            group : str
-                The name of the group to copy.
-            new_file : h5py.File
-                The file to copy the group to.
-            new_group : str
-                The name of the group to copy to.
-            """
-            # Create the new group
-            new_file.create_group(new_group)
-
-            # Copy the attributes
-            for key in file[group].attrs.keys():
-                new_file[new_group].attrs[key] = file[group].attrs[key]
-
-            # Copy the data
-            for key in file[group].keys():
-                if isinstance(file[group][key], h5py.Group):
-                    copy_group(file, group+"/"+key, new_file, new_group+"/"+key)
-                else:
-                    dataset = new_file[new_group].create_dataset(key, data=file[group][key])
-                    dataset.attrs["Brillouin_type"] = file[group][key].attrs["Brillouin_type"]
-        
-        if self.need_for_repack or force_repack:
-            # Create a blank HDF5 file to store the data
-            temporary_file = self.filepath.replace(".h5", "_temp.h5")
-
-            # Create a new file to store the data
-            with h5py.File(self.filepath, 'r') as file_old:
-                # Create a new file to store the data
-                with h5py.File(temporary_file, 'w') as new_file:
-                    # Copy the data and attributes from the wrapper to the new file
-                    for key in file_old.keys():
-                        copy_group(file_old, key, new_file, key)
-        
-            # Delete the old file
-            os.remove(self.filepath)
-
-            # Rename the new file to the old file
-            os.rename(temporary_file, self.filepath)
-
-            # Set the need_for_repack flag to False
-            self.need_for_repack = False
-
-    def move_channel_dimension_to_last(self, path, channel_dimension=None):
-        """Moves the channel dimension to the last dimension of the data to comply with the HDF5_BLS convention.
+        Moves the channel dimension to the last dimension of the data to comply with the HDF5_BLS convention.
 
         Parameters
         ----------
+        path : str
+            The path to the dataset to move the channel dimension to the last dimension.
         channel_dimension : int, optional
             The dimension of the channel. Default is None, which means the channel dimension is the last dimension.
         """
@@ -1236,8 +1305,72 @@ class Wrapper:
             file.create_dataset(path, data=data)
             for k, v in attributes.items():
                 file[path].attrs[k] = v
+
+    def repack(self, force_repack = False): # Test made 19.09.25
+        """
+        Repacks the wrapper to minimize its size.
+
+        Parameters
+        ----------
+        force_repack : bool
+            Flag to force the repacking of the HDF5 file even if not necessary
+        """
+        def copy_group(file, group, new_file, new_group):
+            """
+            Copies a group from one file to another.
+
+            Parameters
+            ----------
+            file : h5py.File
+                The file to copy the group from.
+            group : str
+                The name of the group to copy.
+            new_file : h5py.File
+                The file to copy the group to.
+            new_group : str
+                The name of the group to copy to.
+            """
+            # Create the new group
+            new_file.create_group(new_group)
+
+            # Copy the attributes
+            for key in file[group].attrs.keys():
+                new_file[new_group].attrs[key] = file[group].attrs[key]
+
+            # Copy the data
+            for key in file[group].keys():
+                if isinstance(file[group][key], h5py.Group):
+                    copy_group(file, group+"/"+key, new_file, new_group+"/"+key)
+                else:
+                    dataset = new_file[new_group].create_dataset(key, data=file[group][key])
+                    dataset.attrs["Brillouin_type"] = file[group][key].attrs["Brillouin_type"]
         
-    def save_as_hdf5(self, filepath=None, remove_old_file=True, overwrite = False): # Test made
+        if self.need_for_repack or force_repack:
+            # Create a blank HDF5 file to store the data
+            temporary_file = tempfile.mktemp(suffix = ".h5")
+            with h5py.File(temporary_file, 'w') as file:
+                group = file.create_group("Brillouin")
+                group.attrs["Brillouin_type"] = "Root"
+                group.attrs["HDF5_BLS_version"] = HDF5_BLS_Version
+
+            # Create a new file to store the data
+            with h5py.File(self.filepath, 'r') as file_old:
+                # Create a new file to store the data
+                with h5py.File(temporary_file, 'w') as new_file:
+                    # Copy the data and attributes from the wrapper to the new file
+                    for key in file_old.keys():
+                        copy_group(file_old, key, new_file, key)
+        
+            # Delete the old file
+            os.remove(self.filepath)
+
+            # Rename the new file to the old file
+            os.rename(temporary_file, self.filepath)
+
+            # Set the need_for_repack flag to False
+            self.need_for_repack = False
+
+    def save_as_hdf5(self, filepath=None, remove_old_file=True, overwrite = False): # Test made 19.09.25
         """Saves the data and attributes to an HDF5 file. In practice, moves the temporary hdf5 file to a new location and removes the old file if specified.
     
         Parameters
@@ -1258,7 +1391,7 @@ class Wrapper:
         
         # If the filepath is not the same as the current one, we move the current file to the new location 
         if os.path.isfile(filepath) and not overwrite:
-                raise WrapperError_Overwrite(f"The file '{filepath}' already exists.")
+            raise WrapperError_Overwrite(f"The file '{filepath}' already exists.")
         
         # Copy the current file to the new location and update filepath attribute
         try:
@@ -1274,7 +1407,7 @@ class Wrapper:
     
         self.save = False
 
-    def save_properties_csv(self, filepath, path = None):
+    def save_properties_csv(self, filepath, path = None): # Test made 22.09.25
         """Saves the attributes of the data in the HDF5 file to a CSV file.
 
         Parameters
@@ -1300,43 +1433,6 @@ class Wrapper:
                     writer.writerow([""])
                     writer.writerow([base])
                 writer.writerow([k, v])
-
-    def set_attributes_data(self, attributes, path = None, overwrite = False): # Test made
-        """Sets the attributes of the data in the HDF5 file. If the path leads to a dataset, the attributes are added to the group containing the dataset. If overwrite is False, the attributes are not overwritten if they already exist.
-
-        Parameters
-        ----------
-        attributes : dict
-            The attributes to be added to the HDF5 file. in the form {"MEASURE.Sample": "Water", ...}
-        path : str, optional
-            The path to the dataset or group in the HDF5 file, by default None leads to the top group "Brillouin"
-        overwrite : bool, optional
-            A parameter to indicate whether the attributes should be overwritten if they already exist or not, by default False - attributes are not overwritten.
-        """
-        # If the path is not specified, we set it to the root of the file
-        if path is None: path = "Brillouin"
-
-        # Updating the attributes
-        with h5py.File(self.filepath, 'a') as file:
-            if  path not in file: 
-                raise WrapperError_StructureError(f"The path '{path}' does not lead to an element.")
-            # If the path leads to a dataset, we go up one level to get a group
-            if type(file[path]) is h5py._hl.dataset.Dataset:
-                path = "/".join(path.split("/")[:-1])
-            # We update the attributes of the metadata group taking into account the "update" parameter
-            try:
-                for k, v in attributes.items():
-                    if k in file[path].attrs.keys():
-                        if overwrite and v:
-                            file[path].attrs.modify(k, v)
-                    elif v:
-                        file[path].attrs.create(k, v)
-            except:
-                raise WrapperError(f"An error occured while updating the metadata of the HDF5 file.")
-
-        if self.filepath == os.path.abspath(os.path.dirname(__file__)) + "/temp.h5":
-            self.save = True
-
 
     ##########################
     #    Derived methods     #
@@ -1383,24 +1479,43 @@ class Wrapper:
                             overwrite = overwrite)
 
     def add_attributes(self, attributes, parent_group = "Brillouin", overwrite=False): # Test made
-        """Adds attributes to the wrapper.
+        """
+        Adds attributes to the wrapper.
 
         Parameters
         ----------
         attributes : dict
             The attributes to add to the wrapper. The keys of the dictionary should be the name of the attributes, and the values should be the values of the attributes.
-        parent_group : str, optional
+        path : str, optional
             The parent group where to store the attributes of the HDF5 file. The format of this group should be "Brillouin/Measure". By default parent_group is set to "Brillouin".
         overwrite : bool, optional
             If True, the attributes will be overwritten if they already exist.
         """
-        attr = {"Attributes": attributes}
+        # If the path is not specified, we set it to the root of the file
+        if parent_group is None: parent_group = "Brillouin"
 
-        self.add_dictionary(attr, 
-                            create_group=True,
-                            brillouin_type_parent_group="Root",
-                            parent_group = parent_group, 
-                            overwrite = overwrite)
+        # Updating the attributes
+        with h5py.File(self.filepath, 'a') as file:
+            # Check if the path leads to a valid element, if not create a group at this path of type "Root"
+            if  parent_group not in file: 
+                group = file.create_group(parent_group)
+                group.attrs["Brillouin_type"] = "Root"
+            # If the path leads to a dataset, we go up one level to get a group
+            if type(file[parent_group]) is h5py._hl.dataset.Dataset:
+                parent_group = "/".join(parent_group.split("/")[:-1])
+            # We update the attributes of the metadata group taking into account the "update" parameter
+            try:
+                for k, v in attributes.items():
+                    if k in file[parent_group].attrs.keys():
+                        if overwrite and v:
+                            file[parent_group].attrs.modify(k, v)
+                    elif v:
+                        file[parent_group].attrs.create(k, v)
+            except:
+                raise WrapperError(f"An error occured while updating the metadata of the HDF5 file.")
+
+        if is_tempfile(self.filepath):
+            self.save = True
 
     def add_frequency(self, data, parent_group=None, name=None, overwrite=False): # Test made
         """Adds a frequency array to the wrapper by creating a new group.
@@ -1767,22 +1882,4 @@ class Wrapper:
         for k, v in dic.items():
             print(k," : ", v)
     
-
-if __name__ == "__main__":
-    wrp = Wrapper()
-    dic = {"Raw_data": {"Name": "Wonderful measure 019", 
-                        "Data": np.random.random((100, 100))},
-           "PSD": {"Name": "Wonderful measure 019 - PSD", 
-                    "Data": np.random.random((100, 100))},
-           "Frequency": {"Name": "Frequency",
-                        "Data": np.random.random((100))},
-           "Abscissa_": {"Name":"Time (s)", 
-                          "Data":np.linspace(0,10,100), 
-                          "Units":"s",
-                          "Dim_start":0, 
-                          "Dim_end":1}}
-    wrp.add_dictionary(dic, parent_group="Brillouin/Group1/Group2/Group3/Test", create_group = True, brillouin_type_parent_group="Calibration_spectrum", overwrite=True)
-
-
-    wrp.close()
 

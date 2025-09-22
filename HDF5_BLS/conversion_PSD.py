@@ -1,9 +1,9 @@
-def check_conversion_ar_BLS_VIPA(wrapper, path):
+def check_conversion_ar_BLS_VIPA(wrp, path):
     """This function checks if without any additional information, the data can be converted to a PSD. For an ar-BLS VIPA spectrometer, this can be the case if the center of center of the beam is known and a frequency array exists on the parent of the data.
 
     Parameters
     ----------
-    wrapper : wrapper.Wrapper
+    wrp : wrapper.Wrapper
         The wrapper object leading to the data to be converted.
     path : str
         The path to the data to be converted.
@@ -13,7 +13,7 @@ def check_conversion_ar_BLS_VIPA(wrapper, path):
     bool
         True if the data can be converted to a PSD, False otherwise.
     """
-    attributes = wrapper.get_attributes_path(path)
+    attributes = wrp.get_attributes(path)
     if "TREAT.Center" in attributes.keys():
         return True
     else:
