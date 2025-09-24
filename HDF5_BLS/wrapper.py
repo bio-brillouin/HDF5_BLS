@@ -1438,7 +1438,7 @@ class Wrapper:
     #    Derived methods     #
     ##########################
 
-    def add_abscissa(self, data, parent_group, name=None, unit = "AU", dim_start = 0, dim_end = None, overwrite = False): # Test made
+    def add_abscissa(self, data, parent_group, name=None, unit = "AU", dim_start = 0, dim_end = None, overwrite = False): 
         """Adds abscissa as a dataset to the "parent_group" group. 
         
         Parameters
@@ -1478,7 +1478,7 @@ class Wrapper:
                             brillouin_type_parent_group="Measure", 
                             overwrite = overwrite)
 
-    def add_attributes(self, attributes, parent_group = "Brillouin", overwrite=False): # Test made
+    def add_attributes(self, attributes, parent_group = "Brillouin", overwrite=False): 
         """
         Adds attributes to the wrapper.
 
@@ -1517,7 +1517,7 @@ class Wrapper:
         if is_tempfile(self.filepath):
             self.save = True
 
-    def add_frequency(self, data, parent_group=None, name=None, overwrite=False): # Test made
+    def add_frequency(self, data, parent_group = "Brillouin", name=None, overwrite=False): 
         """Adds a frequency array to the wrapper by creating a new group.
         
         Parameters
@@ -1547,7 +1547,52 @@ class Wrapper:
                             brillouin_type_parent_group="Measure", 
                             overwrite = overwrite)
 
-    def add_PSD(self, data, parent_group=None, name=None, overwrite=False): # Test made
+    def add_other(self, data, parent_group = "Brillouin", name = None, overwrite = False): # Test made 24.09.25
+        """
+        Adds an "Other" dataset to the file at the given location. If the location does not exist, it is created. If the name is not specified, it is set to "Data_i" with i chosen to not overwrite any other dataset. If the name is specified and exists in the file at the given location, the dataset is overwritten if overwrite is set to True, else, a WrapperError_Overwrite is raised.
+
+        Parameters
+        ----------
+        data : np.ndarray
+            The dataset to add
+        parent_group : str, optional
+            The path to the group where to add the dataset, by default "Brillouin"
+        name : str, optional
+            The name of the dataset, by default "Data_i" with i chosen to not overwrite any other dataset
+        overwrite : bool, optional
+            A flag to overwrite any dataset with the same name, by default False
+        """
+        with h5py.File(self.filepath, "r") as file:
+            # Check if the parent group exists
+            create_group = False
+            if parent_group not in file:
+                create_group = True
+
+            # If the name is None, set it to "Data_i"
+            if name is None:
+                names = list(file[parent_group].keys())
+                i = 0
+                default_name = f"Data_{i}"
+                while default_name in names:
+                    i += 1
+                    default_name = f"Data_{i}"
+                name = default_name      
+        
+        dic = {"Other": {"Name": name, 
+                         "Data": data}}
+
+        if create_group:
+            self.add_dictionary(dic, 
+                                parent_group = parent_group, 
+                                create_group=True, 
+                                brillouin_type_parent_group="Measure", 
+                                overwrite = overwrite)
+        else:
+            self.add_dictionary(dic, 
+                                parent_group = parent_group, 
+                                overwrite = overwrite)
+
+    def add_PSD(self, data, parent_group = "Brillouin", name=None, overwrite=False): 
         """Adds a PSD array to the wrapper by creating a new group.
         
         Parameters
@@ -1577,7 +1622,7 @@ class Wrapper:
                             brillouin_type_parent_group="Measure", 
                             overwrite = overwrite)
 
-    def add_raw_data(self, data, parent_group, name=None, overwrite=False): # Test made
+    def add_raw_data(self, data, parent_group, name=None, overwrite=False): 
         """Adds a raw data array to the wrapper by creating a new group.
         
         Parameters
@@ -1608,7 +1653,7 @@ class Wrapper:
                             brillouin_type_parent_group="Measure", 
                             overwrite = overwrite)
 
-    def add_treated_data(self, parent_group, name_group = None, overwrite = False, **kwargs): # Test made, Dev guide made
+    def add_treated_data(self, parent_group, name_group = None, overwrite = False, **kwargs): 
         """Adds the arrays resulting from the treatment of the PSD to the wrapper by creating a new group.
         
         Parameters
@@ -1683,7 +1728,7 @@ class Wrapper:
         else:
             self.clear_empty_attributes(path = "/".join(path.split("/")[:-1]))
 
-    def import_raw_data(self, filepath, parent_group=None, name = None, creator = None, parameters = None, reshape = None, overwrite = False): # Test made
+    def import_raw_data(self, filepath, parent_group = "Brillouin", name = None, creator = None, parameters = None, reshape = None, overwrite = False): 
         """Adds a raw data array to the HDF5 file from a file.
         
         Parameters
@@ -1715,7 +1760,7 @@ class Wrapper:
         
         self.add_raw_data(dic["Raw_data"]["Data"], parent_group, name = name, overwrite = overwrite)
 
-    def import_other(self, filepath, parent_group=None, name = None, creator = None, parameters = None, reshape = None, overwrite = False):
+    def import_other(self, filepath, parent_group = "Brillouin", name = None, creator = None, parameters = None, reshape = None, overwrite = False):
         """Adds a raw data array to the wrapper from a file.
         
         Parameters

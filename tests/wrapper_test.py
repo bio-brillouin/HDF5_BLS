@@ -756,6 +756,39 @@ def test_save_properties_csv(wrapper_instance: Wrapper):
 #     with h5py.File(wrapper_instance.filepath, 'r') as f:
 #         assert "freq" in f["Brillouin"]
 
+def test_add_other(wrapper_instance: Wrapper):
+    # Setup: create file
+    with h5py.File(wrapper_instance.filepath, 'a') as f:
+        group = f["Brillouin"]
+        group1 = group.create_group("Group1")
+        group1.attrs["Brillouin_type"] = "Measure"
+    arr = np.arange(5)
+
+    # Test adding other data without specifying and location without a specified name
+    wrapper_instance.add_other(arr)
+    assert "Data_0" in wrapper_instance.get_children_elements("Brillouin")
+
+    # Test adding other data at a specified location without a specified name
+    wrapper_instance.add_other(arr, parent_group="Brillouin/Group1")
+    wrapper_instance.add_other(arr, parent_group="Brillouin/Group1")
+    assert "Data_0" in wrapper_instance.get_children_elements("Brillouin/Group1")
+    assert "Data_1" in wrapper_instance.get_children_elements("Brillouin/Group1")
+
+    # Test adding other data at a specified location that exists with a specified name
+    wrapper_instance.add_other(arr, parent_group="Brillouin/Group1", name="Other")
+    assert "Other" in wrapper_instance.get_children_elements("Brillouin/Group1")
+
+    # Test adding other data at a specified location that does not exist with a specified name
+    wrapper_instance.add_other(arr, parent_group="Brillouin/Group2", name="Other")
+    assert "Group2" in wrapper_instance.get_children_elements("Brillouin")
+    assert "Other" in wrapper_instance.get_children_elements("Brillouin/Group2")
+
+    # Test adding other data at a specified location with a specified name that already exists
+    try: wrapper_instance.add_other(arr, parent_group="Brillouin/Group1", name="Other")
+    except WrapperError_Overwrite: pass
+
+    os.remove(wrapper_instance.filepath)
+
 # # Test adding PSD data
 # def test_add_PSD(wrapper_instance: Wrapper):
 #     arr = np.arange(5)
