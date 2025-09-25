@@ -101,3 +101,9 @@ For changes that might affect the compatibility of the project with existing dev
 ## License
 
 [GNU-GPL v3.0](https://www.gnu.org/licenses/gpl-3.0.en.html)
+
+## What's new with respect to previous versions?
+
+### v1.0.1
+- New "add_other" method to add datasets from non-specified type to the wrapper
+- Working with temporary files: Instead of creating a temporary H5 file in the directory of the library, the file is now created in a temporary directory of the OS. 
