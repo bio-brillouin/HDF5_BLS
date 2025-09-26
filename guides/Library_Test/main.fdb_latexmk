@@ -1,6 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1757061631.59577 "/Users/pierrebouvet/Documents/Code/HDF5_BLS/guides/Library_Test/main.tex" "main.pdf" "main" 1757061635.01628 0
-  "/Users/pierrebouvet/Documents/Code/HDF5_BLS/guides/Library_Test/main.tex" 1757061631.39471 43004 03408e1c211d77fc7defed0dffd9744c ""
+["pdflatex"] 1758807978.42797 "/Users/pierrebouvet/Documents/Code/HDF5_BLS/guides/Library_Test/main.tex" "main.pdf" "main" 1758807982.02515 0
+  "/Users/pierrebouvet/Documents/Code/HDF5_BLS/guides/Library_Test/main.tex" 1758807976.52083 43004 03408e1c211d77fc7defed0dffd9744c ""
   "/usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc" 1136849721 2971 def0b6c1f0b107b3b936def894055589 ""
   "/usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1136849721 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/usr/local/texlive/2024/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
@@ -196,11 +196,11 @@
   "img/brimview-load_sample_data.png" 1756999664.91765 179882 bd7e7191e9b566a49f70ba3039eef730 ""
   "img/brimview-parameters.png" 1756999664.91886 151287 6b517d38bb70674cd1a3316f04d07f1f ""
   "img/brimview-spectrum.png" 1756999664.92038 187638 38a8b948c61c06d32f8672c3fe1d8ce7 ""
-  "main-1.cpt" 1757061632.51037 886 5f2d8f195a895a3ad4d8410a15e3a935 "pdflatex"
-  "main.aux" 1757061634.91686 8887 67fe166aabfed54e484dc429f552b052 "pdflatex"
-  "main.out" 1757061634.91773 6995 82b753c2ecb09a6c11fcef791e30db74 "pdflatex"
-  "main.tex" 1757061631.39471 43004 03408e1c211d77fc7defed0dffd9744c ""
-  "main.toc" 1757061634.91791 3649 77188efaa7bb719f1ba11fc03de0ff4e "pdflatex"
+  "main-1.cpt" 1758807979.29448 886 5f2d8f195a895a3ad4d8410a15e3a935 "pdflatex"
+  "main.aux" 1758807981.92867 8887 67fe166aabfed54e484dc429f552b052 "pdflatex"
+  "main.out" 1758807981.92955 6995 82b753c2ecb09a6c11fcef791e30db74 "pdflatex"
+  "main.tex" 1758807976.52083 43004 03408e1c211d77fc7defed0dffd9744c ""
+  "main.toc" 1758807981.92975 3649 77188efaa7bb719f1ba11fc03de0ff4e "pdflatex"
   (generated)
   "main-1.cpt"
   "main.aux"

@@ -735,19 +735,56 @@ def test_save_properties_csv(wrapper_instance: Wrapper):
     os.remove(wrapper_instance.filepath)
     os.remove(csv_path)
 
-# # Test adding abscissa data
-# def test_add_abscissa(wrapper_instance: Wrapper):
-#     arr = np.arange(5)
-#     wrapper_instance.add_abscissa(arr, parent_group="Brillouin", name="abscissa")
-#     with h5py.File(wrapper_instance.filepath, 'r') as f:
-#         assert "abscissa" in f["Brillouin"]
+# Test adding abscissa data
+def test_add_abscissa(wrapper_instance: Wrapper):
+    # Setup: Create the file structure
+    with h5py.File(wrapper_instance.filepath, 'a') as f:
+        group = f["Brillouin"].create_group("Group1")
+        group.attrs["Brillouin_type"] = "Measure"
+    arr = np.arange(5)
 
-# # Test adding attributes to a group
-# def test_add_attributes(wrapper_instance: Wrapper):
-#     wrapper_instance.create_group("grp", parent_group="Brillouin")
-#     wrapper_instance.add_attributes({"attr": "value"}, parent_group="Brillouin/grp")
-#     attrs = wrapper_instance.get_attributes("Brillouin/grp")
-#     assert "attr" in attrs
+    # Try adding abscissa data to an existing group
+    wrapper_instance.add_abscissa(arr, parent_group="Brillouin/Group1", name="abscissa")
+    with h5py.File(wrapper_instance.filepath, 'r') as f:
+        assert "abscissa" in f["Brillouin/Group1"]
+
+    # Try adding abscissa data to a non-existing group
+    wrapper_instance.add_abscissa(arr, parent_group="Brillouin/Group2", name="abscissa")
+    with h5py.File(wrapper_instance.filepath, 'r') as f:
+        assert "Group2" in f["Brillouin"]
+        assert "abscissa" in f["Brillouin/Group2"]
+    
+    # Try adding the same abscissa data to an existing group
+    try: wrapper_instance.add_abscissa(arr, parent_group="Brillouin/Group1", name="abscissa")
+    except WrapperError_Overwrite: pass
+
+    # Try adding the same abscissa data to an existing group but with a different name
+    wrapper_instance.add_abscissa(arr, parent_group="Brillouin/Group1", name="abscissa_2")
+    with h5py.File(wrapper_instance.filepath, 'r') as f:
+        assert "abscissa_2" in f["Brillouin/Group1"]
+
+    os.remove(wrapper_instance.filepath)
+
+# Test adding attributes to a group
+def test_add_attributes(wrapper_instance: Wrapper):
+    # Setup: create the file
+    with h5py.File(wrapper_instance.filepath, 'a') as f:
+        group = f["Brillouin"].create_group("Group1")
+        group.attrs["Brillouin_type"] = "Measure"
+        
+    # Try adding attributes to a non-existing group
+    wrapper_instance.add_attributes({"attr": "value"}, parent_group="Brillouin/Group2")
+    with h5py.File(wrapper_instance.filepath, 'r') as f:
+        assert "Group2" in f["Brillouin"]
+        assert "attr" in f["Brillouin/Group2"].attrs
+        
+    # Try adding attributes to an existing group
+    wrapper_instance.add_attributes({"attr": "value"}, parent_group="Brillouin/Group1")
+    with h5py.File(wrapper_instance.filepath, 'r') as f:
+        assert "Group2" in f["Brillouin"]
+        assert "attr" in f["Brillouin/Group2"].attrs
+        
+    os.remove(wrapper_instance.filepath)
 
 # # Test adding frequency data
 # def test_add_frequency(wrapper_instance: Wrapper):
@@ -755,6 +792,9 @@ def test_save_properties_csv(wrapper_instance: Wrapper):
 #     wrapper_instance.add_frequency(arr, parent_group="Brillouin", name="freq")
 #     with h5py.File(wrapper_instance.filepath, 'r') as f:
 #         assert "freq" in f["Brillouin"]
+
+# test_add_attributes(Wrapper(tempfile.mktemp(suffix=".h5")))
+
 
 def test_add_other(wrapper_instance: Wrapper):
     # Setup: create file

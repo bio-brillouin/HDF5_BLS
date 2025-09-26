@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HDF5_BLS.wrapper &mdash; HDF5_BLS v1.0.0 documentation</title>
+  <title>HDF5_BLS.wrapper &mdash; HDF5_BLS v1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
@@ -13,7 +13,7 @@
     <link rel="shortcut icon" href="../../_static/myicon.svg"/>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=76e2d817"></script>
+      <script src="../../_static/documentation_options.js?v=d29a5c0e"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -41,13 +41,16 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../source/quickstart.html">Quick Start</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../source/file_format.html">The file format</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../source/hdf5_bls_package.html">The HDF5_BLS package</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../_autosummary/HDF5_BLS.html">HDF5_BLS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../_autosummary/HDF5_BLS.wrapper.html">HDF5_BLS.wrapper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../_autosummary/HDF5_BLS.analyze.html">HDF5_BLS.analyze</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../_autosummary/HDF5_BLS.treat.html">HDF5_BLS.treat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../_autosummary/HDF5_BLS.load_data.html">HDF5_BLS.load_data</a></li>
 </ul>
 
         </div>
@@ -131,6 +134,7 @@
                                 <span class="s2">&quot;Raw_data&quot;</span><span class="p">,</span> 
                                 <span class="s2">&quot;Shift&quot;</span><span class="p">,</span> 
                                 <span class="s2">&quot;Shift_err&quot;</span><span class="p">]</span>
+    
     <span class="n">BRILLOUIN_TYPES_GROUPS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Calibration_spectrum&quot;</span><span class="p">,</span> <span class="s2">&quot;Impulse_response&quot;</span><span class="p">,</span> <span class="s2">&quot;Measure&quot;</span><span class="p">,</span> <span class="s2">&quot;Root&quot;</span><span class="p">,</span> <span class="s2">&quot;Treatment&quot;</span><span class="p">]</span>
 
 
@@ -324,12 +328,12 @@
                         <span class="n">group</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">file</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Brillouin/</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">])</span>
 
         <span class="c1"># Adding common attributes to root              </span>
-        <span class="n">new_wrapper</span><span class="o">.</span><span class="n">set_attributes_data</span><span class="p">(</span><span class="n">attributes</span><span class="o">=</span><span class="n">attr_combine</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;Brillouin&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">new_wrapper</span><span class="o">.</span><span class="n">add_attributes</span><span class="p">(</span><span class="n">attributes</span><span class="o">=</span><span class="n">attr_combine</span><span class="p">,</span> <span class="n">parent_group</span><span class="o">=</span><span class="s2">&quot;Brillouin&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="c1"># Adding file-specific attributes to the each group that is added</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys1</span><span class="p">:</span>
-            <span class="n">new_wrapper</span><span class="o">.</span><span class="n">set_attributes_data</span><span class="p">(</span><span class="n">attributes</span><span class="o">=</span><span class="n">attr_wrp1</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Brillouin/</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">new_wrapper</span><span class="o">.</span><span class="n">add_attributes</span><span class="p">(</span><span class="n">attributes</span><span class="o">=</span><span class="n">attr_wrp1</span><span class="p">,</span> <span class="n">parent_group</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Brillouin/</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys2</span><span class="p">:</span>
-            <span class="n">new_wrapper</span><span class="o">.</span><span class="n">set_attributes_data</span><span class="p">(</span><span class="n">attributes</span><span class="o">=</span><span class="n">attr_wrp2</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Brillouin/</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">new_wrapper</span><span class="o">.</span><span class="n">add_attributes</span><span class="p">(</span><span class="n">attributes</span><span class="o">=</span><span class="n">attr_wrp2</span><span class="p">,</span> <span class="n">parent_group</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Brillouin/</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                     
         <span class="c1"># except Exception as e:</span>
         <span class="c1">#     raise WrapperError(f&quot;A problem occured when adding the data to the file &#39;{self.filepath}&#39;. Error message: {e}&quot;)</span>
@@ -582,8 +586,10 @@
 <span class="sd">            For attributes, each key is the name of the attribute, and the value is the value of the attribute, which will automatically be converted to string if it is not a string.</span>
 <span class="sd">        parent_group : str, optional</span>
 <span class="sd">            The path in the file where to store the dataset.</span>
+<span class="sd">        create_group : bool, optional</span>
+<span class="sd">            If set to True, the parent group will be created if it does not exist. If False and the group does not exist, an error will be raised. Default is False.</span>
 <span class="sd">        brillouin_type_parent_group : str, optional            </span>
-<span class="sd">            The type of the data group where the data are stored. This argument must be given if a new group is being created. If this argument is given and overwrite is set to True, then the brillouin type of the parent group will be overwritten. Otherwise, the original brillouin type of the parent group will be used.</span>
+<span class="sd">            The type of the data group where the data are stored. This argument must be given if a new group is being created. If this argument is given and overwrite is set to True, then the brillouin type of the parent group will be overwritten. Otherwise, the original brillouin type of the parent group will be used if the group already exists.</span>
 <span class="sd">        overwrite : bool, optional</span>
 <span class="sd">            If set to True, any element of the file with a name corresponding to a name given in the dictionary will be overwritten. Similarly any existing argument will be overwritten and Brillouin type will be redefined. Default is False</span>
 <span class="sd">        </span>
@@ -731,7 +737,11 @@
                     <span class="k">if</span> <span class="s2">&quot;Units&quot;</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                         <span class="n">dataset</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;Units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;Units&quot;</span><span class="p">]</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">dataset</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;Units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;Unit&quot;</span><span class="p">]</span></div>
+                        <span class="n">dataset</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;Units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;Unit&quot;</span><span class="p">]</span>
+            
+        <span class="c1"># If the file is temporary set save flag to True</span>
+        <span class="k">if</span> <span class="n">is_tempfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save</span> <span class="o">=</span> <span class="kc">True</span></div>
 
                     
 <div class="viewcode-block" id="Wrapper.change_brillouin_type">
@@ -1554,7 +1564,7 @@
 
 <div class="viewcode-block" id="Wrapper.save_properties_csv">
 <a class="viewcode-back" href="../../_autosummary/HDF5_BLS.wrapper.html#HDF5_BLS.wrapper.Wrapper.save_properties_csv">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">save_properties_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_properties_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span> <span class="c1"># Test made 22.09.25</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Saves the attributes of the data in the HDF5 file to a CSV file.</span>
 
 <span class="sd">        Parameters</span>
@@ -1582,53 +1592,13 @@
                 <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">([</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="Wrapper.set_attributes_data">
-<a class="viewcode-back" href="../../_autosummary/HDF5_BLS.wrapper.html#HDF5_BLS.wrapper.Wrapper.set_attributes_data">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">set_attributes_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span> <span class="c1"># Test made</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the attributes of the data in the HDF5 file. If the path leads to a dataset, the attributes are added to the group containing the dataset. If overwrite is False, the attributes are not overwritten if they already exist.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        attributes : dict</span>
-<span class="sd">            The attributes to be added to the HDF5 file. in the form {&quot;MEASURE.Sample&quot;: &quot;Water&quot;, ...}</span>
-<span class="sd">        path : str, optional</span>
-<span class="sd">            The path to the dataset or group in the HDF5 file, by default None leads to the top group &quot;Brillouin&quot;</span>
-<span class="sd">        overwrite : bool, optional</span>
-<span class="sd">            A parameter to indicate whether the attributes should be overwritten if they already exist or not, by default False - attributes are not overwritten.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># If the path is not specified, we set it to the root of the file</span>
-        <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;Brillouin&quot;</span>
-
-        <span class="c1"># Updating the attributes</span>
-        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-            <span class="k">if</span>  <span class="n">path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span> 
-                <span class="k">raise</span> <span class="n">WrapperError_StructureError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The path &#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&#39; does not lead to an element.&quot;</span><span class="p">)</span>
-            <span class="c1"># If the path leads to a dataset, we go up one level to get a group</span>
-            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">file</span><span class="p">[</span><span class="n">path</span><span class="p">])</span> <span class="ow">is</span> <span class="n">h5py</span><span class="o">.</span><span class="n">_hl</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">Dataset</span><span class="p">:</span>
-                <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-            <span class="c1"># We update the attributes of the metadata group taking into account the &quot;update&quot; parameter</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">attributes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">file</span><span class="p">[</span><span class="n">path</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                        <span class="k">if</span> <span class="n">overwrite</span> <span class="ow">and</span> <span class="n">v</span><span class="p">:</span>
-                            <span class="n">file</span><span class="p">[</span><span class="n">path</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">modify</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
-                    <span class="k">elif</span> <span class="n">v</span><span class="p">:</span>
-                        <span class="n">file</span><span class="p">[</span><span class="n">path</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
-            <span class="k">except</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">WrapperError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occured while updating the metadata of the HDF5 file.&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">is_tempfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">save</span> <span class="o">=</span> <span class="kc">True</span></div>
-
-
-
     <span class="c1">##########################</span>
     <span class="c1">#    Derived methods     #</span>
     <span class="c1">##########################</span>
 
 <div class="viewcode-block" id="Wrapper.add_abscissa">
 <a class="viewcode-back" href="../../_autosummary/HDF5_BLS.wrapper.html#HDF5_BLS.wrapper.Wrapper.add_abscissa">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_abscissa</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">parent_group</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">unit</span> <span class="o">=</span> <span class="s2">&quot;AU&quot;</span><span class="p">,</span> <span class="n">dim_start</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dim_end</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span> <span class="c1"># Test made</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_abscissa</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">parent_group</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">unit</span> <span class="o">=</span> <span class="s2">&quot;AU&quot;</span><span class="p">,</span> <span class="n">dim_start</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dim_end</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span> <span class="c1"># Test made 26.09.25  </span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds abscissa as a dataset to the &quot;parent_group&quot; group. </span>
 <span class="sd">        </span>
 <span class="sd">        Parameters</span>
@@ -1653,8 +1623,14 @@
 <span class="sd">        WrapperError_StructureError</span>
 <span class="sd">            If the parent group does not exist in the HDF5 file.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="c1"># Check if the parent group exists</span>
+            <span class="n">create_group</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">parent_group</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
+                <span class="n">create_group</span> <span class="o">=</span> <span class="kc">True</span>
+
         <span class="k">if</span> <span class="n">dim_end</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">dim_end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Abscissa_</span><span class="si">{</span><span class="n">dim_start</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">dim_end</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Abscissa_</span><span class="si">{</span><span class="n">dim_start</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">dim_start</span><span class="o">+</span><span class="n">dim_end</span><span class="si">}</span><span class="s2">&quot;</span>
 
         <span class="n">dic</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Abscissa_&quot;</span><span class="p">:{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> 
                            <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">,</span> 
@@ -1662,39 +1638,63 @@
                            <span class="s2">&quot;Dim_start&quot;</span><span class="p">:</span> <span class="n">dim_start</span><span class="p">,</span> 
                            <span class="s2">&quot;Dim_end&quot;</span><span class="p">:</span> <span class="n">dim_end</span><span class="p">}}</span>
         
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_dictionary</span><span class="p">(</span><span class="n">dic</span><span class="p">,</span> 
-                            <span class="n">parent_group</span> <span class="o">=</span> <span class="n">parent_group</span><span class="p">,</span> 
-                            <span class="n">create_group</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
-                            <span class="n">brillouin_type_parent_group</span><span class="o">=</span><span class="s2">&quot;Measure&quot;</span><span class="p">,</span> 
-                            <span class="n">overwrite</span> <span class="o">=</span> <span class="n">overwrite</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="n">create_group</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_dictionary</span><span class="p">(</span><span class="n">dic</span><span class="p">,</span> 
+                                <span class="n">parent_group</span> <span class="o">=</span> <span class="n">parent_group</span><span class="p">,</span> 
+                                <span class="n">create_group</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+                                <span class="n">brillouin_type_parent_group</span><span class="o">=</span><span class="s2">&quot;Measure&quot;</span><span class="p">,</span> 
+                                <span class="n">overwrite</span> <span class="o">=</span> <span class="n">overwrite</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_dictionary</span><span class="p">(</span><span class="n">dic</span><span class="p">,</span> 
+                                <span class="n">parent_group</span> <span class="o">=</span> <span class="n">parent_group</span><span class="p">,</span> 
+                                <span class="n">overwrite</span> <span class="o">=</span> <span class="n">overwrite</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Wrapper.add_attributes">
 <a class="viewcode-back" href="../../_autosummary/HDF5_BLS.wrapper.html#HDF5_BLS.wrapper.Wrapper.add_attributes">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="p">,</span> <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span> <span class="c1"># Test made</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds attributes to the wrapper.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes</span><span class="p">,</span> <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span> <span class="c1"># Test made 26.09.25</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds attributes to the wrapper.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        attributes : dict</span>
 <span class="sd">            The attributes to add to the wrapper. The keys of the dictionary should be the name of the attributes, and the values should be the values of the attributes.</span>
-<span class="sd">        parent_group : str, optional</span>
+<span class="sd">        path : str, optional</span>
 <span class="sd">            The parent group where to store the attributes of the HDF5 file. The format of this group should be &quot;Brillouin/Measure&quot;. By default parent_group is set to &quot;Brillouin&quot;.</span>
 <span class="sd">        overwrite : bool, optional</span>
 <span class="sd">            If True, the attributes will be overwritten if they already exist.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">attr</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Attributes&quot;</span><span class="p">:</span> <span class="n">attributes</span><span class="p">}</span>
+        <span class="c1"># If the path is not specified, we set it to the root of the file</span>
+        <span class="k">if</span> <span class="n">parent_group</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_dictionary</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> 
-                            <span class="n">create_group</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                            <span class="n">brillouin_type_parent_group</span><span class="o">=</span><span class="s2">&quot;Root&quot;</span><span class="p">,</span>
-                            <span class="n">parent_group</span> <span class="o">=</span> <span class="n">parent_group</span><span class="p">,</span> 
-                            <span class="n">overwrite</span> <span class="o">=</span> <span class="n">overwrite</span><span class="p">)</span></div>
+        <span class="c1"># Updating the attributes</span>
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="c1"># Check if the path leads to a valid element, if not create a group at this path of type &quot;Root&quot;</span>
+            <span class="k">if</span>  <span class="n">parent_group</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span> 
+                <span class="n">group</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="n">parent_group</span><span class="p">)</span>
+                <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;Brillouin_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Root&quot;</span>
+            <span class="c1"># If the path leads to a dataset, we go up one level to get a group</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">file</span><span class="p">[</span><span class="n">parent_group</span><span class="p">])</span> <span class="ow">is</span> <span class="n">h5py</span><span class="o">.</span><span class="n">_hl</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">Dataset</span><span class="p">:</span>
+                <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parent_group</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="c1"># We update the attributes of the metadata group taking into account the &quot;update&quot; parameter</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">attributes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">file</span><span class="p">[</span><span class="n">parent_group</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                        <span class="k">if</span> <span class="n">overwrite</span> <span class="ow">and</span> <span class="n">v</span><span class="p">:</span>
+                            <span class="n">file</span><span class="p">[</span><span class="n">parent_group</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">modify</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">v</span><span class="p">:</span>
+                        <span class="n">file</span><span class="p">[</span><span class="n">parent_group</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">WrapperError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occured while updating the metadata of the HDF5 file.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">is_tempfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 
 <div class="viewcode-block" id="Wrapper.add_frequency">
 <a class="viewcode-back" href="../../_autosummary/HDF5_BLS.wrapper.html#HDF5_BLS.wrapper.Wrapper.add_frequency">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_frequency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">parent_group</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span> <span class="c1"># Test made</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_frequency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span> 
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds a frequency array to the wrapper by creating a new group.</span>
 <span class="sd">        </span>
 <span class="sd">        Parameters</span>
@@ -1725,9 +1725,57 @@
                             <span class="n">overwrite</span> <span class="o">=</span> <span class="n">overwrite</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="Wrapper.add_other">
+<a class="viewcode-back" href="../../_autosummary/HDF5_BLS.wrapper.html#HDF5_BLS.wrapper.Wrapper.add_other">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_other</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin&quot;</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span> <span class="c1"># Test made 24.09.25</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds an &quot;Other&quot; dataset to the file at the given location. If the location does not exist, it is created. If the name is not specified, it is set to &quot;Data_i&quot; with i chosen to not overwrite any other dataset. If the name is specified and exists in the file at the given location, the dataset is overwritten if overwrite is set to True, else, a WrapperError_Overwrite is raised.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data : np.ndarray</span>
+<span class="sd">            The dataset to add</span>
+<span class="sd">        parent_group : str, optional</span>
+<span class="sd">            The path to the group where to add the dataset, by default &quot;Brillouin&quot;</span>
+<span class="sd">        name : str, optional</span>
+<span class="sd">            The name of the dataset, by default &quot;Data_i&quot; with i chosen to not overwrite any other dataset</span>
+<span class="sd">        overwrite : bool, optional</span>
+<span class="sd">            A flag to overwrite any dataset with the same name, by default False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="c1"># Check if the parent group exists</span>
+            <span class="n">create_group</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">parent_group</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
+                <span class="n">create_group</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="c1"># If the name is None, set it to &quot;Data_i&quot;</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">file</span><span class="p">[</span><span class="n">parent_group</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">default_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Data_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="k">while</span> <span class="n">default_name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+                    <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">default_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Data_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">default_name</span>      
+        
+        <span class="n">dic</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Other&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> 
+                         <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">}}</span>
+
+        <span class="k">if</span> <span class="n">create_group</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_dictionary</span><span class="p">(</span><span class="n">dic</span><span class="p">,</span> 
+                                <span class="n">parent_group</span> <span class="o">=</span> <span class="n">parent_group</span><span class="p">,</span> 
+                                <span class="n">create_group</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+                                <span class="n">brillouin_type_parent_group</span><span class="o">=</span><span class="s2">&quot;Measure&quot;</span><span class="p">,</span> 
+                                <span class="n">overwrite</span> <span class="o">=</span> <span class="n">overwrite</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_dictionary</span><span class="p">(</span><span class="n">dic</span><span class="p">,</span> 
+                                <span class="n">parent_group</span> <span class="o">=</span> <span class="n">parent_group</span><span class="p">,</span> 
+                                <span class="n">overwrite</span> <span class="o">=</span> <span class="n">overwrite</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="Wrapper.add_PSD">
 <a class="viewcode-back" href="../../_autosummary/HDF5_BLS.wrapper.html#HDF5_BLS.wrapper.Wrapper.add_PSD">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_PSD</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">parent_group</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span> <span class="c1"># Test made</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_PSD</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span> 
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds a PSD array to the wrapper by creating a new group.</span>
 <span class="sd">        </span>
 <span class="sd">        Parameters</span>
@@ -1760,7 +1808,7 @@
 
 <div class="viewcode-block" id="Wrapper.add_raw_data">
 <a class="viewcode-back" href="../../_autosummary/HDF5_BLS.wrapper.html#HDF5_BLS.wrapper.Wrapper.add_raw_data">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_raw_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">parent_group</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span> <span class="c1"># Test made</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_raw_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">parent_group</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span> 
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds a raw data array to the wrapper by creating a new group.</span>
 <span class="sd">        </span>
 <span class="sd">        Parameters</span>
@@ -1794,7 +1842,7 @@
 
 <div class="viewcode-block" id="Wrapper.add_treated_data">
 <a class="viewcode-back" href="../../_autosummary/HDF5_BLS.wrapper.html#HDF5_BLS.wrapper.Wrapper.add_treated_data">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_treated_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_group</span><span class="p">,</span> <span class="n">name_group</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> <span class="c1"># Test made, Dev guide made</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_treated_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_group</span><span class="p">,</span> <span class="n">name_group</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> 
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds the arrays resulting from the treatment of the PSD to the wrapper by creating a new group.</span>
 <span class="sd">        </span>
 <span class="sd">        Parameters</span>
@@ -1821,6 +1869,8 @@
 <span class="sd">            The amplitude error array to add to the wrapper.</span>
 <span class="sd">        blt_std: np.ndarray, optional   </span>
 <span class="sd">            The Loss Tangent error array to add to the wrapper.</span>
+<span class="sd">        treat: HDF5_BLS_Treat.Treat</span>
+<span class="sd">            The treatment object to add to the wrapper. If given, all other keyword arguments are ignored.</span>
 <span class="sd">            </span>
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
@@ -1828,22 +1878,33 @@
 <span class="sd">            If the parent group does not exist in the HDF5 file.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">dic</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">shift</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;shift&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">shift</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;Shift&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Shift&quot;</span><span class="p">,</span> <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="n">shift</span><span class="p">}</span>
-        <span class="n">linewidth</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;linewidth&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">linewidth</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;Linewidth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Linewidth&quot;</span><span class="p">,</span> <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="n">linewidth</span><span class="p">}</span>
-        <span class="n">amplitude</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;amplitude&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">amplitude</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;Amplitude&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Amplitude&quot;</span><span class="p">,</span> <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="n">amplitude</span><span class="p">}</span>
-        <span class="n">blt</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;blt&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">blt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;BLT&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;BLT&quot;</span><span class="p">,</span> <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="n">blt</span><span class="p">}</span>
-        <span class="n">shift_err</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;shift_err&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">shift_err</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;Shift_err&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Shift error&quot;</span><span class="p">,</span> <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="n">shift_err</span><span class="p">}</span>
-        <span class="n">linewidth_err</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;linewidth_err&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">linewidth_err</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;Linewidth_err&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Linewidth error&quot;</span><span class="p">,</span> <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="n">linewidth_err</span><span class="p">}</span>
-        <span class="n">amplitude_err</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;amplitude_err&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">amplitude_err</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;Amplitude_err&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Amplitude error&quot;</span><span class="p">,</span> <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="n">amplitude_err</span><span class="p">}</span>
-        <span class="n">blt_std</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;blt_std&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">blt_std</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;BLT_err&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;BLT error&quot;</span><span class="p">,</span> <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="n">blt_std</span><span class="p">}</span>
+        <span class="n">treat</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;treat&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">treat</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;Shift&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Shift&quot;</span><span class="p">,</span> <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="n">treat</span><span class="o">.</span><span class="n">shift</span><span class="p">}</span>
+            <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;Linewidth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Linewidth&quot;</span><span class="p">,</span> <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="n">treat</span><span class="o">.</span><span class="n">linewidth</span><span class="p">}</span>
+            <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;Amplitude&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Amplitude&quot;</span><span class="p">,</span> <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="n">treat</span><span class="o">.</span><span class="n">amplitude</span><span class="p">}</span>
+            <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;BLT&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;BLT&quot;</span><span class="p">,</span> <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="n">treat</span><span class="o">.</span><span class="n">blt</span><span class="p">}</span>
+            <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;Shift_err&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Shift error&quot;</span><span class="p">,</span> <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="n">treat</span><span class="o">.</span><span class="n">shift_err</span><span class="p">}</span>
+            <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;Linewidth_err&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Linewidth error&quot;</span><span class="p">,</span> <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="n">treat</span><span class="o">.</span><span class="n">linewidth_err</span><span class="p">}</span>
+            <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;Amplitude_err&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Amplitude error&quot;</span><span class="p">,</span> <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="n">treat</span><span class="o">.</span><span class="n">amplitude_err</span><span class="p">}</span>
+            <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;BLT_err&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;BLT error&quot;</span><span class="p">,</span> <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="n">treat</span><span class="o">.</span><span class="n">blt_std</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">shift</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;shift&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">shift</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;Shift&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Shift&quot;</span><span class="p">,</span> <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="n">shift</span><span class="p">}</span>
+            <span class="n">linewidth</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;linewidth&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">linewidth</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;Linewidth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Linewidth&quot;</span><span class="p">,</span> <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="n">linewidth</span><span class="p">}</span>
+            <span class="n">amplitude</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;amplitude&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">amplitude</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;Amplitude&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Amplitude&quot;</span><span class="p">,</span> <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="n">amplitude</span><span class="p">}</span>
+            <span class="n">blt</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;blt&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">blt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;BLT&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;BLT&quot;</span><span class="p">,</span> <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="n">blt</span><span class="p">}</span>
+            <span class="n">shift_err</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;shift_err&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">shift_err</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;Shift_err&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Shift error&quot;</span><span class="p">,</span> <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="n">shift_err</span><span class="p">}</span>
+            <span class="n">linewidth_err</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;linewidth_err&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">linewidth_err</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;Linewidth_err&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Linewidth error&quot;</span><span class="p">,</span> <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="n">linewidth_err</span><span class="p">}</span>
+            <span class="n">amplitude_err</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;amplitude_err&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">amplitude_err</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;Amplitude_err&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;Amplitude error&quot;</span><span class="p">,</span> <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="n">amplitude_err</span><span class="p">}</span>
+            <span class="n">blt_std</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;blt_std&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">blt_std</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;BLT_err&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot;BLT error&quot;</span><span class="p">,</span> <span class="s2">&quot;Data&quot;</span><span class="p">:</span> <span class="n">blt_std</span><span class="p">}</span>
         
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dic</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">return</span>
 
@@ -1875,7 +1936,7 @@
 
 <div class="viewcode-block" id="Wrapper.import_raw_data">
 <a class="viewcode-back" href="../../_autosummary/HDF5_BLS.wrapper.html#HDF5_BLS.wrapper.Wrapper.import_raw_data">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">import_raw_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">parent_group</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">creator</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">reshape</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span> <span class="c1"># Test made</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">import_raw_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin&quot;</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">creator</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">reshape</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span> 
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds a raw data array to the HDF5 file from a file.</span>
 <span class="sd">        </span>
 <span class="sd">        Parameters</span>
@@ -1910,7 +1971,7 @@
 
 <div class="viewcode-block" id="Wrapper.import_other">
 <a class="viewcode-back" href="../../_autosummary/HDF5_BLS.wrapper.html#HDF5_BLS.wrapper.Wrapper.import_other">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">import_other</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">parent_group</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">creator</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">reshape</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">import_other</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin&quot;</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">creator</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">parameters</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">reshape</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds a raw data array to the wrapper from a file.</span>
 <span class="sd">        </span>
 <span class="sd">        Parameters</span>

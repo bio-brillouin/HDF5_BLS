@@ -16,7 +16,7 @@ requirements = parse_requirements('/Users/pierrebouvet/Documents/Code/HDF5_BLS/r
 
 setup(
     name='HDF5_BLS', # name of pack which will be package dir below project
-    version='0.1.1', # v 0.1.0.4 current on test PyPI
+    version='1.0.1', # v 1.0.1
     url='https://github.com/bio-brillouin/HDF5_BLS',
     author='Pierre Bouvet',
     author_email='pierre.bouvet@meduniwien.ac.at',

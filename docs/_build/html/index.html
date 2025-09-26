@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to HDF5_BLS’s documentation! &mdash; HDF5_BLS v1.0.0 documentation</title>
+  <title>In a nutshell &mdash; HDF5_BLS v1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="_static/myicon.svg"/>
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=76e2d817"></script>
+      <script src="_static/documentation_options.js?v=d29a5c0e"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -69,7 +69,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Welcome to HDF5_BLS’s documentation!</li>
+      <li class="breadcrumb-item active">In a nutshell</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -79,8 +79,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="welcome-to-hdf5-bls-s-documentation">
-<h1>Welcome to HDF5_BLS’s documentation!<a class="headerlink" href="#welcome-to-hdf5-bls-s-documentation" title="Link to this heading"></a></h1>
+  <figure class="align-default">
+<img alt="_images/banner.svg" src="_images/banner.svg" />
+</figure>
 <div class="admonition-about-hdf5-bls admonition">
 <p class="admonition-title">About HDF5_BLS</p>
 <p>The <cite>HDF5_BLS</cite> project is a Python package allowing users to easily store Brillouin Light Scattering relevant data in a single HDF5 file. The package is designed to integrate in existing Python workflows and to be as easy to use as possible. The package is a solution for unifying the data storage of Brillouin Light Scattering experiments, with three main goals:</p>
@@ -90,6 +91,31 @@
 <li><p><strong>Expandability</strong>: Allow the format to grow with the needs of the community.</p></li>
 </ul>
 </div>
+<section id="in-a-nutshell">
+<h1>In a nutshell<a class="headerlink" href="#in-a-nutshell" title="Link to this heading"></a></h1>
+<p>The idea is to reproduce the file structure you would use for your experiment, in a HDF5 file. We then add attributes to unify the way we store and use BLS data.</p>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="_images/File_system_HDF5_file.svg"><img alt="_images/File_system_HDF5_file.svg" src="_images/File_system_HDF5_file.svg" style="width: 75%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">A concrete example of measures stored in a file system (background) and the corresponding HDF5 file structure (foreground, using <a class="reference external" href="https://www.giss.nasa.gov/tools/panoply/">Panoply</a>).</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>HDF5 files are composed of groups  and datasets. A group is a container that can contain other groups or datasets. A dataset is a container that stores data.</p>
+<p><strong>But what about the different modalities?</strong></p>
+<p>You can store your data “as is” (what the spectrometer returns), but we recommend storing the associated Power spectral density (PSD) and frequency axis (frequency) in the HDF5 file. This will allow everyone to have access to a unified “nature” of the data.</p>
+<p><strong>But how do I differentiate between the different types of datasets?</strong></p>
+<p>We add to each element of the HDF5 file, a “Brillouin_type” attribute that will allow to know the type of the element. Here are the following types:</p>
+<figure class="align-center" id="id2">
+<a class="reference internal image-reference" href="_images/Groups_and_datasets_type.svg"><img alt="_images/Groups_and_datasets_type.svg" src="_images/Groups_and_datasets_type.svg" style="width: 75%;" />
+</a>
+<figcaption>
+<p><span class="caption-text">A visual representation of the Brillouin_type attribute for groups and datasets in the HDF5 file.</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p><strong>😱 Sounds complicated 😱</strong></p>
+<p>That’s why, to simplify everything, we’ve made a dedicated Python package: HDF5_BLS to take care of complicated things!</p>
+<p>Go check the quickstart guide to get started! 😉</p>
 <section id="contents">
 <h2>Contents:<a class="headerlink" href="#contents" title="Link to this heading"></a></h2>
 <div class="toctree-wrapper compound">

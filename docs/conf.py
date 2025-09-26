@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.abspath('../HDF5_BLS'))
 project = 'HDF5_BLS'
 copyright = '2025, Pierre Bouvet'
 author = 'Pierre Bouvet'
-release = 'v1.0.0'
+release = 'v1.0.1'
 html_favicon = '_static/myicon.svg'
 html_logo = "_static/myicon.svg"
 

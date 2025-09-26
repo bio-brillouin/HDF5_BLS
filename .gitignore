@@ -52,3 +52,5 @@ local_use
 graphical_algorithm.pdf
 TODO.md
 Images
+docs/_build
+docs/_templates

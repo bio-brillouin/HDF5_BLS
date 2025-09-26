@@ -2,7 +2,7 @@ PWD /Users/pierrebouvet/Documents/Code/HDF5_BLS/docs/_build/latex
 INPUT /usr/local/texlive/2024/texmf.cnf
 INPUT /usr/local/texlive/2024/texmf-dist/web2c/texmf.cnf
 INPUT /usr/local/texlive/2024/texmf-var/web2c/pdftex/pdflatex.fmt
-INPUT hdf5_bls.tex
+INPUT /Users/pierrebouvet/Documents/Code/HDF5_BLS/docs/_build/latex/hdf5_bls.tex
 OUTPUT hdf5_bls.log
 INPUT ./sphinxmanual.cls
 INPUT sphinxmanual.cls

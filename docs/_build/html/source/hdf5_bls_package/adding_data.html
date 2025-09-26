@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>General approach to adding data to the HDF5 file &mdash; HDF5_BLS v1.0.0 documentation</title>
+  <title>General approach to adding data to the HDF5 file &mdash; HDF5_BLS v1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="../../_static/myicon.svg"/>
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=76e2d817"></script>
+      <script src="../../_static/documentation_options.js?v=d29a5c0e"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -154,9 +154,18 @@ Let’s consider the following example: we have just initialized a wrapper objec
 <li><p>linewidth_err (optional): The error of the linewidth array</p></li>
 <li><p>shift(optional): The shift array to add</p></li>
 <li><p>shift_err (optional): The error of the shift array</p></li>
+<li><p>treat (optional): An HDF5_BLS_Treat.Treat object to add. This object stores all teh optional parameters above. It also stores the process as a JSON file that is stored as an attribute of the group.</p></li>
 </ul>
 <p><strong>Example</strong></p>
 <p>Let’s consider the following example: we have treated our data and have obtained a shift array (shift), a linewidth array (linewidth) and their errors (shift_err and linewidth_err). We want to add these arrays in the same group as the PSD, that is the group “Test”. The treated data are stored in a separate group nested in the “Test” group by the choices made while building the structure of the file. This is so the name of the treatment group can be chosen freely. Let’s say that in this case, we have performed a non-negative matrix factorization (NnMF) on the data, and extracted the shift values closest to 5GHz. We will therefore call this treatment “NnMF - 5GHz”. We will write:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">wrp</span><span class="o">.</span><span class="n">add_treated_data</span><span class="p">(</span><span class="n">shift</span> <span class="o">=</span> <span class="n">shift</span><span class="p">,</span>
+                     <span class="n">linewidth</span> <span class="o">=</span> <span class="n">linewidth</span><span class="p">,</span>
+                     <span class="n">shift_err</span> <span class="o">=</span> <span class="n">shift_err</span><span class="p">,</span>
+                     <span class="n">linewidth_err</span> <span class="o">=</span> <span class="n">linewidth_err</span><span class="p">,</span>
+                     <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin/Test&quot;</span><span class="p">,</span>
+                     <span class="n">name_group</span> <span class="o">=</span> <span class="s2">&quot;NnMF - 5GHz&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 </section>
 <section id="exception-2-adding-an-abscissa">
 <h1>Exception 2: Adding an abscissa<a class="headerlink" href="#exception-2-adding-an-abscissa" title="Link to this heading"></a></h1>

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HDF5_BLS.wrapper &mdash; HDF5_BLS v1.0.0 documentation</title>
+  <title>HDF5_BLS.wrapper &mdash; HDF5_BLS v1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
@@ -14,14 +14,14 @@
     <link rel="shortcut icon" href="../_static/myicon.svg"/>
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=76e2d817"></script>
+      <script src="../_static/documentation_options.js?v=d29a5c0e"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="HDF5_BLS.wrapper_compatibility" href="HDF5_BLS.wrapper_compatibility.html" />
-    <link rel="prev" title="HDF5_BLS.load_formats.load_sif" href="HDF5_BLS.load_formats.load_sif.html" /> 
+    <link rel="next" title="HDF5_BLS.analyze" href="HDF5_BLS.analyze.html" />
+    <link rel="prev" title="The HDF5_BLS package" href="../source/hdf5_bls_package.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -44,71 +44,65 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../source/quickstart.html">Quick Start</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../source/file_format.html">The file format</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../source/hdf5_bls_package.html">The HDF5_BLS package</a></li>
 </ul>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="HDF5_BLS.html">HDF5_BLS</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="HDF5_BLS.WrapperError.html">HDF5_BLS.WrapperError</a></li>
-<li class="toctree-l2"><a class="reference internal" href="HDF5_BLS.analyze.html">HDF5_BLS.analyze</a></li>
-<li class="toctree-l2"><a class="reference internal" href="HDF5_BLS.conversion_PSD.html">HDF5_BLS.conversion_PSD</a></li>
-<li class="toctree-l2"><a class="reference internal" href="HDF5_BLS.load_data.html">HDF5_BLS.load_data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="HDF5_BLS.load_formats.html">HDF5_BLS.load_formats</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">HDF5_BLS.wrapper</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper"><code class="docutils literal notranslate"><span class="pre">Wrapper</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.filepath"><code class="docutils literal notranslate"><span class="pre">Wrapper.filepath</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.need_for_repack"><code class="docutils literal notranslate"><span class="pre">Wrapper.need_for_repack</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.save"><code class="docutils literal notranslate"><span class="pre">Wrapper.save</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.BRILLOUIN_TYPES_DATASETS"><code class="docutils literal notranslate"><span class="pre">Wrapper.BRILLOUIN_TYPES_DATASETS</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.BRILLOUIN_TYPES_GROUPS"><code class="docutils literal notranslate"><span class="pre">Wrapper.BRILLOUIN_TYPES_GROUPS</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.add_PSD"><code class="docutils literal notranslate"><span class="pre">Wrapper.add_PSD()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.add_abscissa"><code class="docutils literal notranslate"><span class="pre">Wrapper.add_abscissa()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.add_attributes"><code class="docutils literal notranslate"><span class="pre">Wrapper.add_attributes()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.add_dictionary"><code class="docutils literal notranslate"><span class="pre">Wrapper.add_dictionary()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.add_dictionnary"><code class="docutils literal notranslate"><span class="pre">Wrapper.add_dictionnary()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.add_frequency"><code class="docutils literal notranslate"><span class="pre">Wrapper.add_frequency()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.add_hdf5"><code class="docutils literal notranslate"><span class="pre">Wrapper.add_hdf5()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.add_raw_data"><code class="docutils literal notranslate"><span class="pre">Wrapper.add_raw_data()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.add_treated_data"><code class="docutils literal notranslate"><span class="pre">Wrapper.add_treated_data()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.change_brillouin_type"><code class="docutils literal notranslate"><span class="pre">Wrapper.change_brillouin_type()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.change_name"><code class="docutils literal notranslate"><span class="pre">Wrapper.change_name()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.clear_empty_attributes"><code class="docutils literal notranslate"><span class="pre">Wrapper.clear_empty_attributes()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.close"><code class="docutils literal notranslate"><span class="pre">Wrapper.close()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.combine_datasets"><code class="docutils literal notranslate"><span class="pre">Wrapper.combine_datasets()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.compatibility_changes"><code class="docutils literal notranslate"><span class="pre">Wrapper.compatibility_changes()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.copy_dataset"><code class="docutils literal notranslate"><span class="pre">Wrapper.copy_dataset()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.create_group"><code class="docutils literal notranslate"><span class="pre">Wrapper.create_group()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.delete_element"><code class="docutils literal notranslate"><span class="pre">Wrapper.delete_element()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.export_dataset"><code class="docutils literal notranslate"><span class="pre">Wrapper.export_dataset()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.export_group"><code class="docutils literal notranslate"><span class="pre">Wrapper.export_group()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.export_image"><code class="docutils literal notranslate"><span class="pre">Wrapper.export_image()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.get_attributes"><code class="docutils literal notranslate"><span class="pre">Wrapper.get_attributes()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.get_children_elements"><code class="docutils literal notranslate"><span class="pre">Wrapper.get_children_elements()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.get_special_groups_hierarchy"><code class="docutils literal notranslate"><span class="pre">Wrapper.get_special_groups_hierarchy()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.get_structure"><code class="docutils literal notranslate"><span class="pre">Wrapper.get_structure()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.get_type"><code class="docutils literal notranslate"><span class="pre">Wrapper.get_type()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.import_other"><code class="docutils literal notranslate"><span class="pre">Wrapper.import_other()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.import_properties_data"><code class="docutils literal notranslate"><span class="pre">Wrapper.import_properties_data()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.import_raw_data"><code class="docutils literal notranslate"><span class="pre">Wrapper.import_raw_data()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.move"><code class="docutils literal notranslate"><span class="pre">Wrapper.move()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.move_channel_dimension_to_last"><code class="docutils literal notranslate"><span class="pre">Wrapper.move_channel_dimension_to_last()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.print_metadata"><code class="docutils literal notranslate"><span class="pre">Wrapper.print_metadata()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.print_structure"><code class="docutils literal notranslate"><span class="pre">Wrapper.print_structure()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.repack"><code class="docutils literal notranslate"><span class="pre">Wrapper.repack()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.save_as_hdf5"><code class="docutils literal notranslate"><span class="pre">Wrapper.save_as_hdf5()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.save_properties_csv"><code class="docutils literal notranslate"><span class="pre">Wrapper.save_properties_csv()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.set_attributes_data"><code class="docutils literal notranslate"><span class="pre">Wrapper.set_attributes_data()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.update_property"><code class="docutils literal notranslate"><span class="pre">Wrapper.update_property()</span></code></a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">HDF5_BLS.wrapper</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper"><code class="docutils literal notranslate"><span class="pre">Wrapper</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.filepath"><code class="docutils literal notranslate"><span class="pre">Wrapper.filepath</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.need_for_repack"><code class="docutils literal notranslate"><span class="pre">Wrapper.need_for_repack</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.save"><code class="docutils literal notranslate"><span class="pre">Wrapper.save</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.BRILLOUIN_TYPES_DATASETS"><code class="docutils literal notranslate"><span class="pre">Wrapper.BRILLOUIN_TYPES_DATASETS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.BRILLOUIN_TYPES_GROUPS"><code class="docutils literal notranslate"><span class="pre">Wrapper.BRILLOUIN_TYPES_GROUPS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.add_PSD"><code class="docutils literal notranslate"><span class="pre">Wrapper.add_PSD()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.add_abscissa"><code class="docutils literal notranslate"><span class="pre">Wrapper.add_abscissa()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.add_attributes"><code class="docutils literal notranslate"><span class="pre">Wrapper.add_attributes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.add_dictionary"><code class="docutils literal notranslate"><span class="pre">Wrapper.add_dictionary()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.add_dictionnary"><code class="docutils literal notranslate"><span class="pre">Wrapper.add_dictionnary()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.add_frequency"><code class="docutils literal notranslate"><span class="pre">Wrapper.add_frequency()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.add_hdf5"><code class="docutils literal notranslate"><span class="pre">Wrapper.add_hdf5()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.add_other"><code class="docutils literal notranslate"><span class="pre">Wrapper.add_other()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.add_raw_data"><code class="docutils literal notranslate"><span class="pre">Wrapper.add_raw_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.add_treated_data"><code class="docutils literal notranslate"><span class="pre">Wrapper.add_treated_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.change_brillouin_type"><code class="docutils literal notranslate"><span class="pre">Wrapper.change_brillouin_type()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.change_name"><code class="docutils literal notranslate"><span class="pre">Wrapper.change_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.clear_empty_attributes"><code class="docutils literal notranslate"><span class="pre">Wrapper.clear_empty_attributes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.close"><code class="docutils literal notranslate"><span class="pre">Wrapper.close()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.combine_datasets"><code class="docutils literal notranslate"><span class="pre">Wrapper.combine_datasets()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.compatibility_changes"><code class="docutils literal notranslate"><span class="pre">Wrapper.compatibility_changes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.copy_dataset"><code class="docutils literal notranslate"><span class="pre">Wrapper.copy_dataset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.create_group"><code class="docutils literal notranslate"><span class="pre">Wrapper.create_group()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.delete_element"><code class="docutils literal notranslate"><span class="pre">Wrapper.delete_element()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.export_dataset"><code class="docutils literal notranslate"><span class="pre">Wrapper.export_dataset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.export_group"><code class="docutils literal notranslate"><span class="pre">Wrapper.export_group()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.export_image"><code class="docutils literal notranslate"><span class="pre">Wrapper.export_image()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.get_attributes"><code class="docutils literal notranslate"><span class="pre">Wrapper.get_attributes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.get_children_elements"><code class="docutils literal notranslate"><span class="pre">Wrapper.get_children_elements()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.get_special_groups_hierarchy"><code class="docutils literal notranslate"><span class="pre">Wrapper.get_special_groups_hierarchy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.get_structure"><code class="docutils literal notranslate"><span class="pre">Wrapper.get_structure()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.get_type"><code class="docutils literal notranslate"><span class="pre">Wrapper.get_type()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.import_other"><code class="docutils literal notranslate"><span class="pre">Wrapper.import_other()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.import_properties_data"><code class="docutils literal notranslate"><span class="pre">Wrapper.import_properties_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.import_raw_data"><code class="docutils literal notranslate"><span class="pre">Wrapper.import_raw_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.move"><code class="docutils literal notranslate"><span class="pre">Wrapper.move()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.move_channel_dimension_to_last"><code class="docutils literal notranslate"><span class="pre">Wrapper.move_channel_dimension_to_last()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.print_metadata"><code class="docutils literal notranslate"><span class="pre">Wrapper.print_metadata()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.print_structure"><code class="docutils literal notranslate"><span class="pre">Wrapper.print_structure()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.repack"><code class="docutils literal notranslate"><span class="pre">Wrapper.repack()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.save_as_hdf5"><code class="docutils literal notranslate"><span class="pre">Wrapper.save_as_hdf5()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.save_properties_csv"><code class="docutils literal notranslate"><span class="pre">Wrapper.save_properties_csv()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.Wrapper.update_property"><code class="docutils literal notranslate"><span class="pre">Wrapper.update_property()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#HDF5_BLS.wrapper.is_tempfile"><code class="docutils literal notranslate"><span class="pre">is_tempfile()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#HDF5_BLS.wrapper.is_tempfile"><code class="docutils literal notranslate"><span class="pre">is_tempfile()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="HDF5_BLS.wrapper_compatibility.html">HDF5_BLS.wrapper_compatibility</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="HDF5_BLS.analyze.html">HDF5_BLS.analyze</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HDF5_BLS.treat.html">HDF5_BLS.treat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="HDF5_BLS.load_data.html">HDF5_BLS.load_data</a></li>
 </ul>
 
         </div>
@@ -125,7 +119,6 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="HDF5_BLS.html">HDF5_BLS</a></li>
       <li class="breadcrumb-item active">HDF5_BLS.wrapper</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/_autosummary/HDF5_BLS.wrapper.rst.txt" rel="nofollow"> View page source</a>
@@ -204,7 +197,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="HDF5_BLS.wrapper.Wrapper.add_PSD">
-<span class="sig-name descname"><span class="pre">add_PSD</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HDF5_BLS/wrapper.html#Wrapper.add_PSD"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.add_PSD" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_PSD</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Brillouin'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HDF5_BLS/wrapper.html#Wrapper.add_PSD"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.add_PSD" title="Link to this definition"></a></dt>
 <dd><p>Adds a PSD array to the wrapper by creating a new group.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -251,7 +244,7 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>attributes</strong> (<em>dict</em>) – The attributes to add to the wrapper. The keys of the dictionary should be the name of the attributes, and the values should be the values of the attributes.</p></li>
-<li><p><strong>parent_group</strong> (<em>str</em><em>, </em><em>optional</em>) – The parent group where to store the attributes of the HDF5 file. The format of this group should be “Brillouin/Measure”. By default parent_group is set to “Brillouin”.</p></li>
+<li><p><strong>path</strong> (<em>str</em><em>, </em><em>optional</em>) – The parent group where to store the attributes of the HDF5 file. The format of this group should be “Brillouin/Measure”. By default parent_group is set to “Brillouin”.</p></li>
 <li><p><strong>overwrite</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the attributes will be overwritten if they already exist.</p></li>
 </ul>
 </dd>
@@ -270,7 +263,8 @@ All the element of the dictionary are also dictionnaries.
 Except for attributes, each dictionary has at least two keys: “Name” and “Data”. If an abscissa is to be added, then the keys “Dim_start”, “Dim_end” and “Units” need to be populated.
 For attributes, each key is the name of the attribute, and the value is the value of the attribute, which will automatically be converted to string if it is not a string.</p></li>
 <li><p><strong>parent_group</strong> (<em>str</em><em>, </em><em>optional</em>) – The path in the file where to store the dataset.</p></li>
-<li><p><strong>brillouin_type_parent_group</strong> (<em>str</em><em>, </em><em>optional</em>) – The type of the data group where the data are stored. This argument must be given if a new group is being created. If this argument is given and overwrite is set to True, then the brillouin type of the parent group will be overwritten. Otherwise, the original brillouin type of the parent group will be used.</p></li>
+<li><p><strong>create_group</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set to True, the parent group will be created if it does not exist. If False and the group does not exist, an error will be raised. Default is False.</p></li>
+<li><p><strong>brillouin_type_parent_group</strong> (<em>str</em><em>, </em><em>optional</em>) – The type of the data group where the data are stored. This argument must be given if a new group is being created. If this argument is given and overwrite is set to True, then the brillouin type of the parent group will be overwritten. Otherwise, the original brillouin type of the parent group will be used if the group already exists.</p></li>
 <li><p><strong>overwrite</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set to True, any element of the file with a name corresponding to a name given in the dictionary will be overwritten. Similarly any existing argument will be overwritten and Brillouin type will be redefined. Default is False</p></li>
 </ul>
 </dd>
@@ -325,7 +319,7 @@ The “<a href="#id3"><span class="problematic" id="id4">Abscissa_</span></a>…
 
 <dl class="py method">
 <dt class="sig sig-object py" id="HDF5_BLS.wrapper.Wrapper.add_frequency">
-<span class="sig-name descname"><span class="pre">add_frequency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HDF5_BLS/wrapper.html#Wrapper.add_frequency"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.add_frequency" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_frequency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Brillouin'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HDF5_BLS/wrapper.html#Wrapper.add_frequency"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.add_frequency" title="Link to this definition"></a></dt>
 <dd><p>Adds a frequency array to the wrapper by creating a new group.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -371,6 +365,22 @@ The “<a href="#id3"><span class="problematic" id="id4">Abscissa_</span></a>…
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="HDF5_BLS.wrapper.Wrapper.add_other">
+<span class="sig-name descname"><span class="pre">add_other</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Brillouin'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HDF5_BLS/wrapper.html#Wrapper.add_other"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.add_other" title="Link to this definition"></a></dt>
+<dd><p>Adds an “Other” dataset to the file at the given location. If the location does not exist, it is created. If the name is not specified, it is set to “Data_i” with i chosen to not overwrite any other dataset. If the name is specified and exists in the file at the given location, the dataset is overwritten if overwrite is set to True, else, a WrapperError_Overwrite is raised.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>np.ndarray</em>) – The dataset to add</p></li>
+<li><p><strong>parent_group</strong> (<em>str</em><em>, </em><em>optional</em>) – The path to the group where to add the dataset, by default “Brillouin”</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the dataset, by default “Data_i” with i chosen to not overwrite any other dataset</p></li>
+<li><p><strong>overwrite</strong> (<em>bool</em><em>, </em><em>optional</em>) – A flag to overwrite any dataset with the same name, by default False</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="HDF5_BLS.wrapper.Wrapper.add_raw_data">
 <span class="sig-name descname"><span class="pre">add_raw_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_group</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HDF5_BLS/wrapper.html#Wrapper.add_raw_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.add_raw_data" title="Link to this definition"></a></dt>
 <dd><p>Adds a raw data array to the wrapper by creating a new group.</p>
@@ -407,6 +417,7 @@ The “<a href="#id3"><span class="problematic" id="id4">Abscissa_</span></a>…
 <li><p><strong>linewidth_err</strong> (<em>np.ndarray</em><em>, </em><em>optional</em>) – The linewidth error array to add to the wrapper.</p></li>
 <li><p><strong>amplitude_err</strong> (<em>np.ndarray</em><em>, </em><em>optional</em>) – The amplitude error array to add to the wrapper.</p></li>
 <li><p><strong>blt_std</strong> (<em>np.ndarray</em><em>, </em><em>optional</em>) – The Loss Tangent error array to add to the wrapper.</p></li>
+<li><p><strong>treat</strong> (<em>HDF5_BLS_Treat.Treat</em>) – The treatment object to add to the wrapper. If given, all other keyword arguments are ignored.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
@@ -702,7 +713,7 @@ The “<a href="#id3"><span class="problematic" id="id4">Abscissa_</span></a>…
 
 <dl class="py method">
 <dt class="sig sig-object py" id="HDF5_BLS.wrapper.Wrapper.import_other">
-<span class="sig-name descname"><span class="pre">import_other</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">creator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reshape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HDF5_BLS/wrapper.html#Wrapper.import_other"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.import_other" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">import_other</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Brillouin'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">creator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reshape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HDF5_BLS/wrapper.html#Wrapper.import_other"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.import_other" title="Link to this definition"></a></dt>
 <dd><p>Adds a raw data array to the wrapper from a file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -737,7 +748,7 @@ The “<a href="#id3"><span class="problematic" id="id4">Abscissa_</span></a>…
 
 <dl class="py method">
 <dt class="sig sig-object py" id="HDF5_BLS.wrapper.Wrapper.import_raw_data">
-<span class="sig-name descname"><span class="pre">import_raw_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">creator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reshape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HDF5_BLS/wrapper.html#Wrapper.import_raw_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.import_raw_data" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">import_raw_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Brillouin'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">creator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reshape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HDF5_BLS/wrapper.html#Wrapper.import_raw_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.import_raw_data" title="Link to this definition"></a></dt>
 <dd><p>Adds a raw data array to the HDF5 file from a file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -850,21 +861,6 @@ The “<a href="#id3"><span class="problematic" id="id4">Abscissa_</span></a>…
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="HDF5_BLS.wrapper.Wrapper.set_attributes_data">
-<span class="sig-name descname"><span class="pre">set_attributes_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attributes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HDF5_BLS/wrapper.html#Wrapper.set_attributes_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.set_attributes_data" title="Link to this definition"></a></dt>
-<dd><p>Sets the attributes of the data in the HDF5 file. If the path leads to a dataset, the attributes are added to the group containing the dataset. If overwrite is False, the attributes are not overwritten if they already exist.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>attributes</strong> (<em>dict</em>) – The attributes to be added to the HDF5 file. in the form {“MEASURE.Sample”: “Water”, …}</p></li>
-<li><p><strong>path</strong> (<em>str</em><em>, </em><em>optional</em>) – The path to the dataset or group in the HDF5 file, by default None leads to the top group “Brillouin”</p></li>
-<li><p><strong>overwrite</strong> (<em>bool</em><em>, </em><em>optional</em>) – A parameter to indicate whether the attributes should be overwritten if they already exist or not, by default False - attributes are not overwritten.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="HDF5_BLS.wrapper.Wrapper.update_property">
 <span class="sig-name descname"><span class="pre">update_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">apply_to_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/HDF5_BLS/wrapper.html#Wrapper.update_property"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#HDF5_BLS.wrapper.Wrapper.update_property" title="Link to this definition"></a></dt>
 <dd><p>Updates a property of the HDF5 file given a path to the dataset or group, the name of the property and its value.</p>
@@ -892,8 +888,8 @@ The “<a href="#id3"><span class="problematic" id="id4">Abscissa_</span></a>…
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="HDF5_BLS.load_formats.load_sif.html" class="btn btn-neutral float-left" title="HDF5_BLS.load_formats.load_sif" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="HDF5_BLS.wrapper_compatibility.html" class="btn btn-neutral float-right" title="HDF5_BLS.wrapper_compatibility" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../source/hdf5_bls_package.html" class="btn btn-neutral float-left" title="The HDF5_BLS package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="HDF5_BLS.analyze.html" class="btn btn-neutral float-right" title="HDF5_BLS.analyze" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

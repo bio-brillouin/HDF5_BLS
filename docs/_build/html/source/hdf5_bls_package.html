@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The HDF5_BLS package &mdash; HDF5_BLS v1.0.0 documentation</title>
+  <title>The HDF5_BLS package &mdash; HDF5_BLS v1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="../_static/myicon.svg"/>
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=76e2d817"></script>
+      <script src="../_static/documentation_options.js?v=d29a5c0e"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -106,14 +106,17 @@
 <h2>Installation and presentation<a class="headerlink" href="#installation-and-presentation" title="Link to this heading"></a></h2>
 <section id="installation">
 <h3>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h3>
-<p>To install the package, you can either download the source code from the GitHub repository or use pip to install the package. We recommend using pip for users who do not intend on working on the package as it is the easiest way to install the package.</p>
+<p>To install the package, you can either:
+* Download the source code from the GitHub repository (the hard way)
+* Use pip to install the package (easy way)</p>
 <p><strong>Using pip</strong></p>
 <p>To install the package using pip, run the following command:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>HDF5_BLS
 </pre></div>
 </div>
+<p>This will install the latest version of the package from the Python Package Index (PyPI).</p>
 <p><strong>Downloading the source code</strong></p>
-<p>The source code can be downloaded from the ‘GitHub repository &lt;<a class="reference external" href="https://github.com/bio-brillouin/HDF5_BLS">https://github.com/bio-brillouin/HDF5_BLS</a>&gt;’__. To download the source code, click on the green button “Code” and then click on the “Download ZIP” button. Once the download is complete, unzip the file and open a terminal in the folder where the code is stored. To install the package, run the following command:</p>
+<p>The source code can be downloaded from the <a class="reference external" href="https://github.com/bio-brillouin/HDF5_BLS">GitHub repository</a>. To download the source code, click on the green button “Code” and then click on the “Download ZIP” button. Once the download is complete, unzip the file and open a terminal in the folder where the code is stored. To install the package, run the following command:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>setup.py<span class="w"> </span>install
 </pre></div>
 </div>
@@ -122,11 +125,15 @@
 </pre></div>
 </div>
 <p>If the package was installed correctly, the command will not return any error.</p>
+<p>This option is especially useful if you want to contribute to the package, as you can also clone the repository, and then use pip to install the package in editable mode. This will allow you to make changes or update the package from Git without having to reinstall the package every time.</p>
 </section>
 <section id="presentation">
 <h3>Presentation<a class="headerlink" href="#presentation" title="Link to this heading"></a></h3>
-<p>The HDF5_BLS library is a Python package meant to interface Python code with a HDF5 file.</p>
-<p>The goal of this package is to allow the user to semalessly integrate the proposed standard to their existing code. A detailed description of the package will be given in the later sections of this tutorial. Here is however a quick code example to show the integration of the package in a simple case:</p>
+<p>The HDF5_BLS library is a Python package meant to interface Python code with a HDF5 file. The development of this solution was based on three main goals:
+1. Simplicity: Make it easy to store and retrieve data from a single file.
+2. Universality: Allow all modalities to be stored in a single file, while unifying the metadata associated to the data.
+3. Expandability: Allow the format to grow with the needs of the community.</p>
+<p>Practically, this means using this solution should be easy, intuitive and allow a seamless integration of the proposed standard to your existing code. Here is a quick code example to show the integration of the package in a simple case (you want to store a signal out of a spectrometer, its corresponding power spectral density, its frequency axis and its shift and linewidth arrays):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">###############################################################################</span>
 <span class="c1"># Existing imports</span>
 <span class="c1">###############################################################################</span>
@@ -160,7 +167,10 @@
 <span class="n">wrp</span><span class="o">.</span><span class="n">add_treated_data</span><span class="p">(</span><span class="n">shift</span> <span class="o">=</span> <span class="n">shift</span><span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="n">linewidth</span><span class="p">,</span> <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin/path/in/the/file&quot;</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;PSD&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This package also aims at unifying both the way to extract PSD from raw data and extract Brillouin shift and linewidth from the PSD. We will describe later how to do this, we encourage interested readers to already try and add the above code to their code and see how it works.</p>
+<div class="admonition-unification admonition">
+<p class="admonition-title">Unification</p>
+<p>This package also aims at unifying all the processing steps to extract PSD from raw data and extract Brillouin shift and linewidth from the PSD. These unifying steps are however not necessary to store your data in an HDF5 file. We will describe later the solution we propose to do this.</p>
+</div>
 </section>
 <section id="module-structure">
 <h3>Module structure<a class="headerlink" href="#module-structure" title="Link to this heading"></a></h3>
@@ -168,7 +178,7 @@
 <ul class="simple">
 <li><p><em>wrapper</em>: This module is used to interact with HDF5 files. It is used to read the data, to write the data and to modify any aspect of the HDF5 file (dataset, groups or attributes).</p></li>
 <li><p><em>analyze</em>: This module is used to convert raw data taken from a spectrometer into a physically meaningful Power Spectral Density (PSD) array. This process is done to be reliable</p></li>
-<li><p><em>treat</em>: This module is used to extract information from the PSD array, such as the frequency shift and line width of the spectral lines.</p></li>
+<li><p><em>treat</em>: This module is used to extract information from the PSD array, such as the frequency shift and line width of the spectral lines. Note that this module has been made independent of the wrapper module and can be installed separately under the name of HDF5_BLS_treat.</p></li>
 <li><p><em>load_data</em>: This module is used to import data from any formats of interest. This module is an interface between physical files stored on the PC and the wrapper module. It has been designed to be easily extended to any format of data.</p></li>
 </ul>
 </section>
@@ -281,9 +291,18 @@ Let’s consider the following example: we have just initialized a wrapper objec
 <li><p>linewidth_err (optional): The error of the linewidth array</p></li>
 <li><p>shift(optional): The shift array to add</p></li>
 <li><p>shift_err (optional): The error of the shift array</p></li>
+<li><p>treat (optional): An HDF5_BLS_Treat.Treat object to add. This object stores all teh optional parameters above. It also stores the process as a JSON file that is stored as an attribute of the group.</p></li>
 </ul>
 <p><strong>Example</strong></p>
 <p>Let’s consider the following example: we have treated our data and have obtained a shift array (shift), a linewidth array (linewidth) and their errors (shift_err and linewidth_err). We want to add these arrays in the same group as the PSD, that is the group “Test”. The treated data are stored in a separate group nested in the “Test” group by the choices made while building the structure of the file. This is so the name of the treatment group can be chosen freely. Let’s say that in this case, we have performed a non-negative matrix factorization (NnMF) on the data, and extracted the shift values closest to 5GHz. We will therefore call this treatment “NnMF - 5GHz”. We will write:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">wrp</span><span class="o">.</span><span class="n">add_treated_data</span><span class="p">(</span><span class="n">shift</span> <span class="o">=</span> <span class="n">shift</span><span class="p">,</span>
+                     <span class="n">linewidth</span> <span class="o">=</span> <span class="n">linewidth</span><span class="p">,</span>
+                     <span class="n">shift_err</span> <span class="o">=</span> <span class="n">shift_err</span><span class="p">,</span>
+                     <span class="n">linewidth_err</span> <span class="o">=</span> <span class="n">linewidth_err</span><span class="p">,</span>
+                     <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin/Test&quot;</span><span class="p">,</span>
+                     <span class="n">name_group</span> <span class="o">=</span> <span class="s2">&quot;NnMF - 5GHz&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 </section>
 <section id="exception-2-adding-an-abscissa">
 <h3>Exception 2: Adding an abscissa<a class="headerlink" href="#exception-2-adding-an-abscissa" title="Link to this heading"></a></h3>
@@ -357,91 +376,87 @@ Let’s consider the following example: we have just initialized a wrapper objec
 <h2>Adding and merging HDF5 files<a class="headerlink" href="#adding-and-merging-hdf5-files" title="Link to this heading"></a></h2>
 <p>Creating a new HDF5 file based on two existing ones can be done one of two ways depending on the desired end result.</p>
 <ul>
-<li><dl>
-<dt>The <em>__add__</em> dunder metthod. If we want to combine two HDF5 files into a single one “plainly”, for example if we are generating a new HDF5 after each measure, with this structure:</dt><dd><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>20250214_HVEC_03.h5
-+--<span class="w"> </span>Brillouin<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
-<span class="p">|</span><span class="w">   </span>+--<span class="w"> </span>20250214_HVEC_02
-<span class="p">|</span><span class="w">   </span><span class="p">|</span><span class="w">   </span>+--<span class="w"> </span>Measure<span class="w"> </span><span class="o">(</span>dataset<span class="o">)</span>
+<li><p>The <em>__add__</em> dunder metthod. If we want to combine two HDF5 files into a single one “plainly”, for example if we are generating a new HDF5 after each measure, with this structure:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>20250214_HVEC_03.h5
+└──Brillouin<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
+<span class="w">    </span>├──<span class="w"> </span>20250214_HVEC_02
+<span class="w">        </span>└──<span class="w"> </span>Measure<span class="w"> </span><span class="o">(</span>dataset<span class="o">)</span>
 </pre></div>
 </div>
-<p>and we already have a HDF5 file containing the data of the previous experiment:
-.. code-block:: bash</p>
-<blockquote>
-<div><p>20250214_HVEC.h5
-+– Brillouin (group)
-|   +– 20250214_HVEC_01
-|   |   +– Measure (dataset)
-|   +– 20250214_HVEC_02
-|   |   +– Measure (dataset)</p>
-</div></blockquote>
+<p>and we already have a HDF5 file containing the data of the previous experiment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>20250214_HVEC.h5
+├──<span class="w"> </span>Brillouin<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
+<span class="w">    </span>├──<span class="w"> </span>20250214_HVEC_01
+<span class="w">    </span>│<span class="w">   </span>└──<span class="w"> </span>Measure<span class="w"> </span><span class="o">(</span>dataset<span class="o">)</span>
+<span class="w">    </span>├──<span class="w"> </span>20250214_HVEC_02
+<span class="w">        </span>└──<span class="w"> </span>Measure<span class="w"> </span><span class="o">(</span>dataset<span class="o">)</span>
+</pre></div>
+</div>
 <p>We can simply add the first HDF5 file to the second one with:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">wrp1</span> <span class="o">=</span> <span class="n">Wrapper</span><span class="p">(</span><span class="n">filepath</span> <span class="o">=</span> <span class="s2">&quot;.../20250214_HVEC.h5&quot;</span><span class="p">)</span>
 <span class="n">wrp2</span> <span class="o">=</span> <span class="n">Wrapper</span><span class="p">(</span><span class="n">filepath</span> <span class="o">=</span> <span class="s2">&quot;.../20250214_HVEC_02.h5&quot;</span><span class="p">)</span>
 <span class="n">wrp</span> <span class="o">=</span> <span class="n">wrp1</span> <span class="o">+</span> <span class="n">wrp2</span>
 </pre></div>
 </div>
-<p>This will create a new HDF5 file with the following structure:
-.. code-block:: bash</p>
-<blockquote>
-<div><p>20250214_HVEC.h5
-+– Brillouin (group)
-|   +– 20250214_HVEC_01
-|   |   +– Measure (dataset)
-|   +– 20250214_HVEC_02
-|   |   +– Measure (dataset)
-|   +– 20250214_HVEC_03
-|   |   +– Measure (dataset)</p>
-</div></blockquote>
+<p>This will create a new HDF5 file with the following structure:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>20250214_HVEC.h5
+└──<span class="w"> </span>Brillouin<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
+<span class="w">    </span>├──<span class="w"> </span>20250214_HVEC_01
+<span class="w">    </span>│<span class="w">   </span>└──<span class="w"> </span>Measure<span class="w"> </span><span class="o">(</span>dataset<span class="o">)</span>
+<span class="w">    </span>├──<span class="w"> </span>20250214_HVEC_02
+<span class="w">    </span>│<span class="w">   </span>└──<span class="w"> </span>Measure<span class="w"> </span><span class="o">(</span>dataset<span class="o">)</span>
+<span class="w">    </span>└──<span class="w"> </span>20250214_HVEC_03
+<span class="w">        </span>└──<span class="w"> </span>Measure<span class="w"> </span><span class="o">(</span>dataset<span class="o">)</span>
+</pre></div>
+</div>
 <p><strong>WARNING:</strong> The new file is a temporary file, it is therefore important to save it after the addition of the two files with:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">wrp</span><span class="o">.</span><span class="n">save_as_hdf5</span><span class="p">(</span><span class="n">filepath</span> <span class="o">=</span> <span class="n">wrp</span><span class="o">.</span><span class="n">filepath</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Note that from there, wrp1 and wrp will be the same as the wrapper does not store any data in memory but just acts as an access facilitator to the file.</p>
-</dd>
-</dl>
+</div></blockquote>
 </li>
-<li><dl>
-<dt>The <em>add_hdf5</em> method. If we want to import the HDF5 as a new group, for example if we have this HDF5 file containing the data of a cell study:</dt><dd><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Neuronal_cell_study.h5
-+--<span class="w"> </span>Brillouin<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
-<span class="p">|</span><span class="w">   </span>+--<span class="w"> </span>Neuronal<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
-<span class="p">|</span><span class="w">   </span><span class="p">|</span><span class="w">   </span>+--<span class="w"> </span>GT<span class="w"> </span><span class="m">1</span>-7<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
-<span class="p">|</span><span class="w">   </span><span class="p">|</span><span class="w">   </span><span class="p">|</span><span class="w">   </span>+--<span class="w"> </span>...
-<span class="p">|</span><span class="w">   </span><span class="p">|</span><span class="w">   </span>+--<span class="w"> </span>L-fibroblast<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
-<span class="p">|</span><span class="w">   </span><span class="p">|</span><span class="w">   </span><span class="p">|</span><span class="w">   </span>+--<span class="w"> </span>...
-<span class="p">|</span><span class="w">   </span>+--<span class="w"> </span>Skeletal<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
-<span class="p">|</span><span class="w">   </span><span class="p">|</span><span class="w">   </span>+--<span class="w"> </span>...
+<li><p>The <em>add_hdf5</em> method. If we want to import the HDF5 as a new group, for example if we have this HDF5 file containing the data of a cell study:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Neuronal_cell_study.h5
+└──<span class="w"> </span>Brillouin<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
+<span class="w">    </span>├──<span class="w"> </span>Neuronal<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
+<span class="w">    </span>│<span class="w">   </span>├──<span class="w"> </span>GT<span class="w"> </span><span class="m">1</span>-7<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
+<span class="w">    </span>│<span class="w">   </span>│<span class="w">   </span>└──<span class="w"> </span>...
+<span class="w">    </span>│<span class="w">   </span>├──<span class="w"> </span>L-fibroblast<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
+<span class="w">    </span>│<span class="w">   </span>│<span class="w">   </span>└──<span class="w"> </span>...
+<span class="w">    </span>└──<span class="w"> </span>Skeletal<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
+<span class="w">        </span>└──<span class="w"> </span>...
 </pre></div>
 </div>
-<p>And we want to import data done on another neuronal cell line, say “MOV”, that have been stored in the following HDF5 file:
-.. code-block:: bash</p>
-<blockquote>
-<div><p>MOV.h5
-+– Brillouin (group)
-|   +– MOV (group)
-|   |   +– …</p>
-</div></blockquote>
+<p>And we want to import data done on another neuronal cell line, say “MOV”, that have been stored in the following HDF5 file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>MOV.h5
+└──<span class="w"> </span>Brillouin<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
+<span class="w">    </span>└──<span class="w"> </span>MOV<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
+<span class="w">        </span>└──<span class="w"> </span>...
+</pre></div>
+</div>
 <p>We can simply add the second HDF5 file to the first one by specifying the path to the second file in the <em>Wrapper.add_hdf5</em> method:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">wrp1</span> <span class="o">=</span> <span class="n">Wrapper</span><span class="p">(</span><span class="n">filepath</span> <span class="o">=</span> <span class="s2">&quot;.../Neuronal_cell_study.h5&quot;</span><span class="p">)</span>
 <span class="n">wrp1</span><span class="o">.</span><span class="n">add_hdf5</span><span class="p">(</span><span class="n">filepath</span> <span class="o">=</span> <span class="s2">&quot;.../MOV.h5&quot;</span><span class="p">,</span> <span class="n">parent_group</span> <span class="o">=</span> <span class="s2">&quot;Brillouin/Neuronal&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This will create a new HDF5 file with the following structure:
-.. code-block:: bash</p>
-<blockquote>
-<div><p>Neuronal_cell_study.h5
-+– Brillouin (group)
-|   +– Neuronal (group)
-|   |   +– GT 1-7 (group)
-|   |   |   +– …
-|   |   +– L-fibroblast (group)
-|   |   |   +– …
-|   |   +– MOV (group)
-|   |   |   +– …
-|   +– Skeletal (group)
-|   |   +– …</p>
+<p>This will create a new HDF5 file with the following structure:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Neuronal_cell_study.h5
+└──<span class="w"> </span>Brillouin<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
+<span class="w">    </span>├──<span class="w"> </span>Neuronal<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
+<span class="w">    </span>│<span class="w">   </span>├──<span class="w"> </span>GT<span class="w"> </span><span class="m">1</span>-7<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
+<span class="w">    </span>│<span class="w">   </span>│<span class="w">   </span>└──<span class="w"> </span>...
+<span class="w">    </span>│<span class="w">   </span>├──<span class="w"> </span>L-fibroblast<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
+<span class="w">    </span>│<span class="w">   </span>│<span class="w">   </span>└──<span class="w"> </span>...
+<span class="w">    </span>│<span class="w">   </span>├──<span class="w"> </span>MOV<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
+<span class="w">    </span>│<span class="w">   </span>│<span class="w">   </span>└──<span class="w"> </span>...
+<span class="w">    </span>└──<span class="w"> </span>Skeletal<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>
+<span class="w">        </span>└──<span class="w"> </span>...
+</pre></div>
+</div>
 </div></blockquote>
-</dd>
-</dl>
 </li>
 </ul>
 </section>

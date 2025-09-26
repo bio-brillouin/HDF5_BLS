@@ -23,5 +23,4 @@ HDF5_BLS/load_formats/load_sif.py
 tests/__init__.py
 tests/example_creator.py
 tests/load_data_test.py
-tests/temp.py
 tests/wrapper_test.py

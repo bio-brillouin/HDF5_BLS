@@ -86,6 +86,7 @@ Adding treated data differs slightly from adding individual datasets as we'll us
 * linewidth_err (optional): The error of the linewidth array
 * shift(optional): The shift array to add
 * shift_err (optional): The error of the shift array
+* treat (optional): An HDF5_BLS_Treat.Treat object to add. This object stores all teh optional parameters above. It also stores the process as a JSON file that is stored as an attribute of the group.
 
 
 **Example**
