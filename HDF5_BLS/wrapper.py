@@ -49,6 +49,7 @@ class Wrapper:
                                 "Raw_data", 
                                 "Shift", 
                                 "Shift_err"]
+    
     BRILLOUIN_TYPES_GROUPS = ["Calibration_spectrum", "Impulse_response", "Measure", "Root", "Treatment"]
 
 
@@ -1463,8 +1464,14 @@ class Wrapper:
         WrapperError_StructureError
             If the parent group does not exist in the HDF5 file.
         """
+        with h5py.File(self.filepath, "r") as file:
+            # Check if the parent group exists
+            create_group = False
+            if parent_group not in file:
+                create_group = True
+
         if dim_end is None: dim_end = len(data.shape)
-        if name is None: name = f"Abscissa_{dim_start}_{dim_end}"
+        if name is None: name = f"Abscissa_{dim_start}_{dim_start+dim_end}"
 
         dic = {"Abscissa_":{"Name": name, 
                            "Data": data, 
@@ -1472,11 +1479,16 @@ class Wrapper:
                            "Dim_start": dim_start, 
                            "Dim_end": dim_end}}
         
-        self.add_dictionary(dic, 
-                            parent_group = parent_group, 
-                            create_group=True, 
-                            brillouin_type_parent_group="Measure", 
-                            overwrite = overwrite)
+        if create_group:
+            self.add_dictionary(dic, 
+                                parent_group = parent_group, 
+                                create_group=True, 
+                                brillouin_type_parent_group="Measure", 
+                                overwrite = overwrite)
+        else:
+            self.add_dictionary(dic, 
+                                parent_group = parent_group, 
+                                overwrite = overwrite)
 
     def add_attributes(self, attributes, parent_group = "Brillouin", overwrite=False): 
         """
@@ -1680,6 +1692,8 @@ class Wrapper:
             The amplitude error array to add to the wrapper.
         blt_std: np.ndarray, optional   
             The Loss Tangent error array to add to the wrapper.
+        treat: HDF5_BLS_Treat.Treat
+            The treatment object to add to the wrapper. If given, all other keyword arguments are ignored.
             
         Raises
         ------
@@ -1687,22 +1701,33 @@ class Wrapper:
             If the parent group does not exist in the HDF5 file.
         """
         dic = {}
-        shift = kwargs.get("shift", None)
-        if shift is not None: dic["Shift"] = {"Name": "Shift", "Data": shift}
-        linewidth = kwargs.get("linewidth", None)
-        if linewidth is not None: dic["Linewidth"] = {"Name": "Linewidth", "Data": linewidth}
-        amplitude = kwargs.get("amplitude", None)
-        if amplitude is not None: dic["Amplitude"] = {"Name": "Amplitude", "Data": amplitude}
-        blt = kwargs.get("blt", None)
-        if blt is not None: dic["BLT"] = {"Name": "BLT", "Data": blt}
-        shift_err = kwargs.get("shift_err", None)
-        if shift_err is not None: dic["Shift_err"] = {"Name": "Shift error", "Data": shift_err}
-        linewidth_err = kwargs.get("linewidth_err", None)
-        if linewidth_err is not None: dic["Linewidth_err"] = {"Name": "Linewidth error", "Data": linewidth_err}
-        amplitude_err = kwargs.get("amplitude_err", None)
-        if amplitude_err is not None: dic["Amplitude_err"] = {"Name": "Amplitude error", "Data": amplitude_err}
-        blt_std = kwargs.get("blt_std", None)
-        if blt_std is not None: dic["BLT_err"] = {"Name": "BLT error", "Data": blt_std}
+        treat = kwargs.get("treat", None)
+        if treat is not None:
+            dic["Shift"] = {"Name": "Shift", "Data": treat.shift}
+            dic["Linewidth"] = {"Name": "Linewidth", "Data": treat.linewidth}
+            dic["Amplitude"] = {"Name": "Amplitude", "Data": treat.amplitude}
+            dic["BLT"] = {"Name": "BLT", "Data": treat.blt}
+            dic["Shift_err"] = {"Name": "Shift error", "Data": treat.shift_err}
+            dic["Linewidth_err"] = {"Name": "Linewidth error", "Data": treat.linewidth_err}
+            dic["Amplitude_err"] = {"Name": "Amplitude error", "Data": treat.amplitude_err}
+            dic["BLT_err"] = {"Name": "BLT error", "Data": treat.blt_std}
+        else:
+            shift = kwargs.get("shift", None)
+            if shift is not None: dic["Shift"] = {"Name": "Shift", "Data": shift}
+            linewidth = kwargs.get("linewidth", None)
+            if linewidth is not None: dic["Linewidth"] = {"Name": "Linewidth", "Data": linewidth}
+            amplitude = kwargs.get("amplitude", None)
+            if amplitude is not None: dic["Amplitude"] = {"Name": "Amplitude", "Data": amplitude}
+            blt = kwargs.get("blt", None)
+            if blt is not None: dic["BLT"] = {"Name": "BLT", "Data": blt}
+            shift_err = kwargs.get("shift_err", None)
+            if shift_err is not None: dic["Shift_err"] = {"Name": "Shift error", "Data": shift_err}
+            linewidth_err = kwargs.get("linewidth_err", None)
+            if linewidth_err is not None: dic["Linewidth_err"] = {"Name": "Linewidth error", "Data": linewidth_err}
+            amplitude_err = kwargs.get("amplitude_err", None)
+            if amplitude_err is not None: dic["Amplitude_err"] = {"Name": "Amplitude error", "Data": amplitude_err}
+            blt_std = kwargs.get("blt_std", None)
+            if blt_std is not None: dic["BLT_err"] = {"Name": "BLT error", "Data": blt_std}
         
         if len(dic.keys()) == 0: return
 
