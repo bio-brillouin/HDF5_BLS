@@ -1,7 +1,0 @@
-This is makeindex, version 2.17 [TeX Live 2024] (kpathsea + Thai support).
-Scanning style file ./python.ist.......done (7 attributes redefined, 0 ignored).
-Scanning input file hdf5_bls.idx....done (66 entries accepted, 0 rejected).
-Sorting entries....done (415 comparisons).
-Generating output file hdf5_bls.ind....done (143 lines written, 0 warnings).
-Output written in hdf5_bls.ind.
-Transcript written in hdf5_bls.ilg.
