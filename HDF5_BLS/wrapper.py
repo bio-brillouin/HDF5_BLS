@@ -4,6 +4,7 @@ import tempfile
 import json
 import csv
 import os
+import shutil
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -582,14 +583,17 @@ class Wrapper:
                                 raise WrapperError_Overwrite("You cannot add another raw data to a group with an existing raw data")
 
         def check_name():
+            delete_elt = False
             with h5py.File(self.filepath, 'r') as file:
                 group = file[parent_group]
                 for key in dic.keys():
                     if "Attribute" not in key and dic[key]["Name"] in group:
                         if overwrite:
-                            self.delete_element(f"{parent_group}/{dic[key]['Name']}")
+                            delete_elt = True 
                         else:
                             raise WrapperError_Overwrite(f"The name {dic[key]["Name"]} is already used in the group {parent_group}")
+            if delete_elt: 
+                self.delete_element(f"{parent_group}/{dic[key]['Name']}")
 
         # Check that no issues come from the parent group and get the right parent group if a path to a dataset was given
         parent_group = check_parent_group(parent_group)
@@ -1366,7 +1370,8 @@ class Wrapper:
             os.remove(self.filepath)
 
             # Rename the new file to the old file
-            os.rename(temporary_file, self.filepath)
+            shutil.move(temporary_file, self.filepath)
+            # os.rename(temporary_file, self.filepath.split("/")[-1])
 
             # Set the need_for_repack flag to False
             self.need_for_repack = False
@@ -1706,11 +1711,11 @@ class Wrapper:
             dic["Shift"] = {"Name": "Shift", "Data": treat.shift}
             dic["Linewidth"] = {"Name": "Linewidth", "Data": treat.linewidth}
             dic["Amplitude"] = {"Name": "Amplitude", "Data": treat.amplitude}
-            dic["BLT"] = {"Name": "BLT", "Data": treat.blt}
-            dic["Shift_err"] = {"Name": "Shift error", "Data": treat.shift_err}
-            dic["Linewidth_err"] = {"Name": "Linewidth error", "Data": treat.linewidth_err}
-            dic["Amplitude_err"] = {"Name": "Amplitude error", "Data": treat.amplitude_err}
-            dic["BLT_err"] = {"Name": "BLT error", "Data": treat.blt_std}
+            dic["BLT"] = {"Name": "BLT", "Data": treat.BLT}
+            dic["Shift_err"] = {"Name": "Shift error", "Data": treat.shift_var}
+            dic["Linewidth_err"] = {"Name": "Linewidth error", "Data": treat.linewidth_var}
+            dic["Amplitude_err"] = {"Name": "Amplitude error", "Data": treat.amplitude_var}
+            dic["BLT_err"] = {"Name": "BLT error", "Data": treat.BLT_var}
         else:
             shift = kwargs.get("shift", None)
             if shift is not None: dic["Shift"] = {"Name": "Shift", "Data": shift}
@@ -1734,7 +1739,7 @@ class Wrapper:
         self.add_dictionary(dic, 
                             parent_group = f"{parent_group}/{name_group}", 
                             create_group=True, 
-                            brillouin_type_parent_group="Treatment", 
+                            brillouin_type_parent_group = "Treatment", 
                             overwrite = overwrite)
 
     def clear_empty_attributes(self, path):

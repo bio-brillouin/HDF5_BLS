@@ -18,23 +18,23 @@
 In a nutshell
 =============
 
-The idea is to reproduce the file structure you would use for your experiment, in a HDF5 file. We then add attributes to unify the way we store and use BLS data.
+The strategy followed to achieve the goals presented above, is to reproduce the file structure you would use for your experiment in a unified file format: HDF5. This is a concrete example of file structure corresponding to an experiment (ledt) and the corresponding HDF5 file (right, displayed using `Panoply <https://www.giss.nasa.gov/tools/panoply/>`__), used to store Brillouin Light Scattering data.
 
 .. figure:: _static/File_system_HDF5_file.svg
-   :width: 75%
+   :width: 100%
    :align: center
 
-   A concrete example of measures stored in a file system (background) and the corresponding HDF5 file structure (foreground, using `Panoply <https://www.giss.nasa.gov/tools/panoply/>`__).
+   A concrete example of measures stored in a file system (left) and the corresponding HDF5 file structure (right, using `Panoply <https://www.giss.nasa.gov/tools/panoply/>`__).
 
-HDF5 files are composed of groups  and datasets. A group is a container that can contain other groups or datasets. A dataset is a container that stores data.
+Aside from the organization and the data storage, this file format also allows to store metadata associated to the data, say the wavelength of the laser used or the confocal parameters. These metadata are stored with the data they are associated to, allowing for a unified way to store both the data and the metadata.
 
-**But what about the different modalities?** 
+**Sounds interesting, but how do you allow different modalities (spectra derived from TFP measurements, Time-domain measurements or VIPA spectrometers for example) to be stored in the same file?**
 
-You can store your data "as is" (what the spectrometer returns), but we recommend storing the associated Power spectral density (PSD) and frequency axis (frequency) in the HDF5 file. This will allow everyone to have access to a unified "nature" of the data. 
+The cool thing about the strategy presented above, is that you can store your data "as is", so from the moment your data is a dataset, you can store it in a HDF5 file. Now this doesn't mean that you'll have as many datasets as there are people in teh community! One step we all pass through for treating our BLS data, is to convert the data to a Power Spectral Density (PSD) and a frequency axis (frequency). By encouraging you to store these two arrays in the same file, we essentially have a unified file format for the community that is essentially limitless.
 
-**But how do I differentiate between the different types of datasets?**
+**I see, but how do I differentiate my "raw data" from my "PSD" and "frequency"? And what about the other datasets (shift, linewidth...)?**
 
-We add to each element of the HDF5 file, a "Brillouin\_type" attribute that will allow to know the type of the element. Here are the following types:
+That's a great question! and the answer is that we add to each element of the HDF5 file, a specific "Brillouin\_type" attribute that will flag the nature of the dataset. Same goes for the groups, if a group contains say a calibration spectrum, it has a Brillouin\_type of "Calibration\_spectrum". Here are the exhaustive list of types currently supported:
 
 .. figure:: _static/Groups_and_datasets_type.svg
    :width: 75%
@@ -43,7 +43,7 @@ We add to each element of the HDF5 file, a "Brillouin\_type" attribute that will
    A visual representation of the Brillouin\_type attribute for groups and datasets in the HDF5 file.
 
 
-**😱 Sounds complicated 😱**
+**😱 Sounds complicated to do 😱**
 
 That's why, to simplify everything, we've made a dedicated Python package: HDF5\_BLS to take care of complicated things!
 

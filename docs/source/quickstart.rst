@@ -96,6 +96,21 @@ Once the package is installed, you can use it in your Python scripts as follows:
    linewidth = np.random.random((50, 50))
    wrp.add_treated_data(parent_group = "Brillouin", name_group = "Treat_0", shift = shift, linewidth = linewidth)
 
+To summarize this example, we first create a HDF5 file and add the data to it. We add data based on the nature of the dataset, with an associated function. Here are the liste of functions:
+
+* Raw data (data straight from the spectrometer): add_raw_data
+* PSD (a Power Spectral Density array): add_PSD
+* Frequency (a frequency array associated to the power spectral density): add_frequency
+* Abscissa (an abscissa array for the measures where the name is written after the underscore): add_abscissa
+* Shift, Linewidth, or any other type of results: add_treated_data
+* Other (the other data): add_other
+
+We can then extract the data from the HDF5 file using the wrapper object. The wrapper object is initialized by running the following command:
+
+.. code-block:: python
+
+    wrp = Wrapper()
+
 Extracting the data from the HDF5 file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
