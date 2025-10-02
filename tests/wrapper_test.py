@@ -11,8 +11,10 @@ from HDF5_BLS.WrapperError import *
 # Fixture to create a temporary HDF5 file for testing
 @pytest.fixture
 def temp_hdf5_file():
-    path = tempfile.mktemp(suffix=".h5")
-    return path
+    dir = tempfile.mkdtemp()
+    path = os.path.join(dir, "test.h5")
+    yield path
+    shutil.rmtree(dir)
 
 # Fixture to create a Wrapper instance using the temporary HDF5 file
 @pytest.fixture
@@ -64,7 +66,8 @@ def test_add_combines_wrappers(temp_hdf5_file: str):
     with h5py.File(temp_hdf5_file, 'a') as file:
         file["Brillouin"].create_dataset("test_data_1", data=np.arange(10))
 
-    path2 = tempfile.mktemp(suffix=".h5")
+    dir = "/".join(temp_hdf5_file.split("/")[:-1])
+    path2 = dir + "/" + "test_data_2.h5"
     wrp2 = Wrapper(filepath=path2)
     with h5py.File(wrp2.filepath, 'a') as file:
         file["Brillouin"].create_dataset("test_data_2", data=np.arange(10))
@@ -792,9 +795,6 @@ def test_add_attributes(wrapper_instance: Wrapper):
 #     wrapper_instance.add_frequency(arr, parent_group="Brillouin", name="freq")
 #     with h5py.File(wrapper_instance.filepath, 'r') as f:
 #         assert "freq" in f["Brillouin"]
-
-# test_add_attributes(Wrapper(tempfile.mktemp(suffix=".h5")))
-
 
 def test_add_other(wrapper_instance: Wrapper):
     # Setup: create file
