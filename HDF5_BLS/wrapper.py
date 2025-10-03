@@ -626,7 +626,7 @@ class Wrapper:
                             if not overwrite:
                                 raise WrapperError_StructureError(f"The brillouin_type '{brillouin_type_parent_group}' should be 'Calibration_spectrum', 'Impulse_response' or 'Measure' if you want to add a dataset with type '{key}'.")
                             else:
-                                self.change_brillouin_type(path = f"{parent_group}", brillouin_type = brillouin_type_parent_group)
+                                self.change_brillouin_type(path = f"{parent_group}", brillouin_type = "Measure")
                     # If everything is OK, create the dataset with the right Brillouin type
                     dataset = group.create_dataset(value["Name"], data=value["Data"])
                     dataset.attrs["Brillouin_type"] = key
