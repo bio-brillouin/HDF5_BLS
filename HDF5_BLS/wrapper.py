@@ -282,7 +282,6 @@ class Wrapper:
         lines = build_structure(structure)
         return "\n".join(lines)
         
-
     ##########################
     #     Main methods       # 
     ##########################
@@ -624,7 +623,10 @@ class Wrapper:
                     # If the key corresponds to a dataset that should be stored under a measurement group, check that the parent group as a Brillouin type "Measure", "Calibration_spectrum" or "Impulse_response"
                     elif key in ["Frequency", "PSD", "Raw_data"]:
                         if not brillouin_type_parent_group in ["Calibration_spectrum", "Impulse_response", "Measure"]:
-                            raise WrapperError_StructureError(f"The brillouin_type '{brillouin_type_parent_group}' should be 'Calibration_spectrum', 'Impulse_response' or 'Measure' if you want to add a dataset with type '{key}'.")
+                            if not overwrite:
+                                raise WrapperError_StructureError(f"The brillouin_type '{brillouin_type_parent_group}' should be 'Calibration_spectrum', 'Impulse_response' or 'Measure' if you want to add a dataset with type '{key}'.")
+                            else:
+                                self.change_brillouin_type(path = f"{parent_group}", brillouin_type = brillouin_type_parent_group)
                     # If everything is OK, create the dataset with the right Brillouin type
                     dataset = group.create_dataset(value["Name"], data=value["Data"])
                     dataset.attrs["Brillouin_type"] = key
@@ -1352,7 +1354,7 @@ class Wrapper:
         
         if self.need_for_repack or force_repack:
             # Create a blank HDF5 file to store the data
-            temporary_file = tempfile.mktemp(suffix = ".h5")
+            _, temporary_file = tempfile.mkstemp(suffix = ".h5")
             with h5py.File(temporary_file, 'w') as file:
                 group = file.create_group("Brillouin")
                 group.attrs["Brillouin_type"] = "Root"
