@@ -2,6 +2,7 @@ import numpy as np
 from scipy import optimize
 import json
 import inspect
+import matplotlib.pyplot as plt
 
 Treat_version = 0.1
 

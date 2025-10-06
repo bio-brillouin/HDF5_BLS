@@ -9,9 +9,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # from HDF5_BLS.load_data import load_general
-from HDF5_BLS.WrapperError import *
 from HDF5_BLS.load_data import load_general
 import HDF5_BLS.wrapper_compatibility as compat
+from HDF5_BLS.brimfile_converter import BrimConverter
 HDF5_BLS_Version = "1.0"
 
 def is_tempfile(filepath):
@@ -20,6 +20,36 @@ def is_tempfile(filepath):
     filepath = os.path.abspath(filepath)
     tempdir = os.path.abspath(tempdir)
     return os.path.commonpath([filepath, tempdir]) == tempdir
+
+class WrapperError(Exception):
+    def __init__(self, msg) -> None:
+        self.message = msg
+        super().__init__(self.message)
+
+class WrapperError_FileNotFound(Exception):
+    def __init__(self, msg) -> None:
+        self.message = msg
+        super().__init__(self.message)
+
+class WrapperError_StructureError(Exception):
+    def __init__(self, msg) -> None:
+        self.message = msg
+        super().__init__(self.message)
+
+class WrapperError_Overwrite(Exception):
+    def __init__(self, msg) -> None:
+        self.message = msg
+        super().__init__(self.message)
+
+class WrapperError_ArgumentType(Exception):
+    def __init__(self, msg) -> None:
+        self.message = msg
+        super().__init__(self.message)
+
+class WrapperError_Save(Exception):
+    def __init__(self, msg) -> None:
+        self.message = msg
+        super().__init__(self.message)
 
 class Wrapper:
     """
@@ -582,17 +612,17 @@ class Wrapper:
                                 raise WrapperError_Overwrite("You cannot add another raw data to a group with an existing raw data")
 
         def check_name():
-            delete_elt = False
+            delete_keys = []
             with h5py.File(self.filepath, 'r') as file:
                 group = file[parent_group]
                 for key in dic.keys():
-                    if "Attribute" not in key and dic[key]["Name"] in group:
+                    if "Attribute" not in key and dic[key]["Name"] in group.keys():
                         if overwrite:
-                            delete_elt = True 
+                            delete_keys.append(key)
                         else:
                             raise WrapperError_Overwrite(f"The name {dic[key]["Name"]} is already used in the group {parent_group}")
-            if delete_elt: 
-                self.delete_element(f"{parent_group}/{dic[key]['Name']}")
+            for k in delete_keys:
+                self.delete_element(f"{parent_group}/{dic[k]['Name']}")
 
         # Check that no issues come from the parent group and get the right parent group if a path to a dataset was given
         parent_group = check_parent_group(parent_group)
@@ -628,6 +658,11 @@ class Wrapper:
                             else:
                                 self.change_brillouin_type(path = f"{parent_group}", brillouin_type = "Measure")
                     # If everything is OK, create the dataset with the right Brillouin type
+                    if value["Name"] in group.keys():
+                        if overwrite:
+                            self.delete_element(f"{parent_group}/{value['Name']}")
+                        else:
+                            raise WrapperError_Overwrite(f"The dataset '{value['Name']}' already exists in the group '{parent_group}'.")
                     dataset = group.create_dataset(value["Name"], data=value["Data"])
                     dataset.attrs["Brillouin_type"] = key
                 # If the key is an attribute type
@@ -910,6 +945,17 @@ class Wrapper:
         # Set the need_for_repack flag to True
         self.need_for_repack = True
 
+    def export_brim(self, path_to: str):
+        """Converts a brimX file to a brim file.
+
+        Parameters
+        ----------
+        path_to : str
+            The filepath to the exported Brim file.
+        """
+        converter = BrimConverter(self.filepath, path_to, mode="brimX2brim")
+        converter.convert()
+
     def export_dataset(self, path, filepath, export_type = ".npy"): # Test made 17.09.25
         """
         Exports the dataset at the given path as a numpy array.
@@ -1002,13 +1048,14 @@ class Wrapper:
 
         with h5py.File(self.filepath, 'r') as file:
             with h5py.File(filepath, 'w') as new_file:
-                group = new_file.create_group("Brillouin")
+                group = new_file.require_group("Brillouin")
                 group.attrs["Brillouin_type"] = "Root"
                 if add_parent:
                     new_file.copy(file[path], f"Brillouin/{parent}")
                     new_file[f"Brillouin/{parent}"].attrs["Brillouin_type"] = Brillouin_type
                 else:
-                    new_file.copy(file[path], "Brillouin")
+                    for key in file[path].keys():
+                        new_file.copy(file[path][key], f"Brillouin/{key}")
 
     def export_image(self, path, filepath, simple_image = True, image_size = None, cmap = 'viridis', colorbar = False, colorbar_label = None, axis = False, xlabel = None, ylabel = None): # Test made 18.09.25
         """

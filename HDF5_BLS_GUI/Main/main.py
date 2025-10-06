@@ -18,8 +18,7 @@ from TreatWindow.main import TreatWindow
 from _customWidgets import CheckableComboBox
 
 from HDF5_BLS.load_formats.errors import LoadError_creator, LoadError_parameters
-from HDF5_BLS import wrapper, load_data, conversion_PSD
-from HDF5_BLS.WrapperError import WrapperError_Save, WrapperError_Overwrite, WrapperError_ArgumentType
+from HDF5_BLS import wrapper, load_data, conversion_PSD, WrapperError_Save, WrapperError_Overwrite, WrapperError_ArgumentType
 import conversion_ui, treat_ui
 
 current_dir = os.path.abspath(os.path.dirname(__file__))

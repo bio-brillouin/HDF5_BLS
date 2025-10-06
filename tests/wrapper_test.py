@@ -5,8 +5,7 @@ import os
 import shutil
 import tempfile
 import h5py
-from HDF5_BLS.wrapper import Wrapper, HDF5_BLS_Version
-from HDF5_BLS.WrapperError import *
+from HDF5_BLS.wrapper import Wrapper, WrapperError, WrapperError_ArgumentType, WrapperError_FileNotFound, WrapperError_Overwrite, WrapperError_Save, WrapperError_StructureError, HDF5_BLS_Version
 
 # Fixture to create a temporary HDF5 file for testing
 @pytest.fixture

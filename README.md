@@ -104,6 +104,11 @@ For changes that might affect the compatibility of the project with existing dev
 
 ## What's new with respect to previous versions?
 
+### v1.0.2
+- WrapperErrors are now included in the wrapper script
+- Bug fix in the export of groups as independent HDF5 files
+- Ability to export to Brim files
+
 ### v1.0.1
 - New "add_other" method to add datasets from non-specified type to the wrapper
 - Working with temporary files: Instead of creating a temporary H5 file in the directory of the library, the file is now created in a temporary directory of the OS. 
