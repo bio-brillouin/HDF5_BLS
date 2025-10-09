@@ -12,7 +12,10 @@ import matplotlib.pyplot as plt
 from HDF5_BLS.load_data import load_general
 import HDF5_BLS.wrapper_compatibility as compat
 from HDF5_BLS.brimfile_converter import BrimConverter
+
 HDF5_BLS_Version = "1.0"
+HDF5_group = h5py._hl.group.Group
+HDF5_dataset = h5py._hl.dataset.Dataset
 
 def is_tempfile(filepath):
     tempdir = tempfile.gettempdir()
@@ -82,9 +85,6 @@ class Wrapper:
                                 "Shift_err"]
     
     BRILLOUIN_TYPES_GROUPS = ["Calibration_spectrum", "Impulse_response", "Measure", "Root", "Treatment"]
-
-    HDF5_group = h5py._hl.group.Group
-    HDF5_dataset = h5py._hl.dataset.Dataset
 
     ##########################
     #     Magic methods      #
