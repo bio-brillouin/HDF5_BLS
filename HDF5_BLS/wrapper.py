@@ -83,6 +83,8 @@ class Wrapper:
     
     BRILLOUIN_TYPES_GROUPS = ["Calibration_spectrum", "Impulse_response", "Measure", "Root", "Treatment"]
 
+    HDF5_group = h5py._hl.group.Group
+    HDF5_dataset = h5py._hl.dataset.Dataset
 
     ##########################
     #     Magic methods      #
@@ -356,7 +358,7 @@ class Wrapper:
             if parent_group not in file:
                 file.create_group(parent_group)
             # Check if the path leads to a group, if not, we go up one level
-            if not isinstance(file[parent_group], h5py._hl.group.Group):
+            if not isinstance(file[parent_group], self.HDF5_group):
                 parent_group = "/".join(parent_group.split("/")[:-1])
                     
         # Checks if the name of the HDF5 file we want to add is not already in the selected group. If so, check if overwrite is set to True. If so, overwrite. 
@@ -438,7 +440,7 @@ class Wrapper:
                 if parent_group not in file:
                     raise WrapperError_StructureError(f"The parent group '{parent_group}' does not exist in the file.")
                 # Check if the path leads to a group, if not, we go up one level
-                if not isinstance(file[parent_group], h5py._hl.group.Group):
+                if not isinstance(file[parent_group], self.HDF5_group):
                     parent_group = "/".join(parent_group.split("/")[:-1])
 
         # If the name is not specified, we set it by default to the "Data_i"
@@ -563,7 +565,7 @@ class Wrapper:
                         raise WrapperError_StructureError(f"The parent group '{parent_group}' does not exist in the HDF5 file.")
 
                 # Check that the path leads to a group, if not, select the group above
-                if not isinstance(file[parent_group], h5py._hl.group.Group):
+                if not isinstance(file[parent_group], self.HDF5_group):
                     parent_group = "/".join(parent_group.split("/")[:-1])
             
             return parent_group
@@ -721,7 +723,7 @@ class Wrapper:
         check_path()
         
         # Check if the type is valid
-        if self.get_type(path) == h5py._hl.group.Group:
+        if self.get_type(path) == self.HDF5_group:
             if brillouin_type not in self.BRILLOUIN_TYPES_GROUPS:
                 raise WrapperError_ArgumentType(f"The brillouin type '{brillouin_type}' is not valid.")
         else:
@@ -773,9 +775,8 @@ class Wrapper:
             else:
                 raise WrapperError_Save(f"The wrapper has not been saved yet.")
 
-        # If the save flag is down but the need_for_repack is up, repack
-        if self.need_for_repack:
-            self.repack()
+        # Call the repack function (will repack only if need_for_repack flag is up)
+        self.repack()
 
     def combine_datasets(self, datasets, parent_group, name, overwrite = False): # Test made 17.09.25
         """Combines a list of elements into a unique dataset. All the datasets must have the same shape. They are added into a new dataset where the first dimension is the number of datasets, under the group "parent_group". If the dataset already exists and overwrite is set to True, it is overwritten.
@@ -791,7 +792,7 @@ class Wrapper:
         """
         # Check if the datasets are in the file
         for dataset in datasets:
-            if not self.get_type(dataset) == h5py._hl.dataset.Dataset:
+            if not self.get_type(dataset) == self.HDF5_dataset:
                 raise WrapperError_ArgumentType(f"The datasets '{dataset}' are not datasets.")
 
         # Check if the name is not already in use
@@ -978,7 +979,7 @@ class Wrapper:
         # Extract the dataset from the file
         with h5py.File(self.filepath, 'r') as file:
             assert path in file, WrapperError_StructureError(f"The path '{path}' does not exist in the file.")
-            assert isinstance(file[path], h5py._hl.dataset.Dataset), WrapperError_ArgumentType(f"The path '{path}' does not lead to a dataset.")
+            assert isinstance(file[path], self.HDF5_dataset), WrapperError_ArgumentType(f"The path '{path}' does not lead to a dataset.")
             dataset = file[path][()]
         
         # Ensure the filepath ends with the right extension
@@ -1025,7 +1026,7 @@ class Wrapper:
                 raise WrapperError_StructureError(f"The path '{path}' does not exist in the file.")
 
         # Check we're not trying to export datasets
-        if not self.get_type(path = path) == h5py._hl.group.Group:
+        if not self.get_type(path = path) == self.HDF5_group:
             raise WrapperError_ArgumentType(f"Element at path: {path} is not a group")
         
         # Check we're not trying to export a treatment group
@@ -1178,7 +1179,7 @@ class Wrapper:
         if path is None: path = "Brillouin"
 
         with h5py.File(self.filepath, 'r') as file:
-            if isinstance(file[path], h5py._hl.group.Group):
+            if isinstance(file[path], self.HDF5_group):
                 children = list(file[path].keys())
             else:
                 children = []
@@ -1339,7 +1340,7 @@ class Wrapper:
                 raise WrapperError_StructureError(f"The path '{path}' does not exist in the file.")
         
         # Check that the path leads to a dataset
-        if not self.get_type(path = path) == h5py._hl.dataset.Dataset:
+        if not self.get_type(path = path) == self.HDF5_dataset:
             raise WrapperError_ArgumentType(f"The path '{path}' does not lead to a dataset.")
 
         # Extract the data
@@ -1567,7 +1568,7 @@ class Wrapper:
                 group = file.create_group(parent_group)
                 group.attrs["Brillouin_type"] = "Root"
             # If the path leads to a dataset, we go up one level to get a group
-            if type(file[parent_group]) is h5py._hl.dataset.Dataset:
+            if type(file[parent_group]) is self.HDF5_dataset:
                 parent_group = "/".join(parent_group.split("/")[:-1])
             # We update the attributes of the metadata group taking into account the "update" parameter
             try:
@@ -1799,7 +1800,7 @@ class Wrapper:
         path : str
             The path to the element to delete the attributes from.
         """
-        if self.get_type(path) == h5py._hl.group.Group:
+        if self.get_type(path) == self.HDF5_group:
             with h5py.File(self.filepath, 'a') as file:
                 for e in list(file[path].attrs.keys()):
                     if file[path].attrs[e] == "":
@@ -1895,7 +1896,7 @@ class Wrapper:
             If True, all the attributes of the children elements with same name as the ones to be updated are deleted. Default is False.
         """
         def delete_attributes(path, attributes):
-            if self.get_type(path) == h5py._hl.group.Group:
+            if self.get_type(path) == self.HDF5_group:
                 with h5py.File(self.filepath, 'a') as file:
                     for e in list(file[path].attrs.keys()):
                         if e in attributes.keys():
@@ -1956,7 +1957,7 @@ class Wrapper:
         if apply_to_all is None and self.get_attributes(path)["Brillouin_type"] == "Root" and len(self.get_children_elements(path = path)) > 0:
             raise WrapperError_ArgumentType("Apply to all elements or not?")
         elif apply_to_all is not None and apply_to_all:
-            if self.get_type(path = path) is h5py._hl.group.Group:
+            if self.get_type(path = path) is self.HDF5_group:
                 self.add_dictionary({"Attributes": {name: value}}, parent_group=path, overwrite=True)
                 for e in self.get_children_elements(path = path):
                     self.update_property(name = name, value = value, path = f"{path}/{e}", apply_to_all = apply_to_all)
