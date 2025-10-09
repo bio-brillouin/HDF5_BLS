@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: HDF5_BLS
-Version: 1.0.1
+Version: 1.0.2
 Summary: A package to unify the storage of Brillouin Light Scattering related data in HDF5 files
 Home-page: https://github.com/bio-brillouin/HDF5_BLS
 Author: Pierre Bouvet
@@ -23,6 +23,7 @@ Requires-Dist: pyperclip
 Requires-Dist: pandas>=2.0.3
 Requires-Dist: HDF5_BLS_treat
 Requires-Dist: matplotlib
+Requires-Dist: brimfile
 Requires-Dist: pytest
 Requires-Dist: sphinx
 Requires-Dist: sphinx-rtd-theme
@@ -112,7 +113,7 @@ data = wrp["Brillouin/path/in/file/Raw data"]
 ## GUI
 
 To faciliate the use of the package, we have interfaced it with a GUI also accessible in this repository. The GUI is now capable of:
-- Creating HDF5 files following the structure of v1.0.0:
+- Creating HDF5 files following the structure of v1.0:
     - Structure the file in a hierarchical way
     - Import measure data (drag and drop functionality implemented)
     - Import attributes from a CSV or Excel spreadsheet file (drag and drop functionality implemented)
@@ -140,3 +141,14 @@ For changes that might affect the compatibility of the project with existing dev
 ## License
 
 [GNU-GPL v3.0](https://www.gnu.org/licenses/gpl-3.0.en.html)
+
+## What's new with respect to previous versions?
+
+### v1.0.2
+- WrapperErrors are now included in the wrapper script
+- Bug fix in the export of groups as independent HDF5 files
+- Ability to export to Brim files
+
+### v1.0.1
+- New "add_other" method to add datasets from non-specified type to the wrapper
+- Working with temporary files: Instead of creating a temporary H5 file in the directory of the library, the file is now created in a temporary directory of the OS. 

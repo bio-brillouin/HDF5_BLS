@@ -10,6 +10,7 @@ pyperclip
 pandas>=2.0.3
 HDF5_BLS_treat
 matplotlib
+brimfile
 pytest
 sphinx
 sphinx-rtd-theme

@@ -73,7 +73,7 @@ data = wrp["Brillouin/path/in/file/Raw data"]
 ## GUI
 
 To faciliate the use of the package, we have interfaced it with a GUI also accessible in this repository. The GUI is now capable of:
-- Creating HDF5 files following the structure of v1.0.0:
+- Creating HDF5 files following the structure of v1.0:
     - Structure the file in a hierarchical way
     - Import measure data (drag and drop functionality implemented)
     - Import attributes from a CSV or Excel spreadsheet file (drag and drop functionality implemented)
