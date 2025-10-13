@@ -358,7 +358,7 @@ class Wrapper:
             if parent_group not in file:
                 file.create_group(parent_group)
             # Check if the path leads to a group, if not, we go up one level
-            if not isinstance(file[parent_group], self.HDF5_group):
+            if not isinstance(file[parent_group], HDF5_group):
                 parent_group = "/".join(parent_group.split("/")[:-1])
                     
         # Checks if the name of the HDF5 file we want to add is not already in the selected group. If so, check if overwrite is set to True. If so, overwrite. 
@@ -440,7 +440,7 @@ class Wrapper:
                 if parent_group not in file:
                     raise WrapperError_StructureError(f"The parent group '{parent_group}' does not exist in the file.")
                 # Check if the path leads to a group, if not, we go up one level
-                if not isinstance(file[parent_group], self.HDF5_group):
+                if not isinstance(file[parent_group], HDF5_group):
                     parent_group = "/".join(parent_group.split("/")[:-1])
 
         # If the name is not specified, we set it by default to the "Data_i"
@@ -559,13 +559,13 @@ class Wrapper:
                             group = file.create_group(parent_group)
                             group.attrs["Brillouin_type"] = brillouin_type_parent_group
                         else:
-                            raise WrapperError_StructureError(f"A valid Brillouin type must be given when a new group has to be created")
+                            raise WrapperError_StructureError(f"A valid Brillouin type must be given when a new group has to be created.")
                     # else, raise an error
                     else:
                         raise WrapperError_StructureError(f"The parent group '{parent_group}' does not exist in the HDF5 file.")
 
                 # Check that the path leads to a group, if not, select the group above
-                if not isinstance(file[parent_group], self.HDF5_group):
+                if not isinstance(file[parent_group], HDF5_group):
                     parent_group = "/".join(parent_group.split("/")[:-1])
             
             return parent_group
@@ -582,24 +582,24 @@ class Wrapper:
             for k in dic.keys():
                 # Check that each key is a dictionary
                 if type(dic[k]) is not dict:
-                    raise WrapperError_ArgumentType(f"The element '{k}' is not a dictionary")
+                    raise WrapperError_ArgumentType(f"The element '{k}' is not a dictionary.")
                 
                 # Check that each key has a valid brillouin_type
                 if "Attribute" not in k and k not in self.BRILLOUIN_TYPES_DATASETS and k.split("_")[0] != "Abscissa":
                     valid_keys = [e for e in self.BRILLOUIN_TYPES_DATASETS if e.split("_")[0] != "Abscissa"]
-                    raise WrapperError_ArgumentType(f"The key '{k}' does not exist. Valid keys are: {valid_keys} or 'Abscissa_i_j'")
+                    raise WrapperError_ArgumentType(f"The key '{k}' does not exist. Valid keys are: {valid_keys} or 'Abscissa_i_j'.")
                 #Check that if the key is an abscissa, the dictionary has the correct format
                 elif k.split("_")[0] == "Abscissa":
                     l = [e for e in dic[k].keys()]
                     l.sort()
                     if not l == ["Data","Dim_end","Dim_start","Name","Units"]:
                         if not l == ["Data","Dim_end","Dim_start","Name","Unit"]:
-                            raise WrapperError_ArgumentType(f"The key '{k}' does not have the correct format. It should be a dictionary with the following keys: 'Data', 'Dim_end', 'Dim_start', 'Name', 'Units'")
+                            raise WrapperError_ArgumentType(f"The key '{k}' does not have the correct format. It should be a dictionary with the following keys: 'Data', 'Dim_end', 'Dim_start', 'Name', 'Units'.")
                 # Check that if the key is not an abscissa, the dictionary has the correct format
                 elif "Attribute" not in k:
                     l = [e for e in dic[k].keys()]
                     l.sort()
-                    assert (l == ["Data","Name"]), WrapperError_ArgumentType(f"The key '{k}' does not have the correct format. It should be a dictionary with the following keys: 'Data', 'Name'")
+                    assert (l == ["Data","Name"]), WrapperError_ArgumentType(f"The key '{k}' does not have the correct format. It should be a dictionary with the following keys: 'Data', 'Name'.")
 
         def check_raw_data():
             with h5py.File(self.filepath, 'r') as file:
@@ -611,7 +611,7 @@ class Wrapper:
                             if overwrite:
                                 self.delete_element(f"{parent_group}/{elt.name}")
                             else:
-                                raise WrapperError_Overwrite("You cannot add another raw data to a group with an existing raw data")
+                                raise WrapperError_Overwrite("You cannot add another raw data to a group with an existing raw data.")
 
         def check_name():
             delete_keys = []
@@ -622,7 +622,7 @@ class Wrapper:
                         if overwrite:
                             delete_keys.append(key)
                         else:
-                            raise WrapperError_Overwrite(f"The name {dic[key]["Name"]} is already used in the group {parent_group}")
+                            raise WrapperError_Overwrite(f"The name {dic[key]["Name"]} is already used in the group {parent_group}.")
             for k in delete_keys:
                 self.delete_element(f"{parent_group}/{dic[k]['Name']}")
 
@@ -723,7 +723,7 @@ class Wrapper:
         check_path()
         
         # Check if the type is valid
-        if self.get_type(path) == self.HDF5_group:
+        if self.get_type(path) == HDF5_group:
             if brillouin_type not in self.BRILLOUIN_TYPES_GROUPS:
                 raise WrapperError_ArgumentType(f"The brillouin type '{brillouin_type}' is not valid.")
         else:
@@ -792,7 +792,7 @@ class Wrapper:
         """
         # Check if the datasets are in the file
         for dataset in datasets:
-            if not self.get_type(dataset) == self.HDF5_dataset:
+            if not self.get_type(dataset) == HDF5_dataset:
                 raise WrapperError_ArgumentType(f"The datasets '{dataset}' are not datasets.")
 
         # Check if the name is not already in use
@@ -979,7 +979,7 @@ class Wrapper:
         # Extract the dataset from the file
         with h5py.File(self.filepath, 'r') as file:
             assert path in file, WrapperError_StructureError(f"The path '{path}' does not exist in the file.")
-            assert isinstance(file[path], self.HDF5_dataset), WrapperError_ArgumentType(f"The path '{path}' does not lead to a dataset.")
+            assert isinstance(file[path], HDF5_dataset), WrapperError_ArgumentType(f"The path '{path}' does not lead to a dataset.")
             dataset = file[path][()]
         
         # Ensure the filepath ends with the right extension
@@ -1026,7 +1026,7 @@ class Wrapper:
                 raise WrapperError_StructureError(f"The path '{path}' does not exist in the file.")
 
         # Check we're not trying to export datasets
-        if not self.get_type(path = path) == self.HDF5_group:
+        if not self.get_type(path = path) == HDF5_group:
             raise WrapperError_ArgumentType(f"Element at path: {path} is not a group")
         
         # Check we're not trying to export a treatment group
@@ -1179,7 +1179,7 @@ class Wrapper:
         if path is None: path = "Brillouin"
 
         with h5py.File(self.filepath, 'r') as file:
-            if isinstance(file[path], self.HDF5_group):
+            if isinstance(file[path], HDF5_group):
                 children = list(file[path].keys())
             else:
                 children = []
@@ -1340,7 +1340,7 @@ class Wrapper:
                 raise WrapperError_StructureError(f"The path '{path}' does not exist in the file.")
         
         # Check that the path leads to a dataset
-        if not self.get_type(path = path) == self.HDF5_dataset:
+        if not self.get_type(path = path) == HDF5_dataset:
             raise WrapperError_ArgumentType(f"The path '{path}' does not lead to a dataset.")
 
         # Extract the data
@@ -1568,7 +1568,7 @@ class Wrapper:
                 group = file.create_group(parent_group)
                 group.attrs["Brillouin_type"] = "Root"
             # If the path leads to a dataset, we go up one level to get a group
-            if type(file[parent_group]) is self.HDF5_dataset:
+            if type(file[parent_group]) is HDF5_dataset:
                 parent_group = "/".join(parent_group.split("/")[:-1])
             # We update the attributes of the metadata group taking into account the "update" parameter
             try:
@@ -1800,7 +1800,7 @@ class Wrapper:
         path : str
             The path to the element to delete the attributes from.
         """
-        if self.get_type(path) == self.HDF5_group:
+        if self.get_type(path) == HDF5_group:
             with h5py.File(self.filepath, 'a') as file:
                 for e in list(file[path].attrs.keys()):
                     if file[path].attrs[e] == "":
@@ -1896,7 +1896,7 @@ class Wrapper:
             If True, all the attributes of the children elements with same name as the ones to be updated are deleted. Default is False.
         """
         def delete_attributes(path, attributes):
-            if self.get_type(path) == self.HDF5_group:
+            if self.get_type(path) == HDF5_group:
                 with h5py.File(self.filepath, 'a') as file:
                     for e in list(file[path].attrs.keys()):
                         if e in attributes.keys():
@@ -1957,7 +1957,7 @@ class Wrapper:
         if apply_to_all is None and self.get_attributes(path)["Brillouin_type"] == "Root" and len(self.get_children_elements(path = path)) > 0:
             raise WrapperError_ArgumentType("Apply to all elements or not?")
         elif apply_to_all is not None and apply_to_all:
-            if self.get_type(path = path) is self.HDF5_group:
+            if self.get_type(path = path) is HDF5_group:
                 self.add_dictionary({"Attributes": {name: value}}, parent_group=path, overwrite=True)
                 for e in self.get_children_elements(path = path):
                     self.update_property(name = name, value = value, path = f"{path}/{e}", apply_to_all = apply_to_all)
