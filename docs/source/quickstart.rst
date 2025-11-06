@@ -77,7 +77,7 @@ Once the package is installed, you can use it in your Python scripts as follows:
    ###############################################################################
    # Storing the data in the HDF5 file (for this example we use a random array)
    data = np.random.random((50, 50, 512))
-   wrp.add_raw_data(data = data, parent_group = "Brillouin", name = "Raw data")
+   wrp.add_raw_data(data = data, parent_group = "Brillouin/Measure", name = "Raw data")
    
    ###############################################################################
    # Existing code to convert the data to a PSD
@@ -85,8 +85,8 @@ Once the package is installed, you can use it in your Python scripts as follows:
    # Storing the Power Spectral Density in the HDF5 file together with the associated frequency array (for this example we use random arrays)
    PSD = np.random.random((50, 50, 512))
    frequency = np.arange(512)
-   wrp.add_PSD(data = PSD, parent_group = "Brillouin", name = "Power Spectral Density")
-   wrp.add_frequency(data = frequency, parent_group = "Brillouin", name = "Frequency")
+   wrp.add_PSD(data = PSD, parent_group = "Brillouin/Measure", name = "Power Spectral Density")
+   wrp.add_frequency(data = frequency, parent_group = "Brillouin/Measure", name = "Frequency")
 
    ###############################################################################
    # Existing code to fit the PSD to extract shift and linewidth arrays
@@ -94,9 +94,19 @@ Once the package is installed, you can use it in your Python scripts as follows:
    # Storing the Power Spectral Density in the HDF5 file together with the associated frequency array (for this example we use random arrays)
    shift = np.random.random((50, 50))
    linewidth = np.random.random((50, 50))
-   wrp.add_treated_data(parent_group = "Brillouin", name_group = "Treat_0", shift = shift, linewidth = linewidth)
+   wrp.add_treated_data(parent_group = "Brillouin/Measure", name_group = "Treat_0", shift = shift, linewidth = linewidth)
 
-To summarize this example, we first create a HDF5 file and add the data to it. We add data based on the nature of the dataset, with an associated function. Here are the liste of functions:
+   ###############################################################################
+   # Other methods to add data to the HDF5 file
+   ###############################################################################
+   # If you want to add an abscissa array, you can use the following command where you specify which dimensions the abscissa array applies to
+   wrp.add_abscissa(data, "Brillouin/Measure", name="Time", unit = "min", dim_start = 0, dim_end = 1, overwrite = False)
+   # If you want to add a particular attribute, you can use the following command
+   wrp.add_attributes({"an attribute": "its value"}, parent_group="Brillouin/Measure", overwrite=True)
+   # If you want to add any other dataset, you can use the following command
+   wrp.add_other(data, "Brillouin/Measure", name="Other", overwrite=True)
+
+To summarize this example, we first create a HDF5 file. Then we add our data to it, placing it under a group named "Measure". Datasets are added based on their nature, with an associated function. Here we add a PSD, a frequency array, a shift and linewidth array and then an abscissa and another dataset. Here are the liste of functions to use depending on the type of data:
 
 * Raw data (data straight from the spectrometer): add_raw_data
 * PSD (a Power Spectral Density array): add_PSD

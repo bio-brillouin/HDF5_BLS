@@ -602,14 +602,14 @@ class Wrapper:
                     assert (l == ["Data","Name"]), WrapperError_ArgumentType(f"The key '{k}' does not have the correct format. It should be a dictionary with the following keys: 'Data', 'Name'.")
 
         def check_raw_data():
-            with h5py.File(self.filepath, 'r') as file:
+            with h5py.File(self.filepath, 'a') as file:
                 group = file[parent_group]
                 for elt in group:
                     elt = group[elt]
                     if elt.attrs["Brillouin_type"] == "Raw_data":
                         if "Raw_data" in dic.keys():
                             if overwrite:
-                                self.delete_element(f"{parent_group}/{elt.name}")
+                                self.delete_element(path = f"{elt.name[1:]}", file = file)
                             else:
                                 raise WrapperError_Overwrite("You cannot add another raw data to a group with an existing raw data.")
 
@@ -662,7 +662,7 @@ class Wrapper:
                     # If everything is OK, create the dataset with the right Brillouin type
                     if value["Name"] in group.keys():
                         if overwrite:
-                            self.delete_element(f"{parent_group}/{value['Name']}")
+                            self.delete_element(path = f"{parent_group}/{value['Name']}", file = file)
                         else:
                             raise WrapperError_Overwrite(f"The dataset '{value['Name']}' already exists in the group '{parent_group}'.")
                     dataset = group.create_dataset(value["Name"], data=value["Data"])
@@ -749,7 +749,12 @@ class Wrapper:
         WrapperError_StructureError
             If the path does not lead to an element.
         """
+        # If no changes in the name, do nothing
+        if name == path.split("/")[-1]:
+            return
+        
         with h5py.File(self.filepath, 'a') as file:
+            # Check if the path is a valid path
             if path not in file:
                 raise WrapperError_StructureError(f"The path '{path}' does not exist in the file.")
             new_path = "/".join(path.split("/")[:-1])+"/"+name
@@ -903,13 +908,15 @@ class Wrapper:
         if is_tempfile(self.filepath):
             self.save = True
 
-    def delete_element(self, path = None): # Test made 17.09.25
+    def delete_element(self, path = None, file = None): # Test made 17.09.25
         """Deletes an element from the file and sets the need_for_repack flag to True.
 
         Parameters
         ----------
         path : str
             The path to the element to delete
+        file : h5py.File
+            The file to delete the element from. By default this object is created in the function
 
         Raises
         ------
@@ -919,12 +926,24 @@ class Wrapper:
         # If the path is not specified, we delete every element of the file and then create a new root Brillouin group.
         if path is None: 
             paths = []
-            with h5py.File(self.filepath, 'r') as file:
+            if file is None:
+                with h5py.File(self.filepath, 'r') as file:
+                    for key in file["Brillouin"].keys():
+                        paths.append(key)
+            else:
                 for key in file["Brillouin"].keys():
                     paths.append(key)
             for path in paths:
-                self.delete_element(f"Brillouin/{path}")
-            with h5py.File(self.filepath, 'a') as file:
+                if file is None: self.delete_element(f"Brillouin/{path}")
+                else: self.delete_element(f"Brillouin/{path}", file)
+            if file is None:
+                with h5py.File(self.filepath, 'a') as file:
+                    group = file["Brillouin"]
+                    for attr in list(group.attrs.keys()):
+                        del group.attrs[attr]
+                    group.attrs["Brillouin_type"] = "Root"
+                    group.attrs["HDF5_BLS_version"] = HDF5_BLS_Version
+            else:
                 group = file["Brillouin"]
                 for attr in list(group.attrs.keys()):
                     del group.attrs[attr]
@@ -933,7 +952,17 @@ class Wrapper:
             return
 
         # Check if the path leads to an element
-        with h5py.File(self.filepath, 'a') as file:
+        if file is None:
+            with h5py.File(self.filepath, 'a') as file:
+                if path not in file:
+                    raise WrapperError_StructureError(f"The path '{path}' does not lead to an element.")
+                # If the path leads to an element, we delete it
+                else:
+                    try:
+                        del file[path]
+                    except Exception as e:
+                        raise WrapperError(f"An error occured while deleting the element '{path}'. Error message: {e}")
+        else:
             if path not in file:
                 raise WrapperError_StructureError(f"The path '{path}' does not lead to an element.")
             # If the path leads to an element, we delete it

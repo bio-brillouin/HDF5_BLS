@@ -375,6 +375,20 @@ class Analyze:
         with open(filepath, 'w') as f:
             json.dump(algorithm_loc, f, indent=4)
 
+    def set_x_y(self, x, y):
+        """
+        Sets the x and y values of the data
+
+        Parameters
+        ----------
+        x : array-like
+            The x values of the data
+        y : array-like
+            The y values of the data
+        """
+        self.x = x
+        self.y = y
+
 class Analyze_general(Analyze):
     """This class is a class inherited from the Analyze class used to store steps of analysis that are not specific to a particular type of spectrometer and that are not interesting to show in an algorithm. For example, the function to add a remarkable point to the data
     """
