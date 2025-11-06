@@ -1,4 +1,4 @@
-HDF5\_BLS.wrapper
+﻿HDF5\_BLS.wrapper
 =================
 
 .. automodule:: HDF5_BLS.wrapper
@@ -15,4 +15,15 @@ HDF5\_BLS.wrapper
    .. autosummary::
    
       Wrapper
+   
+   .. rubric:: Exceptions
+
+   .. autosummary::
+   
+      WrapperError
+      WrapperError_ArgumentType
+      WrapperError_FileNotFound
+      WrapperError_Overwrite
+      WrapperError_Save
+      WrapperError_StructureError
    

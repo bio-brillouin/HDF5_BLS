@@ -47,6 +47,11 @@ For groups, these types are:
 - Root: the root group
 - Treatment: the treatment
 
+.. figure:: _static/Groups_and_datasets_type.svg
+   :width: 75%
+   :align: center
+
+   A visual representation of the Brillouin\_type attribute for groups and datasets in the HDF5 file.
 
 Installation
 ------------
