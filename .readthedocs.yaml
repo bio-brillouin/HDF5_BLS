@@ -6,6 +6,10 @@ build:
   tools:
     python: "3.12"
 
+# Tell RTD to use the environment.yml file to set up the environment
+conda:
+  environment: environment.yml
+
 # Build documentation in the "docs/" directory with Sphinx
 sphinx:
   configuration: docs/conf.py
@@ -18,7 +22,6 @@ formats:
 # Here we build the environment for the documentation by installing the three packages in editable mode
 python:
   install:
-    - requirements: docs/requirements.txt
     - method: pip
       path: packages/HDF5_BLS
       editable: true
