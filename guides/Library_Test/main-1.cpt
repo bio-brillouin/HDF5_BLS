@@ -1,7 +1,0 @@
-In that case, you need to provide, aside from the dataset itself, the place where to store it and its name, the units of the abscissa (attribute "unit" given as a string, for example "mm" or "K"), the first dimension of the PSD it applies to and the last dimension of the PSD it applies to (attributes "dim\_strart" and "dim\_end" respectively, given as integers and with the usual convention: starting from 0, starting index included, ending index excluded). For example:
-\begin{lstlisting}
-    t = np.linspace(0,10,100) # 100 values of time ranging from 0 to 10s
-    PSD = np.random.random((100,512)) # 100 PSD associated to the time array
-    wrp.add_PSD(data = PSD, parent_group = "Brillouin/A new time series", name = "PSD")
-    wrp.add_abscissa(data = t, parent_group = "Brillouin/A new time series", name = "Time", unit = "s", dim_start = 0, dim_end = 1)
-\end{lstlisting}^^E^^L 
