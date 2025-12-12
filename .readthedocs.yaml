@@ -23,7 +23,7 @@ python:
       editable: true
 
     - method: pip
-      path: packages/HDF5_BLS_anlayse
+      path: packages/HDF5_BLS_analyse
       editable: true
 
     - method: pip
