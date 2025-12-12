@@ -1,18 +1,24 @@
 version: 2
 
-# Set the OS, Python version and other tools you might need
+# Set the OS and Python version
 build:
   os: ubuntu-22.04
   tools:
     python: "3.12"
 
-python: 
-  install:
-    # 1. Use the environment.yml to set up the dependencies via mamba
-    - method: mamba
-      path: environment.yml
+  # *** CRITICAL FIX: Install System-Level Libraries ***
+  # This section ensures the underlying C libraries for h5py and others are present.
+  packages:
+    - libhdf5-dev  # Development headers for HDF5 (crucial for h5py)
+    - liblapack-dev # Linear Algebra libraries (helpful for NumPy/SciPy builds)
+    - libblas-dev # Basic Linear Algebra Subprograms (also helps NumPy/SciPy)
 
-    # 2. Use a standard pip command to install your local packages
+python:
+  install:
+    # 1. Install all dependencies, including Sphinx and h5py/numpy, from requirements.txt
+    - requirements: docs/requirements.txt
+    
+    # 2. Install the local packages in editable mode
     - method: pip
       path: packages/HDF5_BLS
       editable: true
