@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "HDF5_BLS_analyse"
+# Use alpha release (1.0.2a0) for testing purposes, then beta release (1.0.2b0) for stable pre-release, release candidate (1.0.2rc0) for release candidate, and final release (1.0.2) for stable release
+# Use major.minor.patch format for releases, with the patch version incremented for each release
+version = "1.0.1"
+description = "A package to extract a power spectrum from raw data of arbitrary Brillouin spectrometers."
+readme = { file = "README.md", content-type = "text/markdown" }
+license = "GPL-3.0-or-later"
+authors = [
+  { name = "Pierre Bouvet", email = "pierre.bouvet@meduniwien.ac.at" }
+]
+requires-python = ">=3.6"
+keywords = ["HDF5", "Brillouin", "BLS"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent",
+]
+dependencies = [
+  "numpy>=2.0",
+  "scipy>=1.10"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/bio-brillouin/HDF5_BLS"
+"Documentation" = "https://hdf5-bls.readthedocs.io/en/latest/"
+
+[project.optional-dependencies]
+dev = [
+  "pytest",
+]
+docs = [
+  "sphinx",
+  "sphinx-rtd-theme",
+]
+
+# --- SETUPLOOLS CONFIGURATION FOR SRC LAYOUT ---
+
+[tool.setuptools]
+include-package-data = true
+packages = ["HDF5_BLS_analyse"]
+
+# This maps the package name "HDF5_BLS" to the "src" directory relative to this pyproject.toml. This is CRUCIAL for the 'src' layout.
+[tool.setuptools.package-dir]
+"HDF5_BLS_analyse" = "src/_HDF5_BLS_analyse"
+

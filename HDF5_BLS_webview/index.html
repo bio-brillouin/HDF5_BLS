@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HDF5 Web Visualizer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="landing-page" class="landing-page">
+        <h1>HDF5 File Visualizer</h1>
+        <p>This tool helps you explore Brillouin Light Scattering (BLS) data stored in a Hierarchical Data Format (HDF5) file. HDF5 organizes data in a human- and machine-readable hierarchical structure using groups and datasets.</p>
+        <p>The standard structure for a single measure is a `Brillouin` group containing a `Measure` group, which itself contains a `Measure` dataset. Groups are used for organization and storing metadata, while datasets hold the actual data.</p>
+        <div id="drag-drop-area" class="drag-drop-area">
+            <p>Drag and drop an HDF5 file here or click to select a file.</p>
+            <input type="file" id="file-input" accept=".h5, .hdf5" style="display: none;">
+        </div>
+    </div>
+
+    <div id="main-app" class="main-app" style="display: none;">
+        <aside id="left-pane" class="left-pane">
+            <h2>File Structure</h2>
+            <ul id="file-tree" class="file-tree"></ul>
+        </aside>
+        <main id="right-pane" class="right-pane">
+            <nav class="tabs">
+                <button class="tab-button active" data-tab="properties">Properties</button>
+                <button class="tab-button" data-tab="visualization">Visualization</button>
+                <button class="tab-button" data-tab="treatment">Treatment</button>
+            </nav>
+            <div id="tab-content" class="tab-content">
+                <div id="properties" class="tab-pane active">
+                    <h2>Element Properties</h2>
+                    <div id="properties-content">
+                        <p>Click on an element in the file tree to see its properties.</p>
+                    </div>
+                </div>
+                <div id="visualization" class="tab-pane">
+                    <h2>Data Visualization</h2>
+                    <p>Visualization features will be available here.</p>
+                </div>
+                <div id="treatment" class="tab-pane">
+                    <h2>Treatment & Analysis</h2>
+                    <p>Treatment and analysis information will be displayed here.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="lib/h5wasm.js" defer></script>
+    <script src="app.js" defer></script>
+</body>
+</html>

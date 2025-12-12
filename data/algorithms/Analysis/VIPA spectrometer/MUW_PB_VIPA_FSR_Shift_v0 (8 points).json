@@ -1,0 +1,113 @@
+{
+    "name": "Quadratic interpolation frequency axis 3 orders VIPA (9 pts)",
+    "version": "v1.0",
+    "author": "Pierre Bouvet",
+    "description": "This algorithm allows the user to select 9 points (3 elastic, 6 inelastic) and creates a frequency axis that maximizes the equality between frequency shifts.",
+    "functions": [
+        {
+            "function": "add_point",
+            "parameters": {
+                "position_center_window": 11.546,
+                "window_width": 5.0,
+                "type_pnt": "Elastic"
+            },
+            "description": "See previous run"
+        },
+        {
+            "function": "add_point",
+            "parameters": {
+                "position_center_window": 37.034,
+                "window_width": 5.0,
+                "type_pnt": "Stokes"
+            },
+            "description": "See previous run"
+        },
+        {
+            "function": "add_point",
+            "parameters": {
+                "position_center_window": 236.233,
+                "window_width": 5.0,
+                "type_pnt": "Anti-Stokes"
+            },
+            "description": "See previous run"
+        },
+        {
+            "function": "add_point",
+            "parameters": {
+                "position_center_window": 259.973,
+                "window_width": 5.0,
+                "type_pnt": "Elastic"
+            },
+            "description": "See previous run"
+        },
+        {
+            "function": "add_point",
+            "parameters": {
+                "position_center_window": 282.505,
+                "window_width": 5.0,
+                "type_pnt": "Stokes"
+            },
+            "description": "See previous run"
+        },
+        {
+            "function": "add_point",
+            "parameters": {
+                "position_center_window": 465.994,
+                "window_width": 5.0,
+                "type_pnt": "Anti-Stokes"
+            },
+            "description": "See previous run"
+        },
+        {
+            "function": "add_point",
+            "parameters": {
+                "position_center_window": 488.369,
+                "window_width": 5.0,
+                "type_pnt": "Elastic"
+            },
+            "description": "See previous run"
+        },
+        {
+            "function": "add_point",
+            "parameters": {
+                "position_center_window": 509.372,
+                "window_width": 5.0,
+                "type_pnt": "Stokes"
+            },
+            "description": "See previous run"
+        },
+        {
+            "function": "interpolate_elastic_inelastic",
+            "parameters": {
+                "shift": null,
+                "FSR": 60.0
+            },
+            "description": "\nUses the elastic peaks, and the positions of the Brillouin peaks on the different orders to obtain a frequency axis by interpolating the position of the peaks with a quadratic polynomial. The user can either enter a value for the shift or the FSR, or both. The shift value is used to calibrate the frequency axis using known values of shifts when using a calibration sample to obtain the frequency axis. The FSR value is used to calibrate the frequency axis using a known values of FSR for the VIPA.\n\nParameters\n----------  \nshift : float\n    The shift between the elastic and inelastic peaks (in GHz).\nFSR : float\n    The free spectral range of the VIPA spectrometer (in GHz).\n"
+        },
+        {
+            "function": "add_point",
+            "parameters": {
+                "position_center_window": 57.016,
+                "window_width": 5.0,
+                "type_pnt": "Anti-Stokes"
+            },
+            "description": "See previous run"
+        },
+        {
+            "function": "add_point",
+            "parameters": {
+                "position_center_window": 68.47,
+                "window_width": 5.0,
+                "type_pnt": "Stokes"
+            },
+            "description": "See previous run"
+        },
+        {
+            "function": "center_x_axis",
+            "parameters": {
+                "center_type": "Inelastic"
+            },
+            "description": "\nCenters the x axis using the first points stored in the class. The parameter \"center_type\" is used to determine wether to center the axis using the first elastic peak (center_type = \"Elastic\") or the average of two Stokes and Anti-Stokes peaks (center_type = \"Inelastic\").\n\nParameters\n----------\ncenter_type: str\n    The type of the peak to center the x axis around. Must be either \"Elastic\" or \"Inelastic\".\n"
+        }
+    ]
+}

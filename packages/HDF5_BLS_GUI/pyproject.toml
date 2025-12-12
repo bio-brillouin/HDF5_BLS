@@ -1,0 +1,57 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "HDF5_BLS_GUI"
+version = "1.0.0"
+description = "Graphical User Interface application for HDF5_BLS project."
+readme = { file = "../../README.md", content-type = "text/markdown" }
+license = { file = "../../LICENSE.txt" }
+authors = [
+  { name = "Pierre Bouvet", email = "pierre.bouvet@meduniwien.ac.at" }
+]
+maintainers = [
+  { name = "Pierre Bouvet", email = "pierre.bouvet@meduniwien.ac.at" }
+]
+requires-python = ">=3.6"
+keywords = ["HDF5", "Brillouin", "BLS", "GUI"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+  "Operating System :: OS Independent",
+]
+
+# CRITICAL: Lists all three packages as dependencies
+dependencies = [
+  "HDF5_BLS>=1.0.2",
+  "HDF5_BLS_analyse>=1.0.0",
+  "HDF5_BLS_treat>=1.0.0",
+  "PyQt6", # Example GUI library (Replace with your actual GUI framework like PySide6, etc.)
+  "matplotlib", # Needed for plotting within the GUI
+]
+
+[project.urls]
+"Homepage" = "https://github.com/bio-brillouin/HDF5_BLS"
+"Documentation" = "https://hdf5-bls.readthedocs.io/en/latest/"
+
+# --- SETUPLOOLS CONFIGURATION FOR SRC LAYOUT ---
+[tool.setuptools]
+include-package-data = true
+
+# This is used to package GUI assets (images, UI files)
+# that are defined in 'MANIFEST.in' or found via include-package-data=true.
+# (Your tree shows assets in 'assets/img', so you might need a simple MANIFEST.in
+# or use 'package_data' if setuptools doesn't automatically find them.)
+
+[tool.setuptools.package-dir]
+"HDF5_BLS_GUI" = "src"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# --- ENTRY POINT for the GUI ---
+# This defines the command that launches your GUI.
+# Assuming your launch file is src/app.py and the entry function is 'main'.
+[project.gui-scripts]
+HDF5-BLS-GUI = "HDF5_BLS_GUI.app:main"

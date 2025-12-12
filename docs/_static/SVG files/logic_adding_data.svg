@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="202.69824mm"
+   height="175.09302mm"
+   viewBox="0 0 202.69824 175.09302"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25)"
+   sodipodi:docname="logic_adding_data.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="0.56225671"
+     inkscape:cx="390.39107"
+     inkscape:cy="375.27342"
+     inkscape:window-width="1512"
+     inkscape:window-height="945"
+     inkscape:window-x="0"
+     inkscape:window-y="37"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1">
+    <marker
+       style="overflow:visible"
+       id="Triangle"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.5)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path135" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="Triangle-8"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.5)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path135-5" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="Triangle-9"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.5)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path135-1" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="Triangle-6"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.5)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path135-3" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="Triangle-6-4"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.5)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path135-3-5" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="Triangle-6-47"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.5)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path135-3-8" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="Triangle-8-6"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.5)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path135-5-6" />
+    </marker>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-3.0532908,-6.3688528)">
+    <path
+       style="fill:#b7b7b7;fill-opacity:0.461121;fill-rule:evenodd;stroke:#000000;stroke-width:0.600001;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1.2, 2.4;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 3.3532913,129.94004 3.4985205,56.584042 H 205.45857 l 0.29296,120.644498 h -94.90449 l 0,-47.2885 z"
+       id="path34"
+       sodipodi:nodetypes="ccccccc" />
+    <rect
+       style="fill:#ff8a91;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none"
+       id="rect1"
+       width="86.830627"
+       height="15.80168"
+       x="8.2571306"
+       y="6.6688528"
+       ry="0" />
+    <text
+       xml:space="preserve"
+       style="font-style:italic;font-size:4.9389px;font-family:Arial;-inkscape-font-specification:'Arial Italic';text-align:center;letter-spacing:0px;text-anchor:middle;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none"
+       x="51.614574"
+       y="16.308435"
+       id="text1"><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.6;stroke-dasharray:none"
+         x="52.300667"
+         y="16.308435"
+         id="tspan2">The user wants to add &quot;data.ext&quot; </tspan></text>
+    <rect
+       style="fill:#ff8a91;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none"
+       id="rect1-59"
+       width="86.830627"
+       height="15.80168"
+       x="8.2221613"
+       y="165.36018"
+       ry="0" />
+    <text
+       xml:space="preserve"
+       style="font-style:italic;font-size:4.9389px;font-family:Arial;-inkscape-font-specification:'Arial Italic';text-align:center;letter-spacing:0px;text-anchor:middle;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none"
+       x="51.579605"
+       y="174.99977"
+       id="text1-2"><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.6;stroke-dasharray:none"
+         x="51.579605"
+         y="174.99977"
+         id="tspan2-8">END</tspan></text>
+    <g
+       id="g25"
+       transform="translate(96.935639,-62.850312)">
+      <rect
+         style="fill:#57cdff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none"
+         id="rect1-53"
+         width="86.616188"
+         height="27.954859"
+         x="8.3643608"
+         y="130.5208"
+         ry="0" />
+      <text
+         xml:space="preserve"
+         style="font-style:italic;font-size:4.9389px;font-family:Arial;-inkscape-font-specification:'Arial Italic';text-align:center;letter-spacing:0px;text-anchor:middle;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none"
+         x="51.508469"
+         y="136.50516"
+         id="text1-1"><tspan
+           sodipodi:role="line"
+           style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.6;stroke-dasharray:none"
+           x="51.508472"
+           y="136.50516"
+           id="tspan2-1">Call to the function handling the file</tspan><tspan
+           sodipodi:role="line"
+           style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.6;stroke-dasharray:none"
+           x="51.508469"
+           y="142.69078"
+           id="tspan17">extension (e.g. load_dat_file) in </tspan><tspan
+           sodipodi:role="line"
+           style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.6;stroke-dasharray:none"
+           x="51.508469"
+           y="148.8764"
+           id="tspan18">load_data.py with the same </tspan><tspan
+           sodipodi:role="line"
+           style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.6;stroke-dasharray:none"
+           x="51.508469"
+           y="155.06203"
+           id="tspan19">attributes as load_general</tspan></text>
+    </g>
+    <g
+       id="g26"
+       transform="translate(107.45376,-63.726478)">
+      <rect
+         style="fill:#57cdff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none"
+         id="rect1-53-3"
+         width="86.559837"
+         height="33.473953"
+         x="8.3925352"
+         y="168.15706"
+         ry="0" />
+      <text
+         xml:space="preserve"
+         style="font-style:italic;font-size:4.9389px;font-family:Arial;-inkscape-font-specification:'Arial Italic';text-align:center;letter-spacing:0px;text-anchor:middle;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none"
+         x="51.425266"
+         y="174.26154"
+         id="text1-1-2"><tspan
+           sodipodi:role="line"
+           style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.6;stroke-dasharray:none"
+           x="51.425266"
+           y="174.26154"
+           id="tspan19-9">Depending on creator, call to the </tspan><tspan
+           sodipodi:role="line"
+           style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.6;stroke-dasharray:none"
+           x="51.425266"
+           y="180.44716"
+           id="tspan22">right function under the script</tspan><tspan
+           sodipodi:role="line"
+           style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.6;stroke-dasharray:none"
+           x="51.425266"
+           y="186.63278"
+           id="tspan23">dedicated to the extension (e.g. </tspan><tspan
+           sodipodi:role="line"
+           style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.6;stroke-dasharray:none"
+           x="51.425266"
+           y="192.81841"
+           id="tspan24">load_dat.py) in the &quot;load_formats&quot;</tspan><tspan
+           sodipodi:role="line"
+           style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.6;stroke-dasharray:none"
+           x="51.425266"
+           y="199.00403"
+           id="tspan25">folder</tspan></text>
+    </g>
+    <rect
+       style="fill:#70ffa9;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.546255;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none"
+       id="rect1-53-3-5"
+       width="86.613579"
+       height="27.728447"
+       x="115.81942"
+       y="146.68289"
+       ry="0" />
+    <text
+       xml:space="preserve"
+       style="font-style:italic;font-size:4.9389px;font-family:Arial;-inkscape-font-specification:'Arial Italic';text-align:center;letter-spacing:0px;text-anchor:middle;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none"
+       x="159.06712"
+       y="152.54681"
+       id="text1-1-2-0"><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.6;stroke-dasharray:none"
+         x="159.06712"
+         y="152.54681"
+         id="tspan25-9">Automatic extraction of the data</tspan><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.6;stroke-dasharray:none"
+         x="159.06712"
+         y="158.73244"
+         id="tspan29">and attributes that have been stored</tspan><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.6;stroke-dasharray:none"
+         x="159.06712"
+         y="164.91806"
+         id="tspan30">by spectrometer (e.g. scanning range</tspan><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.6;stroke-dasharray:none"
+         x="159.06712"
+         y="171.10368"
+         id="tspan31">in a TFP)</tspan></text>
+    <rect
+       style="fill:#70ffa9;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none"
+       id="rect1-6"
+       width="86.830627"
+       height="15.80168"
+       x="8.2571383"
+       y="35.442104"
+       ry="7.9008398" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.9389px;font-family:Arial;-inkscape-font-specification:Arial;text-align:center;letter-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none"
+       x="51.633865"
+       y="41.988876"
+       id="text3"><tspan
+         sodipodi:role="line"
+         id="tspan3"
+         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:'Arial Italic';stroke-width:0.6;stroke-dasharray:none"
+         x="51.633869"
+         y="41.988876">Logic to determine where to store</tspan><tspan
+         sodipodi:role="line"
+         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:'Arial Italic';stroke-width:0.6;stroke-dasharray:none"
+         x="51.633865"
+         y="48.1745"
+         id="tspan4">store the added dataset</tspan></text>
+    <path
+       style="fill:#57cdff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Triangle)"
+       d="m 51.672442,22.470531 1e-5,8.849868"
+       id="path4" />
+    <path
+       style="fill:#57cdff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Triangle-8)"
+       d="m 51.672453,51.243786 1e-5,8.849868"
+       id="path4-2" />
+    <path
+       style="fill:#57cdff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Triangle-8-6)"
+       d="m 51.672455,152.38861 1e-5,8.84986"
+       id="path4-2-2" />
+    <path
+       style="fill:#57cdff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Triangle-9)"
+       d="m 94.117304,81.647921 7.780276,-9e-6"
+       id="path4-4"
+       sodipodi:nodetypes="cc" />
+    <g
+       id="g34">
+      <rect
+         style="fill:#57cdff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none"
+         id="rect1-5"
+         width="86.22802"
+         height="59.400005"
+         x="8.558444"
+         y="64.215355"
+         ry="0" />
+      <text
+         xml:space="preserve"
+         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.9389px;font-family:Arial;-inkscape-font-specification:'Arial Italic';text-align:start;letter-spacing:0px;text-anchor:start;fill:#57cdff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+         x="10.272994"
+         y="70.989746"
+         id="text5"><tspan
+           sodipodi:role="line"
+           style="text-align:start;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.6;stroke-dasharray:none"
+           x="10.272994"
+           y="70.989746"
+           id="tspan6">Call to load_general in &quot;load_data.py&quot;</tspan><tspan
+           sodipodi:role="line"
+           style="text-align:start;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.6;stroke-dasharray:none"
+           x="10.272994"
+           y="77.163368"
+           id="tspan7">            with 2 main attributes:</tspan><tspan
+           sodipodi:role="line"
+           style="text-align:start;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.6;stroke-dasharray:none"
+           x="10.272994"
+           y="83.336998"
+           id="tspan8">- creator: used to specify the </tspan><tspan
+           sodipodi:role="line"
+           style="text-align:start;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.6;stroke-dasharray:none"
+           x="10.272994"
+           y="89.51062"
+           id="tspan10">way the data was created (paramount</tspan><tspan
+           sodipodi:role="line"
+           style="text-align:start;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.6;stroke-dasharray:none"
+           x="10.272994"
+           y="95.68425"
+           id="tspan11">when different spectrometers use</tspan><tspan
+           sodipodi:role="line"
+           style="text-align:start;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.6;stroke-dasharray:none"
+           x="10.272994"
+           y="101.85787"
+           id="tspan12">same output file extension)</tspan><tspan
+           sodipodi:role="line"
+           style="text-align:start;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.6;stroke-dasharray:none"
+           x="10.272994"
+           y="108.03149"
+           id="tspan13">- parameters: dictionnary of</tspan><tspan
+           sodipodi:role="line"
+           style="text-align:start;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.6;stroke-dasharray:none"
+           x="10.272994"
+           y="114.20512"
+           id="tspan14">parameters needed to extract a </tspan><tspan
+           sodipodi:role="line"
+           style="text-align:start;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.6;stroke-dasharray:none"
+           x="10.272994"
+           y="120.37875"
+           id="tspan15">dataset from the data</tspan></text>
+    </g>
+    <rect
+       style="fill:#70ffa9;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none"
+       id="rect1-6-4"
+       width="86.830627"
+       height="15.80168"
+       x="8.2571402"
+       y="136.58693"
+       ry="7.9008398" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.9389px;font-family:Arial;-inkscape-font-specification:Arial;text-align:center;letter-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none"
+       x="51.633865"
+       y="143.1337"
+       id="text3-7"><tspan
+         sodipodi:role="line"
+         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:'Arial Italic';stroke-width:0.6;stroke-dasharray:none"
+         x="51.633865"
+         y="143.1337"
+         id="tspan4-8">Logic to store the dataset and </tspan><tspan
+         sodipodi:role="line"
+         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:'Arial Italic';stroke-width:0.6;stroke-dasharray:none"
+         x="51.633865"
+         y="149.31932"
+         id="tspan32">its attributes at the right location</tspan></text>
+    <path
+       style="fill:#57cdff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Triangle-6)"
+       d="m 148.60809,95.62535 v 5.73621"
+       id="path4-9"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:#57cdff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Triangle-6-4)"
+       d="m 159.12621,137.90453 v 5.73621"
+       id="path4-9-2"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Triangle-6-47)"
+       d="m 115.81942,160.54712 h -8.86305 v -16.05935 h -7.717723"
+       id="path4-9-7"
+       sodipodi:nodetypes="cccc" />
+  </g>
+</svg>

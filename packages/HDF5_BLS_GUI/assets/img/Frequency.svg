@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="81mm"
+   height="81mm"
+   viewBox="0 0 81 81"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25)"
+   sodipodi:docname="Frequency.svg"
+   inkscape:export-filename="../Frequency.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="0.57059546"
+     inkscape:cx="63.091985"
+     inkscape:cy="297.93437"
+     inkscape:window-width="1512"
+     inkscape:window-height="831"
+     inkscape:window-x="0"
+     inkscape:window-y="38"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1">
+    <linearGradient
+       id="linearGradient6"
+       inkscape:collect="always">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop6" />
+      <stop
+         style="stop-color:#000000;stop-opacity:0;"
+         offset="1"
+         id="stop7" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient1"
+       inkscape:collect="always">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop1" />
+      <stop
+         style="stop-color:#0005ff;stop-opacity:1;"
+         offset="1"
+         id="stop2" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient1"
+       id="linearGradient2"
+       x1="27.263305"
+       y1="56.560922"
+       x2="98.679909"
+       y2="56.560922"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.91351724,0,0,0.91351724,5.8175665,5.9498091)" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient6"
+       id="radialGradient7"
+       cx="132.14856"
+       cy="112.67117"
+       fx="132.14856"
+       fy="112.67117"
+       r="40.503067"
+       gradientTransform="matrix(1,0,0,0.9998885,-28.676958,-15.597684)"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-22.471605,-16.060925)">
+    <path
+       style="opacity:0.5;fill:none;stroke:url(#radialGradient7);stroke-width:0.750396"
+       d="M 22.669295,26.370949 C 26.980384,23.581484 38.635762,13.233528 36.162009,17.426789 33.688261,21.620046 23.378947,33.877986 27.229497,31.562494 31.080146,29.246897 43.211543,18.409039 41.189913,22.13699 39.168205,25.865023 28.432817,38.560878 31.822735,36.719449 35.212745,34.877926 47.736688,23.636071 46.183829,26.882171 44.630682,30.127977 33.536619,43.192963 36.450814,41.841136 39.365109,40.489202 52.213379,28.913563 51.142423,31.663114 50.071485,34.412647 38.687959,47.775542 41.11422,46.925877 43.540765,46.076509 56.643219,34.239268 56.065307,36.481396 55.487464,38.723454 43.885321,52.311343 45.814094,51.973671 47.742959,51.63591 61.028086,39.610671 60.951324,41.337035 60.874904,43.063632 49.126212,56.802346 50.551008,56.98335 51.975804,57.16436 65.370995,45.02585 65.800437,46.231244 66.22988,47.436631 54.407775,61.250899 55.324965,61.954314 56.24206,62.657836 69.67429,50.481792 70.612119,51.163972 71.549932,51.846166 59.72781,65.660446 60.13663,66.887061 c 0.408825,1.226615 13.804012,-10.911895 15.249412,-10.752093 1.44538,0.159833 -10.303349,13.898575 -10.400321,15.646324 -0.09725,1.747452 13.188051,-10.277973 15.137251,-10.636664 1.94915,-0.358635 -9.65313,13.229397 -10.251211,15.492278 -0.59818,2.262989 12.504491,-9.574476 14.951081,-10.444478 2.44636,-0.870343 -8.9374,12.492795 -10.0282,15.262766 -1.09079,2.769965 11.75765,-8.805852 14.69161,-10.178022 2.93383,-1.372031 -8.16048,11.693214 -9.73301,14.958957 -1.57225,3.26605 10.95199,-7.976092 14.36109,-9.837264 3.40898,-1.861046 -7.32676,10.835164 -9.36718,14.582454 -2.04032,3.74719 10.09144,-7.091046 13.96042,-9.425501 3.868978,-2.334462 -6.44072,9.923871 -8.93252,14.135701 -2.49179,4.21182 9.18163,-6.15469 13.492728,-8.94416"
+       title="t sin(3*t)"
+       id="path6" />
+    <text
+       xml:space="preserve"
+       style="font-size:96.6801px;font-family:Arial;-inkscape-font-specification:Arial;text-align:center;letter-spacing:0px;text-anchor:middle;opacity:0.2;fill:#000000;fill-opacity:1;stroke:none;stroke-width:7.25106;stroke-linecap:round;stroke-linejoin:round"
+       x="47.373341"
+       y="97.060928"
+       id="text1-5"><tspan
+         sodipodi:role="line"
+         id="tspan1-4"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:96.6801px;font-family:Georgia;-inkscape-font-specification:Georgia;fill:#000000;fill-opacity:1;stroke:none;stroke-width:7.25106"
+         x="47.373341"
+         y="97.060928">F</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:96.6801px;font-family:Arial;-inkscape-font-specification:Arial;text-align:center;letter-spacing:0px;text-anchor:middle;opacity:1;fill:url(#linearGradient2);stroke:none;stroke-width:7.25106;stroke-linecap:round;stroke-linejoin:round"
+       x="60.015099"
+       y="91.112679"
+       id="text1"><tspan
+         sodipodi:role="line"
+         id="tspan1"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:96.6801px;font-family:Georgia;-inkscape-font-specification:Georgia;fill:url(#linearGradient2);fill-opacity:1;stroke:none;stroke-width:7.25106"
+         x="60.015099"
+         y="91.112679">F</tspan></text>
+  </g>
+</svg>

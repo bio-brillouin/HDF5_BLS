@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="200.19864mm"
+   height="79.279068mm"
+   viewBox="0 0 200.19864 79.279068"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25)"
+   sodipodi:docname="Organization_HDF5_BLS_analyse.svg"
+   inkscape:export-filename="Organization_HDF5_BLS_analyse.png"
+   inkscape:export-xdpi="200"
+   inkscape:export-ydpi="200"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="0.85869658"
+     inkscape:cx="294.05032"
+     inkscape:cy="153.72135"
+     inkscape:window-width="1512"
+     inkscape:window-height="945"
+     inkscape:window-x="0"
+     inkscape:window-y="37"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="g2-7" />
+  <defs
+     id="defs1">
+    <marker
+       style="overflow:visible"
+       id="marker7"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.5)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path7" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="Triangle"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.5)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path135" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="marker7-0"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.5)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path7-4" />
+    </marker>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-3.1749984,-8.7857856)">
+    <text
+       xml:space="preserve"
+       style="font-size:4.9389px;font-family:Arial;-inkscape-font-specification:Arial;text-align:center;letter-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round"
+       x="49.243172"
+       y="35.838085"
+       id="text1"><tspan
+         sodipodi:role="line"
+         id="tspan1"
+         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:1"
+         x="49.243172"
+         y="35.838085" /></text>
+    <g
+       id="g2"
+       transform="translate(24.295918,-14.772951)">
+      <rect
+         style="fill:#52e0fb;fill-rule:evenodd;stroke:#000000;stroke-width:0.811852;stroke-linecap:round;stroke-linejoin:round"
+         id="rect1"
+         width="92.108734"
+         height="17.454664"
+         x="34.649715"
+         y="23.964663"
+         ry="7.1978002" />
+      <text
+         xml:space="preserve"
+         style="font-size:4.9389px;font-family:Arial;-inkscape-font-specification:Arial;text-align:center;letter-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round"
+         x="80.684792"
+         y="33.970127"
+         id="text2"><tspan
+           sodipodi:role="line"
+           id="tspan2"
+           style="stroke-width:1"
+           x="80.684792"
+           y="33.970127">HDF5_BLS_analyse.Analyse_backend</tspan></text>
+    </g>
+    <g
+       id="g2-7"
+       transform="translate(24.295918,13.079621)">
+      <rect
+         style="fill:#fbbc52;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.811852;stroke-linecap:round;stroke-linejoin:round"
+         id="rect1-8"
+         width="92.108734"
+         height="17.454664"
+         x="34.649715"
+         y="26.618366"
+         ry="7.1978002" />
+      <text
+         xml:space="preserve"
+         style="font-size:4.9389px;font-family:Arial;-inkscape-font-specification:Arial;text-align:center;letter-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round"
+         x="80.684792"
+         y="36.623833"
+         id="text2-8"><tspan
+           sodipodi:role="line"
+           id="tspan2-3"
+           style="stroke-width:1"
+           x="80.684792"
+           y="36.623833">HDF5_BLS_analyse.Analyse_general</tspan></text>
+      <g
+         id="g2-9"
+         transform="translate(-55.364709,33.15998)"
+         style="fill:#a3a3a3;fill-opacity:1">
+        <rect
+           style="fill:#a3a3a3;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.811852;stroke-linecap:round;stroke-linejoin:round"
+           id="rect1-1"
+           width="92.108734"
+           height="17.454664"
+           x="34.649715"
+           y="23.964663"
+           ry="7.1978002" />
+        <text
+           xml:space="preserve"
+           style="font-size:4.9389px;font-family:Arial;-inkscape-font-specification:Arial;text-align:center;letter-spacing:0px;text-anchor:middle;fill:#a3a3a3;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round"
+           x="80.684792"
+           y="33.970127"
+           id="text2-7"><tspan
+             sodipodi:role="line"
+             id="tspan2-5"
+             style="fill:#a3a3a3;fill-opacity:1;stroke-width:1"
+             x="80.684792"
+             y="33.970127">HDF5_BLS_analyse.Analyse_backend</tspan></text>
+      </g>
+      <text
+         xml:space="preserve"
+         style="font-size:4.9389px;font-family:Arial;-inkscape-font-specification:Arial;text-align:center;letter-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round"
+         x="25.138006"
+         y="67.130112"
+         id="text2-8-8"><tspan
+           sodipodi:role="line"
+           id="tspan2-3-8"
+           style="stroke-width:1"
+           x="25.138006"
+           y="67.130112">HDF5_BLS_analyse.Analyse_VIPA</tspan></text>
+      <g
+         id="g2-9-5"
+         transform="translate(51.913346,33.159974)"
+         style="fill:#a3a3a3;fill-opacity:1">
+        <rect
+           style="fill:#a3a3a3;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.811852;stroke-linecap:round;stroke-linejoin:round"
+           id="rect1-1-8"
+           width="92.108734"
+           height="17.454664"
+           x="34.649715"
+           y="23.964663"
+           ry="7.1978002" />
+        <text
+           xml:space="preserve"
+           style="font-size:4.9389px;font-family:Arial;-inkscape-font-specification:Arial;text-align:center;letter-spacing:0px;text-anchor:middle;fill:#a3a3a3;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round"
+           x="80.684792"
+           y="33.970127"
+           id="text2-7-2"><tspan
+             sodipodi:role="line"
+             id="tspan2-5-9"
+             style="fill:#a3a3a3;fill-opacity:1;stroke-width:1"
+             x="80.684792"
+             y="33.970127">HDF5_BLS_analyse.Analyse_backend</tspan></text>
+      </g>
+      <text
+         xml:space="preserve"
+         style="font-size:4.9389px;font-family:Arial;-inkscape-font-specification:Arial;text-align:center;letter-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round"
+         x="132.41606"
+         y="67.130104"
+         id="text2-8-8-8"><tspan
+           sodipodi:role="line"
+           id="tspan2-3-8-2"
+           style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:'Arial Italic';stroke-width:1"
+           x="132.41606"
+           y="67.130104">Other clases specific to spectrometers</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.9389px;font-family:Arial;-inkscape-font-specification:'Arial Italic';text-align:center;letter-spacing:0px;text-anchor:middle;fill:#a3a3a3;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round"
+         x="97.220261"
+         y="21.861448"
+         id="text3"><tspan
+           sodipodi:role="line"
+           id="tspan3"
+           style="fill:#000000;fill-opacity:1;stroke-width:1"
+           x="97.220261"
+           y="21.861448">inherits from</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.9389px;font-family:Arial;-inkscape-font-specification:'Arial Italic';text-align:center;letter-spacing:0px;text-anchor:middle;fill:#a3a3a3;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round"
+         x="8.7773752"
+         y="52.367722"
+         id="text3-4"><tspan
+           sodipodi:role="line"
+           id="tspan3-0"
+           style="fill:#000000;fill-opacity:1;stroke-width:1"
+           x="8.7773752"
+           y="52.367722">inherits from</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.9389px;font-family:Arial;-inkscape-font-specification:'Arial Italic';text-align:center;letter-spacing:0px;text-anchor:middle;fill:#a3a3a3;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round"
+         x="152.59456"
+         y="52.367722"
+         id="text3-7"><tspan
+           sodipodi:role="line"
+           id="tspan3-5"
+           style="fill:#000000;fill-opacity:1;stroke-width:1"
+           x="152.59456"
+           y="52.367722">inherits from</tspan></text>
+      <path
+         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;marker-end:url(#Triangle)"
+         d="M 80.704082,13.566754 V 26.618367"
+         id="path3" />
+      <g
+         id="g7">
+        <path
+           style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+           d="m 80.704082,44.073027 0.0048,6.525805"
+           id="path4" />
+        <path
+           style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+           d="M 25.339375,50.598832 H 80.708882"
+           id="path5"
+           sodipodi:nodetypes="cc" />
+        <path
+           style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;marker-end:url(#marker7)"
+           d="m 25.339375,50.598832 v 6.52581"
+           id="path6" />
+      </g>
+      <g
+         id="g7-5"
+         transform="matrix(-1,0,0,1,161.41776,0)">
+        <path
+           style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+           d="m 80.704082,44.073027 0.0048,6.525805"
+           id="path4-5" />
+        <path
+           style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+           d="M 25.339375,50.598832 H 80.708882"
+           id="path5-5"
+           sodipodi:nodetypes="cc" />
+        <path
+           style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;marker-end:url(#marker7-0)"
+           d="m 25.339375,50.598832 v 6.52581"
+           id="path6-4" />
+      </g>
+    </g>
+  </g>
+</svg>

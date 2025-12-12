@@ -1,0 +1,30 @@
+/* _static/custom.css */
+
+/*
+The role :graylight: becomes a span with the class .graylight
+You use 'background-color' to set the background.
+*/
+
+.graylight {
+    /* A subtle, light gray color */
+    background-color: #f0f0f0;
+    /* Optional: Add a little padding for better visual appearance */
+    padding: 2px 4px;
+    /* Optional: Make the background extend to the whole block if possible (less common for inline roles) */
+    display: block; 
+}
+
+/* Define the other styles for completeness: */
+.graysuperlight {
+    background-color: #f8f8f8;
+    padding: 2px 4px;
+    display: block;
+}
+
+.grayheavy {
+    /* A darker gray for the main headings */
+    background-color: #cccccc;
+    font-weight: bold;
+    padding: 4px 6px;
+    display: block;
+}

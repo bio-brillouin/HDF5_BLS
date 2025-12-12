@@ -1,0 +1,107 @@
+/* General body styling */
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+    color: #333;
+}
+
+/* Landing page styling */
+.landing-page {
+    text-align: center;
+    padding: 50px 20px;
+}
+
+.drag-drop-area {
+    border: 2px dashed #ccc;
+    border-radius: 10px;
+    padding: 50px;
+    margin-top: 30px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.drag-drop-area:hover {
+    background-color: #e9e9ee;
+}
+
+/* Main application layout */
+.main-app {
+    display: flex;
+    height: 100vh;
+}
+
+.left-pane {
+    width: 300px;
+    background-color: #fff;
+    border-right: 1px solid #ddd;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.right-pane {
+    flex-grow: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Treeview styling for the file structure */
+.file-tree {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.file-tree .group-item {
+    cursor: pointer;
+    padding: 5px 0;
+    font-weight: bold;
+}
+
+.file-tree .dataset-item {
+    cursor: pointer;
+    padding: 5px 0 5px 20px; /* Indent datasets */
+}
+
+/* Selected item styling */
+.file-tree li.selected {
+    background-color: #e0e0e0;
+}
+
+/* Tab navigation styling */
+.tabs {
+    display: flex;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 20px;
+}
+
+.tab-button {
+    background: none;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.tab-button.active {
+    background-color: #e9e9ee;
+    border-bottom: 2px solid #007bff;
+}
+
+/* Tab content styling */
+.tab-pane {
+    display: none;
+}
+
+.tab-pane.active {
+    display: block;
+}
+
+#properties-content {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 5px;
+}

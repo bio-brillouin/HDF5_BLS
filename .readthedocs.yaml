@@ -1,0 +1,31 @@
+version: 2
+
+# Set the OS, Python version and other tools you might need
+build:
+  os: ubuntu-22.04
+  tools:
+    python: "3.12"
+
+# Build documentation in the "docs/" directory with Sphinx
+sphinx:
+  configuration: docs/conf.py
+
+# Optionally build your docs in additional formats such as PDF and ePub
+formats:
+  - pdf
+  - epub
+
+# Here we build the environment for the documentation by installing the three packages in editable mode
+python:
+  install:
+    - method: pip
+      path: packages/HDF5_BLS
+      editable: true
+
+    - method: pip
+      path: packages/HDF5_BLS_anlayse
+      editable: true
+
+    - method: pip
+      path: packages/HDF5_BLS_treat
+      editable: true

@@ -1,0 +1,5 @@
+configparser
+pyperclip
+PySide6
+HDF5_BLS
+json

@@ -1,0 +1,44 @@
+﻿v 0.1,,Units,Norm or precisions on parameter,Example
+,,,,
+MEASURE,,,,
+MEASURE.Sample,Water,None,,Water
+MEASURE.Date_of_measure,2024-11-18T14:17:55.294821,None,ISO 8601,2024-11-18T14:17:55.294821
+MEASURE.Exposure_s,0.1,s,,0.1
+MEASURE.Dimensionnality_of_measure,0,None,,2
+MEASURE.Abscissa_Names,,None,,Position x Position y Position z Time
+MEASURE.Sampling_Matrix_Size_(Nx Ny Nz),(1 1 1),None,,(100 100 1)
+MEASURE.Sampling_Step_Size_microm(dx dy dz),(0 0 0),µm,,(10 10 0)
+MEASURE.Field_Of_View_microm(X Y Z),(0 0 0),µm,,(1000 1000 0)
+,0,,,
+SPECTROMETER,,,,
+SPECTROMETER.Type,Tandem Fabry-Perot,None,,Tandem Fabry-Perot
+SPECTROMETER.Model,JRS-TFP2,None,Manufacturer-Model,JRS-TFP2
+SPECTROMETER.Wavelength_nm,532,nm,,532
+SPECTROMETER.Confocal_Pinhole_Diameter_AU,1,AU,,1
+SPECTROMETER.Detection_Lens_NA,0.45,None,,0.45
+SPECTROMETER.Detector_Model,Hamamatsu-Orca C11440,None,Manufacturer-Model,Hamamatsu-Orca C11440
+SPECTROMETER.Detector_Type,CMOS,None,,CMOS
+SPECTROMETER.Filtering_Type,Gas cell,None,,Gas cell
+SPECTROMETER.Filtering_Module,Thorlabs-GC19100-I,None,Manufacturer-Model,Thorlabs-GC19100-I
+SPECTROMETER.Illumination_Lens_NA,0.2,None,Taking into account beam size before lens or objective,0.2
+SPECTROMETER.Illumination_Power_mW,15,mW,Measured at the sample,15
+SPECTROMETER.Illumination_Type,CW Laser,None,,CW Laser
+SPECTROMETER.Laser_Model,Cobolt-Samba,None,Manufacturer-Model,Cobolt-Samba
+SPECTROMETER.Laser_Drift_MHz_per_h,<100,MHz/h,Measured independently of spectrometer drifts,700
+SPECTROMETER.Phonons_Measured,Longitudinal & Transverse,None,Longitudinal  Transverse or both,Longitudinal & Transverse
+SPECTROMETER.Polarization_probed-analyzed,Vertical-Horizontal,None,Probed-Analyzed,Vertical-Horizontal
+SPECTROMETER.Scan_Amplitude_GHz,20,GHz,Only for scanning spectrometers,20
+SPECTROMETER.Scanning_Strategy,Raster scan,None,,Raster scan
+SPECTROMETER.Scattering_Angle_deg,180,degrees,The angle between the illumination and the detection,180
+SPECTROMETER.Spectral_Resolution_MHz,150,MHz,Largest easured value,150
+SPECTROMETER.x-Mechanical_Resolution_microm,0.5,µm,Estimated (phonon lifetime),0.5
+SPECTROMETER.x-Optical_Resolution_microm,5,µm,Measured,5
+SPECTROMETER.y-Mechanical_Resolution_microm,0.5,µm,Estimated (phonon lifetime),0.5
+SPECTROMETER.y-Optical_Resolution_microm,5,µm,Measured,5
+SPECTROMETER.z-Mechanical_Resolution_microm,0.5,µm,Estimated (phonon lifetime),0.5
+SPECTROMETER.z-Optical_Resolution_microm,50,µm,Measured,50
+,,,,
+FILEPROP,,,,
+FILEPROP.BLS_HDF5_Version,0.1,None,Version of the spreadsheet - Don't change,0.1
+FILEPROP.Filepath,,None,Global name of the h5 file,\Users\library\documents\BLS.h5
+FILEPROP.Name,,None,,Water spectrum
