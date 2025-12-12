@@ -18,6 +18,7 @@ formats:
 # Here we build the environment for the documentation by installing the three packages in editable mode
 python:
   install:
+    - requirements: docs/requirements.txt
     - method: pip
       path: packages/HDF5_BLS
       editable: true
