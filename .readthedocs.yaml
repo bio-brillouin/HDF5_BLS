@@ -24,12 +24,9 @@ python:
   install:
     - method: pip
       path: packages/HDF5_BLS
-      editable: true
 
     - method: pip
       path: packages/HDF5_BLS_analyse
-      editable: true
 
     - method: pip
       path: packages/HDF5_BLS_treat
-      editable: true
