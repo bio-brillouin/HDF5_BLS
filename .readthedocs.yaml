@@ -10,6 +10,8 @@ build:
 conda:
   environment: environment.yml
 
+python: {}
+
 # Build documentation in the "docs/" directory with Sphinx
 sphinx:
   configuration: docs/conf.py
