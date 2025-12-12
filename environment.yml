@@ -1,22 +1,25 @@
+# environment.yml (Revised structure)
 name: docs-env
 channels:
   - conda-forge
   - defaults
 dependencies:
-  # Scientific packages (Conda is much better at installing these)
+  # Scientific packages (installed by Conda)
   - python=3.12
   - numpy>=2.0
   - scipy>=1.10
   - h5py>=3.12
   - pandas>=2.0.3
   - matplotlib>=3.7.1
-  # Documentation tools
+  - setuptools
+  # Documentation tools (installed by Conda)
   - pip
   - sphinx
   - sphinx-rtd-theme
-  # Dependencies needed for local package installation
-  - setuptools
-  - wheel
-  # Use pip to install the rest of your documentation requirements
+  # Local packages (installed via Conda's pip)
   - pip:
-    - -r docs/requirements.txt # Includes things like openpyxl, pyperclip, brimfile, etc.
+    - -e packages/HDF5_BLS
+    - -e packages/HDF5_BLS_analyse
+    - -e packages/HDF5_BLS_treat
+    # You might also put your docs/requirements.txt here if it contains minor dependencies
+    # - -r docs/requirements.txt

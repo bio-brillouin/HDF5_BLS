@@ -6,13 +6,6 @@ build:
   tools:
     python: "3.12"
 
-  jobs:
-    post_install:
-      # Use the commands directly in the shell after the environment is set up
-      - pip install -e packages/HDF5_BLS
-      - pip install -e packages/HDF5_BLS_analyse
-      - pip install -e packages/HDF5_BLS_treat
-
 # Tell RTD to use the environment.yml file to set up the environment
 conda:
   environment: environment.yml
