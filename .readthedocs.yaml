@@ -6,30 +6,23 @@ build:
   tools:
     python: "3.12"
 
-  # *** CRITICAL FIX: Install System-Level Libraries ***
-  # This section ensures the underlying C libraries for h5py and others are present.
-  packages:
-    - libhdf5-dev  # Development headers for HDF5 (crucial for h5py)
-    - liblapack-dev # Linear Algebra libraries (helpful for NumPy/SciPy builds)
-    - libblas-dev # Basic Linear Algebra Subprograms (also helps NumPy/SciPy)
-
 python:
   install:
     # 1. Install all dependencies, including Sphinx and h5py/numpy, from requirements.txt
     - requirements: docs/requirements.txt
     
-    # 2. Install the local packages in editable mode
-    - method: pip
-      path: packages/HDF5_BLS
-      editable: true
+    # # 2. Install the local packages in editable mode
+    # - method: pip
+    #   path: packages/HDF5_BLS
+    #   editable: true
 
-    - method: pip
-      path: packages/HDF5_BLS_analyse
-      editable: true
+    # - method: pip
+    #   path: packages/HDF5_BLS_analyse
+    #   editable: true
 
-    - method: pip
-      path: packages/HDF5_BLS_treat
-      editable: true
+    # - method: pip
+    #   path: packages/HDF5_BLS_treat
+    #   editable: true
 
 # Build documentation in the "docs/" directory with Sphinx
 sphinx:
