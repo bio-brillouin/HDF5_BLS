@@ -13,14 +13,14 @@ python:
     
     # # 2. Install the local packages in editable mode
     - method: pip
-      path: packages/HDF5_BLS
+      path: packages/pack_HDF5_BLS
 
 
     - method: pip
-      path: packages/HDF5_BLS_analyse
+      path: packages/pack_HDF5_BLSHDF5_BLS_analyse
 
     - method: pip
-      path: packages/HDF5_BLS_treat
+      path: packages/pack_HDF5_BLS_treat
 
 # Build documentation in the "docs/" directory with Sphinx
 sphinx:
