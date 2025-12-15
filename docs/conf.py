@@ -50,6 +50,10 @@ autodoc_default_options = {
     'show-inheritance': True,
 }
 
+autodoc_mock_imports = [
+    'HDF5_BLS.load_formats',
+]
+
 numfig = True
 templates_path = ['_templates']
 master_doc = 'index'
