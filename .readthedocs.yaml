@@ -17,7 +17,7 @@ python:
 
 
     - method: pip
-      path: packages/pack_HDF5_BLSHDF5_BLS_analyse
+      path: packages/pack_HDF5_BLS_analyse
 
     - method: pip
       path: packages/pack_HDF5_BLS_treat
