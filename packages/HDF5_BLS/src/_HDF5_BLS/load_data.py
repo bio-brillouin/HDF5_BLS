@@ -1,6 +1,8 @@
 import os
 import sys 
 
+print("Loading HDF5_BLS load_data module")
+
 from .load_formats.errors import LoadError_creator, LoadError_parameters
 
 ###############################################################################
