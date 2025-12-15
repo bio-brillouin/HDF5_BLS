@@ -1,7 +1,7 @@
 import os
 import sys 
 
-from HDF5_BLS.load_formats.errors import LoadError_creator, LoadError_parameters
+from .load_formats.errors import LoadError_creator, LoadError_parameters
 
 ###############################################################################
 # GENERAL GUIDELINES
