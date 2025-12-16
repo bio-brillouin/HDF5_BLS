@@ -10,13 +10,14 @@ pandas>=2.0.3
 brimfile
 matplotlib>=3.7.1
 
-# dependencies of HDF5_BLS_analyse
+# dependencies of HDF5_BLS_analyse and HDF5_BLS_treat
 numpy>=2.0
 scipy>=1.10
 
-# dependencies of HDF5_BLS_treat
-numpy>=2.0
-scipy>=1.10
+# The HDF5_BLS packages
+HDF5_BLS
+HDF5_BLS_analyse
+HDF5_BLS_treat
 
 # documentation
 sphinx
