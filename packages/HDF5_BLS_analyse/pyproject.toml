@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "HDF5_BLS_analyse"
 # Use alpha release (1.0.2a0) for testing purposes, then beta release (1.0.2b0) for stable pre-release, release candidate (1.0.2rc0) for release candidate, and final release (1.0.2) for stable release
 # Use major.minor.patch format for releases, with the patch version incremented for each release
-version = "1.0.1"
+version = "1.1.1"
 description = "A package to extract a power spectrum from raw data of arbitrary Brillouin spectrometers."
 readme = { file = "README.md", content-type = "text/markdown" }
 license = "GPL-3.0-or-later"

@@ -2,7 +2,6 @@ import os
 from PIL import Image
 import numpy as np
 
-
 def load_image_base(filepath, parameters = None, brillouin_type = "Raw_data"):
     """Loads image files with the Pillow library. Note that by default the Brillouin type is "Raw data". Please specify the Brillouin type in the parameters if you want to change it.
 

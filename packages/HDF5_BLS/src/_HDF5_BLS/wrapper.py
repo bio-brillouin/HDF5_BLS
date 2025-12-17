@@ -9,10 +9,11 @@ import shutil
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from HDF5_BLS.load_data import load_general
 from .brimfile_converter.brim_converter import BrimConverter
-from HDF5_BLS.wrapper_compatibility import brillouin_type_update
-from HDF5_BLS.errors import WrapperError, WrapperError_FileNotFound, WrapperError_StructureError, WrapperError_Overwrite, WrapperError_ArgumentType, WrapperError_Save
+
+from .load_data import load_general
+from .wrapper_compatibility import brillouin_type_update
+from .errors import WrapperError, WrapperError_FileNotFound, WrapperError_StructureError, WrapperError_Overwrite, WrapperError_ArgumentType, WrapperError_Save
 
 HDF5_BLS_Version = "1.0"
 HDF5_group = h5py._hl.group.Group

@@ -1,8 +1,6 @@
 import os
 import sys 
 
-from .load_formats.errors import LoadError_creator, LoadError_parameters
-
 ###############################################################################
 # GENERAL GUIDELINES
     # This file is meant to dispatch the loading of the data to the sub-module load_formats. 
@@ -41,6 +39,7 @@ def load_dat_file(filepath, creator = None, parameters = None, brillouin_type = 
         The dictionary with the data and the attributes of the file stored respectively in the keys "Data" and "Attributes". For time domain files, the dictionary also contains the time vector in the key "Abscissa_dt".
     """
     from .load_formats.load_dat import load_dat_GHOST, load_dat_TimeDomain
+    from .load_formats.load_errors import LoadError_creator
 
     if creator == "GHOST": return load_dat_GHOST(filepath)
     elif creator == "TimeDomain": return load_dat_TimeDomain(filepath, parameters)
@@ -72,6 +71,7 @@ def load_image_file(filepath, parameters = None, brillouin_type = None): # Test 
         If True, the image is converted to grayscale, by default False
     """
     from .load_formats.load_image import load_image_base
+
     if brillouin_type is None:
         return load_image_base(filepath, parameters = parameters)
     else:
@@ -93,6 +93,7 @@ def load_npy_file(filepath, brillouin_type = None): # Test made
         The dictionary with the data and the attributes of the file stored respectively in the keys "Data" and "Attributes"
     """
     from .load_formats.load_npy import load_npy_base
+
     if brillouin_type is None:
         return load_npy_base(filepath)
     else:
@@ -114,6 +115,7 @@ def load_sif_file(filepath, parameters = None, brillouin_type = None):
         The dictionary with the data and the attributes of the file stored respectively in the keys "Data" and "Attributes"
     """
     from .load_formats.load_sif import load_sif_base
+
     return load_sif_base(filepath, parameters = parameters)
 
 def load_general(filepath, creator = None, parameters = None, brillouin_type = None): # Test made 

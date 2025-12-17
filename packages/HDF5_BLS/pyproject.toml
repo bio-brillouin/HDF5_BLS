@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "HDF5_BLS"
 # Use alpha release (1.0.2a0) for testing purposes, then beta release (1.0.2b0) for stable pre-release, release candidate (1.0.2rc0) for release candidate, and final release (1.0.2) for stable release
 # Use major.minor.patch format for releases, with the patch version incremented for each release
-version = "1.0.3"
+version = "1.1.0"
 description = "A package to unify the storage of Brillouin Light Scattering related data in HDF5 files"
 readme = { file = "README.md", content-type = "text/markdown" }
 license = "GPL-3.0-or-later"
@@ -35,6 +35,7 @@ dependencies = [
 [project.urls]
 "Homepage" = "https://github.com/bio-brillouin/HDF5_BLS"
 "Documentation" = "https://hdf5-bls.readthedocs.io/en/latest/"
+"Issues" = "https://github.com/bio-brillouin/HDF5_BLS/issues"
 
 [project.optional-dependencies]
 dev = [
@@ -49,9 +50,12 @@ docs = [
 
 [tool.setuptools]
 include-package-data = true
-packages = ["HDF5_BLS"]
+packages = ["HDF5_BLS", "HDF5_BLS.load_formats", "HDF5_BLS.brimfile_converter"]
 
 # This maps the package name "HDF5_BLS" to the "src" directory relative to this pyproject.toml. This is CRUCIAL for the 'src' layout.
 [tool.setuptools.package-dir]
 "HDF5_BLS" = "src/_HDF5_BLS"
+"HDF5_BLS.load_formats" = "src/_HDF5_BLS/load_formats"
+"HDF5_BLS.brimfile_converter" = "src/_HDF5_BLS/brimfile_converter"
+
 

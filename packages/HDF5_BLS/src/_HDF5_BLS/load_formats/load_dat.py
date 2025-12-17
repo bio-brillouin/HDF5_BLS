@@ -5,7 +5,7 @@ from numpy.polynomial import Chebyshev
 import re
 import logging
 
-from .errors import LoadError_parameters
+from .load_errors import LoadError_parameters
 
 class PipelineLogger(logging.Handler):
     def __init__(self):

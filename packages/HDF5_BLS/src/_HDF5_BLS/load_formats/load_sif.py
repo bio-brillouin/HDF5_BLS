@@ -1,7 +1,8 @@
 import os
 import sif_parser
 from datetime import datetime
-from .errors import LoadError
+
+from .load_errors import LoadError
 
 def load_sif_base(filepath, parameters = None):
     """Loads npy files

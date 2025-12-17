@@ -267,8 +267,6 @@ class Analyse_VIPA(Analyse_general):
         
         a, b, c = result.x
 
-        print(a, a_min, a_max)
-
         # Create the new x axis corresponding to the frequency axis fitted
         self.x = a*self.x**2 + b*self.x + c
 
