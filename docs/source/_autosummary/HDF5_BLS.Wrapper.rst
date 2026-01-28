@@ -39,6 +39,7 @@
       ~Wrapper.export_image
       ~Wrapper.get_attributes
       ~Wrapper.get_children_elements
+      ~Wrapper.get_default_attributes
       ~Wrapper.get_special_groups_hierarchy
       ~Wrapper.get_structure
       ~Wrapper.get_type

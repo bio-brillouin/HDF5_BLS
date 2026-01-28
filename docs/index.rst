@@ -52,6 +52,15 @@ For any question, please contact the main developer of the project: `Pierre Bouv
    source/hdf5_bls_analyse_package
    source/hdf5_bls_treat_package
 
+.. raw:: latex
+
+   \part{GUI}
+
+.. toctree::
+   :maxdepth: 4
+   :caption: GUI
+
+   source/gui_attributes
 
 .. raw:: latex
 

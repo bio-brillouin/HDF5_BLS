@@ -26,3 +26,8 @@ Adding and merging HDF5 files
 
 .. include:: hdf5_bls_package/add_merge.rst
 
+Attributes
+----------
+
+.. include:: hdf5_bls_package/attributes.rst
+

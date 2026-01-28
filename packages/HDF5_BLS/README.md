@@ -19,14 +19,23 @@ You can access the documentation of the project at [this link](https://github.co
 ## Example of usage
 
 ```python
-from HDF5_BLS import Wrapper
+from HDF5_BLS import Wrapper, NormalizedAttributes
 
 # Create a HDF5 file
 wrp = Wrapper(filepath = "path/to/file.h5")
 
+# Use normalized attributes
+NormalizedAttributes.to_excel("my_attributes.xlsx") # Export standardized list
+attrs = NormalizedAttributes.get_attributes_by_group("MEASURE")
+
+# Add a normalized attribute to the file
+wrp.add_attributes({"MEASURE.Sample": "Water"}, parent_group="Brillouin/Measure")
+```
+
 ###############################################################################
 # Existing code to extract data from a file
 ###############################################################################
+# ...
 # Storing the data in the HDF5 file (for this example we use a random array)
 data = np.random.random((50, 50, 512))
 wrp.add_raw_data(data = data, parent_group = "Brillouin", name = "Raw data")
