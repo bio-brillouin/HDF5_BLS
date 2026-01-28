@@ -1,6 +1,6 @@
 from PySide6.QtCore import Slot, QItemSelection, QPoint, QSize, Qt, QTimer
 from PySide6.QtGui import QAction, QStandardItemModel, QStandardItem, QIcon, QDragEnterEvent, QDropEvent
-from PySide6.QtWidgets import QAbstractItemView, QDialog, QFileDialog, QGridLayout, QMainWindow, QMenu, QMessageBox, QPushButton, QSizePolicy, QSpacerItem, QTabWidget, QTableView, QTextBrowser, QTreeView, QWidget
+from PySide6.QtWidgets import QAbstractItemView, QDialog, QFileDialog, QGridLayout, QHBoxLayout, QMainWindow, QMenu, QMessageBox, QPushButton, QSizePolicy, QSpacerItem, QTabWidget, QTableView, QTextBrowser, QTreeView, QVBoxLayout, QWidget
 
 from configparser import ConfigParser
 import pyperclip
@@ -13,7 +13,7 @@ from HDF5_BLS.errors import WrapperError_Overwrite, WrapperError_Save, WrapperEr
 from HDF5_BLS_analyse.VIPA import Analyse_VIPA
 from HDF5_BLS_treat import Treat
 from HDF5_BLS.wrapper import HDF5_group, HDF5_dataset
-from HDF5_BLS.load_formats.errors import LoadError_creator, LoadError_parameters
+from HDF5_BLS.load_formats.load_errors import LoadError_creator, LoadError_parameters
 from HDF5_BLS.load_data import load_general
 
 from MessageBox_multiple_choice.main import MessageBoxMultipleChoice
@@ -80,6 +80,9 @@ class MainWindow(QMainWindow):
 
         # Update the structure and properties frames
         self.update_treeview()
+
+        # Create the menu bar
+        self._initialize_menubar()
 
         # Layout
         self._initialize_layout()
@@ -178,7 +181,7 @@ class MainWindow(QMainWindow):
         self.layout = QGridLayout()
         self.layout.addWidget(self.buttons_widget, 1, 1, 1, 3)
         self.layout.addWidget(self.treeview, 3, 1, 1, 1)
-        self.layout.addWidget(self.properties_tab_wdg, 3, 3, 1, 1)
+        self.layout.addWidget(self.properties_widget, 3, 3, 1, 1)
         self.layout.addWidget(self.log, 5, 1, 1, 3)
 
     def _initialize_log_frame(self):
@@ -232,6 +235,78 @@ class MainWindow(QMainWindow):
         self.properties_other_model = QStandardItemModel()
         self.properties_other_model.setHorizontalHeaderLabels(["Name", "Value", "Units"])
         self.properties_other_tableview.setModel(self.properties_other_model)
+
+        # Add buttons for adding and removing attributes
+        self.properties_buttons_layout = QHBoxLayout()
+        self.btn_add_attribute = QPushButton("Add Attribute")
+        self.btn_remove_attribute = QPushButton("Remove Attribute")
+        self.properties_buttons_layout.addWidget(self.btn_add_attribute)
+        self.properties_buttons_layout.addWidget(self.btn_remove_attribute)
+        
+        self.properties_layout = QVBoxLayout()
+        self.properties_layout.addWidget(self.properties_tab_wdg)
+        self.properties_layout.addLayout(self.properties_buttons_layout)
+        self.properties_widget = QWidget()
+        self.properties_widget.setLayout(self.properties_layout)
+        
+        # Connect buttons
+        self.btn_add_attribute.clicked.connect(self.add_attribute)
+        self.btn_remove_attribute.clicked.connect(self.remove_attribute)
+
+    def _initialize_menubar(self):
+        """Initializes the menu bar.
+        """
+        menubar = self.menuBar()
+
+        # File Menu
+        file_menu = menubar.addMenu("&File")
+
+        new_action = QAction(QIcon(f"{self.gui_root}/assets/img/new_db.svg"), "&New", self)
+        new_action.setShortcut("Ctrl+N")
+        new_action.triggered.connect(self.new_hdf5)
+        file_menu.addAction(new_action)
+
+        open_action = QAction(QIcon(f"{self.gui_root}/assets/img/open_db.svg"), "&Open", self)
+        open_action.setShortcut("Ctrl+O")
+        open_action.triggered.connect(self.open_hdf5)
+        file_menu.addAction(open_action)
+
+        save_action = QAction(QIcon(f"{self.gui_root}/assets/img/save.svg"), "&Save", self)
+        save_action.setShortcut("Ctrl+S")
+        save_action.triggered.connect(self.save_hdf5)
+        file_menu.addAction(save_action)
+
+        file_menu.addSeparator()
+
+        exit_action = QAction(QIcon(f"{self.gui_root}/assets/img/exit.svg"), "&Exit", self)
+        exit_action.setShortcut("Ctrl+Q")
+        exit_action.triggered.connect(self.close)
+        file_menu.addAction(exit_action)
+
+        # Edit Menu
+        edit_menu = menubar.addMenu("&Edit")
+        
+        add_attr_action = QAction("Add Attribute", self)
+        add_attr_action.triggered.connect(self.add_attribute)
+        edit_menu.addAction(add_attr_action)
+
+        remove_attr_action = QAction("Remove Attribute", self)
+        remove_attr_action.triggered.connect(self.remove_attribute)
+        edit_menu.addAction(remove_attr_action)
+
+        # Tools Menu
+        tools_menu = menubar.addMenu("&Tools")
+        
+        export_attrs_action = QAction("Export Normalized Attributes", self)
+        export_attrs_action.triggered.connect(self.export_normalized_attributes)
+        tools_menu.addAction(export_attrs_action)
+
+        # Help Menu
+        help_menu = menubar.addMenu("&Help")
+        
+        about_action = QAction(QIcon(f"{self.gui_root}/assets/img/help.svg"), "&About", self)
+        about_action.triggered.connect(lambda: QMessageBox.about(self, "About HDF5_BLS", "HDF5_BLS GUI\nVersion 1.0"))
+        help_menu.addAction(about_action)
 
     def _initialize_architecture_frame(self):
         """Initializes the architecture frame with the treeview.
@@ -489,7 +564,7 @@ class MainWindow(QMainWindow):
         filepath : str, optional
             The path to the HDF5 file. If None, a file dialog will open to select a file.
         """
-        if filepath is None:
+        if filepath is None or filepath == False:
             filepath = QFileDialog.getOpenFileName(self, "Open File", "", "HDF5 Files (*.h5)")[0]
             if filepath is None: return
             else: self.filepath = filepath
@@ -649,6 +724,40 @@ class MainWindow(QMainWindow):
             creator, parameters = check_creator_parameters(filepaths[0], creator, parameters)
             for filepath in filepaths:
                 add_single_file(filepath, parent_item)
+
+    def add_attribute(self):
+        """Add a new attribute to the selected element.
+        """
+        from .attribute_dialog import AddAttributeDialog
+        dialog = AddAttributeDialog(self)
+        if dialog.exec_():
+            full_name, value = dialog.get_data()
+            path = self.treeview.currentIndex().data(Qt.UserRole)
+            if path:
+                try:
+                    self.wrp.add_attributes(attributes={full_name: value}, parent_group=path)
+                    self.update_properties()
+                    self.log.append(f"Attribute <b>{full_name}</b> added to <i>{path}</i>")
+                except Exception as e:
+                    QMessageBox.warning(self, "Error", f"Could not add attribute: {e}")
+
+    def export_normalized_attributes(self):
+        """Export the normalized list of attributes to an Excel file.
+        """
+        from HDF5_BLS import NormalizedAttributes
+        
+        filepath, _ = QFileDialog.getSaveFileName(self, "Export Normalized Attributes", str(Path.home() / "normalized_attributes.xlsx"), "Excel Files (*.xlsx)")
+        if filepath:
+            try:
+                NormalizedAttributes.to_excel(filepath)
+                self.log.append(f"Normalized attributes exported to <i>{filepath}</i>")
+            except Exception as e:
+                QMessageBox.warning(self, "Error", f"Could not export normalized attributes: {e}")
+
+    def remove_attribute(self):
+        """Remove an attribute from the selected element.
+        """
+        print("remove_attribute called")
 
     def add_directory(self, filepaths, parent_item, update_treeview = True, extension = None, creator = None, parameters = None):
         """Add a directory to the HDF5 file.

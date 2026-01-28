@@ -9,11 +9,16 @@ import shutil
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from .brimfile_converter.brim_converter import BrimConverter
-
-from .load_data import load_general
-from .wrapper_compatibility import brillouin_type_update
-from .errors import WrapperError, WrapperError_FileNotFound, WrapperError_StructureError, WrapperError_Overwrite, WrapperError_ArgumentType, WrapperError_Save
+try:
+    from .load_data import load_general
+    from .wrapper_compatibility import brillouin_type_update
+    from .errors import WrapperError, WrapperError_FileNotFound, WrapperError_StructureError, WrapperError_Overwrite, WrapperError_ArgumentType, WrapperError_Save
+    from .normalized_attributes import NormalizedAttributes
+except ImportError:
+    from load_data import load_general
+    from wrapper_compatibility import brillouin_type_update
+    from errors import WrapperError, WrapperError_FileNotFound, WrapperError_StructureError, WrapperError_Overwrite, WrapperError_ArgumentType, WrapperError_Save
+    from normalized_attributes import NormalizedAttributes
 
 HDF5_BLS_Version = "1.0"
 HDF5_group = h5py._hl.group.Group
@@ -951,6 +956,7 @@ class Wrapper:
         path_to : str
             The filepath to the exported Brim file.
         """
+        from .brimfile_converter.brim_converter import BrimConverter
         converter = BrimConverter(self.filepath, path_to, mode="brimX2brim")
         converter.convert()
 
@@ -1184,6 +1190,12 @@ class Wrapper:
             return list(children)
         else:
             return [e for e in children if self.get_type(path=f"{path}/{e}", return_Brillouin_type=True) == Brillouin_type]
+
+    def get_default_attributes(self):
+        """
+        Returns the default attributes of the wrapper.
+        """
+        return NormalizedAttributes.get_all()
 
     def get_special_groups_hierarchy(self, path = None, brillouin_type = None): # Test made 18.09.25
         """
@@ -2129,3 +2141,6 @@ class Wrapper:
             print(k," : ", v)
     
 
+if __name__ == "__main__":
+    wrp = Wrapper()
+    print(wrp.get_default_attributes())    
