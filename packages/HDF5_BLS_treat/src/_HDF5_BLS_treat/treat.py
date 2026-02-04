@@ -3,10 +3,11 @@ from scipy import optimize
 import json
 import inspect
 
-from HDF5_BLS_treat import Treat_backend, Models, TreatmentError
+from HDF5_BLS_treat import Treat_backend, Models, TreatmentError, record_class_methods
 
 Treat_version = 0.1
 
+@record_class_methods
 class Treat(Treat_backend):
     """This class is a class inherited from the Treat_backend class used to define functions to treat the data. Each function is meant to perform the minimum of operation so as to give the user a total control over the treatment. 
     """

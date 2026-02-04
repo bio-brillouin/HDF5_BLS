@@ -1,71 +1,83 @@
 import numpy as np
 import json
 import inspect
+from functools import wraps
 
+def record_algorithm(func):
+    """Decorator to record the function call in the algorithm and history.
+    """
+    @wraps(func)
+    def wrapper(self, *args, **kwargs):
+        # Extract the description of the function from the docstring
+        docstring = inspect.getdoc(func)
+        description = docstring.split('\n\n')[0] if docstring else ""
+
+        # Get the default parameter values from the function signature
+        signature = inspect.signature(func)
+        
+        # Handle positional arguments if they are passed as such
+        # This is a bit tricky if we want to store them by name in the JSON
+        params = signature.bind(self, *args, **kwargs)
+        params.apply_defaults()
+        recorded_params = params.arguments.copy()
+        if 'self' in recorded_params:
+            del recorded_params['self']
+
+        # If the attribute _record_algorithm is True, add the function to the algorithm
+        if self._record_algorithm:
+            name = func.__name__
+            # If the same function has already been run in the algorithm, change the description to "See previous run"
+            if name in [f["function"] for f in self._algorithm["functions"]]:
+                description = "See previous run"
+
+            self._algorithm["functions"].append({
+                "function": name,
+                "parameters": recorded_params,
+                "description": description
+            })
+
+        # Store the attributes of the class in memory to compare them to the ones after the function is run
+        treat_selection = getattr(self, "_treat_selection", None)
+        if treat_selection == "sampled":
+            temp_PSD_sample = self.PSD_sample.copy()
+            temp_frequency_sample = self.frequency_sample.copy()
+            temp_points = self.points.copy()
+            temp_windows = self.windows.copy()
+
+        # Run the function
+        result = func(self, *args, **kwargs)
+
+        # If the attribute _save_history is True, compare the attributes of the class with the ones stored in memory and update the history if needed
+        if treat_selection == "sampled":
+            self._history.append({"function": func.__name__})
+            if not np.all(self.PSD_sample == temp_PSD_sample):
+                self._history[-1]["PSD_sample"] = self.PSD_sample.copy().tolist()
+            if not np.all(self.frequency_sample == temp_frequency_sample):
+                self._history[-1]["frequency_sample"] = self.frequency_sample.copy().tolist()
+            if self.points != temp_points:
+                self._history[-1]["points"] = self.points.copy()
+            if self.windows != temp_windows:
+                self._history[-1]["windows"] = self.windows.copy()
+        
+        return result
+    return wrapper
+
+def record_class_methods(cls):
+    """Class decorator to apply record_algorithm to all public methods.
+    """
+    for name, method in inspect.getmembers(cls, predicate=inspect.isfunction):
+        if not name.startswith('_') and not name.startswith('silent_') and name != '__init__':
+            setattr(cls, name, record_algorithm(method))
+    return cls
+
+@record_class_methods
 class Treat_backend:
     """This class is the base class for all the treat classes. Its purpose is to provide the basic silent functions to open, create and save algorithms, and to store the different steps of the treatment and their effects on the data.
-
-    Notes
-    -----
-    
-    The philosophy of this class is to rely on 2 fixed attributes:
-
-    - frequency: the array of frequency axis corresponding to the PSD
-    - PSD: the array of power spectral density to be treated
-    And to update the following attributes:
-    - shift: the shift array obtained after the treatment
-    - shift_var: the array of standard deviation of the shift array obtained after the treatment
-    - linewidth: the linewidth array obtained after the treatment
-    - linewidth_var: the array of standard deviation of the linewidth array obtained after the treatment
-    - amplitude: the amplitude array obtained after the treatment
-    - amplitude_var: the array of standard deviation of the amplitude array obtained after the treatment
-
-    The treatment itself is stored in the _algorithm attribute and each change to a classe's attribute is stored in the _history attribute:
-
-    - _algorithm: a dictionary that stores the name of the algorithm, its version, the author, and a description
-    - _record_algorithm: a boolean that indicates whether the algorithm should be recorded or not while running the functions of the class
-
-    When a treatment fails or is identified as not well fitted, the class stores the information in the following attributes:
-
-    - point_errors: the list of points that are not well fitted
-
-    Additionally, the class uses sub-attributes to test the treatment on particular spectra. These sub-attributes are:
-
-    - frequency_sample: A 1-D sampled frequency array
-    - PSD_sample: A 1-D sampled PSD array
-    - offset_sample: A list of offset values obtained on the sampled PSD array (size of lists corresponds to number of peaks analysed)
-    - shift_sample: A list of shift values obtained on the sampled PSD array(size of lists corresponds to number of peaks analysed)
-    - shift_err_sample: A list of the standard deviation on the shift values obtained on the sampled PSD array(size of lists corresponds to number of peaks analysed)
-    - linewidth_sample: A list of linewidth values obtained on the sampled PSD array(size of lists corresponds to number of peaks analysed)
-    - linewidth_err_sample: A list of the standard deviation on the linewidth values obtained on the sampled PSD array(size of lists corresponds to number of peaks analysed)
-    - amplitude_sample: A list of amplitude values obtained on the sampled PSD array  (size of lists corresponds to number of peaks analysed)  
-    - amplitude_err_sample: A list of the standard deviation on the amplitude values obtained on the sampled PSD array(size of lists corresponds to number of peaks analysed)
-    For treating these samples, the class offers an argument to store the steps of the treatment. This is stored in the _history attribute.
-    - _history: a list that stores the evolution of the attributes 
-    
-    To switch the class between the treatment of all the PSD array, sampled PSD arrays or error points, we use the attribute:
-
-    - _treat_selection: a string that directs the treatment towards the whole PSD array, sampled PSD arrays or error points with the following options:
-        - all: the whole PSD array is treated
-        - sampled: the sampled PSD arrays are treated
-        - errors: the error points are treated
-        
-    Note that the _history attribute is implemented only if _treat_selection is set to "sampled".
-    
     """
     _record_algorithm = True # This attribute is used to record the steps of the analysis
 
     def __init__(self, frequency: np.ndarray, PSD: np.ndarray, frequency_sample_dimension = None):
         """Initializes the class by storing the PSD and frequency arrays. Also initializes the sample sub-arrays using the frequency_sample_dimension parameter.
-
-        Parameters
-        ----------
-        frequency : np.ndarray
-            An array corresponding to the frequency axis of the PSD
-        PSD : np.ndarray
-            An array corresponding to the power spectral density to treat
-        frequency_sample_dimension : tuple, optional
-            The tuple leading to the 1-D array to use as frequency axis. By default, the first dimension of the frequency is used.
         """
         # Initialize the algorithm and history
         self._algorithm = {
@@ -106,86 +118,6 @@ class Treat_backend:
         # Initializes the progress callback
         self._progress_callback = None
 
-    def __getattribute__(self, name: str):
-        """This function is used to override the __getattribute__ function of the class. It is used to keep track of the history of the algorithm, its impact on the classes attributes, and to store the algorithm in the _algorithm attribute so as to be able to save it or run it later.
-
-        Parameters
-        ----------
-        name : str
-            The name of a function of the class.
-
-        Returns
-        -------
-        The result of the function call.
-        """
-        """This function is used to override the __getattribute__ function of the class. It is used to keep track of the history of the algorithm, its impact on the classes attributes, and to store the algorithm in the _algorithm attribute so as to be able to save it or run it later.
-
-        Parameters
-        ----------
-        name : str
-            The name of a function of the class.
-
-        Returns
-        -------
-        The result of the function call.
-        """
-        # If the attribute is a function, we call it with the given arguments
-        attribute = super().__getattribute__(name)
-
-        # If the attribute is a function, and its name doesn't start with an underscore, we run the intermediate function "wrapper"
-        if callable(attribute) and not name.startswith('_') and not name.startswith('silent_'):
-            def wrapper(*args, **kwargs):
-                # Extract the description of the function from the docstring
-                docstring = inspect.getdoc(attribute)
-                description = docstring.split('\n\n')[0] if docstring else ""
-
-                # Get the default parameter values from the function signature
-                signature = inspect.signature(attribute)
-                default_kwargs = {
-                    k: v.default for k, v in signature.parameters.items() if v.default is not inspect.Parameter.empty
-                }
-
-                # Merge default kwargs with provided kwargs
-                merged_kwargs = {**default_kwargs, **kwargs}
-
-                # If the attribute _record_algorithm is True, add the function to the algorithm
-                if self._record_algorithm:
-                    # If the same function has already been run in the algorithm, change the description to "See previous run"
-                    if name in [func["function"] for func in self._algorithm["functions"]]:
-                        description = "See previous run"
-
-                    self._algorithm["functions"].append({
-                        "function": name,
-                        "parameters": merged_kwargs,
-                        "description": description
-                    })
-
-                # Store the attributes of the class in memory to compare them to the ones after the function is run
-                if self._treat_selection == "sampled":
-                    temp_PSD_sample = self.PSD_sample.copy()
-                    temp_frequency_sample = self.frequency_sample.copy()
-                    temp_points = self.points.copy()
-                    temp_windows = self.windows.copy()
-
-                # Run the function
-                result = attribute(*args, **kwargs)
-
-                # If the attribute _save_history is True, compare the attributes of the class with the ones stored in memory and update the history if needed
-                if self._treat_selection == "sampled":
-                    self._history.append({"function": name})
-                    if not np.all(self.PSD_sample == temp_PSD_sample):
-                        self._history[-1]["PSD_sample"] = self.PSD_sample.copy().tolist()
-                    if not np.all(self.frequency_sample == temp_frequency_sample):
-                        self._history[-1]["frequency_sample"] = self.frequency_sample.copy().tolist()
-                    if self.points != temp_points:
-                        self._history[-1]["points"] = self.points.copy()
-                    if self.windows != temp_windows:
-                        self._history[-1]["windows"] = self.windows.copy()
-                
-                return result
-            return wrapper
-        return attribute
-
     def silent_clear_points(self):
         """
         Clears the list of points and the list of windows.
@@ -195,17 +127,6 @@ class Treat_backend:
 
     def silent_create_algorithm(self, algorithm_name: str ="Unnamed Algorithm", version: str ="0.1", author: str = "Unknown", description: str = "", new_algorithm = False):
         """Creates a new JSON algorithm with the given name, version, author and description. This algorithm is stored in the _algorithm attribute. This function also creates an empty history. for the software.
-
-        Parameters
-        ----------
-        algorithm_name : str, optional
-            The name of the algorithm, by default "Unnamed Algorithm"
-        version : str, optional
-            The version of the algorithm, by default "0.1"
-        author : str, optional
-            The author of the algorithm, by default "Unknown"
-        description : str, optional
-            The description of the algorithm, by default ""
         """
         if new_algorithm:
             self._algorithm["functions"] = []
@@ -220,13 +141,6 @@ class Treat_backend:
 
     def silent_move_step(self, step: int, new_step: int):
         """Moves a step from one position to another in the _algorithm attribute. Deletes the elements of the _history attribute that are after the moved step (included)
-
-        Parameters
-        ----------
-        step : int
-            The position of the function to move in the _algorithm attribute.
-        new_step : int
-            The new position to move the function to.
         """
         # Moves the step
         self._algorithm["functions"].insert(new_step, self._algorithm["functions"].pop(step))
@@ -237,11 +151,6 @@ class Treat_backend:
 
     def silent_open_algorithm(self, filepath: str =None):
         """Opens an existing JSON algorithm and stores it in the _algorithm attribute. This function also creates an empty history.
-
-        Parameters
-        ----------
-        filepath : str, optional
-            The filepath to the JSON algorithm, by default None
         """
         # Ensures that the filepath is not None
         if filepath is None:
@@ -254,11 +163,6 @@ class Treat_backend:
 
     def silent_remove_step(self, step: int = None):
         """Removes the step from the _history attribute of the class. If no step is given, removes the last step.
-
-        Parameters
-        ----------
-        step : int, optional
-            The number of the function up to which the algorithm has to be run. Default is None, means that the last step is removed.
         """
         # If no step is given, set the step to the last step
         if step is None:
@@ -279,31 +183,14 @@ class Treat_backend:
 
     def silent_return_string_algorithm(self):
         """Returns a string representation of the algorithm stored in the _algorithm attribute of the class.
-
-        Returns
-        -------
-        str
-            The string representation of the algorithm.
         """
         return json.dumps(self._algorithm, indent=4)
 
     def silent_run_algorithm(self, step: int = None, algorithm: dict = None):
         """Runs an algorithm. By default, the algorithm run is the one stored in the _algorithm attribute of the class. This function can also run other algorithms if specified. The function runs the algorithm up to the given step (included). If no step is given, the algorithm is run up to the last step (included). 
-
-        Parameters
-        ----------
-        step : int, optional
-            The number of the function up to which the algorithm has to be run (included), by default None means that all the steps of the algorithm are run.
-        algorithm : dict, optional
-            The algorithm to be run. If None, the algorithm stored in the _algorithm attribute is used. Default is None.
         """
         def extract_parameters_from_history(self, step):
             """Extracts the parameters from the _history attribute of the class up to the given step.
-
-            Parameters
-            ----------
-            step : int
-                The number of the function up to which the algorithm has to be run.
             """
             # Goes through the steps of the _history attribute up to the given step (excluded) and updates the attributes of the class
             for i in range(step):
@@ -319,11 +206,6 @@ class Treat_backend:
 
         def run_step(self, step):
             """Runs the algorithm stored in the _algorithm attribute of the class. This function can also run up to a specific step of the algorithm.
-
-            Parameters
-            ----------
-            step : int
-                The number of the function up to which the algorithm has to be run.
             """
             function_name = algorithm["functions"][step]["function"]
             parameters = algorithm["functions"][step]["parameters"]
@@ -409,13 +291,6 @@ class Treat_backend:
 
     def silent_save_algorithm(self, filepath: str = "algorithm.json", save_parameters: bool = False):
         """Saves the algorithm to a JSON file with or without the parameters used. If the parameters are not saved, their value is set to a default value proper to their type.
-
-        Parameters
-        ----------
-        filepath : str, optional
-            The filepath to save the algorithm to. Default is "algorithm.json".
-        save_parameters : bool, optional
-            Whether to save the parameters of the functions. Default is False.
         """
         # Creates a local dictionnary to store the algorithm to save. This allows to reinitiate the parameters if needed.
         algorithm_loc = {}
