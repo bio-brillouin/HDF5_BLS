@@ -1,7 +1,7 @@
 import pytest
 import os
 import pandas as pd
-from _HDF5_BLS import NormalizedAttributes
+from HDF5_BLS import NormalizedAttributes
 
 def test_attributes_list():
     attrs = NormalizedAttributes.get_all()

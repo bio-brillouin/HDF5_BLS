@@ -294,18 +294,7 @@ class Treat(Treat_backend):
         This function updates the global attributes of the class concerning the shift, the linewidth and the amplitude together with their variance, taking into account error propagation. 
         If a spectrum could not be fitted, its value is set to 0 in the global attributes.
         All the points where the spectra could not be fitted are marked with the "fit_error_marker" parameter in the global attributes (shift, linewidth, amplitude, shift_var, linewidth_var, amplitude_var) and their coordinates are stored in the "point_error" list. The "point_error_type" attribute is also updated with the type of error returned by the fit function (see scipy.optimize.curve_fit documentation). The function returns the number of spectra that could not be fitted.
-
        """
-        def plus_one(shape, max_shape, dim):
-            if dim == -1: 
-                return None
-            if shape[dim] == max_shape[dim]-1:
-                shape[dim] = 0
-                return plus_one(shape, max_shape, dim-1)
-            else:
-                shape[dim] += 1
-                return shape
-
         def initialize():    
             # Initialize the list of points that could not be fitted
             self.point_error = []
@@ -322,11 +311,8 @@ class Treat(Treat_backend):
             self.amplitude = np.zeros(dim).astype(float)        
             self.amplitude_var = np.zeros(dim).astype(float)
 
-            # Initialize the index of the selected spectrum
-            return np.zeros(len(self.PSD.shape[:-1])).astype(int)
-
-        # Initialize the list of fitted points, error point and index of selected spectrum
-        PSD_i = initialize()
+        # Initialize the list of fitted points and error point
+        initialize()
 
         # Set the treat selection to "all"
         self._treat_selection = "all"
@@ -343,7 +329,7 @@ class Treat(Treat_backend):
         total = np.prod(self.PSD.shape[:-1])
 
         # Iterate on each spectrum of the PSD array
-        while PSD_i is not None:
+        for PSD_i in np.ndindex(self.PSD.shape[:-1]):
             # Assign the current PSD and frequency arrays to the corresponding variables
             self.PSD_sample = self.PSD[tuple(PSD_i)]
 
@@ -359,11 +345,9 @@ class Treat(Treat_backend):
             self.amplitude_var[tuple(PSD_i)] = self.amplitude_err_sample
 
             if np.all(np.isnan(self.shift[tuple(PSD_i)])):
-                self.point_error.append(PSD_i.copy())
+                self.point_error.append(PSD_i)
                 self.point_error_type.append("fit_error")
                 self.point_error_value.append(np.nan)
-
-            PSD_i = plus_one(PSD_i, self.PSD.shape[:-1], len(PSD_i)-1)
 
             if self._progress_callback is not None:
                 count += 1

@@ -4,15 +4,15 @@ import os
 import datetime
 
 from HDF5_BLS.load_data import load_dat_file, load_image_file, load_general, load_npy_file, load_sif_file
-from HDF5_BLS.load_formats.errors import LoadError_creator, LoadError_parameters
+from HDF5_BLS.load_formats.load_errors import LoadError_creator, LoadError_parameters
 
 def test_load_dat_file():
     filepath = os.path.join(os.path.dirname(__file__), "test_data", "example_GHOST.DAT")
-    try: load_dat_file(filepath)
-    except LoadError_creator as e: pass
+    with pytest.raises(LoadError_creator):
+        load_dat_file(filepath)
     
-    try: load_dat_file(filepath, creator = "TimeDomain")
-    except LoadError_parameters as e: pass
+    with pytest.raises(LoadError_parameters):
+        load_dat_file(filepath, creator = "TimeDomain")
 
     dic = load_dat_file(filepath, creator = "GHOST")
     print(dic.keys())
@@ -52,11 +52,11 @@ def test_load_general():
     for fp in filepath:
         _, ext = os.path.splitext(fp)
         if ext.lower() in [".dat"]:
-            try: load_general(os.path.join(os.path.dirname(__file__), "test_data",fp))
-            except LoadError_creator as e: pass
+            with pytest.raises(LoadError_creator):
+                load_general(os.path.join(os.path.dirname(__file__), "test_data",fp))
             
-            try: load_general(os.path.join(os.path.dirname(__file__), "test_data",fp), creator = "TimeDomain")
-            except LoadError_parameters as e: pass
+            with pytest.raises(LoadError_parameters):
+                load_general(os.path.join(os.path.dirname(__file__), "test_data",fp), creator = "TimeDomain")
 
         elif ext.lower() in [".tif", ".npy", "sif"]:
             dic = load_general(os.path.join(os.path.dirname(__file__), "test_data",fp))

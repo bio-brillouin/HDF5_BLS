@@ -116,34 +116,24 @@ def test_add_dictionary(wrapper_instance: Wrapper):
            "Attribute": {"SPECTROMETER.Type": "TFP",
                           "SAMPLE.Name": "Water"}}
     # Testing adding data without specifying anything
-    try:
+    with pytest.raises(TypeError):
         wrapper_instance.add_dictionary()
-    except TypeError:
-        pass
 
     # Testing adding data without specifying parent group
-    try:
+    with pytest.raises(TypeError):
         wrapper_instance.add_dictionary(dic)
-    except TypeError:
-        pass
 
     # Testing adding data with a wrong parent group
-    try:
+    with pytest.raises(WrapperError_StructureError):
         wrapper_instance.add_dictionary(dic, parent_group="Wrong_group")
-    except WrapperError_StructureError:
-        pass
 
     # Testing adding data while creating a new group without a Brillouin_type
-    try:
+    with pytest.raises(WrapperError_StructureError):
         wrapper_instance.add_dictionary(dic, parent_group="Brillouin/Measure", create_group=True)
-    except WrapperError_StructureError:
-        pass
     
     # Testing adding data while creating a new group with a wrong Brillouin_type
-    try:
+    with pytest.raises(WrapperError_StructureError):
         wrapper_instance.add_dictionary(dic, parent_group="Brillouin/Measure", create_group=True, brillouin_type_parent_group="Wrong_type")
-    except WrapperError_StructureError:
-        pass
 
     # Testing adding data while creating a new group with a correct Brillouin_type
     wrapper_instance.add_dictionary(dic, parent_group="Brillouin/Measure", create_group=True, brillouin_type_parent_group="Measure")
@@ -156,20 +146,20 @@ def test_add_dictionary(wrapper_instance: Wrapper):
     # Testing adding a second raw data
     dic = {"Raw_data": {"Name": "Measure 2",
                         "Data": np.random.random((50,50,100))}}
-    try: wrapper_instance.add_dictionary(dic, parent_group="Brillouin/Measure")
-    except WrapperError_Overwrite: pass
+    with pytest.raises(WrapperError_Overwrite):
+        wrapper_instance.add_dictionary(dic, parent_group="Brillouin/Measure")
 
     # Testing adding a second dataset with same name
     dic = {"PSD": {"Name": "Measure Water PSD",
                         "Data": np.random.random((50,50,100))}}
-    try: wrapper_instance.add_dictionary(dic, parent_group="Brillouin/Measure")
-    except WrapperError_Overwrite: pass
+    with pytest.raises(WrapperError_Overwrite):
+        wrapper_instance.add_dictionary(dic, parent_group="Brillouin/Measure")
 
     # Testing adding a shift dataset in a Measure group
     dic = {"Shift": {"Name": "Shift",
                         "Data": np.random.random((50,50))}}
-    try: wrapper_instance.add_dictionary(dic, parent_group="Brillouin/Measure")
-    except WrapperError_StructureError: pass
+    with pytest.raises(WrapperError_StructureError):
+        wrapper_instance.add_dictionary(dic, parent_group="Brillouin/Measure")
 
     # Testing adding a dataset in a calibration group
     dic = {"Raw_data": {"Name": "Measure Water raw",
@@ -204,12 +194,12 @@ def test_change_brillouin_type(wrapper_instance: Wrapper):
         grp.attrs["Brillouin_type"] = "Measure"
 
     # Test changing Brillouin type on a non-existing path
-    try: wrapper_instance.change_brillouin_type("Brillouin/wrong_path", "Impulse_response")
-    except WrapperError_StructureError: pass
+    with pytest.raises(WrapperError_StructureError):
+        wrapper_instance.change_brillouin_type("Brillouin/wrong_path", "Impulse_response")
 
     # Test changing Brillouin type to an invalid type
-    try: wrapper_instance.change_brillouin_type("Brillouin/test", "Wrong_type")
-    except WrapperError_ArgumentType: pass
+    with pytest.raises(WrapperError_ArgumentType):
+        wrapper_instance.change_brillouin_type("Brillouin/test", "Wrong_type")
 
     # Test successful change of Brillouin type
     assert wrapper_instance.get_type(path = "Brillouin/test",  return_Brillouin_type=True) == "Measure"
@@ -226,8 +216,8 @@ def test_change_name(wrapper_instance: Wrapper):
         grp.attrs["Brillouin_type"] = "Measure"
     
     # Test changing name on a non-existing path
-    try: wrapper_instance.change_name("Brillouin/wrong_path", "new_name")
-    except WrapperError_StructureError: pass
+    with pytest.raises(WrapperError_StructureError):
+        wrapper_instance.change_name("Brillouin/wrong_path", "new_name")
 
     # Test successful change of name
     wrapper_instance.change_name("Brillouin/old_name", "new_name")
@@ -243,8 +233,8 @@ def test_close_deletes_temp(wrapper_instance: Wrapper):
     wrapper_instance.save = True
 
     # Test closing the wrapper without expressely saying that we want to delete the temporary file
-    try: wrapper_instance.close()
-    except WrapperError_Save: pass
+    with pytest.raises(WrapperError_Save):
+        wrapper_instance.close()
 
     # Test closing the wrapper and deleting the temporary file
     wrapper_instance.close(delete_temp_file=True)
@@ -268,16 +258,16 @@ def test_combine_datasets(wrapper_instance: Wrapper):
         f["Brillouin/Measure 3/d3-20"].attrs["Brillouin_type"] = "Raw_data"
 
     # Try adding a group as a dataset
-    try: wrapper_instance.combine_datasets(datasets = ["Brillouin", "Brillouin/Measure 1/d1-10"], parent_group="Brillouin/Combined", name="combined")
-    except WrapperError_ArgumentType: pass
+    with pytest.raises(WrapperError_ArgumentType):
+        wrapper_instance.combine_datasets(datasets = ["Brillouin", "Brillouin/Measure 1/d1-10"], parent_group="Brillouin/Combined", name="combined")
 
     # Try adding a dataset with the same name
-    try: wrapper_instance.combine_datasets(datasets = ["Brillouin/Measure 1/d1-10", "Brillouin/Measure 2/d2-10"], parent_group="Brillouin/Measure 1", name="d1-10")
-    except WrapperError_Overwrite: pass
+    with pytest.raises(WrapperError_Overwrite):
+        wrapper_instance.combine_datasets(datasets = ["Brillouin/Measure 1/d1-10", "Brillouin/Measure 2/d2-10"], parent_group="Brillouin/Measure 1", name="d1-10")
 
     # Try adding datasets with different shapes
-    try: wrapper_instance.combine_datasets(datasets = ["Brillouin/Measure 1/d1-10", "Brillouin/Measure 3/d3-20"], parent_group="Brillouin/Measure", name="combined")
-    except WrapperError_ArgumentType: pass
+    with pytest.raises(WrapperError_ArgumentType):
+        wrapper_instance.combine_datasets(datasets = ["Brillouin/Measure 1/d1-10", "Brillouin/Measure 3/d3-20"], parent_group="Brillouin/Measure", name="combined")
     
     # Test successful addition of datasets
     wrapper_instance.combine_datasets(datasets = ["Brillouin/Measure 1/d1-10", "Brillouin/Measure 2/d2-10"], parent_group="Brillouin/Measure", name="combined")
@@ -313,15 +303,15 @@ def test_copy_dataset(wrapper_instance: Wrapper):
 # Test creating a new group
 def test_create_group(wrapper_instance: Wrapper):
     # Create a new group under a wrong parent group
-    try: wrapper_instance.create_group("new_group", parent_group="Wrong_group")
-    except WrapperError_StructureError: pass
+    with pytest.raises(WrapperError_StructureError):
+        wrapper_instance.create_group("new_group", parent_group="Wrong_group")
 
     # Create a new group under a correct parent group
     wrapper_instance.create_group("new_group", parent_group="Brillouin")
 
     # Try creating a group with the same name
-    try: wrapper_instance.create_group("new_group", parent_group="Brillouin")
-    except WrapperError_Overwrite: pass
+    with pytest.raises(WrapperError_Overwrite):
+        wrapper_instance.create_group("new_group", parent_group="Brillouin")
 
     # Create a group with a custom Brillouin_type
     wrapper_instance.create_group("new_group2", parent_group="Brillouin", brillouin_type="Measure")
@@ -392,8 +382,8 @@ def test_export_dataset(wrapper_instance: Wrapper):
     export_path = f"{tmp_path}/export_3D"
     wrapper_instance.export_dataset(path = "Brillouin/Measure 3D/data", filepath = str(export_path), export_type = ".npy")
     assert os.path.exists(export_path+".npy"), f"The file '{export_path}' does not exist."
-    try: wrapper_instance.export_dataset(path = "Brillouin/Measure 3D/data", filepath = str(export_path), export_type = ".xlsx")
-    except WrapperError_ArgumentType: pass
+    with pytest.raises(WrapperError_ArgumentType):
+        wrapper_instance.export_dataset(path = "Brillouin/Measure 3D/data", filepath = str(export_path), export_type = ".xlsx")
 
     os.remove(wrapper_instance.filepath)
     for f in os.listdir(tmp_path):
@@ -421,16 +411,16 @@ def test_export_group(wrapper_instance: Wrapper):
     export_path = f"{tmp_path}/export_group.h5"
 
     # Test exporting a non-existing element
-    try: wrapper_instance.export_group("Brillouin/Measure/Non_existing", str(export_path))
-    except WrapperError_StructureError: pass
+    with pytest.raises(WrapperError_StructureError):
+        wrapper_instance.export_group("Brillouin/Measure/Non_existing", str(export_path))
 
     # Test exporting a dataset
-    try: wrapper_instance.export_group("Brillouin/Measure/PSD", str(export_path))
-    except WrapperError_ArgumentType: pass
+    with pytest.raises(WrapperError_ArgumentType):
+        wrapper_instance.export_group("Brillouin/Measure/PSD", str(export_path))
 
     # Test exporing a treatment group
-    try: wrapper_instance.export_group("Brillouin/Measure/Treatment", str(export_path))
-    except WrapperError_ArgumentType: pass
+    with pytest.raises(WrapperError_ArgumentType):
+        wrapper_instance.export_group("Brillouin/Measure/Treatment", str(export_path))
 
     # Test successful export of a group
     wrapper_instance.export_group("Brillouin/Measure", str(export_path))
@@ -478,8 +468,8 @@ def test_get_attributes(wrapper_instance: Wrapper):
         ds.attrs["Brillouin_type"] = "Raw_data"
     
     # Test getting attributes from a non-existing path
-    try: wrapper_instance.get_attributes(path="Brillouin/Wrong_path")
-    except WrapperError_StructureError: pass
+    with pytest.raises(WrapperError_StructureError):
+        wrapper_instance.get_attributes(path="Brillouin/Wrong_path")
 
     # Test getting attributes from an parent group
     attr = wrapper_instance.get_attributes(path="Brillouin/Group1")
@@ -542,8 +532,8 @@ def test_get_special_groups_hierarchy(wrapper_instance: Wrapper):
         ds2.attrs["Brillouin_type"] = "Raw_data"
     
     # Test giving a wrong path
-    try: wrapper_instance.get_special_groups_hierarchy(path = "Wrong_path")
-    except WrapperError_StructureError: pass
+    with pytest.raises(WrapperError_StructureError):
+        wrapper_instance.get_special_groups_hierarchy(path = "Wrong_path")
 
     # Check that the function returns the correct hierarchy
     assert wrapper_instance.get_special_groups_hierarchy(path = "Brillouin/Group1/Group1/data") == ["Brillouin/Group1", "Brillouin/Group1/Group4"]
@@ -606,8 +596,8 @@ def test_move(wrapper_instance: Wrapper):
         group2.attrs["Brillouin_type"] = "Root"
     
     # Test moving an element that does not exist
-    try: wrapper_instance.move(path = "Wrong_path", new_path = "Brillouin/Group2")
-    except WrapperError_StructureError: pass
+    with pytest.raises(WrapperError_StructureError):
+        wrapper_instance.move(path = "Wrong_path", new_path = "Brillouin/Group2")
 
     # Test moving to an existing group
     wrapper_instance.move(path = "Brillouin/Group1/Measure", new_path = "Brillouin/Group2")
@@ -695,8 +685,8 @@ def test_save_as_hdf5(wrapper_instance: Wrapper):
     assert os.path.exists(save_path)
 
     # Try overwriting the file
-    try: wrapper_instance.save_as_hdf5(str(old_path))
-    except WrapperError_Overwrite: pass
+    with pytest.raises(WrapperError_Overwrite):
+        wrapper_instance.save_as_hdf5(str(old_path))
     wrapper_instance.save_as_hdf5(str(old_path), overwrite=True)
 
     # Try saving the file with removing old file
@@ -758,8 +748,8 @@ def test_add_abscissa(wrapper_instance: Wrapper):
         assert "abscissa" in f["Brillouin/Group2"]
     
     # Try adding the same abscissa data to an existing group
-    try: wrapper_instance.add_abscissa(arr, parent_group="Brillouin/Group1", name="abscissa")
-    except WrapperError_Overwrite: pass
+    with pytest.raises(WrapperError_Overwrite):
+        wrapper_instance.add_abscissa(arr, parent_group="Brillouin/Group1", name="abscissa")
 
     # Try adding the same abscissa data to an existing group but with a different name
     wrapper_instance.add_abscissa(arr, parent_group="Brillouin/Group1", name="abscissa_2")
@@ -824,8 +814,8 @@ def test_add_other(wrapper_instance: Wrapper):
     assert "Other" in wrapper_instance.get_children_elements("Brillouin/Group2")
 
     # Test adding other data at a specified location with a specified name that already exists
-    try: wrapper_instance.add_other(arr, parent_group="Brillouin/Group1", name="Other")
-    except WrapperError_Overwrite: pass
+    with pytest.raises(WrapperError_Overwrite):
+        wrapper_instance.add_other(arr, parent_group="Brillouin/Group1", name="Other")
 
     os.remove(wrapper_instance.filepath)
 
