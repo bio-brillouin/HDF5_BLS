@@ -95,6 +95,8 @@ class ArchitectureWidget(QTreeView):
         self.setCurrentIndex(self.architecture_file_model.index(0, 0))
 
     def _set_icon(self, item, brillouin_type):
+        if "Abscissa" in brillouin_type:
+            brillouin_type = "Abscissa"
         item.setIcon(QIcon(f"{self.gui_root}/assets/img/{brillouin_type}.svg"))
 
     def _on_selection_changed(self, selected, deselected):
