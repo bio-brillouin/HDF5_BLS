@@ -6,8 +6,8 @@ build-backend = "setuptools.build_meta"
 name = "HDF5_BLS_GUI"
 version = "1.0.0"
 description = "Graphical User Interface application for HDF5_BLS project."
-readme = { file = "../../README.md", content-type = "text/markdown" }
-license = { file = "../../LICENSE.txt" }
+readme = { file = "README.md", content-type = "text/markdown" }
+license = { text = "GPLv3" }
 authors = [
   { name = "Pierre Bouvet", email = "pierre.bouvet@meduniwien.ac.at" }
 ]
@@ -38,17 +38,13 @@ dependencies = [
 # --- SETUPLOOLS CONFIGURATION FOR SRC LAYOUT ---
 [tool.setuptools]
 include-package-data = true
-
-# This is used to package GUI assets (images, UI files)
-# that are defined in 'MANIFEST.in' or found via include-package-data=true.
-# (Your tree shows assets in 'assets/img', so you might need a simple MANIFEST.in
-# or use 'package_data' if setuptools doesn't automatically find them.)
+packages = ["HDF5_BLS_GUI", "HDF5_BLS_GUI.Main", "HDF5_BLS_GUI.DataProcessing", "HDF5_BLS_GUI.MessageBox_multiple_choice"]
 
 [tool.setuptools.package-dir]
 "HDF5_BLS_GUI" = "src"
-
-[tool.setuptools.packages.find]
-where = ["src"]
+"HDF5_BLS_GUI.Main" = "src/Main"
+"HDF5_BLS_GUI.DataProcessing" = "src/DataProcessing"
+"HDF5_BLS_GUI.MessageBox_multiple_choice" = "src/MessageBox_multiple_choice"
 
 # --- ENTRY POINT for the GUI ---
 # This defines the command that launches your GUI.

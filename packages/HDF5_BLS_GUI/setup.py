@@ -13,7 +13,9 @@ def parse_requirements(filename):
         return [line.strip() for line in f if line.strip() and not line.startswith('#')]
 
 # Read the requirements from requirements.txt
-requirements = parse_requirements('/Users/pierrebouvet/Documents/Code/HDF5_BLS/requirements_library.txt')
+requirements = parse_requirements(path.join(working_directory, 'requirements.txt'))
+if 'json' in requirements:
+    requirements.remove('json')
 
 setup(
     name='HDF5_BLS_GUI', # name of pack which will be package dir below project
@@ -24,7 +26,8 @@ setup(
     description='A package to interface the HDF5_BLS library with a GUI',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    packages=find_packages(), 
+    package_dir={'HDF5_BLS_GUI': 'src'},
+    packages=['HDF5_BLS_GUI'] + ['HDF5_BLS_GUI.' + p for p in find_packages(where="src")],
     install_requires=requirements,
     classifiers=[
         "Programming Language :: Python :: 3",
