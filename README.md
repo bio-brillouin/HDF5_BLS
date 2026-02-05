@@ -1,5 +1,5 @@
 
-[![PyPI Downloads](https://img.shields.io/badge/HDF5__BLS-v1.1.1__dev-blue)](
+[![PyPI Downloads](https://img.shields.io/badge/HDF5__BLS-v1.1.0-blue)](
 https://pypi.org/project/HDF5_BLS/)
 
 # HDF5_BLS
@@ -228,7 +228,7 @@ The project is licensed under the [GNU-GPL v3.0](https://www.gnu.org/licenses/gp
 
 ## What's new with respect to previous versions?
 
-### v1.1.1 (Current)
+### v1.1.1 (Development)
 - **HDF5_BLS_treat Refactoring**: 
     - Replaced the previous attribute interception with a more robust, decorator-based algorithm tracking system. This improves JSON algorithm generation accuracy and ensures reliable data processing history capture.
 - **Documentation Overhaul**:
@@ -241,6 +241,10 @@ The project is licensed under the [GNU-GPL v3.0](https://www.gnu.org/licenses/gp
     - Standardized error handling through categorized `WrapperError` classes.
     - Cleaned up legacy backend utilities and improved performance.
 - **CI/CD Integration**: Implemented automated testing and documentation verification via GitHub Actions.
+
+### v1.1.0 (Current)
+- **Release of the package on PyPI**
+    - The package is now available on PyPI in a stable first usable version
 
 ### v1.0.3
 - **Repository architecture**
