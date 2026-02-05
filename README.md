@@ -1,5 +1,5 @@
 
-[![PyPI Downloads](https://img.shields.io/badge/HDF5__BLS_v1.1.1__dev-blue)](
+[![PyPI Downloads](https://img.shields.io/badge/HDF5__BLS-v1.1.1__dev-blue)](
 https://pypi.org/project/HDF5_BLS/)
 
 # HDF5_BLS
