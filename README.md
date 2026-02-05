@@ -1,3 +1,7 @@
+
+[![PyPI Downloads](https://img.shields.io/badge/HDF5__BLS_v1.1.1__dev-blue)](
+https://pypi.org/project/HDF5_BLS/)
+
 # HDF5_BLS
 
 **HDF5_BLS** is a project to unify and standardize the storage of Brillouin Light Scattering (BLS) data in a HDF5 files, and to develop unified tools to process these data. The projects consists of three modules:
