@@ -2,7 +2,7 @@ The addition of any type of data or attribute to the HDF5 file has been centrali
 
 To add a single dataset to a group, we first need to specify the type of dataset we want to add, which are the following:
 
-.. figure:: ../_static/Datasets_type.png
+.. figure:: /_static/Datasets_type.png
    :width: 70%
    :align: center
 

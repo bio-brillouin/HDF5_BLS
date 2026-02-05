@@ -23,7 +23,7 @@ The project is based on the following specifications:
    - :italic:`1.1.1.3. Storing measures performed with changes of different hyper parameters should be easy and unambiguous.`
    - :italic:`1.1.1.4. Storing a PSD and Frequency arrays extracted from a measure should be easy and unambiguous.`
    - :italic:`1.1.1.5. Storing the result of a treatment should be easy and unambiguous.`
-   - 
+
 :graylight:`1.2. Universality`
 
 :graysuperlight:`1.2.1. The format should be compatible with existing HDF5 softwares.`
@@ -105,7 +105,7 @@ The timeline of the project is divided in four phases:
 - **Phase 1**: Design a HDF5-based file format that is minimally constrained and that allows all BLS-derived data to be stored
 - **Phase 2**: Stress test the file format to make sure it answers all the needs of the community, in particular ensure compatibility with different spectrometers
 - **Phase 3**: Create data processing tools to treat BLS measures and extract relevant parameters from them
-- **Phase 3**: Define normalization rules to store particular data formats (single spectra, series of spectra evolving with respect to one hyper parameter, spatial images, etc.), and develop dedicated visualization tools to display the data, metadata and results.
+- **Phase 4**: Define normalization rules to store particular data formats (single spectra, series of spectra evolving with respect to one hyper parameter, spatial images, etc.), and develop dedicated visualization tools to display the data, metadata and results.
 
 User interfaces
 ---------------

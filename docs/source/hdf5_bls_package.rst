@@ -31,3 +31,11 @@ Attributes
 
 .. include:: hdf5_bls_package/attributes.rst
 
+Tutorial
+--------
+
+.. toctree::
+   :maxdepth: 2
+
+   hdf5_bls_package/tutorial
+
