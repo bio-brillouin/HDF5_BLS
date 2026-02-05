@@ -1,10 +1,15 @@
 # HDF5_BLS
 
-**HDF5_BLS** is a project to unify and standardize the storage of Brillouin Light Scattering (BLS) data in a HDF5 files, and to develop unified tools to process these data. The projects consists of three packages:
+**HDF5_BLS** is a project to unify and standardize the storage of Brillouin Light Scattering (BLS) data in a HDF5 files, and to develop unified tools to process these data. The projects consists of three modules:
 
 - **HDF5_BLS**: A package to store BLS data in a single HDF5 file.
 - **HDF5_BLS_analyse**: A package to analyse BLS data (extract power spectra) from raw data.
 - **HDF5_BLS_treat**: A package to treat BLS data (process power spectra to obtain relevant quantities).
+
+Additionally, the project hosts two GUIs to facilitate the use of the library:
+
+- **HDF5_BLS_GUI**: A GUI to create and edit HDF5 files locally.
+- **HDF5_BLS_webviewer**: A web-based viewer to display the content of HDF5 files remotely with no editing capabilities.
 
 The library is thought to seemlessly integrate in existing Python workflows, to be minimally constrained, and to be as easy to use as possible. Additionally, the library is aimed at speeding up all the steps involved in BLS data processing, starting with the extraction of raw data from arbitrary sources.
 
@@ -219,13 +224,34 @@ The project is licensed under the [GNU-GPL v3.0](https://www.gnu.org/licenses/gp
 
 ## What's new with respect to previous versions?
 
+### v1.1.1 (Current)
+- **HDF5_BLS_treat Refactoring**: 
+    - Replaced the previous attribute interception with a more robust, decorator-based algorithm tracking system. This improves JSON algorithm generation accuracy and ensures reliable data processing history capture.
+- **Documentation Overhaul**:
+    - Added comprehensive guides for the `HDF5_BLS_treat` package (installation, organisation, and usage).
+    - Restructured the `HDF5_BLS` tutorial to emphasize user-friendly derived methods (`add_raw_data`, `add_PSD`, etc.).
+    - Introduced a **Methods Index** for rapid navigation across the library's 23 core methods.
+    - Achieved a 100% warning-free Sphinx build.
+- **GUI and Backend**:
+    - Improved modularity of the GUI components and streamlined the signal flow logic.
+    - Standardized error handling through categorized `WrapperError` classes.
+    - Cleaned up legacy backend utilities and improved performance.
+- **CI/CD Integration**: Implemented automated testing and documentation verification via GitHub Actions.
+
 ### v1.0.3
-- Restructuring of the documentation and GitHub repository
+- **Repository architecture**
+    - Restructuring of the GitHub repository in a modular way
+- **Documentation**
+    - Restructuring of the documentation
 
 ### v1.0.2
-- Bug fix in the export of groups as independent HDF5 files
-- Ability to export to Brim files
+- **GUI**
+    - Bug fix in the export of groups as independent HDF5 files
+- **Brim files**
+    - Ability to export to Brim files
 
 ### v1.0.1
-- New "add_other" method to add datasets from non-specified type to the wrapper
-- Working with temporary files: Instead of creating a temporary H5 file in the directory of the library, the file is now created in a temporary directory of the OS. 
+- **Wrapper**
+    - New "add_other" method to add datasets from non-specified type to the wrapper
+- **Working with temporary files**
+    - Instead of creating a temporary H5 file in the directory of the library, the file is now created in a temporary directory of the OS. 
