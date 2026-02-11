@@ -15,7 +15,6 @@ def test_load_dat_file():
         load_dat_file(filepath, creator = "TimeDomain")
 
     dic = load_dat_file(filepath, creator = "GHOST")
-    print(dic.keys())
     assert list(dic.keys()) == ["PSD", "Frequency", "Attributes"], "FAIL - test_load_dat_file - Structure of the dictionary is not correct"
     assert dic["PSD"]["Data"].shape == (512,), "FAIL - test_load_dat_file - PSD data shape is not correct"
 

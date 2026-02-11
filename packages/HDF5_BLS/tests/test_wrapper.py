@@ -5,7 +5,8 @@ import os
 import shutil
 import tempfile
 import h5py
-from HDF5_BLS.wrapper import Wrapper, HDF5_BLS_Version
+import unittest.mock as mock
+from HDF5_BLS.wrapper import Wrapper, HDF5_BLS_Version, is_tempfile
 from HDF5_BLS.errors import WrapperError, WrapperError_ArgumentType, WrapperError_FileNotFound, WrapperError_Overwrite, WrapperError_Save, WrapperError_StructureError
 
 # Fixture to create a temporary HDF5 file for testing
@@ -21,6 +22,31 @@ def temp_hdf5_file():
 def wrapper_instance(temp_hdf5_file: str):
     return Wrapper(filepath=temp_hdf5_file)
 
+# Test is_tempfile function logic
+def test_is_tempfile_logic():
+    # Test standard temp file
+    with tempfile.NamedTemporaryFile(suffix=".h5") as tmp:
+        assert is_tempfile(tmp.name) == True
+    
+    # Test macOS external drive path
+    assert is_tempfile("/Volumes/External/test.h5") == True
+    
+    # Test Windows external drive logic (removable drive)
+    if os.name == 'nt':
+        with mock.patch('ctypes.windll.kernel32.GetDriveTypeW', return_value=2):
+            assert is_tempfile("D:\\test.h5") == True
+        
+        # Test Windows cross-drive path (ValueError from commonpath)
+        # Assuming tempdir is on C: and we check E:
+        with mock.patch('tempfile.gettempdir', return_value="C:\\Temp"):
+             # We simulate a filepath on different drive that doesn't trigger GetDriveTypeW return True
+             with mock.patch('ctypes.windll.kernel32.GetDriveTypeW', return_value=3): # DRIVE_FIXED
+                assert is_tempfile("E:\\test.h5") == True # Should return True due to ValueError in except block
+    
+    # Test normal user path (assuming not in temp and not in /Volumes/)
+    # On macOS, home is usually /Users/...
+    assert is_tempfile("/Users/pierrebouvet/test.h5") == False
+
 # Test Wrapper initialization and file creation
 def test_init_creates_wrapper(temp_hdf5_file: str):
     # Initialize the wrapper with no arguments
@@ -28,11 +54,7 @@ def test_init_creates_wrapper(temp_hdf5_file: str):
     w = Wrapper()
 
     # Check if a temporary file is created in the system's temp directory
-    tempdir = tempfile.gettempdir()
-    # Normalize paths for comparison
-    filepath = os.path.abspath(w.filepath)
-    tempdir = os.path.abspath(tempdir)
-    assert os.path.commonpath([filepath, tempdir]) == tempdir, f"temp.h5 not found in {tempdir}"
+    assert is_tempfile(w.filepath), f"temp.h5 not flagged as temp file: {w.filepath}"
 
     # Remove the temporary file
     os.remove(w.filepath)
@@ -893,3 +915,59 @@ def test_add_other(wrapper_instance: Wrapper):
 #     wrapper_instance.print_metadata("Brillouin/grp")
 #     captured = capsys.readouterr()
 #     assert "grp" in captured.out
+
+# Test crop_region_of_interest
+def test_crop_region_of_interest(wrapper_instance: Wrapper):
+    # Setup: Create a Measure group with Frequency and PSD
+    path = "Brillouin/Measure_1"
+    wrapper_instance.create_group("Measure_1", "Brillouin", brillouin_type="Measure")
+    
+    freq_data = np.linspace(-10, 10, 101) # -10, -9.8, ..., 10
+    psd_data = np.random.random((5, 5, 101))
+    
+    wrapper_instance.add_frequency(freq_data, path, "Frequency")
+    wrapper_instance.add_PSD(psd_data, path, "PSD")
+    
+    # ROI: [-5, 5]
+    ROI = [[-5, 5]]
+    wrapper_instance.crop_region_of_interest(path, ROI)
+    
+    # Verify
+    new_freq = wrapper_instance[f"{path}/Frequency"]
+    new_psd = wrapper_instance[f"{path}/PSD"]
+    
+    assert np.all((new_freq >= -5) & (new_freq <= 5))
+    assert new_freq.shape[0] == 51 # Index 25 to 75 inclusive
+    assert new_psd.shape == (5, 5, 51)
+    assert wrapper_instance.need_for_repack is True
+
+    # Test multiple ROI: [-8, -6] and [6, 8]
+    # We need to recreate the data because it was cropped in-place (irreversible)
+    wrapper_instance.add_frequency(freq_data, path, "Frequency", overwrite=True)
+    wrapper_instance.add_PSD(psd_data, path, "PSD", overwrite=True)
+    
+    ROI = [[-8, -6], [6, 8]]
+    wrapper_instance.crop_region_of_interest(path, ROI)
+    
+    new_freq = wrapper_instance[f"{path}/Frequency"]
+    new_psd = wrapper_instance[f"{path}/PSD"]
+    
+    # Each range [-8, -6] and [6, 8] has 11 points (step 0.2)
+    assert new_freq.shape[0] == 22
+    assert np.all(((new_freq >= -8) & (new_freq <= -6)) | ((new_freq >= 6) & (new_freq <= 8)))
+    assert new_psd.shape == (5, 5, 22)
+
+def test_crop_region_of_interest_errors(wrapper_instance: Wrapper):
+    # Test non-existent path
+    with pytest.raises(WrapperError_StructureError):
+        wrapper_instance.crop_region_of_interest("Brillouin/NonExistent", [[-5, 5]])
+        
+    # Test not a Measure group
+    wrapper_instance.create_group("NotAMeasure", "Brillouin", brillouin_type="Root")
+    with pytest.raises(WrapperError_StructureError):
+        wrapper_instance.crop_region_of_interest("Brillouin/NotAMeasure", [[-5, 5]])
+        
+    # Test missing Frequency or PSD
+    wrapper_instance.create_group("Measure_Missing", "Brillouin", brillouin_type="Measure")
+    with pytest.raises(WrapperError_StructureError):
+        wrapper_instance.crop_region_of_interest("Brillouin/Measure_Missing", [[-5, 5]])

@@ -29,7 +29,27 @@ def is_tempfile(filepath):
     # Normalize paths for comparison
     filepath = os.path.abspath(filepath)
     tempdir = os.path.abspath(tempdir)
-    return os.path.commonpath([filepath, tempdir]) == tempdir
+
+    # Check for external drive (macOS)
+    if filepath.startswith('/Volumes/'):
+        return True
+
+    # Check for external drive (Windows)
+    if os.name == 'nt':
+        import ctypes
+        drive = os.path.splitdrive(filepath)[0]
+        if drive:
+            # DRIVE_REMOVABLE = 2, DRIVE_REMOTE = 4, DRIVE_CDROM = 5
+            try:
+                if ctypes.windll.kernel32.GetDriveTypeW(drive + "\\") in [2, 4, 5]:
+                    return True
+            except:
+                pass
+
+    try:
+        return os.path.commonpath([filepath, tempdir]) == tempdir
+    except ValueError: # In windows, different drives lead to a ValueError
+        return True
 
 class Wrapper:
     """
@@ -61,7 +81,11 @@ class Wrapper:
                                 "Shift", 
                                 "Shift_err"]
     
-    BRILLOUIN_TYPES_GROUPS = ["Calibration_spectrum", "Impulse_response", "Measure", "Root", "Treatment"]
+    BRILLOUIN_TYPES_GROUPS = ["Calibration_spectrum", 
+                                "Impulse_response", 
+                                "Measure", 
+                                "Root", 
+                                "Treatment"]
 
     ##########################
     #     Magic methods      #
@@ -880,6 +904,70 @@ class Wrapper:
         # If the file was temporary, we set the save flag to True
         if is_tempfile(self.filepath):
             self.save = True
+
+    def crop_region_of_interest(self, path, ROI: list):
+        """Crops a couple of Frequency and PSD arrays to a region of interest. Note: this action is irreversible.
+
+        Parameters
+        ----------
+        path : str
+            The path to the dataset to crop
+        ROI : list
+            The regions of interest to crop. Format: [[f_min1, f_max1],[f_min2, f_max2]]
+            
+        Raises
+        ------
+        WrapperError
+            Raises an error if the path does not lead to an element.
+        """
+        # Check that the user entered a valid path
+        with h5py.File(self.filepath, 'a') as file:
+            if path not in file:
+                raise WrapperError_StructureError(f"The path '{path}' does not exist in the HDF5 file.")
+            
+        # If the path leads to a dataset, get the parent group.
+        if self.get_type(path = path) == HDF5_dataset:
+            path = "/".join(path.split("/")[:-1])
+        
+        # Check the path leads to a Measure group
+        if self.get_type(path = path, return_Brillouin_type=True) != "Measure":
+            raise WrapperError_StructureError(f"The path '{path}' does not lead to a Measure group.")
+
+        # Check there is a PSD and a Frequency array in the group
+        pth_freq, pth_psd = False, False
+        for e in self.get_children_elements(path = path):
+            if self.get_type(path = f"{path}/{e}", return_Brillouin_type=True) == "Frequency":
+                pth_freq = e
+            if self.get_type(path = f"{path}/{e}", return_Brillouin_type=True) == "PSD":
+                pth_psd = e
+        if not pth_freq or not pth_psd:
+            raise WrapperError_StructureError(f"The path '{path}' does not lead to a Measure group.")
+
+        # Get the frequency array
+        freq = self[f"{path}/{pth_freq}"]
+        
+        # Check the frequency array is 1D
+        if freq.ndim != 1:
+            raise WrapperError_StructureError(f"Currently, only 1d arrays are supported for the frequency array.")
+
+        # Get the indices of the region of interest
+        # Initialize a mask of False values
+        total_mask = np.zeros(freq.shape, dtype=bool)
+
+        # Update mask with an OR condition for every range [mi, Mi]
+        for m_i, M_i in ROI:
+            total_mask |= (freq >= m_i) & (freq <= M_i)
+        
+        # Get the cropped frequency array and PSD array
+        cropped_freq = freq[total_mask]
+        cropped_psd = self[f"{path}/{pth_psd}"][..., total_mask]
+
+        # Save the cropped data
+        self.add_frequency(cropped_freq, parent_group=path, name = pth_freq, overwrite=True)
+        self.add_PSD(cropped_psd, parent_group=path, name = pth_psd, overwrite=True)
+
+        # Set need for repack flag to True
+        self.need_for_repack = True
 
     def delete_element(self, path = None, file = None): # Test made 17.09.25
         """Deletes an element from the file and sets the need_for_repack flag to True.
@@ -2143,4 +2231,4 @@ class Wrapper:
 
 if __name__ == "__main__":
     wrp = Wrapper()
-    print(wrp.get_default_attributes())    
+    print(wrp.get_default_attributes()) 
