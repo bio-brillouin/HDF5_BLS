@@ -1,4 +1,4 @@
-The HDF5\_BLS\_analyse package
+The HDF5\_BLS\_treat package
 ==============================
 
 Installation and presentation

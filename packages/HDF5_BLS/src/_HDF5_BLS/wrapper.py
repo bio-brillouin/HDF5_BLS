@@ -754,9 +754,12 @@ class Wrapper:
             # Check if the path is a valid path
             if path not in file:
                 raise WrapperError_StructureError(f"The path '{path}' does not exist in the file.")
-            new_path = "/".join(path.split("/")[:-1])+"/"+name
-            file[new_path] = file[path]
-            self.delete_element(path)   
+            
+            new_path = "/".join(path.split("/")[:-1]) + "/" + name
+            
+            # Use h5py's move method for efficient renaming
+            file.move(path, new_path)
+            self.need_for_repack = True
 
     def close(self, delete_temp_file = False): # Test made 16.09.25
         """Closes the wrapper and deletes the temporary file if it exists
@@ -1386,7 +1389,13 @@ class Wrapper:
 
         with h5py.File(self.filepath, 'r') as file:
             if return_Brillouin_type:
-                return file[path].attrs["Brillouin_type"]
+                try:
+                    return file[path].attrs["Brillouin_type"]
+                except:
+                    if isinstance(file[path], h5py.Group):
+                        return "Root"
+                    else:
+                        return "Other"
             else:
                 return type(file[path])
 
@@ -1917,23 +1926,23 @@ class Wrapper:
             The name of the group that will be created to store the treated data. By default the name is "Treat_i" with i the number of the treatment so that the name is unique.
         overwrite : bool, optional 
             A parameter to indicate whether the dataset should be overwritten if a dataset with same name already exist or not, by default False - not overwritten. 
-        shift: np.ndarray, optional
+        shift : np.ndarray, optional
             The shift array to add to the wrapper.
-        linewidth: np.ndarray, optional
+        linewidth : np.ndarray, optional
             The linewidth array to add to the wrapper.
-        amplitude: np.ndarray, optional
+        amplitude : np.ndarray, optional
             The amplitude array to add to the wrapper.
-        blt: np.ndarray, optional
+        blt : np.ndarray, optional
             The Loss Tangent array to add to the wrapper.
-        shift_err: np.ndarray, optional
+        shift_err : np.ndarray, optional
             The shift error array to add to the wrapper.
-        linewidth_err: np.ndarray, optional
+        linewidth_err : np.ndarray, optional
             The linewidth error array to add to the wrapper.
-        amplitude_err: np.ndarray, optional 
+        amplitude_err : np.ndarray, optional 
             The amplitude error array to add to the wrapper.
-        blt_std: np.ndarray, optional   
+        blt_std : np.ndarray, optional   
             The Loss Tangent error array to add to the wrapper.
-        treat: HDF5_BLS_Treat.Treat
+        treat : HDF5_BLS_Treat.Treat
             The treatment object to add to the wrapper. If given, all other keyword arguments are ignored.
             
         Raises

@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HDF5 Web Visualizer</title>
+    <title>HDF5_BLS Web Viewer</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
     <div id="landing-page" class="landing-page">
-        <h1>HDF5 File Visualizer</h1>
-        <p>This tool helps you explore Brillouin Light Scattering (BLS) data stored in a Hierarchical Data Format (HDF5) file. HDF5 organizes data in a human- and machine-readable hierarchical structure using groups and datasets.</p>
-        <p>The standard structure for a single measure is a `Brillouin` group containing a `Measure` group, which itself contains a `Measure` dataset. Groups are used for organization and storing metadata, while datasets hold the actual data.</p>
+        <h1>HDF5_BLS Viewer</h1>
+        <p>Explore HDF5 files for Brillouin Light Scattering (BLS) experiments.</p>
         <div id="drag-drop-area" class="drag-drop-area">
-            <p>Drag and drop an HDF5 file here or click to select a file.</p>
+            <p>Drop HDF5 file here</p>
+            <span>or click to browse</span>
             <input type="file" id="file-input" accept=".h5, .hdf5" style="display: none;">
         </div>
     </div>
@@ -38,7 +40,8 @@
                 </div>
                 <div id="visualization" class="tab-pane">
                     <h2>Data Visualization</h2>
-                    <p>Visualization features will be available here.</p>
+                    <div id="viz-controls" class="viz-controls"></div>
+                    <div id="plotly-graph" style="width:100%; height:600px;"></div>
                 </div>
                 <div id="treatment" class="tab-pane">
                     <h2>Treatment & Analysis</h2>
@@ -49,6 +52,8 @@
     </div>
 
     <script src="lib/h5wasm.js" defer></script>
+    <script src="lib/plotly-latest.min.js" defer></script>
     <script src="app.js" defer></script>
 </body>
+
 </html>

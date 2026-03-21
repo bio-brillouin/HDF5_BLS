@@ -32,6 +32,7 @@
       ~Wrapper.compatibility_changes
       ~Wrapper.copy_dataset
       ~Wrapper.create_group
+      ~Wrapper.crop_region_of_interest
       ~Wrapper.delete_element
       ~Wrapper.export_brim
       ~Wrapper.export_dataset

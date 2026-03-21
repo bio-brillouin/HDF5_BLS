@@ -82,7 +82,10 @@ class PropertiesWidget(QWidget):
         if not path:
             return
             
-        attr = self.handler.get_attributes(path)
+        try: 
+            attr = self.handler.get_attributes(path)
+        except:
+            return
 
         # Update the tables
         self.properties_measure_model.clear()

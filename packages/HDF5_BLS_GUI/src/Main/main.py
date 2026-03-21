@@ -1,6 +1,6 @@
 from PySide6.QtCore import Slot, Qt
 from PySide6.QtGui import QAction, QIcon
-from PySide6.QtWidgets import QFileDialog, QGridLayout, QMainWindow, QMessageBox, QWidget
+from PySide6.QtWidgets import QFileDialog, QGridLayout, QMainWindow, QMessageBox, QWidget, QInputDialog
 
 from configparser import ConfigParser
 import pyperclip
@@ -11,8 +11,10 @@ from .widgets.log_widget import LogWidget
 from .widgets.button_panel import ButtonPanel
 from .widgets.architecture_widget import ArchitectureWidget
 from .widgets.properties_widget import PropertiesWidget
+from treat_wizard.main import TreatWizard
 
 from HDF5_BLS.errors import WrapperError_Overwrite, WrapperError_Save
+from HDF5_BLS.load_formats import load_errors
 
 class MainWindow(QMainWindow):
 
@@ -80,7 +82,13 @@ class MainWindow(QMainWindow):
         self.architecture_widget.selection_changed.connect(self.properties_widget.update_properties)
         self.architecture_widget.delete_requested.connect(self.remove_element)
         self.architecture_widget.add_group_requested.connect(self.add_group)
-        self.architecture_widget.files_dropped.connect(self.handle_file_drop)
+        self.architecture_widget.change_type_requested.connect(self.change_brillouin_type)
+        self.architecture_widget.export_path_clipboard.connect(self.handler.export_path_clipboard)
+        self.architecture_widget.export_group_requested.connect(self.export_group)
+        self.architecture_widget.files_dropped.connect(self.handle_file_addition)
+        self.architecture_widget.update_property_requested.connect(self.properties_widget.update_properties)
+        self.architecture_widget.treat_PSD_requested.connect(self.treat_PSD)
+        self.architecture_widget.analyze_raw_data_requested.connect(self.analyze_raw_data)
 
     def _initialize_menubar(self):
         menubar = self.menuBar()
@@ -135,6 +143,57 @@ class MainWindow(QMainWindow):
         about_action.triggered.connect(lambda: QMessageBox.about(self, "About HDF5_BLS", "HDF5_BLS GUI\nVersion 1.0"))
         help_menu.addAction(about_action)
 
+    def add_attribute(self):
+        """Add a new attribute to the selected element.
+        """
+        from .attribute_dialog import AddAttributeDialog
+        dialog = AddAttributeDialog(self)
+        if dialog.exec_():
+            full_name, value = dialog.get_data()
+            path = self.architecture_widget.get_current_path()
+            if path:
+                try:
+                    self.handler.wrp.add_attributes(attributes={full_name: value}, parent_group=path)
+                    self.properties_widget.update_properties(path)
+                    self.log.append(f"Attribute <b>{full_name}</b> added to <i>{path}</i>")
+                except Exception as e:
+                    QMessageBox.warning(self, "Error", f"Could not add attribute: {e}")
+
+    def add_data(self):
+        """Add a new element to the HDF5 file.
+        """
+        filepaths = QFileDialog.getOpenFileNames(self, "Select a file to add", "All files (*)")[0]
+        if len(filepaths) == 0: return
+
+        parent_path = self.architecture_widget.get_current_path()
+
+        self.handle_file_addition(filepaths, parent_path)
+
+    def add_group(self, path=None):
+        """Add a new group to the HDF5 file.
+        """
+        if path is None:
+            path = self.architecture_widget.get_current_path()
+            
+        try:
+            # For simplicity, using a default name "New Group"
+            self.handler.create_group("New Group", path)
+            self.architecture_widget.update_treeview()
+            self.architecture_widget.expand_path(f"{path}/New Group")
+            self.log.append(f"Group <i>New Group</i> created in <i>{path}</i>")
+        except Exception as e:
+            QMessageBox.warning(self, "Error", f"Could not create group: {e}")
+
+    def change_brillouin_type(self, path, new_type):
+        """Change the Brillouin type of the Brillouin group.
+        """
+        try:
+            self.handler.wrp.change_brillouin_type(path, new_type)
+            self.log.append(f"Brillouin type changed to <i>{new_type}</i> in <i>{path}</i>")
+            self.architecture_widget.update_icon(path)
+        except Exception as e:
+            QMessageBox.warning(self, "Error", f"Could not change Brillouin type: {e}")
+
     @Slot()
     def closeEvent(self, event):
         """Close the window and exit the application.
@@ -146,6 +205,30 @@ class MainWindow(QMainWindow):
         
         self.handler.wrp.close(delete_temp_file = True)
         event.accept()
+
+    def export_group(self, path):
+        """Export the group to an HDF5 file.
+        """
+        name_group = path.split("/")[-1]
+        filepath, _ = QFileDialog.getSaveFileName(self, "Export Group", str(Path.home() / f"{name_group}.h5"), "HDF5 Files (*.h5)")
+        if filepath:
+            try:
+                self.handler.wrp.export_group(path, filepath)
+                self.log.append(f"Group <i>{name_group}</i> exported to <i>{filepath}</i>")
+            except Exception as e:
+                QMessageBox.warning(self, "Error", f"Could not export group: {e}")
+
+    def export_normalized_attributes(self):
+        """Export the normalized list of attributes to an Excel file.
+        """
+        from HDF5_BLS import NormalizedAttributes
+        filepath, _ = QFileDialog.getSaveFileName(self, "Export Normalized Attributes", str(Path.home() / "normalized_attributes.xlsx"), "Excel Files (*.xlsx)")
+        if filepath:
+            try:
+                NormalizedAttributes.to_excel(filepath)
+                self.log.append(f"Normalized attributes exported to <i>{filepath}</i>")
+            except Exception as e:
+                QMessageBox.warning(self, "Error", f"Could not export normalized attributes: {e}")
 
     def handle_error_save(self):
         """Function that handles the error when trying to close the wrapper without saving it. 
@@ -160,6 +243,44 @@ class MainWindow(QMainWindow):
         elif dialog == QMessageBox.Cancel:
             return False
         return True
+
+    def handle_file_addition(self, filepaths, parent_path, creator = None):
+        """Handle files dropped on the architecture widget.
+
+        Parameters:
+        -----------
+        filepaths : list
+            List of file paths to import.
+        parent_path : str
+            Path to the parent group in the HDF5 file.
+        creator : str, optional
+            Creator of the data. Defaults to None.
+        """
+        # Check all filepaths have same extension
+        extensions = [Path(filepath).suffix for filepath in filepaths]
+        if len(set(extensions)) > 1:
+            QMessageBox.warning(self, "Error", "All filepaths must have the same extension.")
+            return
+        
+        extension = extensions[0]
+        if extension == ".h5":
+            for filepath in filepaths:
+                self.open_hdf5(filepath)
+        else:
+            for filepath in filepaths:
+                try:
+                    self.handler.import_raw_data(filepath, parent_path, creator=creator)
+                    self.log.append(f"<i>{filepath}</i> imported to {parent_path} using {creator}")
+                except load_errors.LoadError_creator as e:
+                    creator, ok = QInputDialog.getItem(self, "Select Creator", f"Multiple creators found. Please select one:", e.creators, 0, False)
+                    if ok and creator:
+                        self.handle_file_addition(filepaths, parent_path, creator)
+                        break
+                    else:
+                        return
+                except Exception as e:
+                    QMessageBox.warning(self, "Error", f"Could not import {filepath}: {e}")
+                    return
 
     def new_hdf5(self):
         """Create a new HDF5 file.
@@ -206,68 +327,6 @@ class MainWindow(QMainWindow):
                 self.handler.save_as_hdf5(filepath, overwrite = True)
             self.log.append(f"<i>{filepath}</i> has been saved")
 
-    def add_data(self):
-        """Add a new element to the HDF5 file.
-        """
-        filepaths = QFileDialog.getOpenFileNames(self, "Select a file to add", "All files (*)")[0]
-        if len(filepaths) == 0: return
-
-        parent_path = self.architecture_widget.get_current_path()
-        for filepath in filepaths:
-            try:
-                self.handler.import_data(filepath, parent_path)
-                self.log.append(f"<i>{filepath}</i> imported to {parent_path}")
-            except Exception as e:
-                QMessageBox.warning(self, "Error", f"Could not import {filepath}: {e}")
-        
-        self.architecture_widget.update_treeview()
-
-    def handle_file_drop(self, filepaths, parent_path):
-        """Handle files dropped on the architecture widget.
-        """
-        for filepath in filepaths:
-            if filepath.lower().endswith(".h5"):
-                self.open_hdf5(filepath)
-            else:
-                try:
-                    self.handler.import_data(filepath, parent_path)
-                    self.log.append(f"<i>{filepath}</i> imported to {parent_path}")
-                except Exception as e:
-                    QMessageBox.warning(self, "Error", f"Could not import {filepath}: {e}")
-        
-        self.architecture_widget.update_treeview()
-        self.log.append("Drag and drop operation completed")
-
-    def add_group(self, path=None):
-        """Add a new group to the HDF5 file.
-        """
-        if path is None:
-            path = self.architecture_widget.get_current_path()
-            
-        try:
-            # For simplicity, using a default name "New Group"
-            self.handler.create_group("New Group", path)
-            self.architecture_widget.update_treeview()
-            self.log.append(f"Group created in <i>{path}</i>")
-        except Exception as e:
-            QMessageBox.warning(self, "Error", f"Could not create group: {e}")
-
-    def add_attribute(self):
-        """Add a new attribute to the selected element.
-        """
-        from .attribute_dialog import AddAttributeDialog
-        dialog = AddAttributeDialog(self)
-        if dialog.exec_():
-            full_name, value = dialog.get_data()
-            path = self.architecture_widget.get_current_path()
-            if path:
-                try:
-                    self.handler.wrp.add_attributes(attributes={full_name: value}, parent_group=path)
-                    self.properties_widget.update_properties(path)
-                    self.log.append(f"Attribute <b>{full_name}</b> added to <i>{path}</i>")
-                except Exception as e:
-                    QMessageBox.warning(self, "Error", f"Could not add attribute: {e}")
-
     def remove_element(self, path=None):
         """Remove the selected element from the HDF5 file.
         """
@@ -281,8 +340,11 @@ class MainWindow(QMainWindow):
         dialog = QMessageBox.question(self, "Warning", f"Are you sure you want to remove <b>{path}</b>?")
         if dialog == QMessageBox.Yes:
             try:
-                self.handler.remove_element(path)
+                parent = "/".join(path.split('/')[:-1])
+                self.handler.delete_element(path)
                 self.architecture_widget.update_treeview()
+                self.architecture_widget.expand_path(parent)
+                self.properties_widget.update_properties(parent)
                 self.log.append(f"Element <i>{path}</i> removed")
             except Exception as e:
                 QMessageBox.warning(self, "Error", f"Could not remove element: {e}")
@@ -292,17 +354,23 @@ class MainWindow(QMainWindow):
         """
         QMessageBox.information(self, "Not implemented", "Remove attribute functionality is not yet implemented.")
 
-    def export_normalized_attributes(self):
-        """Export the normalized list of attributes to an Excel file.
+    def treat_PSD(self, path = None):
+        """Treat the PSD data.
         """
-        from HDF5_BLS import NormalizedAttributes
-        filepath, _ = QFileDialog.getSaveFileName(self, "Export Normalized Attributes", str(Path.home() / "normalized_attributes.xlsx"), "Excel Files (*.xlsx)")
-        if filepath:
-            try:
-                NormalizedAttributes.to_excel(filepath)
-                self.log.append(f"Normalized attributes exported to <i>{filepath}</i>")
-            except Exception as e:
-                QMessageBox.warning(self, "Error", f"Could not export normalized attributes: {e}")
+        if path is None:
+            path = self.architecture_widget.get_current_path()
+        
+        if not path:
+            QMessageBox.warning(self, "Warning", "Please select a group to treat.")
+            return
+
+        dialog = TreatWizard(self.handler, path, self)
+        dialog.exec()
+
+    def analyze_raw_data(self, path = None):
+        """Analyze the raw data.
+        """
+        QMessageBox.information(self, "Not implemented", f"Raw data analysis functionality is not yet implemented. <b>{path}</b>")
 
 if __name__ == "__main__":
     from PySide6.QtWidgets import QApplication
