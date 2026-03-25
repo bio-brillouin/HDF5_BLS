@@ -17,9 +17,9 @@ sys.path.insert(0, os.path.abspath('..'))
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'HDF5_BLS'
-copyright = '2025, Pierre Bouvet'
+copyright = '2026, Pierre Bouvet'
 author = 'Pierre Bouvet'
-release = 'v1.1.1_dev'
+release = 'v1.1.0'
 html_favicon = '_static/myicon.png'
 html_logo = "_static/myicon.png"
 
