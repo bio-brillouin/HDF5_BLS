@@ -29,6 +29,9 @@ These function work a bit differently from the ones used to add data, as we migh
 * overwrite: A parameter to indicate whether the dataset should be overwritten if it already exists, by default False - attributes are not overwritten. 
 * *all the attributes corresponding to the type of data (abscissa, frequency, PSD, raw data, treated data)*
 
+.. important::
+    The *creator* parameter is used to differentiate different structures of files using the same format (for example .dat files). Note that giving the wrong creator will most likely result in an error, as the data will not be interpreted correctly. 
+
 **Example**
 Let's consider the following example: we have just initialized a wrapper object and want to import an abscissa axis corresponding to our measures that have been stored in a .npy file (for example if a Python routine has been used to impose conditions for the measure). In that case, the array can be interpreted without any parameters nor specification.
 
