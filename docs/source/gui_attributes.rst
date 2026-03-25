@@ -10,9 +10,9 @@ Adding Attributes
 
 To add an attribute to a specific group or dataset:
 
-1.  Select the desired element in the **Architecture Tree** (right panel).
-2.  Click the **"Add Attribute"** button located below the Properties tab widget.
-3.  In the **Add Attribute** window:
+1.  Select the desired element in the **Architecture Tree** (left panel).
+2.  Click the **"Edit Attribute"** button located below the Properties tab widget.
+3.  In the **Edit Attribute** window:
     -   **Group Selection**: Choose a standardized group from the dropdown (e.g., `MEASURE`, `SPECTROMETER`).
     -   **Attribute Name**: Select an existing name from the dropdown or click **"new name"** to enter a custom one. A grey italicized placeholder will guide your custom entry.
     -   **Value**: If the selected attribute has recommended values, choose one from the dropdown. Otherwise, click **"custom"** to enter a manual value.
