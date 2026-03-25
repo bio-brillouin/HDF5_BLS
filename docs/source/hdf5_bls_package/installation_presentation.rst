@@ -4,6 +4,7 @@ Installation
 ^^^^^^^^^^^^
 
 To install the package, you can either:
+
 * Download the source code from the GitHub repository (the hard way) 
 * Use pip to install the package (easy way) 
 

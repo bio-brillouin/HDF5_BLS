@@ -92,13 +92,27 @@ The name of the attributes contains the unit of the attribute if it has units, i
 * "MEASURE.Date\_of\_measurement" is the date of the measurement, stored following the ISO8601 norm.
 * "FILEPROP.Name" is the name of the file.
 
-To ease the unification of nomenclature and norms of attributes, we propose to use a spreadsheet that contains the list of attributes, their definition, their unit and an example of value. This spreadsheet is available on the project repository and is updated as new attributes are added to the project. Each attribute has a version number that is also stored in the attributes of each data attribute (under FILEPROP.version).
+To ease the unification of nomenclature and norms of attributes, the ``HDF5_BLS`` package provides a centralized ``NormalizedAttributes`` class. This class contains the list of all standardized attributes, their definition, units, and recommended values. 
+
+The standardized attributes can be exported to an Excel spreadsheet or a CSV file for manual editing, and then import with dedicated methods of the HDF5_BLS class. Alternatively, the user can rely on the programmatic API or the built-in GUI tools to set the attributes.
+
+.. code-block:: python
+
+    from HDF5_BLS import NormalizedAttributes
+
+    # Export to Excel with dropdown validation
+    NormalizedAttributes.to_excel("normalized_attributes.xlsx")
+
+    # Get attributes by group
+    attrs = NormalizedAttributes.get_attributes_by_group("SPECTROMETER")
+    for attr in attrs:
+        print(f"{attr.name}: {attr.description}")
 
 .. figure:: ../_static/Excel_attributes.png
    :width: 70%
    :align: center
 
-   A visualization of the spreadsheet containing the list of attributes.
+   A visualization of the exported Excel spreadsheet containing the list of attributes with data validation.
 
 
 Storing analysis and treatment processes performed with the HDF5\_BLS package

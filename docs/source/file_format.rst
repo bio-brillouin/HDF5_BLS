@@ -105,7 +105,7 @@ Following the same logic, each of these datasets will be associated to a "Brillo
 Multiple measures stored with their results and algorithms
 ----------------------------------------------------------
 
-The file structure is capable of storing not only datasets, attributes related to how the data was collected, in a hierarchical way, but it also allows users to store their scripts. This is particularly useful when the user performs a new kind of data processing, or when he uses the data to generate figures. Any script can be stored in the file as text. Note that in order to differentiate between scripts and "normal" attributes, we recommend using the prefix "script_" for the attribute name, so as to clearly distinguish them from the other attributes.
+The file structure is capable of storing not only datasets, attributes related to how the data was collected, in a hierarchical way, but it also allows users to store their scripts. This is particularly useful when the user performs a new kind of data processing, or when he uses the data to generate figures. Any script can be stored in the file as text. Note that in order to differentiate between scripts and "normal" attributes, we recommend using the prefix "script\_" for the attribute name, so as to clearly distinguish them from the other attributes.
 
 These scripts can be in any programming language, and will in the future be runnable from the library itself (particularly to re-generate the figures). Here is an example of how a file storing a script would look like:
 

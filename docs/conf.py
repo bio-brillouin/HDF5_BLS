@@ -17,9 +17,9 @@ sys.path.insert(0, os.path.abspath('..'))
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'HDF5_BLS'
-copyright = '2025, Pierre Bouvet'
+copyright = '2026, Pierre Bouvet'
 author = 'Pierre Bouvet'
-release = 'v1.0.3'
+release = 'v1.1.0'
 html_favicon = '_static/myicon.png'
 html_logo = "_static/myicon.png"
 
@@ -54,7 +54,18 @@ numfig = True
 templates_path = ['_templates']
 master_doc = 'index'
 language = 'en'
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = [
+    '_build', 
+    'Thumbs.db', 
+    '.DS_Store',
+    'source/hdf5_bls_package/installation_presentation.rst',
+    'source/hdf5_bls_package/wrapper_object.rst',
+    'source/hdf5_bls_package/adding_data.rst',
+    'source/hdf5_bls_package/import_data.rst',
+    'source/hdf5_bls_package/add_merge.rst',
+    'source/hdf5_bls_package/attributes.rst',
+    'source/hdf5_bls_analyse_package/installation_presentation.rst',
+]
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
