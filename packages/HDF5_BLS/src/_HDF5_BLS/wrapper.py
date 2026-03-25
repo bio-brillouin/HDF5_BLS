@@ -1399,16 +1399,16 @@ class Wrapper:
             else:
                 return type(file[path])
 
-    def move(self, path, new_path): # Test made 19.09.25
+    def move(self, path, new_path):
         """
-        Moves an element from one path to another. If the new group does not exist, it is created.
+        Moves an element from one path to another. 
 
         Parameters
         ----------
         path : str
             The path to the element to move.
         new_path : str
-            The new path to move the element to.
+            The new path where to move the element to (including the name).
 
         Raises
         ------
@@ -1418,16 +1418,18 @@ class Wrapper:
         with h5py.File(self.filepath, 'a') as file:
             if path not in file:
                 raise WrapperError_StructureError(f"The path '{path}' does not exist in the file.")
+            
+            # If the destination group does not exist, create it
             if new_path not in file:
-                file.create_group(new_path)
-            group = file[new_path]
-            name_group = path.split("/")[-1]
-            group.create_group(name_group)
-            for k,v in file[path].attrs.items():
-                group[name_group].attrs[k] = v
-            for key in file[path].keys():
-                file[new_path][name_group].copy(file[path][key], key)
-            self.delete_element(path)
+                new_group = file.create_group(new_path)
+                new_group.attrs["Brillouin_type"] = "Root"
+            
+            # destination full path includes the name of the moved element
+            dest_full_path = f"{new_path}/{path.split('/')[-1]}"
+            
+            # Use h5py's move method for efficient movement
+            file.move(path, dest_full_path)
+            self.need_for_repack = True
 
     def move_channel_dimension_to_last(self, path, channel_dimension=None): # Test made 19.09.25
         """
