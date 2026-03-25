@@ -79,16 +79,20 @@ class MainWindow(QMainWindow):
         self.button_panel.close_requested.connect(self.close)
 
         # Architecture Widget signals
-        self.architecture_widget.selection_changed.connect(self.properties_widget.update_properties)
-        self.architecture_widget.delete_requested.connect(self.remove_element)
         self.architecture_widget.add_group_requested.connect(self.add_group)
-        self.architecture_widget.change_type_requested.connect(self.change_brillouin_type)
-        self.architecture_widget.export_path_clipboard.connect(self.handler.export_path_clipboard)
-        self.architecture_widget.export_group_requested.connect(self.export_group)
-        self.architecture_widget.files_dropped.connect(self.handle_file_addition)
-        self.architecture_widget.update_property_requested.connect(self.properties_widget.update_properties)
-        self.architecture_widget.treat_PSD_requested.connect(self.treat_PSD)
         self.architecture_widget.analyze_raw_data_requested.connect(self.analyze_raw_data)
+        self.architecture_widget.change_type_requested.connect(self.change_brillouin_type)
+        self.architecture_widget.delete_requested.connect(self.remove_element)
+        self.architecture_widget.export_group_requested.connect(self.export_group)
+        self.architecture_widget.export_path_clipboard.connect(self.handler.export_path_clipboard)
+        self.architecture_widget.files_dropped.connect(self.handle_file_addition)
+        self.architecture_widget.rename_requested.connect(self.rename_element)
+        self.architecture_widget.selection_changed.connect(self.properties_widget.update_properties)
+        self.architecture_widget.treat_PSD_requested.connect(self.treat_PSD)
+        self.architecture_widget.update_property_requested.connect(self.properties_widget.update_properties)
+
+        # Properties Widget signals
+        self.properties_widget.edit_attributes_requested.connect(self.edit_attributes)
 
     def _initialize_menubar(self):
         menubar = self.menuBar()
@@ -121,9 +125,9 @@ class MainWindow(QMainWindow):
         # Edit Menu
         edit_menu = menubar.addMenu("&Edit")
         
-        add_attr_action = QAction("Add Attribute", self)
-        add_attr_action.triggered.connect(self.add_attribute)
-        edit_menu.addAction(add_attr_action)
+        edit_attr_action = QAction("Edit Attribute", self)
+        edit_attr_action.triggered.connect(self.edit_attributes)
+        edit_menu.addAction(edit_attr_action)
         
         remove_attr_action = QAction("Remove Attribute", self)
         remove_attr_action.triggered.connect(self.remove_attribute)
@@ -142,22 +146,6 @@ class MainWindow(QMainWindow):
         about_action = QAction(QIcon(f"{self.gui_root}/assets/img/help.svg"), "&About", self)
         about_action.triggered.connect(lambda: QMessageBox.about(self, "About HDF5_BLS", "HDF5_BLS GUI\nVersion 1.0"))
         help_menu.addAction(about_action)
-
-    def add_attribute(self):
-        """Add a new attribute to the selected element.
-        """
-        from .attribute_dialog import AddAttributeDialog
-        dialog = AddAttributeDialog(self)
-        if dialog.exec_():
-            full_name, value = dialog.get_data()
-            path = self.architecture_widget.get_current_path()
-            if path:
-                try:
-                    self.handler.wrp.add_attributes(attributes={full_name: value}, parent_group=path)
-                    self.properties_widget.update_properties(path)
-                    self.log.append(f"Attribute <b>{full_name}</b> added to <i>{path}</i>")
-                except Exception as e:
-                    QMessageBox.warning(self, "Error", f"Could not add attribute: {e}")
 
     def add_data(self):
         """Add a new element to the HDF5 file.
@@ -179,10 +167,17 @@ class MainWindow(QMainWindow):
             # For simplicity, using a default name "New Group"
             self.handler.create_group("New Group", path)
             self.architecture_widget.update_treeview()
-            self.architecture_widget.expand_path(f"{path}/New Group")
+            new_path = f"{path}/New Group"
+            self.architecture_widget.expand_path(new_path)
+            self.architecture_widget.edit_path(new_path)
             self.log.append(f"Group <i>New Group</i> created in <i>{path}</i>")
         except Exception as e:
             QMessageBox.warning(self, "Error", f"Could not create group: {e}")
+
+    def analyze_raw_data(self, path = None):
+        """Analyze the raw data.
+        """
+        QMessageBox.information(self, "Not implemented", f"Raw data analysis functionality is not yet implemented. <b>{path}</b>")
 
     def change_brillouin_type(self, path, new_type):
         """Change the Brillouin type of the Brillouin group.
@@ -205,6 +200,28 @@ class MainWindow(QMainWindow):
         
         self.handler.wrp.close(delete_temp_file = True)
         event.accept()
+
+    def edit_attributes(self, path = None):
+        """Edit the attributes of the selected element.
+        """
+        print("\nEntering edit_attributes")
+        if type(path) == type(None):
+            path = self.architecture_widget.get_current_path()
+            print("\npath - ", path)
+        if path is False:
+            path = 'Brillouin'
+
+        from .attribute_edit_dialog import AttributeEditDialog
+        dialog = AttributeEditDialog(self.handler, path, self)
+        if dialog.exec():
+            new_attrs = dialog.get_attributes()
+            try:
+                # Update attributes in HDF5
+                self.handler.add_attributes(path, new_attrs, overwrite=True)
+                self.properties_widget.update_properties(path)
+                self.log.append(f"Attributes updated for <i>{path}</i>")
+            except Exception as e:
+                QMessageBox.warning(self, "Error", f"Could not update attributes: {e}")
 
     def export_group(self, path):
         """Export the group to an HDF5 file.
@@ -264,8 +281,15 @@ class MainWindow(QMainWindow):
         
         extension = extensions[0]
         if extension == ".h5":
-            for filepath in filepaths:
-                self.open_hdf5(filepath)
+            if not len(self.handler.wrp.get_children_elements()):
+                self.open_hdf5(filepaths[-1])
+            else:
+                response = QMessageBox.question(self, "Addition or opening", "Do you want to add the HDF5 file to the current database or open the last one as a new database?", QMessageBox.Yes | QMessageBox.No |QMessageBox.Cancel)
+                if response == QMessageBox.Yes:
+                    for filepath in filepaths:
+                        self.handler.add_hdf5(filepath, parent_path)
+                elif response == QMessageBox.No:
+                    self.open_hdf5(filepaths[-1])
         else:
             for filepath in filepaths:
                 try:
@@ -310,6 +334,54 @@ class MainWindow(QMainWindow):
         self.properties_widget.update_properties("Brillouin")
         self.log.append(f"<i>{filepath}</i> opened")
 
+    def remove_element(self, path=None, next_path=None):
+        """Remove the selected element from the HDF5 file.
+        """
+        if path is None:
+            path = self.architecture_widget.get_current_path()
+
+        if path == "Brillouin":
+            QMessageBox.warning(self, "Warning", "You can't remove the root element")
+            return
+        
+        # Determine fallback next path if not provided
+        if next_path is None:
+            next_path = "/".join(path.split('/')[:-1])
+
+        dialog = QMessageBox.question(self, "Warning", f"Are you sure you want to remove <b>{path}</b>?")
+        if dialog == QMessageBox.Yes:
+            try:
+                self.handler.delete_element(path)
+                self.architecture_widget.update_treeview()
+                self.architecture_widget.expand_path(next_path)
+                self.properties_widget.update_properties(next_path)
+                self.log.append(f"Element <i>{path}</i> removed")
+            except Exception as e:
+                QMessageBox.warning(self, "Error", f"Could not remove element: {e}")
+
+    def remove_attribute(self):
+        """Remove an attribute from the selected element.
+        """
+        QMessageBox.information(self, "Not implemented", "Remove attribute functionality is not yet implemented.")
+
+    def rename_element(self, path):
+        """Rename the selected element.
+        """
+        if path == "Brillouin":
+            QMessageBox.warning(self, "Warning", "You can't rename the root element")
+            return
+
+        new_name, ok = QInputDialog.getText(self, "Rename Element", f"Enter new name for <b>{path}</b>:")
+        if ok and new_name:
+            try:
+                self.handler.change_name(path, new_name)
+                self.architecture_widget.update_treeview()
+                self.architecture_widget.expand_path(path)
+                self.properties_widget.update_properties(path)
+                self.log.append(f"Element at <i>{path}</i> renamed to <i>{new_name}</i>")
+            except Exception as e:
+                QMessageBox.warning(self, "Error", f"Could not rename element: {e}")
+
     def repack(self):
         """Repacks the wrapper to minimize its size.
         """
@@ -327,33 +399,6 @@ class MainWindow(QMainWindow):
                 self.handler.save_as_hdf5(filepath, overwrite = True)
             self.log.append(f"<i>{filepath}</i> has been saved")
 
-    def remove_element(self, path=None):
-        """Remove the selected element from the HDF5 file.
-        """
-        if path is None:
-            path = self.architecture_widget.get_current_path()
-
-        if path == "Brillouin":
-            QMessageBox.warning(self, "Warning", "You can't remove the root element")
-            return
-        
-        dialog = QMessageBox.question(self, "Warning", f"Are you sure you want to remove <b>{path}</b>?")
-        if dialog == QMessageBox.Yes:
-            try:
-                parent = "/".join(path.split('/')[:-1])
-                self.handler.delete_element(path)
-                self.architecture_widget.update_treeview()
-                self.architecture_widget.expand_path(parent)
-                self.properties_widget.update_properties(parent)
-                self.log.append(f"Element <i>{path}</i> removed")
-            except Exception as e:
-                QMessageBox.warning(self, "Error", f"Could not remove element: {e}")
-
-    def remove_attribute(self):
-        """Remove an attribute from the selected element.
-        """
-        QMessageBox.information(self, "Not implemented", "Remove attribute functionality is not yet implemented.")
-
     def treat_PSD(self, path = None):
         """Treat the PSD data.
         """
@@ -366,11 +411,6 @@ class MainWindow(QMainWindow):
 
         dialog = TreatWizard(self.handler, path, self)
         dialog.exec()
-
-    def analyze_raw_data(self, path = None):
-        """Analyze the raw data.
-        """
-        QMessageBox.information(self, "Not implemented", f"Raw data analysis functionality is not yet implemented. <b>{path}</b>")
 
 if __name__ == "__main__":
     from PySide6.QtWidgets import QApplication

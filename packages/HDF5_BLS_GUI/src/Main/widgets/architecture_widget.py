@@ -6,8 +6,8 @@ from HDF5_BLS.wrapper import HDF5_group, HDF5_dataset
 
 class ArchitectureWidget(QTreeView):
     selection_changed = Signal(str)  # Emits the path of the selected element
-    rename_requested = Signal(str, str)  # Emits (old_path, new_name)
-    delete_requested = Signal(str)
+    rename_requested = Signal(str)  # Emits (path)
+    delete_requested = Signal(str, str) # Emits (path_to_delete, path_to_select_after)
     add_group_requested = Signal(str) # path
     change_type_requested = Signal(str, str) # path, brillouin_type
     export_path_clipboard = Signal(str) # path
@@ -40,8 +40,8 @@ class ArchitectureWidget(QTreeView):
 
         # UI Setup
         self.setAcceptDrops(True)
-        self.setDragEnabled(False)
-        self.setDragDropMode(QAbstractItemView.DropOnly)
+        self.setDragEnabled(True)
+        self.setDragDropMode(QAbstractItemView.DragDrop)
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.show_context_menu)
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
@@ -213,156 +213,35 @@ class ArchitectureWidget(QTreeView):
             self.setCurrentIndex(index)
             self.update_property_requested.emit(path)
 
-
-
-
-
-
-    def treeview_context_menu(self, position: QPoint):
-
-        def add_action_general(menu, menu_actions, associated_action):
-            """General actions common to all elements of an HDF5 file.
-
-            Parameters
-            ----------
-            menu : QMenu
-                The main context menu
-            menu_actions : dic
-                Dictionnary of actions to add to the menu
-            associated_action : dic
-                Dictionnary of associated functions to the actions
-            """
-            menu_actions["export_path"] = menu.addAction("Copy path to clipboard")
-            associated_action["export_path"] = self.export_path_clipboard
-
-            menu_actions["import"] = menu.addAction("Import element")
-            associated_action["import"] = self.add_data
-            
-        def add_action_groups(menu, menu_actions, associated_action):
-            
-            def sub_menu_Brillouin_type_group():
-                def apply_change(value):
-                    self.wrp.change_brillouin_type(path=self.treeview.currentIndex().data(Qt.UserRole), brillouin_type=value)
-                    self.set_icon_brillouin_type(self.architecture_file_model.itemFromIndex(self.treeview.currentIndex()), value)
-
-                # Clear the menu
-                menu_actions["edit_type_group"].clear()
-
-                # Add actions for each group type
-                for tpe in self.wrp.BRILLOUIN_TYPES_GROUPS:
-                    menu_actions[f"edit_type_group_{tpe}"] = QAction(tpe.replace("_", " "), self)
-                    menu_actions[f"edit_type_group_{tpe}"].triggered.connect(partial(apply_change, value=tpe))
-                    menu_actions["edit_type_group"].addAction(menu_actions[f"edit_type_group_{tpe}"])
-                
-            def add_action_group_root(menu, menu_actions, associated_action):
-                associated_action["merge_sub_datasets"] = self.merge_sub_datasets
-
-            def add_action_group_measure(menu, menu_actions, associated_action):
-                associated_action["export_brim"] = self.export_brim
-
-            menu_actions["edit_type_group"] = menu.addMenu("Edit Type")
-            menu_actions["edit_type_group"].aboutToShow.connect(sub_menu_Brillouin_type_group)
-            menu.addSeparator()
-            menu_actions["export_group"] = menu.addAction("Export group as a HDF5 file")
-            associated_action["export_group"] = self.export_HDF5_group
-            menu.addSeparator()
-            menu_actions["get_PSD"] = menu.addAction("Get PSD")
-            associated_action["get_PSD"] = self.get_PSD
-            menu_actions["get_results"] = menu.addAction("Get Results")
-            associated_action["get_results"] = self.get_results
-            menu.addSeparator()
-
-            # Add actions in function of the Brillouin type of the selected item
-            if self.wrp.get_type(path=self.treeview.currentIndex().data(Qt.UserRole), return_Brillouin_type=True) == "Root":
-                add_action_group_root(menu, menu_actions, associated_action)
-            elif self.wrp.get_type(path=self.treeview.currentIndex().data(Qt.UserRole), return_Brillouin_type=True) in ["Calibration_spectrum", "Impulse_response", "Measure"]:
-                add_action_group_measure(menu, menu_actions, associated_action)
-
-        def add_action_datasets(menu, menu_actions, associated_action):
-            def sub_menu_Brillouin_type_dataset():
-                def apply_change(value):
-                    self.wrp.change_brillouin_type(path=self.treeview.currentIndex().data(Qt.UserRole), brillouin_type=value)
-                    self.set_icon_brillouin_type(self.architecture_file_model.itemFromIndex(self.treeview.currentIndex()), value)
-
-                menu_actions["edit_type_dataset"].clear()
-
-                for tpe in self.wrp.BRILLOUIN_TYPES_DATASETS:
-                    menu_actions[f"edit_type_dataset_{tpe}"] = QAction(tpe.replace("_", " "), self)
-                    menu_actions[f"edit_type_dataset_{tpe}"].triggered.connect(partial(apply_change, value=tpe))
-                    menu_actions["edit_type_dataset"].addAction(menu_actions[f"edit_type_dataset_{tpe}"])
-
-            def sub_menu_export_dataset():
-                # Clear the menu
-                menu_actions["export_dataset"].clear()
-
-                # Export the dataset as a numpy array
-                menu_actions["export_numpy_array"] = QAction("Export dataset as a numpy array", self)
-                menu_actions["export_numpy_array"].triggered.connect(self.export_numpy_array)
-                menu_actions["export_dataset"].addAction(menu_actions["export_numpy_array"])
-                
-                # If the dataset can be exported as an image, allow the user to do so
-                shape = [s for s in self.wrp[self.treeview.currentIndex().data(Qt.UserRole)].shape if s > 1]
-                if len(shape) == 2:
-                    menu_actions["export_image"] = QAction("Export dataset as an image", self)
-                    menu_actions["export_image"].triggered.connect(self.export_numpy_array)
-                    menu_actions["export_dataset"].addAction(menu_actions["export_image"])
-
-            def add_actions_dataset_PSD(menu, menu_actions, associated_action):
-                menu.addSeparator()
-                menu_actions["get_PSD"] = menu.addAction("Get PSD")
-                associated_action["get_PSD"] = self.get_PSD
-                menu.addSeparator()
-
-            menu_actions["edit_type_dataset"] = menu.addMenu("Edit Type")
-            menu_actions["edit_type_dataset"].aboutToShow.connect(sub_menu_Brillouin_type_dataset)
-            menu_actions["export_dataset"] = menu.addMenu("Export dataset")
-            menu_actions["export_dataset"].aboutToShow.connect(sub_menu_export_dataset)
-            if self.wrp.get_type(path=self.treeview.currentIndex().data(Qt.UserRole), return_Brillouin_type=True) in ["Frequency","Raw_data", "PSD"]:
-                add_actions_dataset_PSD(menu, menu_actions, associated_action)
-
-        indexes = self.treeview.selectedIndexes()
-
-        # If there is a selected element
-        if indexes:
-            # Initialize the menu
-            menu = QMenu()
-            menu_actions = {}
-            associated_action = {}
-
-            # Starts by adding actions common to all elements
-            add_action_general(menu, menu_actions, associated_action)
-            menu.addSeparator()
-
-            # Add actions in function of the type of the selected item (group or dataset)
-            if self.wrp.get_type(path=self.treeview.currentIndex().data(Qt.UserRole)) == HDF5_group:
-                add_action_groups(menu, menu_actions, associated_action)
-
-            elif self.wrp.get_type(path=self.treeview.currentIndex().data(Qt.UserRole)) == HDF5_dataset:
-                add_action_datasets(menu, menu_actions, associated_action)
-
-            # Execute the menu
-            action = menu.exec_(self.treeview.viewport().mapToGlobal(position))
-            for act in menu_actions.keys():
-                if action == menu_actions[act] and act in associated_action.keys():
-                    associated_action[act]()
-
-
-
-
-
-
+    def edit_path(self, path: str):
+        """Trigger editing of the item at the given path.
+        """
+        item = self.find_item_by_path(path)
+        if item:
+            index = item.index()
+            self.setCurrentIndex(index)
+            self.edit(index)
 
     def show_context_menu(self, position: QPoint):
         def general_actions():
+            if not path == "Brillouin":
+                rename_action = menu.addAction("Rename")
+                rename_action.triggered.connect(lambda: self.rename_requested.emit(path))
+
             export_path_action = menu.addAction("Export path to clipboard")
             export_path_action.triggered.connect(lambda: self.export_path_clipboard.emit(path))
 
+            if not path == "Brillouin":
+                remove_action = menu.addAction("Delete")
+                # Find index above for selection after delete
+                above_index = self.indexAbove(index)
+                above_path = above_index.data(Qt.UserRole) if above_index.isValid() else "Brillouin"
+                remove_action.triggered.connect(lambda: self.delete_requested.emit(path, above_path))
+
+            menu.addSeparator()
+
             import_data_action = menu.addAction("Import Data")
             import_data_action.triggered.connect(lambda: self.import_data_requested.emit(path))
-
-            if not path == "Brillouin":
-                remove_action = menu.addAction("Remove Element")
-                remove_action.triggered.connect(lambda: self.delete_requested.emit(path))
 
         def group_actions(path):
             def sub_menu_Brillouin_type_group():
@@ -402,7 +281,14 @@ class ArchitectureWidget(QTreeView):
 
                 return ret
             
-                
+            add_group_action = menu.addAction("New sub-group")
+            add_group_action.triggered.connect(lambda: self.add_group_requested.emit(path))
+
+            export_group_action = menu.addAction("Export Group as HDF5 file")
+            export_group_action.triggered.connect(lambda: self.export_group_requested.emit(path))
+
+            menu.addSeparator()
+
             change_type_group_action = menu.addMenu("Edit Type")
             change_type_group_action.aboutToShow.connect(sub_menu_Brillouin_type_group)
 
@@ -410,14 +296,6 @@ class ArchitectureWidget(QTreeView):
 
             if special_actions_PSD(path):
                 menu.addSeparator()
-
-            add_group_action = menu.addAction("Add Group")
-            add_group_action.triggered.connect(lambda: self.add_group_requested.emit(path))
-
-            menu.addSeparator()
-
-            export_group_action = menu.addAction("Export Group as HDF5 file")
-            export_group_action.triggered.connect(lambda: self.export_group_requested.emit(path))
 
         def dataset_actions():
             pass
@@ -440,10 +318,10 @@ class ArchitectureWidget(QTreeView):
         
         # Add actions based on path/type
         general_actions()
-        menu.addSeparator()
         if is_group:
             group_actions(path)
         else:
+            menu.addSeparator()
             dataset_actions()
         
         menu.exec_(self.viewport().mapToGlobal(position))
@@ -452,11 +330,22 @@ class ArchitectureWidget(QTreeView):
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls():
             event.accept()
+        elif event.mimeData().hasText(): # Internal drag
+            event.acceptProposedAction()
         else:
             super().dragEnterEvent(event)
 
     def dragMoveEvent(self, event):
         if event.mimeData().hasUrls():
+            event.accept()
+        elif event.mimeData().hasText(): # Internal drag
+            # Expand group on hover
+            index = self.indexAt(event.position().toPoint())
+            if index.isValid():
+                self.expand(index)
+            
+            # Show the green "+" by using CopyAction (per user request)
+            event.setDropAction(Qt.CopyAction)
             event.accept()
         else:
             super().dragMoveEvent(event)
@@ -471,6 +360,42 @@ class ArchitectureWidget(QTreeView):
             event.accept()
             self.update_treeview()
             self.expand_path(path)
+        elif event.mimeData().hasText(): # Internal drop
+            old_paths = event.mimeData().text().split(",")
+            index = self.indexAt(event.position().toPoint())
+            new_parent = index.data(Qt.UserRole) if index.isValid() else "Brillouin"
+            
+            # If dropped on a dataset, move to its parent instead? 
+            # Or just follow the folder metaphor.
+            if self.handler.get_type(new_parent) == HDF5_dataset:
+                new_parent = "/".join(new_parent.split("/")[:-1])
+
+            try:
+                for old_path in old_paths:
+                    if old_path != new_parent and not new_parent.startswith(old_path + "/"):
+                        self.handler.move_element(old_path, new_parent)
+                
+                event.accept()
+                self.update_treeview()
+                self.expand_path(new_parent)
+                self.selection_changed.emit(new_parent) # Update properties as requested
+            except Exception as e:
+                QMessageBox.warning(self, "Move Error", f"Could not move element: {e}")
         else:
             super().dropEvent(event)
 
+    def keyPressEvent(self, event):
+        """Handle key presses for delete shortcut.
+        """
+        if event.key() in (Qt.Key_Backspace, Qt.Key_Delete):
+            index = self.currentIndex()
+            if index.isValid():
+                path = index.data(Qt.UserRole)
+                if path and path != "Brillouin":
+                    # Get item above before deleting
+                    above_index = self.indexAbove(index)
+                    above_path = above_index.data(Qt.UserRole) if above_index.isValid() else "Brillouin"
+                    
+                    self.delete_requested.emit(path, above_path)
+        else:
+            super().keyPressEvent(event)

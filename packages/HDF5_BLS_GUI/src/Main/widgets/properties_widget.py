@@ -3,8 +3,8 @@ from PySide6.QtGui import QStandardItemModel, QStandardItem
 from PySide6.QtCore import Qt, Signal
 
 class PropertiesWidget(QWidget):
-    add_attribute_requested = Signal()
-    remove_attribute_requested = Signal()
+    edit_attributes_requested = Signal(str) # Path to the element in the HDF5 file
+    remove_attribute_requested = Signal(str, str) # Path to the element in the HDF5 file, name of the attribute to remove
 
     def __init__(self, handler, config, parent=None):
         """Initializes the frame with the property tabs and the visualization tab.
@@ -13,6 +13,7 @@ class PropertiesWidget(QWidget):
         self.handler = handler
         self.config = config
         self._initialize_ui()
+        self.path = None
 
     def _initialize_ui(self):
         # Create the properties widget
@@ -63,7 +64,7 @@ class PropertiesWidget(QWidget):
 
         # Add buttons for adding and removing attributes
         self.properties_buttons_layout = QHBoxLayout()
-        self.btn_add_attribute = QPushButton("Add Attribute")
+        self.btn_add_attribute = QPushButton("Edit Attributes")
         self.btn_remove_attribute = QPushButton("Remove Attribute")
         self.properties_buttons_layout.addWidget(self.btn_add_attribute)
         self.properties_buttons_layout.addWidget(self.btn_remove_attribute)
@@ -73,14 +74,26 @@ class PropertiesWidget(QWidget):
         self.main_layout.addLayout(self.properties_buttons_layout)
         
         # Connect buttons
-        self.btn_add_attribute.clicked.connect(self.add_attribute_requested)
-        self.btn_remove_attribute.clicked.connect(self.remove_attribute_requested)
+        self.btn_add_attribute.clicked.connect(lambda: self.edit_attributes_requested.emit(self.path))
+        self.btn_remove_attribute.clicked.connect(self.remove_attribute)
+
+    def remove_attribute(self):
+        """Remove the selected attribute.
+        """
+        selected_items = self.properties_other_tableview.selectedIndexes()
+        if not selected_items:
+            return
+        
+        row = selected_items[0].row()
+        attribute_name = self.properties_other_model.item(row, 0).text()
+        self.remove_attribute_requested.emit(self.path, attribute_name)
 
     def update_properties(self, path):
         """Update the properties frame based on the selected path.
         """
         if not path:
             return
+        self.path = path
             
         try: 
             attr = self.handler.get_attributes(path)

@@ -2,9 +2,7 @@ from HDF5_BLS import Wrapper
 from HDF5_BLS.errors import WrapperError_Overwrite, WrapperError_Save
 from HDF5_BLS.wrapper import HDF5_group, HDF5_dataset
 
-
 import pyperclip
-
 
 class HDF5Handler:
     def __init__(self, wrapper=None):
@@ -16,6 +14,9 @@ class HDF5Handler:
 
     def add_frequency(self, frequency, parent_group, name="Frequency", overwrite=False):
         self.wrp.add_frequency(data=frequency, parent_group=parent_group, name=name, overwrite=overwrite)
+
+    def add_hdf5(self, filepath, parent_group):
+        self.wrp.add_hdf5(filepath = filepath, parent_group = parent_group, overwrite = False)
 
     def change_brillouin_type(self, path, brillouin_type):
         self.wrp.change_brillouin_type(path=path, brillouin_type=brillouin_type)
@@ -55,7 +56,7 @@ class HDF5Handler:
                                     parent_group = parent_group, 
                                     brillouin_type = "Measure", 
                                 overwrite=False)
-        self.wrp.import_PSD(filepath=filepath, parent_group=f"{parent_group}/{name}", name=name, creator=creator, parameters=parameters, overwrite=overwrite)
+        self.wrp.import_PSD(filepath=filepath, parent_group=f"{parent_group}/{name}", name='PSD', creator=creator, parameters=parameters, overwrite=overwrite)
 
     def import_raw_data(self, filepath, parent_group, name="Raw data", creator=None, parameters=None, overwrite=False):
         if creator == 'GHOST':
@@ -66,7 +67,10 @@ class HDF5Handler:
                                     parent_group=parent_group, 
                                     brillouin_type = "Measure", 
                                     overwrite=overwrite)
-            self.wrp.import_raw_data(filepath=filepath, parent_group=f"{parent_group}/{name}", name=name, creator=creator, parameters=parameters, overwrite=overwrite)
+            self.wrp.import_raw_data(filepath=filepath, parent_group=f"{parent_group}/{name}", name='Raw data', creator=creator, parameters=parameters, overwrite=overwrite)
+
+    def move_element(self, path, new_parent):
+        self.wrp.move(path=path, new_path=new_parent)
 
     def new_hdf5(self):
         self.wrp = Wrapper()
