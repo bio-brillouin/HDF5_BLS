@@ -146,3 +146,25 @@ To get the path leading to a dataset, you can either use existing software to br
 .. code-block:: python
 
     print(wrp)
+
+Importing external data
+^^^^^^^^^^^^^^^^^^^^^^^
+
+The module comes with a centralized import module (HDF5_BLS.load_formats) that is meant to streamline the import of data from external files. This module has been wrapped in the Wrapper object and can be accessed with dedicated commands, depending on the nature of the file you want to import:
+
+.. code-block:: python
+
+    wrp.import_raw_data(filepath, parent_group = "Brillouin", name = 'Name of the dataset', creator = None, parameters = None, reshape = None, overwrite = False)
+    wrp.import_PSD(filepath, parent_group = "Brillouin", name = 'Name of the dataset', creator = None, parameters = None, reshape = None, overwrite = False)
+    wrp.import_other(filepath, parent_group = "Brillouin", name = 'Name of the dataset', creator = None, parameters = None, reshape = None, overwrite = False)
+    wrp.import_properties_data(filepath, path = None, overwrite = False, delete_child_attributes = False)
+
+The 'creator' parameter is used to identify the software or method used to generate the data. The creator is a string that is attached to a file extension. Here is a table of the creators and their associated file extensions:
+
+.. include:: hdf5_bls_package/load_formats/creators.rst
+
+As the project grows, we expect more file extensions to be added to this table.
+
+.. note::
+    The import of HDF5 files is handled by a specific logic, which is explained in the section :ref:`add merge <hdf5_bls_add_merge>`.
+    The import of Brim files is handled by a specific module, 'BrimConverter'.

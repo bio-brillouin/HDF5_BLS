@@ -290,6 +290,10 @@ class Wrapper:
     #     Main methods       # 
     ##########################
 
+    def add_brim(self, filepath, parent_group = 'Brillouin', overwrite = False):
+        ""
+        print('Function in construction')
+
     def add_hdf5(self, filepath, parent_group = "Brillouin", overwrite = False): # Test made 16.09.25
         """Adds an HDF5 file to the wrapper by specifying in which group the data have to be stored. Default is the "Brillouin" group. If the specified group does not exist, it will be created.
 
