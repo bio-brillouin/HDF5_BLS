@@ -1399,6 +1399,19 @@ class Wrapper:
             else:
                 return type(file[path])
 
+    def import_brim(self, filepath, parent_group = None):
+        """
+        Imports a brim file into the current HDF5 file.
+
+        Parameters
+        ----------
+        filepath : str
+            The path to the brim file.
+        parent_group : str, optional
+            The path to the parent group where the brim file should be imported. Default is None, which means the root group is used.
+        """
+        print('To do')
+            
     def move(self, path, new_path):
         """
         Moves an element from one path to another. 

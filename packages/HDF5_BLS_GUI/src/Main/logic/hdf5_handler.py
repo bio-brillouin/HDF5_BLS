@@ -56,11 +56,35 @@ class HDF5Handler:
                                     parent_group = parent_group, 
                                     brillouin_type = "Measure", 
                                 overwrite=False)
-        self.wrp.import_PSD(filepath=filepath, parent_group=f"{parent_group}/{name}", name='PSD', creator=creator, parameters=parameters, overwrite=overwrite)
-
+            self.wrp.import_PSD(filepath=filepath, parent_group=f"{parent_group}/{name}", name='PSD', creator=creator, parameters=parameters, overwrite=overwrite)
+        else:
+            self.wrp.import_PSD(filepath=filepath, parent_group=parent_group, name='PSD', creator=creator, parameters=parameters, overwrite=overwrite)
     def import_raw_data(self, filepath, parent_group, name="Raw data", creator=None, parameters=None, overwrite=False):
+        try:
+            parent_type = self.get_type(parent_group, return_Brillouin_type=True)
+        except:
+            parent_type = "Root"
+
+        if parent_type == "Measure":
+            has_raw_or_psd = False
+            for child in self.get_children_elements(parent_group):
+                child_type = self.get_type(f"{parent_group}/{child}", return_Brillouin_type=True)
+                if child_type in ["Raw_data", "PSD"]:
+                    has_raw_or_psd = True
+                    break
+            
+            if has_raw_or_psd:
+                new_name = filepath.split("/")[-1].split(".")[0]
+                self.wrp.import_other(filepath=filepath, parent_group=parent_group, name=new_name, creator=creator, parameters=parameters, overwrite=overwrite)
+            else:
+                if creator == 'GHOST':
+                    self.import_PSD(filepath=filepath, parent_group=parent_group, name='PSD', creator=creator, parameters=parameters, overwrite=overwrite, create_group=False)
+                else:
+                    self.wrp.import_raw_data(filepath=filepath, parent_group=parent_group, name='Raw data', creator=creator, parameters=parameters, overwrite=overwrite)
+            return
+
         if creator == 'GHOST':
-            self.import_PSD(filepath=filepath, parent_group=parent_group, name='PSD', creator=creator, parameters=parameters, overwrite=overwrite, create_group=False)
+            self.import_PSD(filepath=filepath, parent_group=parent_group, name='PSD', creator=creator, parameters=parameters, overwrite=overwrite, create_group=True)
         else:
             name = filepath.split("/")[-1].split(".")[0]
             self.wrp.create_group(name = name, 

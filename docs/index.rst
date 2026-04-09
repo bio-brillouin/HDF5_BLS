@@ -60,7 +60,8 @@ For any question, please contact the main developer of the project: `Pierre Bouv
    :maxdepth: 4
    :caption: GUI
 
-   source/gui_attributes
+   source/hdf5_bls_gui/gui_quickstart
+   source/hdf5_bls_gui/gui_attributes
 
 .. raw:: latex
 
