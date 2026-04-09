@@ -273,38 +273,105 @@ class MainWindow(QMainWindow):
         creator : str, optional
             Creator of the data. Defaults to None.
         """
-        # Check all filepaths have same extension
-        extensions = [Path(filepath).suffix for filepath in filepaths]
-        if len(set(extensions)) > 1:
-            QMessageBox.warning(self, "Error", "All filepaths must have the same extension.")
-            return
+        # if filepaths is one or a list of directories
+        is_dir = Path(filepaths[0]).is_dir()
+        for path in filepaths:
+            if not Path(path).is_dir() and is_dir:
+                QMessageBox.warning(self, "Error", "All filepaths must have the same extension.")
+                return
         
-        extension = extensions[0]
-        if extension == ".h5":
-            if not len(self.handler.wrp.get_children_elements()):
-                self.open_hdf5(filepaths[-1])
+        if is_dir:
+            # List all the file extensions recursively in the selected directories
+            extensions = []
+            for path in filepaths:
+                extensions.extend([filepath.suffix for filepath in Path(path).rglob('*') if filepath.is_file()])
+            extensions = list(set(extensions))
+            try:
+                extensions.remove("")
+            except ValueError:
+                pass
+            
+            # Ask the user to select between the file extensions with a tickable combo box
+            extension, ok = QInputDialog.getItem(self, "Select Extension", "Please select the file extension:", extensions, 0, False)
+            if ok and extension:
+                pass
             else:
-                response = QMessageBox.question(self, "Addition or opening", "Do you want to add the HDF5 file to the current database or open the last one as a new database?", QMessageBox.Yes | QMessageBox.No |QMessageBox.Cancel)
-                if response == QMessageBox.Yes:
-                    for filepath in filepaths:
-                        self.handler.add_hdf5(filepath, parent_path)
-                elif response == QMessageBox.No:
-                    self.open_hdf5(filepaths[-1])
+                return
+            
+            # Get the creator by trying to import the first element
+            def get_creator(directories, extension):
+                for path in directories:
+                    for element in Path(path).rglob('*'):
+                        if element.suffix == extension:
+                            try:
+                                self.handler.import_raw_data(str(element), parent_path)
+                                self.handler.delete_element(parent_path + "/" + element.name.split(".")[0])
+                            except load_errors.LoadError_creator as e:
+                                creator, ok = QInputDialog.getItem(self, "Select Creator", f"Multiple creators found. Please select one:", e.creators, 0, False)
+                                if ok and creator:
+                                    self.handler.delete_element(parent_path + "/" + element.name.split(".")[0])
+                                    return creator
+                            return None
+                        elif element.is_dir():
+                            creator = add_element([element], extension)
+                            if creator:
+                                return creator
+                return None
+            
+            creator = get_creator(filepaths, extension)
+        
+            # Add all the elements
+            def add_element(directories, extension, parent_group = parent_path):
+                for path in directories:
+                    list_elements = []
+                    group_created = False
+                    for element in Path(path).rglob('*'):
+                        if element.suffix == extension:
+                            if not group_created:
+                                try:
+                                    self.handler.create_group(name = path.split('/')[-2], parent_group=parent_path)
+                                    group_created = True
+                                except:
+                                    pass
+                                parent = parent_group + "/" + path.split('/')[-2]
+                            self.handler.import_raw_data(str(element), parent, creator=creator)
+                        elif element.is_dir():
+                            add_element([element], extension, parent_group)
+            add_element(filepaths, extension)
+        
         else:
-            for filepath in filepaths:
-                try:
-                    self.handler.import_raw_data(filepath, parent_path, creator=creator)
-                    self.log.append(f"<i>{filepath}</i> imported to {parent_path} using {creator}")
-                except load_errors.LoadError_creator as e:
-                    creator, ok = QInputDialog.getItem(self, "Select Creator", f"Multiple creators found. Please select one:", e.creators, 0, False)
-                    if ok and creator:
-                        self.handle_file_addition(filepaths, parent_path, creator)
-                        break
-                    else:
+            # Check all filepaths have same extension
+            extensions = [Path(filepath).suffix for filepath in filepaths]
+            if len(set(extensions)) > 1:
+                QMessageBox.warning(self, "Error", "All filepaths must have the same extension.")
+                return
+        
+            extension = extensions[0]
+            if extension == ".h5":
+                if not len(self.handler.wrp.get_children_elements()):
+                    self.open_hdf5(filepaths[-1])
+                else:
+                    response = QMessageBox.question(self, "Addition or opening", "Do you want to add the HDF5 file to the current database or open the last one as a new database?", QMessageBox.Yes | QMessageBox.No |QMessageBox.Cancel)
+                    if response == QMessageBox.Yes:
+                        for filepath in filepaths:
+                            self.handler.add_hdf5(filepath, parent_path)
+                    elif response == QMessageBox.No:
+                        self.open_hdf5(filepaths[-1])
+            else:
+                for filepath in filepaths:
+                    try:
+                        self.handler.import_raw_data(filepath, parent_path, creator=creator)
+                        self.log.append(f"<i>{filepath}</i> imported to {parent_path} using {creator}")
+                    except load_errors.LoadError_creator as e:
+                        creator, ok = QInputDialog.getItem(self, "Select Creator", f"Multiple creators found. Please select one:", e.creators, 0, False)
+                        if ok and creator:
+                            self.handle_file_addition(filepaths, parent_path, creator)
+                            break
+                        else:
+                            return
+                    except Exception as e:
+                        QMessageBox.warning(self, "Error", f"Could not import {filepath}: {e}")
                         return
-                except Exception as e:
-                    QMessageBox.warning(self, "Error", f"Could not import {filepath}: {e}")
-                    return
 
     def new_hdf5(self):
         """Create a new HDF5 file.
