@@ -1,0 +1,149 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{xcolor}
+
+\title{HDF5\_BLS Structure Guide \\ \large A Reference for AI Agents}
+\author{BioBrillouin Project}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+This document is intended for AI agents and automated tools that need to write, parse, or structure Brillouin Light Scattering (BLS) data into HDF5 files compliant with the \texttt{HDF5\_BLS} project format. By following this structure and nomenclature, data remains standardized, easily shareable, and fully compatible with the HDF5\_BLS suite (Wrapper, Treat, Analyse, and GUI).
+
+\section{Core File Hierarchy}
+An HDF5\_BLS-compliant \texttt{.h5} file is structured hierarchically using groups and datasets. The typical hierarchy is as follows:
+
+\begin{verbatim}
+    file.h5
+        Brillouin (Root Group)
+            Measure 1 (Group)
+                Raw_data (Dataset)
+                PSD (Dataset)
+                Frequency (Dataset)
+                Abscissa_0 (Dataset)
+                Treatment\_Group\_1 (Group)
+                    Shift (Dataset)
+                    Shift\_err (Dataset)
+                    Linewidth (Dataset)
+                    Linewidth\_err (Dataset)
+                    Amplitude (Dataset)
+                    Amplitude\_err (Dataset)
+                    Process\_Algorithm.json (Attribute/Text)
+            Measure 2 (Group)
+                ...
+\end{verbatim}
+
+\subsection{Root Group}
+By default, the root group is named \texttt{Brillouin}. It acts as the container for all subsequent measurements.
+It MUST contain the following attributes:
+\begin{itemize}
+    \item \texttt{Brillouin\_type}: \texttt{"Root"}
+    \item \texttt{HDF5\_BLS\_version}: e.g., \texttt{"0.1"} (Reflects the file structure specification version).
+\end{itemize}
+
+\subsection{Dataset Nomenclature}
+AI agents should give comprehensible names for the datasets that are being stored. The norm does not enforce a fixed nomenclature for groups or arrays, except teh top-level group called "Brillouin".
+
+\section{The Brillouin\_type Attribute}
+Every group and dataset in an HDF5\_BLS-compliant file MUST possess a \texttt{Brillouin\_type} attribute. This attribute is a string that allows the library and parsing software to recognize the logical category of the element.
+
+\subsection{Allowed Group Types}
+A group's \texttt{Brillouin\_type} attribute must be one of the following:
+\begin{itemize}
+    \item \texttt{Root}: Used for organisation groups, that contain other groups.
+    \item \texttt{Measure}: Standard measurement group containing experiment raw/PSD data and parameters.
+    \item \texttt{Calibration\_spectrum}: Group containing calibration spectra data.
+    \item \texttt{Impulse\_response}: Group containing instrumental impulse response data.
+    \item \texttt{Treatment}: Nested subgroup designed specifically to hold data analysis, fitting results, and algorithms.
+\end{itemize}
+
+\subsection{Allowed Dataset Types}
+A dataset's \texttt{Brillouin\_type} attribute must match one of the following categories:
+\begin{itemize}
+    \item \texttt{Raw\_data}: Raw signal matrices. Must reside within a group of type \texttt{Measure}, \texttt{Calibration\_spectrum}, or \texttt{Impulse\_response}.
+    \item \texttt{PSD}: Power Spectral Density data. Must reside within a group of type \texttt{Measure}, \texttt{Calibration\_spectrum}, or \texttt{Impulse\_response}.
+    \item \texttt{Frequency}: Frequency coordinates corresponding to the PSD.
+    \item \texttt{Abscissa\_X\_Y}: Coordinates for physical dimensions of the measurement (e.g., spatial coordinates). Formatted as \texttt{Abscissa\_[Dim\_start]\_[Dim\_end]} (e.g., \texttt{Abscissa\_0\_1}).
+    \item \texttt{Shift}, \texttt{Shift\_err}: Brillouin frequency shift fit results and errors. Must reside within a group of type \texttt{Treatment}.
+    \item \texttt{Linewidth}, \texttt{Linewidth\_err}: Linewidth (FWHM) fit results and errors. Must reside within a group of type \texttt{Treatment}.
+    \item \texttt{Amplitude}, \texttt{Amplitude\_err}: Peak amplitude fit results and errors. Must reside within a group of type \texttt{Treatment}.
+    \item \texttt{BLT}, \texttt{BLT\_err}: Brillouin Loss Tangent results and errors. Must reside within a group of type \texttt{Treatment}.
+    \item \texttt{Other}: General user-defined data arrays that do not map to the categories above.
+\end{itemize}
+
+\section{Normalized Attributes}
+Metadata management is central to the HDF5\_BLS philosophy. Attributes must be attached to the appropriate groups (usually the measure group). The \texttt{NormalizedAttributes} class defines a standard set of parameters. 
+
+AI agents MUST format attribute names as \texttt{GROUP.Name} (e.g., \texttt{SPECTROMETER.Type}) or store them in a way where the logical group is maintained if handled by the \texttt{HDF5\_BLS.Wrapper}.
+
+Below is the dictionary of strictly defined attributes:
+
+\subsection{MEASURE Attributes}
+Attributes describing the specific sample and conditions of the measure.
+\begin{itemize}
+    \item \texttt{MEASURE.Sample}: e.g., "Water"
+    \item \texttt{MEASURE.Date\_of\_measure}: ISO 8601 format (e.g., "2024-11-18T14:17:55.294821")
+    \item \texttt{MEASURE.Exposure\_(s)}: Exposure time in seconds (e.g., 0.1)
+\end{itemize}
+
+\subsection{SPECTROMETER Attributes}
+Attributes describing the instrumental setup. AI agents should select recommended values when they fit the context.
+\begin{longtable}{p{8cm} p{7.5cm}}
+\toprule
+\textbf{Attribute Name} & \textbf{Description / Examples} \\
+\midrule
+\texttt{SPECTROMETER.Type} & Setup type. \textit{Rec:} "1 stage VIPA", "2 stage VIPA", "Angle-resolved VIPA", "TFP", "TR-TFP", "TR-1VIPA" \\
+\texttt{SPECTROMETER.Model} & Manufacturer-Model (e.g., "JRS-TFP2") \\
+\texttt{SPECTROMETER.Wavelength\_(nm)} & Wavelength in nm (e.g., 532) \\
+\texttt{SPECTROMETER.Confocal\_Pinhole\_Diameter\_(AU)} & Size in Airy Units (e.g., 1) \\
+\texttt{SPECTROMETER.Detection\_Lens\_NA} & Numerical aperture (e.g., 0.45) \\
+\texttt{SPECTROMETER.Detector\_Model} & Manufacturer-Model (e.g., "Hamamatsu-Orca C11440") \\
+\texttt{SPECTROMETER.Detector\_Type} & e.g., "CMOS" \\
+\texttt{SPECTROMETER.Filtering\_Type} & e.g., "Gas cell" \\
+\texttt{SPECTROMETER.Filtering\_Module} & Manufacturer-Model (e.g., "Thorlabs-GC19100-I") \\
+\texttt{SPECTROMETER.Illumination\_Lens\_NA} & Taking into account beam size before lens/objective (e.g., 0.2) \\
+\texttt{SPECTROMETER.Illumination\_Power\_(mW)} & Power measured at the sample in mW (e.g., 15) \\
+\texttt{SPECTROMETER.Illumination\_Type} & \textit{Rec:} "CW Laser", "Pulsed Laser" \\
+\texttt{SPECTROMETER.Laser\_Model} & Manufacturer-Model (e.g., "Cobolt-Samba") \\
+\texttt{SPECTROMETER.Laser\_Drift\_(MHz/h)} & Drift measured independently of spectrometer in MHz/h \\
+\texttt{SPECTROMETER.Phonons\_Measured} & \textit{Rec:} "Longitudinal", "Transverse", "Longitudinal \& Transverse" \\
+\texttt{SPECTROMETER.Polarization\_probed-analyzed} & \textit{Rec:} "Vertical-Horizontal", "Horizontal-Vertical", "Vertical-Vertical", "Horizontal-Horizontal" \\
+\texttt{SPECTROMETER.Scan\_Amplitude\_(GHz)} & Only for scanning spectrometers (e.g., 20) \\
+\texttt{SPECTROMETER.Scanning\_Strategy} & \textit{Rec:} "Raster scan", "Line scan", "Point scan" \\
+\texttt{SPECTROMETER.Scattering\_Angle\_(deg)} & Angle between illumination and detection in degrees (e.g., 180) \\
+\texttt{SPECTROMETER.Spectral\_Resolution\_(MHz)} & Largest measured value (e.g., 150) \\
+\texttt{SPECTROMETER.VIPA\_FSR\_(GHz)} & Free Spectral Range of the VIPA (e.g., 30) \\
+\texttt{SPECTROMETER.x-Mechanical\_Resolution\_(um)} & Estimated mechanical resolution (e.g., 0.5) \\
+\texttt{SPECTROMETER.x-Optical\_Resolution\_(um)} & Measured optical resolution (e.g., 5) \\
+\texttt{SPECTROMETER.y-Mechanical\_Resolution\_(um)} & Estimated mechanical resolution (e.g., 0.5) \\
+\texttt{SPECTROMETER.y-Optical\_Resolution\_(um)} & Measured optical resolution (e.g., 5) \\
+\texttt{SPECTROMETER.z-Mechanical\_Resolution\_(um)} & Estimated mechanical resolution (e.g., 0.5) \\
+\texttt{SPECTROMETER.z-Optical\_Resolution\_(um)} & Measured optical resolution (e.g., 50) \\
+\bottomrule
+\end{longtable}
+
+\subsection{FILEPROP Attributes}
+Attributes defining file-level properties.
+\begin{itemize}
+    \item \texttt{FILEPROP.BLS\_HDF5\_Version}: Version of the spreadsheet nomenclature (e.g., "0.1")
+    \item \texttt{FILEPROP.Filepath}: Global absolute or relative name/path of the \texttt{.h5} file.
+    \item \texttt{FILEPROP.Name}: Human-readable identifier for the file (e.g., "Water spectrum").
+\end{itemize}
+
+\section{Implementation Guidelines for AI Agents}
+When an AI agent is tasked with adding data or translating a workflow into an HDF5\_BLS structure, it should strictly:
+\begin{enumerate}
+    \item \textbf{Use the \texttt{Wrapper} methods:} Prefer \texttt{add\_raw\_data()}, \texttt{add\_PSD()}, \texttt{add\_frequency()}, \texttt{add\_abscissa()}, and \texttt{add\_treated\_data()} instead of direct H5Py calls. These methods automatically enforce the correct paths and basic attributes.
+    \item \textbf{Apply \texttt{NormalizedAttributes}:} Use \texttt{wrp.add\_attributes(attributes=\{...\}, parent\_group="...")} mapped to the dictionaries expected by the codebase to inject metadata consistently. Never invent new attribute names if an existing normalized attribute applies.
+    \item \textbf{Group treated data logically:} All resulting arrays of a curve fitting or analysis algorithm (shift, linewidth, errors, etc.) must go into an explicit Treatment group under the measured spectra.
+\end{enumerate}
+
+\end{document}
