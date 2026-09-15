@@ -5,6 +5,7 @@ from PySide6.QtCore import Qt, Signal
 class PropertiesWidget(QWidget):
     edit_attributes_requested = Signal(str) # Path to the element in the HDF5 file
     remove_attribute_requested = Signal(str, str) # Path to the element in the HDF5 file, name of the attribute to remove
+    csv_dropped = Signal(list, str) # filepaths, target_path
 
     def __init__(self, handler, config, parent=None):
         """Initializes the frame with the property tabs and the visualization tab.
@@ -14,6 +15,28 @@ class PropertiesWidget(QWidget):
         self.config = config
         self._initialize_ui()
         self.path = None
+        self.setAcceptDrops(True)
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasUrls():
+            event.accept()
+        else:
+            super().dragEnterEvent(event)
+
+    def dragMoveEvent(self, event):
+        if event.mimeData().hasUrls():
+            event.accept()
+        else:
+            super().dragMoveEvent(event)
+
+    def dropEvent(self, event):
+        if event.mimeData().hasUrls():
+            urls = [url.toLocalFile() for url in event.mimeData().urls()]
+            path = self.path if self.path else "Brillouin"
+            self.csv_dropped.emit(urls, path)
+            event.accept()
+        else:
+            super().dropEvent(event)
 
     def _initialize_ui(self):
         # Create the properties widget
