@@ -9,6 +9,8 @@ import HDF5_BLS
 import HDF5_BLS_analyse
 import HDF5_BLS_treat
 
+from sphinx_treeview.decorator import DecoratorType, images_to_decorator_icons
+import os
 
 sys.path.append("../")
 sys.path.insert(0, os.path.abspath('..'))
@@ -32,6 +34,7 @@ extensions = [
     'sphinx.ext.viewcode',     # For adding links to the source code
     'sphinx.ext.autosummary',  # For generating summary tables
     'sphinx.ext.imgconverter',
+    'sphinx_treeview'
 ]
 
 # Add the directory containing your custom.css file
@@ -72,3 +75,17 @@ exclude_patterns = [
 
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
+
+# -- Custom icons for the treeview directive ----------------------------------
+# Define the absolute path to your icons folder
+attributes_icon_dir = os.path.abspath(os.path.join('_static', 'attributes'))
+# Register the new decorator type
+stv_decorators = [
+    DecoratorType(
+        name="icon", # The role name you will use in your RST files
+        icons=images_to_decorator_icons(
+            attributes_icon_dir, 
+            css_properties={"background-size": "contain"}
+        )
+    )
+]

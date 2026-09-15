@@ -104,8 +104,10 @@ class Wrapper:
         
         Example
         -------
-        >>> wrp = HDF5_BLS() # Creates a temporary HDF5 file in the temporary directory of the operating system
-        >>> wrp = HDF5_BLS("path/to/file.h5") # Creates a HDF5 file at the given path or opens an existing one at the given path
+
+        .. code::
+            >>> wrp = HDF5_BLS() # Creates a temporary HDF5 file in the temporary directory of the operating system
+            >>> wrp = HDF5_BLS("path/to/file.h5") # Creates a HDF5 file at the given path or opens an existing one at the given path
         """
         def no_filepath():
             """
@@ -1362,9 +1364,8 @@ class Wrapper:
                         dic[key] = {"Brillouin_type": "Raw_data"}
                 # If the element is a group, we iterate over it
                 if isinstance(file[key], h5py.Group):
-                    if file[key].attrs["Brillouin_type"] != "Metadata":
-                        temp = iteration(file[key])
-                        if temp: dic[key].update(temp)
+                    temp = iteration(file[key])
+                    if temp: dic[key].update(temp)
             else: return dic
 
         with h5py.File(filepath, 'r') as file:
@@ -2252,6 +2253,1117 @@ class Wrapper:
         for k, v in dic.items():
             print(k," : ", v)
     
+class Wrapper_file(h5py.File):
+    """
+    This object is used to store data and attributes in a unified structure by inheriting from h5py.File.
+    Unlike Wrapper, Wrapper_file keeps the HDF5 file open while in use and operates directly on the open file,
+    matching the native lifecycle and logic of h5py.
+
+    Attributes
+    ----------
+    filepath: str
+        The path to the HDF5 file (alias for filename).
+    need_for_repack: bool
+        A flag to check whether elements were deleted in the file using the "del" method.
+    save: bool
+        A flag to check whether the file needs to be saved or not (for temporary files).
+    """
+    ###############################
+    #     General attributes      #
+    ###############################
+    BRILLOUIN_TYPES_DATASETS = ["Abscissa", 
+                                "Amplitude", 
+                                "Amplitude_err", 
+                                "BLT", 
+                                "BLT_err", 
+                                "Frequency", 
+                                "Linewidth", 
+                                "Linewidth_err", 
+                                "Other", 
+                                "PSD", 
+                                "Raw_data", 
+                                "Shift", 
+                                "Shift_err"]
+    
+    BRILLOUIN_TYPES_GROUPS = ["Calibration_spectrum", 
+                                "Impulse_response", 
+                                "Measure", 
+                                "Root", 
+                                "Treatment"]
+
+    def __init__(self, name=None, mode='a', **kwargs):
+        """Initializes the Wrapper_file object.
+        If no name/filepath is given, a temporary HDF5 file is created in the temporary directory of the operating system.
+        A parent 'Brillouin' group is created if it does not exist, and 'HDF5_BLS_version' is set to the current version.
+
+        Parameters
+        ----------
+        name : str, optional
+            The filepath of the HDF5 file to open/create.
+        mode : str, optional
+            The file mode (e.g. 'r', 'r+', 'w', 'x', 'a'). Default is 'a'.
+        **kwargs :
+            Additional keyword arguments forwarded to h5py.File (e.g. driver, libver).
+            Supports 'filepath' as an alias for 'name'.
+        """
+        filepath = name if name is not None else kwargs.pop("filepath", None)
+        if filepath is None:
+            fd, filepath = tempfile.mkstemp(suffix=".h5")
+            os.close(fd)
+            mode = 'a'
+
+        # Initialize the underlying h5py.File
+        super().__init__(filepath, mode=mode, **kwargs)
+
+        # In writable modes, ensure Brillouin root group exists or run compatibility checks
+        if mode in ('a', 'w', 'w-', 'x', 'r+'):
+            if "Brillouin" not in self:
+                group = super().create_group("Brillouin")
+                group.attrs["Brillouin_type"] = "Root"
+                group.attrs["HDF5_BLS_version"] = HDF5_BLS_Version
+            else:
+                self.compatibility_changes()
+
+        self.save = False
+        self.need_for_repack = False
+
+    @property
+    def filepath(self):
+        """The path to the HDF5 file (compatible with Wrapper.filepath)."""
+        return self.filename
+
+    def get_data(self, key):
+        """Returns the data array corresponding to the path, reshaped according to the
+        sampling matrix size attribute if present.
+
+        Parameters
+        ----------
+        key : str
+            The path to the dataset.
+
+        Returns
+        -------
+        numpy.ndarray
+            The reshaped data array.
+        """
+        if key not in self:
+            raise WrapperError_StructureError(f"The path '{key}' does not exist in the file.")
+        item = self[key]
+        if isinstance(item, h5py.Dataset):
+            data = item[()]
+            try:
+                attrs = self.get_attributes(path=key)
+                shape = attrs.get("MEASURE.Sampling_Matrix_Size_(Nx,Ny,Nz)_()", None)
+                if shape:
+                    shape = [int(i) for i in shape.split(",")] + [-1]
+                    return data.reshape(shape)
+            except Exception:
+                pass
+            return data
+        return item
+
+    def __add__(self, other):
+        """Magic method to add two wrappers together into a new Wrapper_file instance."""
+        new_wrapper = Wrapper_file()
+
+        if self.filepath == new_wrapper.filepath or other.filepath == new_wrapper.filepath:
+            raise WrapperError_FileNotFound("Please use wrappers that are not temporary and are saved on the disk.")
+
+        # Checking the versions of the two files
+        version_self = self["Brillouin"].attrs["HDF5_BLS_version"]
+        version_other = other["Brillouin"].attrs["HDF5_BLS_version"]
+        if version_self != version_other:
+            raise WrapperError_StructureError("The two files have different versions of the HDF5_BLS package.")
+
+        keys_self = list(self.get_structure()["Brillouin"].keys())
+        if "Brillouin_type" in keys_self:
+            keys_self.remove("Brillouin_type")
+        keys_other = list(other.get_structure()["Brillouin"].keys())
+        if "Brillouin_type" in keys_other:
+            keys_other.remove("Brillouin_type")
+
+        for key in keys_self:
+            if key in keys_other:
+                raise WrapperError_Overwrite("At least one group has the same name in the two files.")
+
+        attr_combine, attr_wrp1, attr_wrp2 = {}, {}, {}
+        attributes_self = self.get_attributes(path="Brillouin")
+        attributes_other = other.get_attributes(path="Brillouin")
+        for key in attributes_self.keys():
+            if key in attributes_other.keys():
+                if attributes_self[key] == attributes_other[key]:
+                    attr_combine[key] = attributes_self[key]
+                else:
+                    attr_wrp1[key] = attributes_self[key]
+            else:
+                attr_wrp1[key] = attributes_self[key]
+        for key in attributes_other.keys():
+            if key in attributes_self.keys():
+                if attributes_self[key] != attributes_other[key]:
+                    attr_wrp2[key] = attributes_other[key]
+            else:
+                attr_wrp2[key] = attributes_other[key]
+
+        keys1, keys2 = [], []
+        group = new_wrapper["Brillouin"]
+        for key in other["Brillouin"].keys():
+            if isinstance(other[f"Brillouin/{key}"], h5py.Group):
+                other.copy(f"Brillouin/{key}", group, key)
+                keys2.append(key)
+            else:
+                group.create_dataset(key, data=other[f"Brillouin/{key}"])
+        for key in self["Brillouin"].keys():
+            if isinstance(self[f"Brillouin/{key}"], h5py.Group):
+                self.copy(f"Brillouin/{key}", group, key)
+                keys1.append(key)
+            else:
+                group.create_dataset(key, data=self[f"Brillouin/{key}"])
+
+        new_wrapper.add_attributes(attributes=attr_combine, parent_group="Brillouin", overwrite=True)
+        for key in keys1:
+            new_wrapper.add_attributes(attributes=attr_wrp1, parent_group=f"Brillouin/{key}", overwrite=True)
+        for key in keys2:
+            new_wrapper.add_attributes(attributes=attr_wrp2, parent_group=f"Brillouin/{key}", overwrite=True)
+
+        new_wrapper.save = True
+        return new_wrapper
+
+    def __str__(self):
+        def build_structure(dic, lvl=0):
+            lines = []
+            for k, v in dic.items():
+                if k == "Brillouin_type":
+                    continue
+                if isinstance(v, dict):
+                    tpe = v.get("Brillouin_type", "")
+                    lines.append("|-" * lvl + f"{k} ({tpe})")
+                    lines.extend(build_structure(v, lvl + 1))
+                else:
+                    lines.append("|-" * lvl + str(k))
+            return lines
+
+        structure = self.get_structure()
+        lines = build_structure(structure)
+        return "\n".join(lines)
+
+    def add_hdf5(self, filepath, parent_group="Brillouin", overwrite=False):
+        if not os.path.isfile(filepath):
+            raise WrapperError_FileNotFound(f"The file '{filepath}' does not exist.")
+
+        name = os.path.basename(filepath).split(".")[0]
+
+        if parent_group not in self:
+            super().create_group(parent_group)
+        if not isinstance(self[parent_group], HDF5_group):
+            parent_group = "/".join(parent_group.split("/")[:-1])
+
+        group = self[parent_group]
+        if name in group.keys() and overwrite:
+            self.delete_element(path=f"{parent_group}/{name}")
+            new_group = group.create_group(name)
+            new_group.attrs["Brillouin_type"] = "Root"
+        elif name not in group.keys():
+            new_group = group.create_group(name)
+            new_group.attrs["Brillouin_type"] = "Root"
+        else:
+            raise WrapperError_Overwrite(f"A group with the name '{name}' already exists in the parent group '{parent_group}'.")
+
+        try:
+            with h5py.File(filepath, 'r') as file_copy:
+                for key, value in file_copy["Brillouin"].attrs.items():
+                    new_group.attrs[key] = value
+                for key in file_copy["Brillouin"].keys():
+                    if isinstance(file_copy[f"Brillouin/{key}"], h5py.Group):
+                        file_copy.copy(file_copy[f"Brillouin/{key}"], new_group, key)
+                    else:
+                        new_group.create_dataset(key, data=file_copy[f"Brillouin/{key}"])
+        except Exception as e:
+            raise WrapperError(f"A problem occured when adding the data to the file '{self.filepath}'. Error message: {e}")
+
+        if is_tempfile(self.filepath):
+            self.save = True
+
+    def add_dictionnary(self, dic, parent_group=None, name_group=None, brillouin_type="Measure", overwrite=False):
+        only_parent = False
+        if parent_group is None:
+            parent_group = "Brillouin"
+        else:
+            if parent_group == name_group:
+                only_parent = True
+            if parent_group not in self:
+                raise WrapperError_StructureError(f"The parent group '{parent_group}' does not exist in the file.")
+            if not isinstance(self[parent_group], HDF5_group):
+                parent_group = "/".join(parent_group.split("/")[:-1])
+
+        if name_group is None:
+            group = self[parent_group]
+            i = 0
+            while f"Data_{i}" in group.keys():
+                i += 1
+            name_group = f"Data_{i}"
+
+        if not only_parent:
+            if name_group in self[parent_group].keys() and overwrite:
+                self.delete_element(path=f"{parent_group}/{name_group}")
+                new_group = self[parent_group].create_group(name_group)
+                new_group.attrs["Brillouin_type"] = brillouin_type
+            elif name_group not in self[parent_group].keys():
+                new_group = self[parent_group].create_group(name_group)
+                new_group.attrs["Brillouin_type"] = brillouin_type
+            else:
+                raise WrapperError_Overwrite(f"A group with the name '{name_group}' already exists in the parent group '{parent_group}'.")
+        else:
+            new_group = self[parent_group]
+
+        for key, value in dic.items():
+            if key == "Abscissa":
+                for k, v in value.items():
+                    name_dataset = v.get("Name", k)
+                    dataset = new_group.create_dataset(name_dataset, data=np.array(v["Data"]))
+                    dataset.attrs["Brillouin_type"] = f"Abscissa_{v['Dim_start']}_{v['Dim_end']}"
+                    if "Units" in v:
+                        dataset.attrs["Units"] = v["Units"]
+                    elif "Unit" in v:
+                        dataset.attrs["Units"] = v["Unit"]
+            elif key in self.BRILLOUIN_TYPES_DATASETS:
+                if isinstance(value, dict) and "Data" in value:
+                    name_dataset = value.get("Name", key)
+                    val = np.array(value["Data"])
+                else:
+                    name_dataset = key
+                    val = np.array(value)
+                dataset = new_group.create_dataset(name_dataset, data=val)
+                dataset.attrs["Brillouin_type"] = key
+            elif key == "Attributes":
+                for k, v in value.items():
+                    try:
+                        if k in new_group.attrs.keys():
+                            if overwrite:
+                                new_group.attrs.modify(k, str(v))
+                        else:
+                            new_group.attrs.create(k, str(v))
+                    except Exception:
+                        pass
+            else:
+                raise WrapperError_ArgumentType(f"The key '{key}' is not recognized.")
+
+        if is_tempfile(self.filepath):
+            self.save = True
+
+    def add_dictionary(self, dic, parent_group, create_group=False, brillouin_type_parent_group=None, overwrite=False):
+        # Check parent group
+        if parent_group not in self:
+            if create_group:
+                if brillouin_type_parent_group is not None and brillouin_type_parent_group in self.BRILLOUIN_TYPES_GROUPS:
+                    super().create_group(parent_group)
+                    self[parent_group].attrs["Brillouin_type"] = brillouin_type_parent_group
+                else:
+                    raise WrapperError_StructureError("A valid Brillouin type must be given when a new group has to be created.")
+            else:
+                raise WrapperError_StructureError(f"The parent group '{parent_group}' does not exist in the HDF5 file.")
+
+        if not isinstance(self[parent_group], HDF5_group):
+            parent_group = "/".join(parent_group.split("/")[:-1])
+
+        group = self[parent_group]
+        if brillouin_type_parent_group is None:
+            brillouin_type_parent_group = group.attrs.get("Brillouin_type", None)
+
+        # Check dictionary format
+        for k in dic.keys():
+            if type(dic[k]) is not dict:
+                raise WrapperError_ArgumentType(f"The element '{k}' is not a dictionary.")
+            if "Attribute" not in k and k not in self.BRILLOUIN_TYPES_DATASETS and k.split("_")[0] != "Abscissa":
+                valid_keys = [e for e in self.BRILLOUIN_TYPES_DATASETS if e.split("_")[0] != "Abscissa"]
+                raise WrapperError_ArgumentType(f"The key '{k}' does not exist. Valid keys are: {valid_keys} or 'Abscissa_i_j'.")
+            elif k.split("_")[0] == "Abscissa":
+                l = sorted(list(dic[k].keys()))
+                if l != ["Data", "Dim_end", "Dim_start", "Name", "Units"] and l != ["Data", "Dim_end", "Dim_start", "Name", "Unit"]:
+                    raise WrapperError_ArgumentType(f"The key '{k}' does not have the correct format. It should be a dictionary with the following keys: 'Data', 'Dim_end', 'Dim_start', 'Name', 'Units'.")
+            elif "Attribute" not in k:
+                l = sorted(list(dic[k].keys()))
+                assert l == ["Data", "Name"], WrapperError_ArgumentType(f"The key '{k}' does not have the correct format. It should be a dictionary with the following keys: 'Data', 'Name'.")
+
+        # Check raw data
+        for elt_name in group:
+            elt = group[elt_name]
+            if elt.attrs.get("Brillouin_type") == "Raw_data":
+                if "Raw_data" in dic.keys():
+                    if overwrite:
+                        self.delete_element(path=f"{elt.name[1:]}")
+                    else:
+                        raise WrapperError_Overwrite("You cannot add another raw data to a group with an existing raw data.")
+
+        # Check name
+        delete_keys = []
+        for key in dic.keys():
+            if "Attribute" not in key and dic[key]["Name"] in group.keys():
+                if overwrite:
+                    delete_keys.append(key)
+                else:
+                    raise WrapperError_Overwrite(f"The name {dic[key]['Name']} is already used in the group {parent_group}.")
+        for k in delete_keys:
+            self.delete_element(f"{parent_group}/{dic[k]['Name']}")
+
+        # Add data and attributes
+        for key, value in dic.items():
+            if key in self.BRILLOUIN_TYPES_DATASETS and key != "Abscissa":
+                if key in ["Amplitude", "Amplitude_err", "BLT", "BLT_err", "Linewidth", "Linewidth_err", "Shift", "Shift_err"]:
+                    if brillouin_type_parent_group != "Treatment":
+                        raise WrapperError_StructureError(f"The brillouin_type '{brillouin_type_parent_group}' should be 'Treatment' if you want to add a dataset with type '{key}'.")
+                elif key in ["Frequency", "PSD", "Raw_data"]:
+                    if brillouin_type_parent_group not in ["Calibration_spectrum", "Impulse_response", "Measure"]:
+                        if not overwrite:
+                            raise WrapperError_StructureError(f"The brillouin_type '{brillouin_type_parent_group}' should be 'Calibration_spectrum', 'Impulse_response' or 'Measure' if you want to add a dataset with type '{key}'.")
+                        else:
+                            self.change_brillouin_type(path=f"{parent_group}", brillouin_type="Measure")
+
+                if value["Name"] in group.keys():
+                    if overwrite:
+                        self.delete_element(path=f"{parent_group}/{value['Name']}")
+                    else:
+                        raise WrapperError_Overwrite(f"The dataset '{value['Name']}' already exists in the group '{parent_group}'.")
+                dataset = group.create_dataset(value["Name"], data=value["Data"])
+                dataset.attrs["Brillouin_type"] = key
+
+            elif "Attribute" in key:
+                for k, v in value.items():
+                    if k in group.attrs.keys():
+                        if overwrite and v:
+                            group.attrs.modify(k, str(v))
+                    elif v:
+                        group.attrs.create(k, str(v))
+
+            elif key.split("_")[0] == "Abscissa":
+                dataset = group.create_dataset(value["Name"], data=value["Data"])
+                dataset.attrs["Brillouin_type"] = f"Abscissa_{value['Dim_start']}_{value['Dim_end']}"
+                if "Units" in value:
+                    dataset.attrs["Units"] = value["Units"]
+                else:
+                    dataset.attrs["Units"] = value["Unit"]
+
+        if is_tempfile(self.filepath):
+            self.save = True
+
+    def change_brillouin_type(self, path, brillouin_type):
+        if path not in self:
+            raise WrapperError_StructureError(f"The path '{path}' does not exist in the file.")
+
+        if self.get_type(path) == HDF5_group:
+            if brillouin_type not in self.BRILLOUIN_TYPES_GROUPS:
+                raise WrapperError_ArgumentType(f"The brillouin type '{brillouin_type}' is not valid.")
+        else:
+            if brillouin_type not in self.BRILLOUIN_TYPES_DATASETS and brillouin_type.split("_")[0] != "Abscissa":
+                raise WrapperError_ArgumentType(f"The brillouin type '{brillouin_type}' is not valid.")
+
+        self[path].attrs["Brillouin_type"] = brillouin_type
+
+    def change_name(self, path, name):
+        if name == path.split("/")[-1]:
+            return
+        if path not in self:
+            raise WrapperError_StructureError(f"The path '{path}' does not exist in the file.")
+        new_path = "/".join(path.split("/")[:-1]) + "/" + name
+        super().move(path, new_path)
+        self.need_for_repack = True
+
+    def close(self, delete_temp_file=False):
+        if self.save:
+            if delete_temp_file and is_tempfile(self.filepath):
+                filename = self.filename
+                super().close()
+                if os.path.isfile(filename):
+                    os.remove(filename)
+                return
+            else:
+                raise WrapperError_Save("The wrapper has not been saved yet.")
+        self.repack()
+        filename = self.filename
+        super().close()
+        if delete_temp_file and is_tempfile(filename) and os.path.isfile(filename):
+            os.remove(filename)
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.id:
+            if self.save and is_tempfile(self.filepath):
+                self.close(delete_temp_file=True)
+            else:
+                self.close()
+
+    def combine_datasets(self, datasets, parent_group, name, overwrite=False):
+        for dataset in datasets:
+            if not self.get_type(dataset) == HDF5_dataset:
+                raise WrapperError_ArgumentType(f"The datasets '{dataset}' are not datasets.")
+
+        if parent_group not in self:
+            super().create_group(parent_group)
+            self[parent_group].attrs["Brillouin_type"] = "Measure"
+        if name in self.get_children_elements(path=parent_group):
+            if not overwrite:
+                raise WrapperError_Overwrite(f"A dataset with the name '{name}' already exists.")
+            self.delete_element(f"{parent_group}/{name}")
+
+        shapes = [self[dataset].shape for dataset in datasets]
+        if len(set(shapes)) > 1:
+            raise WrapperError_ArgumentType("The datasets have different shapes.")
+
+        tpe = self.get_type(path=datasets[0], return_Brillouin_type=True)
+        new_dataset = np.array([self[dataset][()] for dataset in datasets])
+        dic = {tpe: {"Name": name, "Data": new_dataset}}
+        self.add_dictionary(dic, parent_group=parent_group)
+
+    def compatibility_changes(self):
+        self.visititems(brillouin_type_update)
+        if "Brillouin" in self:
+            self["Brillouin"].attrs["HDF5_BLS_version"] = HDF5_BLS_Version
+
+    def copy_dataset(self, path, copy_path):
+        if path not in self:
+            raise WrapperError_StructureError(f"The path '{path}' does not exist in the HDF5 file.")
+        if copy_path not in self:
+            raise WrapperError_StructureError(f"The path '{copy_path}' does not exist in the HDF5 file.")
+        if not self.get_type(path=path) == HDF5_dataset:
+            raise WrapperError_ArgumentType(f"The path '{path}' does not lead to a dataset.")
+        if not self.get_type(path=copy_path) == HDF5_group:
+            raise WrapperError_ArgumentType(f"The path '{copy_path}' does not lead to a group.")
+
+        new_name = self[path].name.split("/")[-1]
+        self[copy_path].create_dataset(name=new_name, data=self[path][()])
+        for e in self[path].attrs.keys():
+            self[copy_path + "/" + new_name].attrs[e] = self[path].attrs[e]
+
+    def create_group(self, name, parent_group=None, brillouin_type="Root", overwrite=False, **kwargs):
+        if parent_group is not None:
+            if parent_group not in self:
+                raise WrapperError_StructureError(f"The parent group '{parent_group}' does not exist in the HDF5 file.")
+            full_path = f"{parent_group}/{name}"
+        else:
+            if name == "Brillouin" or name.startswith("Brillouin/") or name.startswith("/"):
+                full_path = name
+            elif "Brillouin" in self:
+                full_path = f"Brillouin/{name}"
+            else:
+                full_path = name
+
+        if full_path in self:
+            if not overwrite:
+                raise WrapperError_Overwrite(f"A group with the name '{name}' already exists in the parent group '{parent_group}'.")
+            self.delete_element(full_path)
+
+        group = super().create_group(full_path, **kwargs)
+        group.attrs.create("Brillouin_type", brillouin_type)
+
+        if is_tempfile(self.filepath):
+            self.save = True
+        return group
+
+    def crop_region_of_interest(self, path, ROI: list):
+        if path not in self:
+            raise WrapperError_StructureError(f"The path '{path}' does not exist in the HDF5 file.")
+
+        if self.get_type(path=path) == HDF5_dataset:
+            path = "/".join(path.split("/")[:-1])
+
+        if self.get_type(path=path, return_Brillouin_type=True) != "Measure":
+            raise WrapperError_StructureError(f"The path '{path}' does not lead to a Measure group.")
+
+        pth_freq, pth_psd = False, False
+        for e in self.get_children_elements(path=path):
+            if self.get_type(path=f"{path}/{e}", return_Brillouin_type=True) == "Frequency":
+                pth_freq = e
+            if self.get_type(path=f"{path}/{e}", return_Brillouin_type=True) == "PSD":
+                pth_psd = e
+        if not pth_freq or not pth_psd:
+            raise WrapperError_StructureError(f"The path '{path}' does not lead to a Measure group.")
+
+        freq = self[f"{path}/{pth_freq}"][()]
+        if freq.ndim != 1:
+            raise WrapperError_StructureError("Currently, only 1d arrays are supported for the frequency array.")
+
+        total_mask = np.zeros(freq.shape, dtype=bool)
+        for m_i, M_i in ROI:
+            total_mask |= (freq >= m_i) & (freq <= M_i)
+
+        cropped_freq = freq[total_mask]
+        cropped_psd = self[f"{path}/{pth_psd}"][..., total_mask]
+
+        self.add_frequency(cropped_freq, parent_group=path, name=pth_freq, overwrite=True)
+        self.add_PSD(cropped_psd, parent_group=path, name=pth_psd, overwrite=True)
+        self.need_for_repack = True
+
+    def delete_element(self, path=None, file=None):
+        if path is None:
+            group = self["Brillouin"]
+            for key in list(group.keys()):
+                del group[key]
+            for attr in list(group.attrs.keys()):
+                del group.attrs[attr]
+            group.attrs["Brillouin_type"] = "Root"
+            group.attrs["HDF5_BLS_version"] = HDF5_BLS_Version
+            return
+
+        if path not in self:
+            raise WrapperError_StructureError(f"The path '{path}' does not lead to an element.")
+        try:
+            del self[path]
+        except Exception as e:
+            raise WrapperError(f"An error occured while deleting the element '{path}'. Error message: {e}")
+
+        self.need_for_repack = True
+
+    def export_brim(self, path_to: str):
+        from .brimfile_converter.brim_converter import BrimConverter
+        self.flush()
+        converter = BrimConverter(self.filepath, path_to, mode="brimX2brim")
+        converter.convert()
+
+    def export_dataset(self, path, filepath, export_type=".npy"):
+        assert export_type in [".npy", ".csv", ".xlsx"], WrapperError_ArgumentType(f"The export type '{export_type}' is not supported. Supported types are: '.npy', '.csv', '.xlsx'.")
+        assert path in self, WrapperError_StructureError(f"The path '{path}' does not exist in the file.")
+        assert isinstance(self[path], HDF5_dataset), WrapperError_ArgumentType(f"The path '{path}' does not lead to a dataset.")
+        dataset = self[path][()]
+
+        if not filepath.endswith(export_type):
+            filepath += export_type
+
+        if export_type == ".npy":
+            np.save(filepath, dataset)
+        elif export_type == ".csv":
+            if len(dataset.shape) > 2:
+                raise WrapperError_ArgumentType(f"The dataset at path '{path}' has more than 2 dimensions. Only datasets of 2 or less dimensions can be exported.")
+            np.savetxt(filepath, dataset, delimiter=",")
+        elif export_type == ".xlsx":
+            if len(dataset.shape) > 2:
+                raise WrapperError_ArgumentType(f"The dataset at path '{path}' has more than 2 dimensions. Only datasets of 2 or less dimensions can be exported.")
+            df = pd.DataFrame(dataset)
+            df.to_excel(filepath)
+
+    def export_group(self, path, filepath, overwrite=False):
+        if not filepath.endswith(".h5"):
+            filepath += ".h5"
+
+        if path not in self:
+            raise WrapperError_StructureError(f"The path '{path}' does not exist in the file.")
+        if not self.get_type(path=path) == HDF5_group:
+            raise WrapperError_ArgumentType(f"Element at path: {path} is not a group")
+        if self.get_type(path=path, return_Brillouin_type=True) == "Treatment":
+            raise WrapperError_ArgumentType(f"Element at path: {path} is a group of type Treatment.")
+
+        add_parent = False
+        if not self.get_type(path=path, return_Brillouin_type=True) == "Root":
+            add_parent = True
+            parent = path.split("/")[-1]
+            Brillouin_type = self.get_type(path=path, return_Brillouin_type=True)
+
+        if os.path.isfile(filepath):
+            if overwrite:
+                os.remove(filepath)
+            else:
+                raise WrapperError_Overwrite(f"File at path: {filepath} already exists. Set overwrite to True to overwrite.")
+
+        with h5py.File(filepath, 'w') as new_file:
+            group = new_file.require_group("Brillouin")
+            group.attrs["Brillouin_type"] = "Root"
+            if add_parent:
+                self.copy(self[path], new_file["Brillouin"], parent)
+                new_file[f"Brillouin/{parent}"].attrs["Brillouin_type"] = Brillouin_type
+            else:
+                for key in self[path].keys():
+                    self.copy(self[path][key], new_file["Brillouin"], key)
+
+    def export_image(self, path, filepath, simple_image=True, image_size=None, cmap='viridis', colorbar=False, colorbar_label=None, axis=False, xlabel=None, ylabel=None):
+        if path not in self:
+            raise WrapperError_StructureError(f"The path '{path}' does not exist in the file.")
+        data = self[path][()]
+        new_shape = [s for s in data.shape if s > 1]
+        data = data.reshape(new_shape)
+
+        if len(data.shape) == 2:
+            if simple_image:
+                data = np.nan_to_num(data, nan=np.nanmin(data))
+                plt.imsave(filepath, data, cmap='gray')
+            else:
+                if image_size is None:
+                    plt.figure()
+                else:
+                    plt.figure(figsize=image_size)
+
+                if axis is False:
+                    plt.imshow(data, cmap=cmap)
+                elif axis is True:
+                    extent = self.get_attributes(path=f"{path}")["MEASURE.Field_Of_View_(X,Y,Z)_(um)"]
+                    extent = [float(e) for e in extent.split(",")]
+                    extent = [-extent[0]/2, extent[0]/2, -extent[1]/2, extent[1]/2]
+                    plt.imshow(data, cmap=cmap, extent=extent)
+
+                if xlabel is not None:
+                    plt.xlabel(xlabel)
+                if ylabel is not None:
+                    plt.ylabel(ylabel)
+                if colorbar:
+                    if colorbar_label is None:
+                        plt.colorbar()
+                    else:
+                        plt.colorbar(label=colorbar_label)
+                plt.savefig(filepath)
+
+    def get_attributes(self, path=None):
+        if path is None:
+            path = "Brillouin"
+        if path not in self:
+            raise WrapperError_StructureError(f"The path '{path}' does not exist in the HDF5 file.")
+
+        attr = {}
+        path_split = path.split("/")
+        path_temp = path_split.pop(0)
+        for e in self[path_temp].attrs.keys():
+            attr[e] = self[path_temp].attrs[e]
+        for e in path_split:
+            path_temp += "/" + e
+            for a in self[path_temp].attrs.keys():
+                attr[a] = self[path_temp].attrs[a]
+        return attr
+
+    def get_children_elements(self, path=None, Brillouin_type=None):
+        if path is None:
+            path = "Brillouin"
+        if path not in self:
+            return []
+        if isinstance(self[path], HDF5_group):
+            children = list(self[path].keys())
+        else:
+            children = []
+
+        if Brillouin_type is None:
+            return list(children)
+        else:
+            return [e for e in children if self.get_type(path=f"{path}/{e}", return_Brillouin_type=True) == Brillouin_type]
+
+    def get_default_attributes(self):
+        return NormalizedAttributes.get_all()
+
+    def get_special_groups_hierarchy(self, path=None, brillouin_type=None):
+        if path is None:
+            path = "Brillouin"
+        if brillouin_type is None:
+            brillouin_type = "Root"
+
+        if path not in self:
+            raise WrapperError_StructureError(f"The path '{path}' does not exist in the file.")
+
+        path_split = path.split("/")
+        path_temp = ""
+        groups = []
+        while len(path_split) > 0:
+            if path_temp == "":
+                path_temp = path_split.pop(0)
+            else:
+                path_temp = f"{path_temp}/{path_split.pop(0)}"
+            childs = self.get_children_elements(path_temp)
+            for e in childs:
+                if self.get_type(path=f"{path_temp}/{e}", return_Brillouin_type=True) == brillouin_type:
+                    groups.append(f"{path_temp}/{e}")
+        return groups
+
+    def get_structure(self, filepath=None):
+        def iteration(obj):
+            dic = {}
+            for key in obj.keys():
+                if key == "Structure":
+                    continue
+                try:
+                    dic[key] = {"Brillouin_type": obj[key].attrs["Brillouin_type"]}
+                except Exception:
+                    if isinstance(obj[key], h5py.Group):
+                        dic[key] = {"Brillouin_type": "Root"}
+                    else:
+                        dic[key] = {"Brillouin_type": "Raw_data"}
+                if isinstance(obj[key], h5py.Group):
+                    temp = iteration(obj[key])
+                    if temp:
+                        dic[key].update(temp)
+            return dic
+
+        if filepath is None or filepath == self.filename:
+            return iteration(self)
+        else:
+            with h5py.File(filepath, 'r') as file:
+                return iteration(file)
+
+    def get_type(self, path=None, return_Brillouin_type=False):
+        if path is None:
+            path = "Brillouin"
+        if path not in self:
+            raise WrapperError_StructureError(f"The path '{path}' does not exist in the file.")
+        if return_Brillouin_type:
+            try:
+                return self[path].attrs["Brillouin_type"]
+            except Exception:
+                if isinstance(self[path], h5py.Group):
+                    return "Root"
+                else:
+                    return "Other"
+        else:
+            return type(self[path])
+
+    def import_brim(self, filepath, parent_group=None):
+        print('To do')
+
+    def move(self, path, new_path):
+        super().move(path, new_path)
+        self.need_for_repack = True
+
+    def move_channel_dimension_to_last(self, path, channel_dimension=None):
+        if path not in self:
+            raise WrapperError_StructureError(f"The path '{path}' does not exist in the file.")
+        if not self.get_type(path=path) == HDF5_dataset:
+            raise WrapperError_ArgumentType(f"The path '{path}' does not lead to a dataset.")
+
+        data = self[path][()]
+        if channel_dimension is None or channel_dimension == data.ndim - 1:
+            return
+
+        data = np.moveaxis(data, channel_dimension, -1)
+        attributes = dict(self[path].attrs)
+        self.delete_element(path)
+        self.create_dataset(path, data=data)
+        for k, v in attributes.items():
+            self[path].attrs[k] = v
+
+    def repack(self, force_repack=False):
+        if not (self.need_for_repack or force_repack):
+            return
+
+        def copy_group(src, src_path, dst, dst_path):
+            dst.create_group(dst_path)
+            for k in src[src_path].attrs.keys():
+                dst[dst_path].attrs[k] = src[src_path].attrs[k]
+            for key in src[src_path].keys():
+                sub_src = f"{src_path}/{key}" if src_path else key
+                sub_dst = f"{dst_path}/{key}" if dst_path else key
+                if isinstance(src[sub_src], h5py.Group):
+                    copy_group(src, sub_src, dst, sub_dst)
+                else:
+                    dset = dst[dst_path].create_dataset(key, data=src[sub_src][()])
+                    if "Brillouin_type" in src[sub_src].attrs:
+                        dset.attrs["Brillouin_type"] = src[sub_src].attrs["Brillouin_type"]
+
+        self.flush()
+        _, temporary_file = tempfile.mkstemp(suffix=".h5")
+        with h5py.File(temporary_file, 'w') as new_file:
+            for key in self.keys():
+                if isinstance(self[key], h5py.Group):
+                    copy_group(self, key, new_file, key)
+                else:
+                    new_file.create_dataset(key, data=self[key][()])
+
+        current_file = self.filename
+        super().close()
+        os.remove(current_file)
+        shutil.move(temporary_file, current_file)
+        super().__init__(current_file, 'a')
+        self.need_for_repack = False
+
+    def save_as_hdf5(self, filepath=None, remove_old_file=True, overwrite=False):
+        if filepath is None or filepath == self.filepath:
+            self.flush()
+            self.save = False
+            return
+
+        if os.path.isfile(filepath) and not overwrite:
+            raise WrapperError_Overwrite(f"The file '{filepath}' already exists.")
+
+        self.flush()
+        try:
+            with h5py.File(filepath, 'w') as dst_file:
+                self.copy('/Brillouin', dst_file)
+            old_filepath = self.filepath
+            if remove_old_file:
+                super().close()
+                if os.path.isfile(old_filepath):
+                    os.remove(old_filepath)
+                super().__init__(filepath, 'a')
+            self.save = False
+        except Exception as e:
+            raise WrapperError(f"An error occured while saving the file '{self.filepath}'. Error message: {e}")
+
+    def save_stored_script(self, path: str = None, attribute_name: str = None, save_filepath: str = None):
+        if path is None or attribute_name is None or save_filepath is None:
+            return
+        if path not in self:
+            raise WrapperError_StructureError(f"The path '{path}' does not exist in the file.")
+        if attribute_name not in self[path].attrs.keys():
+            raise WrapperError_StructureError(f"The attribute '{attribute_name}' does not exist in the file.")
+        script = self[path].attrs[attribute_name]
+        with open(save_filepath, 'w', encoding="utf-8") as out_f:
+            out_f.write(script)
+
+    def save_properties_csv(self, filepath, path=None):
+        if path is None:
+            path = "Brillouin"
+        attributes = self.get_attributes(path=path)
+        with open(filepath, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            base = ''
+            writer.writerow([attributes["HDF5_BLS_version"]])
+            for k, v in attributes.items():
+                if k in ["Brillouin_type", "HDF5_BLS_version"]:
+                    continue
+                if k.split(".")[0] != base:
+                    base = k.split(".")[0]
+                    writer.writerow([""])
+                    writer.writerow([base])
+                writer.writerow([k, v])
+
+    def store_script(self, path: str = None, attribute_name: str = None, script_filepath: str = None):
+        if path is None:
+            path = "Brillouin"
+        if attribute_name is None:
+            attribute_name = "Script"
+        if script_filepath is None:
+            caller_filename = None
+            for frame_info in inspect.stack()[1:]:
+                fname = frame_info.filename
+                if os.path.abspath(fname) != os.path.abspath(__file__):
+                    caller_filename = fname
+                    break
+            if not caller_filename:
+                raise RuntimeError("Cannot infer caller filename. Run from a script or pass `path` explicitly.")
+            script_filepath = caller_filename
+
+        with open(script_filepath, 'r') as script_file:
+            script_content = script_file.read()
+        self.add_attributes({attribute_name: script_content}, parent_group=path, overwrite=True)
+
+    def add_abscissa(self, data, parent_group, name=None, unit="AU", dim_start=0, dim_end=None, overwrite=False):
+        if dim_end is None:
+            dim_end = dim_start + 1
+        if name is None:
+            name = "Abscissa"
+        dic = {f"Abscissa_{dim_start}_{dim_end}": {
+            "Name": name,
+            "Data": data,
+            "Dim_start": dim_start,
+            "Dim_end": dim_end,
+            "Unit": unit
+        }}
+        self.add_dictionary(dic,
+                            parent_group=parent_group,
+                            create_group=True,
+                            brillouin_type_parent_group="Measure",
+                            overwrite=overwrite)
+
+    def add_attributes(self, attributes, parent_group="Brillouin", overwrite=False):
+        if parent_group not in self:
+            raise WrapperError_StructureError(f"The parent group '{parent_group}' does not exist in the HDF5 file.")
+        group = self[parent_group]
+        for key, value in attributes.items():
+            if key in group.attrs.keys():
+                if overwrite and value:
+                    group.attrs.modify(key, str(value))
+            elif value:
+                group.attrs.create(key, str(value))
+
+    def add_frequency(self, data, parent_group="Brillouin", name=None, overwrite=False):
+        if name is None:
+            name = "Frequency"
+        dic = {"Frequency": {"Name": name, "Data": data}}
+        self.add_dictionary(dic,
+                            parent_group=parent_group,
+                            create_group=True,
+                            brillouin_type_parent_group="Measure",
+                            overwrite=overwrite)
+
+    def add_other(self, data, parent_group="Brillouin", name=None, overwrite=False):
+        if name is None:
+            name = "Other"
+        dic = {"Other": {"Name": name, "Data": data}}
+        self.add_dictionary(dic,
+                            parent_group=parent_group,
+                            create_group=True,
+                            brillouin_type_parent_group="Measure",
+                            overwrite=overwrite)
+
+    def add_PSD(self, data, parent_group="Brillouin", name=None, overwrite=False):
+        if name is None:
+            name = "PSD"
+        dic = {"PSD": {"Name": name, "Data": data}}
+        self.add_dictionary(dic,
+                            parent_group=parent_group,
+                            create_group=True,
+                            brillouin_type_parent_group="Measure",
+                            overwrite=overwrite)
+
+    def add_raw_data(self, data, parent_group, name=None, overwrite=False):
+        if name is None:
+            name = "Raw_data"
+        dic = {"Raw_data": {"Name": name, "Data": data}}
+        self.add_dictionary(dic,
+                            parent_group=parent_group,
+                            create_group=True,
+                            brillouin_type_parent_group="Measure",
+                            overwrite=overwrite)
+
+    def add_treated_data(self, parent_group, name_group=None, overwrite=False, **kwargs):
+        dic = {}
+        treat = kwargs.get("treat", None)
+        if treat is not None:
+            dic["Shift"] = {"Name": "Shift", "Data": treat.shift}
+            dic["Linewidth"] = {"Name": "Linewidth", "Data": treat.linewidth}
+            dic["Amplitude"] = {"Name": "Amplitude", "Data": treat.amplitude}
+            dic["BLT"] = {"Name": "BLT", "Data": treat.BLT}
+            dic["Shift_err"] = {"Name": "Shift error", "Data": treat.shift_var}
+            dic["Linewidth_err"] = {"Name": "Linewidth error", "Data": treat.linewidth_var}
+            dic["Amplitude_err"] = {"Name": "Amplitude error", "Data": treat.amplitude_var}
+            dic["BLT_err"] = {"Name": "BLT error", "Data": treat.BLT_var}
+        else:
+            shift = kwargs.get("shift", None)
+            if shift is not None: dic["Shift"] = {"Name": "Shift", "Data": shift}
+            linewidth = kwargs.get("linewidth", None)
+            if linewidth is not None: dic["Linewidth"] = {"Name": "Linewidth", "Data": linewidth}
+            amplitude = kwargs.get("amplitude", None)
+            if amplitude is not None: dic["Amplitude"] = {"Name": "Amplitude", "Data": amplitude}
+            blt = kwargs.get("blt", None)
+            if blt is not None: dic["BLT"] = {"Name": "BLT", "Data": blt}
+            shift_err = kwargs.get("shift_err", None)
+            if shift_err is not None: dic["Shift_err"] = {"Name": "Shift error", "Data": shift_err}
+            linewidth_err = kwargs.get("linewidth_err", None)
+            if linewidth_err is not None: dic["Linewidth_err"] = {"Name": "Linewidth error", "Data": linewidth_err}
+            amplitude_err = kwargs.get("amplitude_err", None)
+            if amplitude_err is not None: dic["Amplitude_err"] = {"Name": "Amplitude error", "Data": amplitude_err}
+            blt_std = kwargs.get("blt_std", None)
+            if blt_std is not None: dic["BLT_err"] = {"Name": "BLT error", "Data": blt_std}
+
+        if len(dic.keys()) == 0:
+            return
+
+        self.add_dictionary(dic,
+                            parent_group=f"{parent_group}/{name_group}",
+                            create_group=True,
+                            brillouin_type_parent_group="Treatment",
+                            overwrite=overwrite)
+
+    def clear_empty_attributes(self, path):
+        if self.get_type(path) == HDF5_group:
+            for e in list(self[path].attrs.keys()):
+                if self[path].attrs[e] == "":
+                    self[path].attrs.pop(e, None)
+        else:
+            self.clear_empty_attributes(path="/".join(path.split("/")[:-1]))
+
+    def import_raw_data(self, filepath, parent_group="Brillouin", name=None, creator=None, parameters=None, reshape=None, overwrite=False):
+        if not os.path.isfile(filepath):
+            raise WrapperError_FileNotFound(f"The file '{filepath}' does not exist.")
+        dic = load_general(filepath, creator=creator, parameters=parameters)
+        if reshape is not None:
+            dic["Raw_data"]["Data"] = np.reshape(dic["Raw_data"]["Data"], reshape)
+        self.add_raw_data(dic["Raw_data"]["Data"], parent_group, name=name, overwrite=overwrite)
+        self.add_attributes(dic["Attributes"], parent_group, overwrite=overwrite)
+
+    def import_PSD(self, filepath, parent_group="Brillouin", name=None, creator=None, parameters=None, reshape=None, overwrite=False):
+        if not os.path.isfile(filepath):
+            raise WrapperError_FileNotFound(f"The file '{filepath}' does not exist.")
+        dic = load_general(filepath, creator=creator, parameters=parameters)
+        if reshape is not None:
+            dic["PSD"]["Data"] = np.reshape(dic["Raw_data"]["Data"], reshape)
+        self.add_PSD(dic["PSD"]["Data"], parent_group, name=name, overwrite=overwrite)
+        self.add_frequency(dic["Frequency"]["Data"], parent_group, name="Frequency", overwrite=overwrite)
+        self.add_attributes(dic["Attributes"], parent_group, overwrite=overwrite)
+
+    def import_other(self, filepath, parent_group="Brillouin", name=None, creator=None, parameters=None, reshape=None, overwrite=False):
+        if not os.path.isfile(filepath):
+            raise WrapperError_FileNotFound(f"The file '{filepath}' does not exist.")
+        if parent_group not in self:
+            super().create_group(parent_group)
+        if name in self[parent_group].keys():
+            i = 0
+            while f"{name}_{i}" in self[parent_group].keys():
+                i += 1
+            name = f"{name}_{i}"
+        dic = load_general(filepath, creator=creator, parameters=parameters, brillouin_type="Other")
+        if reshape is not None:
+            dic["Other"]["Data"] = np.reshape(dic["Other"]["Data"], reshape)
+        dic["Other"]["Name"] = name
+        self.add_dictionary(dic, parent_group=parent_group, create_group=True, brillouin_type_parent_group="Measure", overwrite=overwrite)
+
+    def import_properties_data(self, filepath, path=None, overwrite=False, delete_child_attributes=False):
+        def delete_attributes(pth, attributes):
+            if self.get_type(pth) == HDF5_group:
+                for e in list(self[pth].attrs.keys()):
+                    if e in attributes.keys():
+                        self[pth].attrs.pop(e, None)
+                for e in self.get_children_elements(pth):
+                    delete_attributes(f"{pth}/{e}", attributes)
+
+        if not filepath.endswith(('.csv', '.xlsx', '.xls')):
+            raise WrapperError_FileNotFound(f"The file '{filepath}' is not a valid CSV file.")
+        elif not os.path.isfile(filepath):
+            raise WrapperError_FileNotFound(f"The file '{filepath}' does not exist.")
+
+        if path is None:
+            path = "Brillouin"
+
+        new_attributes = {}
+        if filepath.endswith('.csv'):
+            with open(filepath, mode='r', encoding='latin1') as csv_file:
+                csv_reader = csv.reader(csv_file)
+                for row in csv_reader:
+                    if len(row) > 1 and len(row[0].split(".")) > 1 and row[0].split(".")[0] in ["FILEPROP", "SPECTROMETER", "MEASURE"] and row[1] != "":
+                        new_attributes[row[0]] = str(row[1])
+        elif filepath.endswith(('.xlsx', '.xls')):
+            df = pd.read_excel(filepath, header=None)
+            for index, row in df.iterrows():
+                if pd.notna(row[0]):
+                    if len(str(row[0]).split(".")) > 1 and str(row[0]).split(".")[0] in ["FILEPROP", "SPECTROMETER", "MEASURE"]:
+                        if pd.notna(row[1]):
+                            new_attributes[str(row[0])] = str(row[1])
+        else:
+            raise WrapperError_FileNotFound(f"The file '{filepath}' is not a valid CSV, XLSX or XLS file.")
+
+        if delete_child_attributes:
+            delete_attributes(path, new_attributes)
+
+        self.add_dictionary({"Attributes": new_attributes}, parent_group=path, overwrite=overwrite)
+
+    def update_property(self, name, value, path, apply_to_all=None):
+        if path is None:
+            path = "Brillouin"
+
+        if apply_to_all is None and self.get_attributes(path).get("Brillouin_type") == "Root" and len(self.get_children_elements(path=path)) > 0:
+            raise WrapperError_ArgumentType("Apply to all elements or not?")
+        elif apply_to_all is not None and apply_to_all:
+            if self.get_type(path=path) is HDF5_group:
+                self.add_dictionary({"Attributes": {name: value}}, parent_group=path, overwrite=True)
+                for e in self.get_children_elements(path=path):
+                    self.update_property(name=name, value=value, path=f"{path}/{e}", apply_to_all=apply_to_all)
+            else:
+                return
+        else:
+            self.add_dictionary({"Attributes": {name: value}}, parent_group=path, overwrite=True)
+
+    def print_structure(self, lvl=0):
+        dic = self.get_structure()
+        for e in dic.keys():
+            if e == "Brillouin_type":
+                continue
+            elif type(dic[e]) is dict:
+                print("|-" * lvl + e + "(" + dic[e]["Brillouin_type"] + ")")
+                self.print_metadata(dic[e], lvl + 1)
+            else:
+                print("|-" * lvl + e)
+                print("|-" * (lvl + 1) + str(dic[e]))
+
+    def print_metadata(self, path=None):
+        if path is None:
+            path = "Brillouin"
+        dic = self.get_attributes(path)
+        for k, v in dic.items():
+            print(k, " : ", v)
+
+
+
+
+
 
 if __name__ == "__main__":
     wrp = Wrapper()
