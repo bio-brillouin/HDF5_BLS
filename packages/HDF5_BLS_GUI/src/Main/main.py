@@ -84,6 +84,7 @@ class MainWindow(QMainWindow):
         self.architecture_widget.change_type_requested.connect(self.change_brillouin_type)
         self.architecture_widget.delete_requested.connect(self.remove_element)
         self.architecture_widget.export_group_requested.connect(self.export_group)
+        self.architecture_widget.export_properties_requested.connect(self.export_properties)
         self.architecture_widget.export_path_clipboard.connect(self.handler.export_path_clipboard)
         self.architecture_widget.files_dropped.connect(self.handle_file_addition)
         self.architecture_widget.rename_requested.connect(self.rename_element)
@@ -93,6 +94,7 @@ class MainWindow(QMainWindow):
 
         # Properties Widget signals
         self.properties_widget.edit_attributes_requested.connect(self.edit_attributes)
+        self.properties_widget.csv_dropped.connect(self.handle_properties_csv_dropped)
 
     def _initialize_menubar(self):
         menubar = self.menuBar()
@@ -204,10 +206,8 @@ class MainWindow(QMainWindow):
     def edit_attributes(self, path = None):
         """Edit the attributes of the selected element.
         """
-        print("\nEntering edit_attributes")
         if type(path) == type(None):
             path = self.architecture_widget.get_current_path()
-            print("\npath - ", path)
         if path is False:
             path = 'Brillouin'
 
@@ -217,7 +217,7 @@ class MainWindow(QMainWindow):
             new_attrs = dialog.get_attributes()
             try:
                 # Update attributes in HDF5
-                self.handler.add_attributes(path, new_attrs, overwrite=True)
+                self.handler.add_attributes(new_attrs, path, overwrite=True)
                 self.properties_widget.update_properties(path)
                 self.log.append(f"Attributes updated for <i>{path}</i>")
             except Exception as e:
@@ -246,6 +246,17 @@ class MainWindow(QMainWindow):
                 self.log.append(f"Normalized attributes exported to <i>{filepath}</i>")
             except Exception as e:
                 QMessageBox.warning(self, "Error", f"Could not export normalized attributes: {e}")
+
+    def export_properties(self, path):
+        """Export the properties of the selected element to an Excel file.
+        """
+        filepath, _ = QFileDialog.getSaveFileName(self, "Export Properties", str(Path(self.handler.wrp.filepath).parent / "properties.csv"), "CSV Files (*.csv)")
+        if filepath:
+            try:
+                self.handler.export_properties(path, filepath)
+                self.log.append(f"Properties exported to <i>{filepath}</i>")
+            except Exception as e:
+                QMessageBox.warning(self, "Error", f"Could not export properties: {e}")
 
     def handle_error_save(self):
         """Function that handles the error when trying to close the wrapper without saving it. 
@@ -372,6 +383,21 @@ class MainWindow(QMainWindow):
                     except Exception as e:
                         QMessageBox.warning(self, "Error", f"Could not import {filepath}: {e}")
                         return
+
+    def handle_properties_csv_dropped(self, filepaths, path):
+        """Handle CSV files dropped on the properties widget.
+        """
+        for filepath in filepaths:
+            if not Path(filepath).suffix.lower() in ['.csv', '.xls', '.xlsx']:
+                QMessageBox.warning(self, "Invalid File", f"The file '{filepath}' is not a valid properties file (.csv, .xls, .xlsx).")
+                continue
+            
+            try:
+                self.handler.wrp.import_properties_data(filepath, path=path)
+                self.log.append(f"Properties from <i>{filepath}</i> imported to <i>{path}</i>")
+                self.properties_widget.update_properties(path)
+            except Exception as e:
+                QMessageBox.warning(self, "Error", f"Could not import properties from {filepath}: {e}")
 
     def new_hdf5(self):
         """Create a new HDF5 file.
