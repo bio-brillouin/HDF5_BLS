@@ -7,11 +7,12 @@ from HDF5_BLS.wrapper import HDF5_group, HDF5_dataset
 class ArchitectureWidget(QTreeView):
     selection_changed = Signal(str)  # Emits the path of the selected element
     rename_requested = Signal(str)  # Emits (path)
-    delete_requested = Signal(str, str) # Emits (path_to_delete, path_to_select_after)
     add_group_requested = Signal(str) # path
     change_type_requested = Signal(str, str) # path, brillouin_type
-    export_path_clipboard = Signal(str) # path
+    delete_requested = Signal(str, str) # Emits (path_to_delete, path_to_select_after)
     export_group_requested = Signal(str) # path
+    export_path_clipboard = Signal(str) # path
+    export_properties_requested = Signal(str) # path
     files_dropped = Signal(list, str) # paths, target_path
     import_data_requested = Signal(str) # path
     process_psd_requested = Signal(list) # paths
@@ -242,6 +243,9 @@ class ArchitectureWidget(QTreeView):
 
             import_data_action = menu.addAction("Import Data")
             import_data_action.triggered.connect(lambda: self.import_data_requested.emit(path))
+
+            export_properties_action = menu.addAction("Export Properties")
+            export_properties_action.triggered.connect(lambda: self.export_properties_requested.emit(path))
 
         def group_actions(path):
             def sub_menu_Brillouin_type_group():

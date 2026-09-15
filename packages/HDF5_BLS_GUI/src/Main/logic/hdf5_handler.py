@@ -40,6 +40,11 @@ class HDF5Handler:
         """
         self.wrp.export_group(path, filepath)
 
+    def export_properties(self, path, filepath):
+        """Export the properties of the selected element to an Excel file.
+        """
+        self.wrp.save_properties_csv(filepath, path)
+
     def get_children_elements(self, path="Brillouin"):
         return self.wrp.get_children_elements(path=path)
 
