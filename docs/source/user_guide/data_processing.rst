@@ -1,3 +1,4 @@
+.. _data_processing:
 
 Data Processing with HDF5_BLS
 =============================

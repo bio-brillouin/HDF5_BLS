@@ -270,7 +270,7 @@ and the datasets to add:
 - the array storing amplitude errors (argument "amplitude_err")
 - the array storing loss tangent errors (argument "blt_std")
 
-Alternatively, you can just specify a HDF5_BLS_treat.Treat object (argument "treat") which will automatically add all the attributes of the treatment object to the group. This is the recommended way to add treated data as it not only saves all the datasets above but also all the steps followed during the treatment and ensures a unified treatment between members of the community (see :doc:`/source/hdf5_bls_treat_package` for more information on the treatment object).
+Alternatively, you can just specify a HDF5_BLS_treat.Treat object (argument "treat") which will automatically add all the attributes of the treatment object to the group. This is the recommended way to add treated data as it not only saves all the datasets above but also all the steps followed during the treatment and ensures a unified treatment between members of the community (see :doc:`user_guide/hdf5_bls_treat_package/usage` for more information on the treatment object).
 
 .. code-block:: python
 

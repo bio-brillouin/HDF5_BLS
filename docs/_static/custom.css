@@ -28,3 +28,32 @@ You use 'background-color' to set the background.
     padding: 4px 6px;
     display: block;
 }
+
+/* Override sphinx_rtd_theme bullet points in treeview */
+.rst-content .treeview ul,
+.rst-content .treeview li {
+    list-style: none !important;
+    list-style-type: none !important;
+    list-style-image: none !important;
+}
+
+/* Reduce the left space before each level in the treeview */
+:root {
+    --treeview-indent: 1rem;
+    --treeview-spacing: 0rem;
+}
+
+/* Ensure no additional vertical spacing is added by paragraphs or definition lists */
+.rst-content .treeview p,
+.rst-content .treeview dl,
+.rst-content .treeview dd,
+.rst-content .treeview dt {
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1.4 !important;
+}
+
+.rst-content .treeview li {
+    margin-bottom: 0 !important;
+    line-height: 1.4 !important;
+}

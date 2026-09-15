@@ -1,3 +1,5 @@
+.. _hdf5_bls_package:
+
 The HDF5\_BLS package
 =====================
 

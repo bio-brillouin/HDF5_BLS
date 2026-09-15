@@ -4,27 +4,27 @@ Quickstart
 Spirit of the project
 ---------------------
 
-The idea of the package is to provide a simple way to store and retrieve data relevant to Brillouin Light Scattering experiments together with the metadata associated to the data. The file we propose to use is the HDF5 file format (standing for "Hierarchical Data Format version 5"). The idea of this project is to use this file format to reproduce the structure of a filesystem within a single file, storing all files corresponding to a given expoeriment in a single "group". For example, a typical structure of the HDF5 file could be:
+The idea of the package is to provide a simple way to unify the storage of data relevant to Brillouin Light Scattering experiments together with the metadata associated to the data. The file we propose to use is the HDF5 file format (standing for "Hierarchical Data Format version 5"). The idea of this project is to use this file format to reproduce the structure of a filesystem within a single file, storing all files corresponding to a given expoeriment in a single "group". For example, a typical structure of the HDF5 file could be:
 
-.. code-block:: bash
+.. treeview::
+
+   - :dir:`file` file.h5
+     - :dir:`folder` Brillouin 
+       - :dir:`folder` Measure of water
+         - :dir:`file` Image of the power spectral density
+         - :dir:`file` Channels associated to the power spectral density
+         - :dir:`folder` Results after data processing
+           - :dir:`file` Shift
+           - :dir:`file` Shift variance
+           - :dir:`file` Linewidth
+           - :dir:`file` Linewidth variance
+           - :dir:`file` Amplitude
+           - :dir:`file` Amplitude variance
+           - :dir:`file` ... 
+       - :dir:`folder` Measure of methanol
+         - :dir:`file` ...
    
-   file.h5
-   └── Brillouin
-       ├── Measure of water
-       │   ├── Image of the power spectral density
-       │   ├── Channels associated to the power spectral density
-       │   ├── Results after data processing
-       │   │   ├── Shift
-       │   │   ├── Shift variance
-       │   │   ├── Linewidth
-       │   │   ├── Linewidth variance
-       │   │   ├── Amplitude
-       │   │   ├── Amplitude variance
-       │   │   ├── ... 
-       ├── Measure of methanol
-       │   ├── ...
-   
-To allow this file format to be used with other modalities (e.g. electrophoresis assays to complement a Brillouin experiment), we propose to use a top-level group corresponding a minima to the modality (e.g. "Brillouin"). We also propose to add to each element of the HDF5 file, a "Brillouin_type" attribute that will allow to know the type of the element. For datasets, these types are:
+To allow this file format to be used with other modalities (e.g. electrophoresis assays to complement a Brillouin experiment), we propose to store all BLS-relevant data in a top-level group called "Brillouin". We also propose to add to each element of the HDF5 file, a "Brillouin_type" attribute that will allow to know the type of the element. For datasets, these types are:
 
 - Raw_data: the raw data
 - PSD: a power spectral density array
@@ -47,11 +47,42 @@ For groups, these types are:
 - Root: the root group
 - Treatment: the treatment
 
-.. figure:: ..//_static/Groups_and_datasets_type.png
+.. figure:: ../../_static/Groups_and_datasets_type.png
    :width: 75%
    :align: center
 
    A visual representation of the Brillouin\_type attribute for groups and datasets in the HDF5 file.
+
+Our example would therefore become, with the Brilloui\_type attribute:
+
+.. treeview::
+
+   - :dir:`file` file.h5
+     - :dir:`folder` Brillouin 
+       - :icon:`icon_attr` Brillouin_type: Root
+       - :dir:`folder` Measure of water
+         - :icon:`icon_attr` Brillouin_type: Measure
+         - :dir:`file` Image of the power spectral density
+           - :icon:`icon_attr` Brillouin_type: Raw_data
+         - :dir:`file` Channels associated to the power spectral density
+           - :icon:`icon_attr` Brillouin_type: Frequency
+         - :dir:`folder` Results after data processing
+           - :icon:`icon_attr` Brillouin_type: Treatment
+           - :dir:`file` Shift
+             - :icon:`icon_attr` Brillouin_type: Shift
+           - :dir:`file` Shift variance
+             - :icon:`icon_attr` Brillouin_type: Shift_err
+           - :dir:`file` Linewidth
+             - :icon:`icon_attr` Brillouin_type: Linewidth
+           - :dir:`file` Linewidth variance
+             - :icon:`icon_attr` Brillouin_type: Linewidth_err
+           - :dir:`file` Amplitude
+             - :icon:`icon_attr` Brillouin_type: Amplitude
+           - :dir:`file` Amplitude variance
+             - :icon:`icon_attr` Brillouin_type: Amplitude_err
+           - :dir:`file` ... 
+       - :dir:`folder` Measure of methanol
+         - :dir:`file` ...
 
 Installation
 ------------

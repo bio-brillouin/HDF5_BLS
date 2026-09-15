@@ -1,3 +1,5 @@
+.. _hdf5_bls_analyse_package:
+
 The HDF5\_BLS\_analyse package
 ==============================
 

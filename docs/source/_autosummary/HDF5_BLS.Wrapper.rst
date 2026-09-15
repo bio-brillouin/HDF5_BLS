@@ -45,6 +45,7 @@
       ~Wrapper.get_structure
       ~Wrapper.get_type
       ~Wrapper.import_PSD
+      ~Wrapper.import_brim
       ~Wrapper.import_other
       ~Wrapper.import_properties_data
       ~Wrapper.import_raw_data

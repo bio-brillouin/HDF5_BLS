@@ -3,7 +3,13 @@
 Normalization rules for the BioBrillouin community
 ==================================================
 
-In order to be able to share and compare data between members of the BioBrillouin community, we need to agree on a set of normalization rules. We here propose a basis, largely inspired by the OME community. 
+In this section, we detail the HDF5_BLS norm. This set of norm is largely inspired by the OME community and particularly the OME Zarr norm. 
+
+Note that the HDF5_BLS norm is a goal to reach by the community of researchers and developers working on Brillouin Light Scattering. As such, these norms are meant to be expanded and improved upon over time and for now minimally constraining to allow a smooth transition for users and teh wider possible adoption. As such, we strongly encourage you to only follow these norms if 
+
+1. You have time to dedicate to learning how to use them 
+2. You are planning on sharing your BLS data, particularly with a publication where you can refer to these norms as a 'standard'
+
 
 This section is divided in three parts: 
 
@@ -17,9 +23,9 @@ Normalization rules for attributes
 The Brillouin\_type Attributes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The Brillouin\_type attribute is used to recognize the type of the element. Note that this attribute is therefore the first step in normalizing the file format. It can be any one of the following values:
+The Brillouin\_type attribute is used to recognize the type of the element (group or dataset). It can take the following values:
 
-.. figure:: ../_static/Groups_and_datasets_type.png
+.. figure:: ../../_static/Groups_and_datasets_type.png
    :width: 70%
    :align: center
 
@@ -30,37 +36,51 @@ Hierarchical strorage of attributes
 
 HDF5 file format allows the storage of attributes in the metadata of the groups and datasets. As all the attributes applying to a measure will apply to all the elements of the "measure" group, we propose to store all the attributes concerning an experiment in the attributes of the group:
 
-.. code-block:: bash
 
-    file.h5
-    └── Brillouin (group)
-        ├── Measure (group) -> attributes of the measure
-            └── Measure (dataset)
+.. treeview::
 
+    - :dir:`file` file.h5
+        - :dir:`folder` Brillouin 
+            - :dir:`folder` Measure
+                    - :icon:`icon_attr` Attributes applied to all the datasets inside the group
+                - :dir:`file` Power Spectral Density
+                - :dir:`file` Frequency
 
 Being a hierarchical format, we also propose to store attributes hierarchically: all attributes of parent group apply to childre groups (if not redefined in children groups). Storing attributes in large files can therefore be done the following way:
 
-.. code-block:: bash
+.. treeview::
 
-    file.h5
-    └── Brillouin (group) -> attributes shared by Measure 0 and Measure 1
-        ├── Measure 0 (group) -> other attributes specific to Measure 0
-        │   └── Measure (dataset)
-        └── Measure 1 (group) -> other attributes specific to Measure 1
-            └── Measure (dataset)
+    - :dir:`file` file.h5
+        - :dir:`folder` Brillouin 
+                - :icon:`icon_attr` Attributes applied to all sub-groups (Measure 1 and Measure 2 here)
+            - :dir:`folder` Measure 1
+                    - :icon:`icon_attr` Attributes applied only to the Measure 1 group
+                - :dir:`file` Power Spectral Density
+                - :dir:`file` Frequency
+            - :dir:`folder` Measure 2
+                    - :icon:`icon_attr` Attributes applied only to the Measure 2 group
+                - :dir:`file` Power Spectral Density
+                - :dir:`file` Frequency
+
 
 This approach allows us to store for example the parameters of the spectrometer used in a series of measures in the topmost group of the file.
 
 Note that the same logic applies to the treatment of the data. The attributes of the treatment will be stored in the attributes of the "Treatment" group.
 
-.. code-block:: bash
 
-    file.h5
-    └── Brillouin (group)
-        └── Measure (group) -> attributes of the measure
-            ├── Measure (dataset)
-            └── Treatment (group) -> attributes of the treatment
-                └── Shift (dataset)
+.. treeview::
+
+    - :dir:`file` file.h5
+        - :dir:`folder` Brillouin 
+                - :icon:`icon_attr` Attributes applied to all sub-groups (Measure 1 and Measure 2 here)
+            - :dir:`folder` Measure 1
+                    - :icon:`icon_attr` Attributes applied only to the Measure 1 group
+                - :dir:`file` Power Spectral Density
+                - :dir:`file` Frequency
+                    - :dir:`folder` Treatment
+                            - :icon:`icon_attr` Attributes specific to the treatment group
+                        - :dir:`file` Shift
+                        - :dir:`file` Linewidth
 
 Attribute type
 ^^^^^^^^^^^^^^
@@ -73,13 +93,14 @@ Organization of the attributes
 Prefix
 """"""
 
-We differentiate 5 types of attributes, that we differentiate using the following prefixes:
+We differentiate 6 types of attributes, that we differentiate using the following prefixes:
 
-* SPECTROMETER - Attributes that are specific to the spectrometer used, such as the wavelength of the laser, the type of laser, the type of detector, etc. These attributes are recognized by the capital letter word "SPECTROMETER" in the name of the attribute.
-* MEASURE - Attributes that are specific to the sample, such as the date of the measure, the name of the sample, etc. These attributes are recognized by the capital letter word "MEASURE" in the name of the attribute.
-* FILEPROP - Attributes that are specific to the original file format, such as the name of the file, the date of the file, the version of the file, the precision used on the storage of the data, etc. These attributes are recognized by the capital letter word "FILEPROP" in the name of the attribute.
-* PROCESS - Attributes that are specific to the storage of algorithms. These attributes are recognized by the capital letter word "PROCESS" in the name of the attribute.
-* Attributes that are used inside the HDF5 file, such as the "Brillouin\_type" attribute. These attributes are the only ones without a prefix.
+* **SPECTROMETER** - Attributes that are specific to the spectrometer used, such as the wavelength of the laser, the type of laser, the type of detector, etc. These attributes are recognized by the capital letter word "SPECTROMETER" in the name of the attribute.
+* **MEASURE** - Attributes that are specific to the sample, such as the date of the measure, the name of the sample, etc. These attributes are recognized by the capital letter word "MEASURE" in the name of the attribute.
+* **FILEPROP** - Attributes that are specific to the original file format, such as the name of the file, the date of the file, the version of the file, the precision used on the storage of the data, etc. These attributes are recognized by the capital letter word "FILEPROP" in the name of the attribute.
+* **PROCESS** - Attributes that are specific to the storage of algorithms. These attributes are recognized by the capital letter word "PROCESS" in the name of the attribute.
+* **script** - Attributes storing an entire script the user wants to store along side the measure (for example an algorithm to process the data). These attributes are recognized by the lowercase "script" in the name of the attribute.
+* **Attributes that are used inside the HDF5 file**, such as the "Brillouin\_type" attribute. These attributes are the only ones without a prefix.
 
 Units
 """""
@@ -108,7 +129,7 @@ The standardized attributes can be exported to an Excel spreadsheet or a CSV fil
     for attr in attrs:
         print(f"{attr.name}: {attr.description}")
 
-.. figure:: ../_static/Excel_attributes.png
+.. figure:: ../../_static/Excel_attributes.png
    :width: 70%
    :align: center
 
@@ -170,7 +191,7 @@ General guidelines
 1. Datasets should be presented as tensors where the dimensions are attribuated to the different hyperparameters of the experiment (see :numref:`Dataset_multidimensional`).
 
 .. _Dataset_multidimensional:
-.. figure:: ../_static/Dataset_dimensions.png
+.. figure:: ../../_static/Dataset_dimensions.png
    :width: 70%
    :align: center
 
@@ -188,7 +209,7 @@ General guidelines
     - Other (n-...)
 
 .. _Dataset_dimension_norm:
-.. figure:: ../_static/Dataset_dimensions_normalization.png
+.. figure:: ../../_static/Dataset_dimensions_normalization.png
    :width: 40%
    :align: center
 
@@ -218,35 +239,55 @@ Hierarchical storage of abscissa datasets
 
 If a series of measures are performed using the same abscissa (e.g. a series of 2D mappings on a region of same size between different samples), we can store the abscissa array in the parent group of all the measures sharing this same abscissa. This is optional but allows to equivalent file organizations:
 
-.. code-block:: bash
+.. treeview::
 
-    file.h5
-    └── Brillouin (group, Brillouin_type = "Root")
-        ├── Mapping 1 (group, Brillouin_type = "Measure")
-        |   ├── x (dataset, Brillouin_type = "Abscissa_1")
-        |   ├── y (dataset, Brillouin_type = "Abscissa_2")
-        |   ├── PSD (dataset, Brillouin_type = "PSD")
-        |   └── Frequency (dataset, Brillouin_type = "Frequency")
-        └── Mapping 2 (group, Brillouin_type = "Measure")
-            ├── x (dataset, Brillouin_type = "Abscissa_1")
-            ├── y (dataset, Brillouin_type = "Abscissa_2")
-            ├── PSD (dataset, Brillouin_type = "PSD")
-            └── Frequency (dataset, Brillouin_type = "Frequency")
+    - :dir:`file` file.h5
+        - :dir:`folder` Brillouin 
+                - :icon:`icon_attr` Brillouin_type = "Root"
+            - :dir:`folder` Mapping 1
+                    - :icon:`icon_attr` Brillouin_type = "Measure"
+                - :dir:`file` Power Spectral Density
+                    - :icon:`icon_attr` Brillouin_type = "PSD"
+                - :dir:`file` Frequency
+                    - :icon:`icon_attr` Brillouin_type = "Frequency"
+                - :dir:`file` X
+                    - :icon:`icon_attr` Brillouin_type = "Abscissa_1"
+                - :dir:`file` Y
+                    - :icon:`icon_attr` Brillouin_type = "Abscissa_2"
+            - :dir:`folder` Mapping 2
+                    - :icon:`icon_attr` Brillouin_type = "Measure"
+                - :dir:`file` Power Spectral Density
+                    - :icon:`icon_attr` Brillouin_type = "PSD"
+                - :dir:`file` Frequency
+                    - :icon:`icon_attr` Brillouin_type = "Frequency"
+                - :dir:`file` X
+                    - :icon:`icon_attr` Brillouin_type = "Abscissa_1"
+                - :dir:`file` Y
+                    - :icon:`icon_attr` Brillouin_type = "Abscissa_2"
 
 and
 
-.. code-block:: bash
+.. treeview::
 
-    file.h5
-    └── Brillouin (group, Brillouin_type = "Root")
-        ├── x (dataset, Brillouin_type = "Abscissa_1")
-        ├── y (dataset, Brillouin_type = "Abscissa_2")
-        ├── Mapping 1 (group, Brillouin_type = "Measure")
-        |   ├── PSD (dataset, Brillouin_type = "PSD")
-        |   └── Frequency (dataset, Brillouin_type = "Frequency")
-        └── Mapping 2 (group, Brillouin_type = "Measure")
-            ├── PSD (dataset, Brillouin_type = "PSD")
-            └── Frequency (dataset, Brillouin_type = "Frequency")
+    - :dir:`file` file.h5
+        - :dir:`folder` Brillouin 
+                - :icon:`icon_attr` Brillouin_type = "Root"
+            - :dir:`file` X
+                - :icon:`icon_attr` Brillouin_type = "Abscissa_1"
+            - :dir:`file` Y
+                - :icon:`icon_attr` Brillouin_type = "Abscissa_2"
+            - :dir:`folder` Mapping 1
+                    - :icon:`icon_attr` Brillouin_type = "Measure"
+                - :dir:`file` Power Spectral Density
+                    - :icon:`icon_attr` Brillouin_type = "PSD"
+                - :dir:`file` Frequency
+                    - :icon:`icon_attr` Brillouin_type = "Frequency"
+            - :dir:`folder` Mapping 2
+                    - :icon:`icon_attr` Brillouin_type = "Measure"
+                - :dir:`file` Power Spectral Density
+                    - :icon:`icon_attr` Brillouin_type = "PSD"
+                - :dir:`file` Frequency
+                    - :icon:`icon_attr` Brillouin_type = "Frequency"
 
 For now we do not encourage one solution over the other in the normalization rules.
 
