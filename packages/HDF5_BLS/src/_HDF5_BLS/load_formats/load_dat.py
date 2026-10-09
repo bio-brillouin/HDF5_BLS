@@ -666,7 +666,7 @@ def load_dat_TimeDomain(filepath, parameters = None):
                            "start_offset",
                            "zp"]
         
-        raise LoadError_parameters(f"The following parameters have to be provided: {"; ".join(parameters_list)}", parameters_list)
+        raise LoadError_parameters(f"The following parameters have to be provided: {'; '.join(parameters_list)}", parameters_list)
     else:
         attributes = {}
         for k, v in parameters.items():
