@@ -598,7 +598,7 @@ class Wrapper:
                         if overwrite:
                             delete_keys.append(key)
                         else:
-                            raise WrapperError_Overwrite(f"The name {dic[key]["Name"]} is already used in the group {parent_group}.")
+                            raise WrapperError_Overwrite(f"The name {dic[key]['Name']} is already used in the group {parent_group}.")
             for k in delete_keys:
                 self.delete_element(f"{parent_group}/{dic[k]['Name']}")
 
