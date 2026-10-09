@@ -66,8 +66,8 @@ def test_add_combines_wrappers(temp_hdf5_file: str):
     with h5py.File(temp_hdf5_file, 'a') as file:
         file["Brillouin"].create_dataset("test_data_1", data=np.arange(10))
 
-    dir = "/".join(temp_hdf5_file.split("/")[:-1])
-    path2 = dir + "/" + "test_data_2.h5"
+    dir = os.path.dirname(temp_hdf5_file)
+    path2 = os.path.join(dir, "test_data_2.h5")
     wrp2 = Wrapper(filepath=path2)
     with h5py.File(wrp2.filepath, 'a') as file:
         file["Brillouin"].create_dataset("test_data_2", data=np.arange(10))
@@ -89,8 +89,8 @@ def test_add_hdf5_adds_file(wrapper_instance: Wrapper, temp_hdf5_file: str):
     wrapper_instance.add_hdf5(temp_hdf5_file)
 
     with h5py.File(wrapper_instance.filepath, 'r') as f:
-        assert temp_hdf5_file.split("/")[-1][:-3] in f["Brillouin"]
-        assert "data" in f["Brillouin"][temp_hdf5_file.split("/")[-1][:-3]]
+        assert os.path.basename(temp_hdf5_file)[:-3] in f["Brillouin"]
+        assert "data" in f["Brillouin"][os.path.basename(temp_hdf5_file)[:-3]]
     
     os.remove(temp_hdf5_file)
 
@@ -402,7 +402,7 @@ def test_export_dataset(wrapper_instance: Wrapper):
 
 # Test exporting a group to a file
 def test_export_group(wrapper_instance: Wrapper):
-    tmp_path = "/".join(wrapper_instance.filepath.split("/")[:-1])
+    tmp_path = os.path.dirname(wrapper_instance.filepath)
     # Setup: Create an initial HDF5 file
     with h5py.File(wrapper_instance.filepath, 'a') as f:
         group = f["Brillouin"].create_group("Measure")
@@ -448,7 +448,7 @@ def test_export_group(wrapper_instance: Wrapper):
 
 # Test exporting an image from a dataset
 def test_export_image(wrapper_instance: Wrapper):
-    tmp_path = "/".join(wrapper_instance.filepath.split("/")[:-1])
+    tmp_path = os.path.dirname(wrapper_instance.filepath)
     # Setup: create a 2D dataset
     arr = np.random.rand(10, 10)
     with h5py.File(wrapper_instance.filepath, 'a') as f:
