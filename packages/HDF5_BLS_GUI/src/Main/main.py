@@ -13,7 +13,7 @@ from HDF5_BLS.errors import WrapperError_Overwrite, WrapperError_Save, WrapperEr
 from HDF5_BLS_analyse.VIPA import Analyse_VIPA
 from HDF5_BLS_treat import Treat
 from HDF5_BLS.wrapper import HDF5_group, HDF5_dataset
-from HDF5_BLS.load_formats.errors import LoadError_creator, LoadError_parameters
+from HDF5_BLS.load_formats.load_errors import LoadError_creator, LoadError_parameters
 from HDF5_BLS.load_data import load_general
 
 from MessageBox_multiple_choice.main import MessageBoxMultipleChoice
