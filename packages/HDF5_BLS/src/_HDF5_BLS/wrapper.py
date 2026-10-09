@@ -1403,7 +1403,8 @@ class Wrapper:
         
         if self.need_for_repack or force_repack:
             # Create a blank HDF5 file to store the data
-            _, temporary_file = tempfile.mkstemp(suffix = ".h5")
+            fd, temporary_file = tempfile.mkstemp(suffix = ".h5")
+            os.close(fd)  # Close the file descriptor, otherwise Windows keeps the file locked
             with h5py.File(temporary_file, 'w') as file:
                 group = file.create_group("Brillouin")
                 group.attrs["Brillouin_type"] = "Root"
