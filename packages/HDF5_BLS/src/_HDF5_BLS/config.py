@@ -1,9 +1,16 @@
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Tuple, Any
+import re
+import pkgutil
+import importlib
+import pandas as pd
+from openpyxl.worksheet.datavalidation import DataValidation
+from openpyxl.utils import get_column_letter
 
 DEFAULT_GROUP_TYPE = "Root"
 DEFAULT_DATASET_TYPE = "Other"
 
+# Groups in H5 file
 @dataclass(frozen=True)
 class GroupType:
     """Metadata and specification for a Brillouin group type."""
@@ -11,7 +18,7 @@ class GroupType:
     description: str
     allowed_child_groups: List[str] = field(default_factory=list)
 
-
+# Datasets in H5 file
 @dataclass(frozen=True)
 class DatasetType:
     """Metadata and specification for a Brillouin dataset type."""
@@ -28,24 +35,66 @@ class DatasetType:
             return True
         return parent_group_type in self.allowed_parent_groups
 
+# Attributes in H5 file
+@dataclass(frozen=True)
+class Attribute:
+    """
+    Metadata for a standardized HDF5 attribute.
+    """
+    group: str
+    name: str
+    units: Optional[str] = None
+    description: Optional[str] = None
+    example: Any = None
+    recommended_values: List[Any] = field(default_factory=list)
 
+    @property
+    def full_name(self) -> str:
+        return f"{self.group}.{self.name}"
+
+# Version configurator (stores the spec for each version)
 @dataclass(frozen=True)
 class VersionConfig:
     """Specification for a specific version of HDF5_BLS."""
     version: str
     groups: Dict[str, GroupType]
     datasets: Dict[str, DatasetType]
+    attributes: Dict[str, Attribute]
     type_renames: Dict[str, str] = field(default_factory=dict)
     default_group_type: str = DEFAULT_GROUP_TYPE
     default_dataset_type: str = DEFAULT_DATASET_TYPE
 
     @property
-    def group_names(self) -> List[str]:
-        return list(self.groups.keys())
-
+    def attribute_names(self) -> List[str]:
+        return list(self.attributes.keys())
+    
     @property
     def dataset_names(self) -> List[str]:
         return list(self.datasets.keys())
+    @property
+    def group_names(self) -> List[str]:
+        return list(self.groups.keys())
+
+    def get_attribute(self, name: str) -> Optional[Attribute]:
+        """Retrieves an Attribute by full_name ('MEASURE.Sample') or simple name ('Sample')."""
+        if name in self.attributes:
+            return self.attributes[name]
+        for attr in self.attributes.values():
+            if attr.name == name:
+                return attr
+        return None
+
+    def get_all_attributes(self) -> List[Attribute]:
+        """Returns list of all normalized attributes for this version."""
+        return list(self.attributes.values())
+
+    def get_attribute_groups(self) -> List[str]:
+        """Returns sorted list of attribute meta-groups (e.g. 'FILEPROP', 'MEASURE', 'SPECTROMETER')."""
+        return sorted(list(set(attr.group for attr in self.attributes.values())))
+    
+    def get_attributes_by_group(self, group: str) -> List[Attribute]:
+        """Returns attributes belonging to a specific meta-group (e.g. 'FILEPROP', 'MEASURE', 'SPECTROMETER')."""
+        return [attr for attr in self.attributes.values() if attr.group == group]
 
     def get_dataset(self, name: Optional[str] = None) -> Optional[DatasetType]:
         """Retrieves DatasetType by name, resolving aliases/renames and Abscissa prefixes.
@@ -119,6 +168,73 @@ class VersionConfig:
             },
             "type_renames": self.type_renames,
         }
+
+    def attributes_to_pandas(self) -> "pd.DataFrame":
+        """
+        Returns a pandas DataFrame representation of the normalized attributes.
+        """
+        data = []
+        current_group = None
+        for attr in self.attributes.values():
+            if attr.group != current_group:
+                data.append({
+                    "Attribute": attr.group,
+                    "Value": None,
+                    "Units": None,
+                    "Norm or precisions on parameter": None,
+                    "Example": None,
+                    "Recommended Values": None
+                })
+                current_group = attr.group
+            
+            data.append({
+                "Attribute": attr.full_name,
+                "Value": None,
+                "Units": attr.units,
+                "Norm or precisions on parameter": attr.description,
+                "Example": attr.example,
+                "Recommended Values": ", ".join(map(str, attr.recommended_values)) if attr.recommended_values else None
+            })
+            
+        return pd.DataFrame(data)
+
+    def attributes_to_excel(self, path: str):
+        """Generates an Excel spreadsheet of the normalized attributes with dropdowns."""
+        df = self.attributes_to_pandas()
+        
+        with pd.ExcelWriter(path, engine='openpyxl') as writer:
+            df.to_excel(writer, index=False, sheet_name='Attributes')
+            workbook = writer.book
+            worksheet = writer.sheets['Attributes']
+
+            # Find columns
+            attribute_col = 1 # A
+            value_col = 2     # B
+            
+            # Add data validation for attributes with recommended values
+            # Rows are 2-indexed (1 is header)
+            row_idx = 2
+            current_group = None
+            for attr in self.attributes.values():
+                if attr.group != current_group:
+                    row_idx += 1 # Skip group header row
+                    current_group = attr.group
+                
+                if attr.recommended_values:
+                    dv = DataValidation(
+                        type="list", 
+                        formula1=f'"{",".join(map(str, attr.recommended_values))}"',
+                        allow_blank=True
+                    )
+                    dv.add(f"{get_column_letter(value_col)}{row_idx}")
+                    worksheet.add_data_validation(dv)
+                
+                row_idx += 1
+
+    def attributes_to_csv(self, path: str):
+        """Generates a CSV file of the normalized attributes."""
+        df = self.attributes_to_pandas()
+        df.to_csv(path, index=False)
 
 
 # Global registry of version configurations -> key are string, values are VersionConfig 
