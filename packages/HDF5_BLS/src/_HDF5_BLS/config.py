@@ -61,6 +61,7 @@ class VersionConfig:
     datasets: Dict[str, DatasetType]
     attributes: Dict[str, Attribute]
     type_renames: Dict[str, str] = field(default_factory=dict)
+    attributes_renames: Dict[str, str] = field(default_factory=dict)
     default_group_type: str = DEFAULT_GROUP_TYPE
     default_dataset_type: str = DEFAULT_DATASET_TYPE
 
@@ -71,6 +72,7 @@ class VersionConfig:
     @property
     def dataset_names(self) -> List[str]:
         return list(self.datasets.keys())
+    
     @property
     def group_names(self) -> List[str]:
         return list(self.groups.keys())
@@ -141,6 +143,10 @@ class VersionConfig:
     def get_canonical_type_name(self, name: str) -> str:
         """Resolves historical or alias names to the canonical name in this version."""
         return self.type_renames.get(name, name)
+
+    def get_canonical_attribute_name(self, name: str) -> str:
+        """Resolves historical or alias names to the canonical name in this version."""
+        return self.attributes_renames.get(name, name)
 
     def to_dict(self) -> Dict[str, Any]:
         """Exports configuration as a serializable dictionary."""

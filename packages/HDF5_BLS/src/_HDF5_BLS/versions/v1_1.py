@@ -5,7 +5,7 @@ ATTRIBUTES = [
         Attribute("MEASURE", "Sample", example="Water"),
         Attribute("MEASURE", "Date_of_measure", description="ISO 8601", example="2024-11-18T14:17:55.294821"),
         Attribute("MEASURE", "Exposure_(s)", units="s", example="0.1"),
-        Attribute("MEASURE", "Shape", description='The shape of the detected signal. Format: (N_y, N_x) or (N_y, N_x, N_channel).', example="(50, 50)"),
+        Attribute("MEASURE", "Shape_()", description='The shape of the detected signal. Format: (N_y, N_x) or (N_y, N_x, N_channel).', example="(50, 50)"),
         
         # SPECTROMETER group
         Attribute(
@@ -162,7 +162,10 @@ VERSION_1_1 = VersionConfig(
         "BLT_std": "BLT_err",
     },
     attributes={attr.full_name: attr for attr in ATTRIBUTES},
+    attributes_renames={
+        "MEASURE.Sampling_Matrix_Size_(Nx,Ny,Nz)_()": "MEASURE.Shape_()"
+    }
 )
 
 # New attributes for v1.1
-# MEASURE.Shape
+# MEASURE.Shape_()
