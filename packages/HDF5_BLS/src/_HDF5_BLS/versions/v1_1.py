@@ -1,18 +1,18 @@
 from ..config import VersionConfig, GroupType, DatasetType, Attribute
 
 ATTRIBUTES = [
+        # No group
+        Attribute("", "HDF5_BLS_version", description="Version of the HDF5 file specifying the types of groups, datasets and the nomeclature of attributes", example="0.1"),
+        Attribute("", "Brillouin_type", description="Attribute used to differentiates groups and datasets based on their meaning.", example="Measure"),
+        
         # MEASURE group
         Attribute("MEASURE", "Sample", example="Water"),
         Attribute("MEASURE", "Date_of_measure", description="ISO 8601", example="2024-11-18T14:17:55.294821"),
         Attribute("MEASURE", "Exposure_(s)", units="s", example="0.1"),
         Attribute("MEASURE", "Shape_()", description='The shape of the detected signal. Format: (N_y, N_x) or (N_y, N_x, N_channel).', example="(50, 50)"),
-        
+       
         # SPECTROMETER group
-        Attribute(
-            "SPECTROMETER", "Type", 
-            example="Tandem Fabry-Perot",
-            recommended_values=["1 stage VIPA", "2 stage VIPA", "Angle-resolved VIPA", "TFP", "TR-TFP", "TR-1VIPA"]
-        ),
+        Attribute("SPECTROMETER", "Type", example="Tandem Fabry-Perot", recommended_values=["1 stage VIPA", "2 stage VIPA", "Angle-resolved VIPA", "TFP", "TR-TFP", "TR-1VIPA"]),
         Attribute("SPECTROMETER", "Model", description="Manufacturer-Model", example="JRS-TFP2"),
         Attribute("SPECTROMETER", "Wavelength_(nm)", units="nm", example="532"),
         Attribute("SPECTROMETER", "Confocal_Pinhole_Diameter_(AU)", units="AU", example="1"),
@@ -41,7 +41,6 @@ ATTRIBUTES = [
         Attribute("SPECTROMETER", "z-Optical_Resolution_(um)", units="um", description="Measured", example=50),
         
         # FILEPROP group
-        Attribute("FILEPROP", "BLS_HDF5_Version", description="Version of the spreadsheet - Don't change", example="0.1"),
         Attribute("FILEPROP", "Filepath", description="Global name of the h5 file", example=r"\Users\library\documents\BLS.h5"),
         Attribute("FILEPROP", "Name", example="Water spectrum"),
     ]
@@ -149,6 +148,12 @@ VERSION_1_1 = VersionConfig(
             allowed_parent_groups=["Treatment"],
             default_unit="AU"
         ),
+        "Chi_square": DatasetType(
+            name="Chi_square",
+            description="Chi square of the fit.",
+            allowed_parent_groups=["Treatment"],
+            default_unit="AU"
+        ),
         "Other": DatasetType(
             name="Other",
             description="Supplementary datasets (e.g., other modalities, fit statistics, chi-square, baseline offset, slope, etc.)",
@@ -156,16 +161,21 @@ VERSION_1_1 = VersionConfig(
         ),
     },
     type_renames={
-        "Shift_std": "Shift_err",
-        "Linewidth_std": "Linewidth_err",
-        "Amplitude_std": "Amplitude_err",
-        "BLT_std": "BLT_err",
     },
     attributes={attr.full_name: attr for attr in ATTRIBUTES},
     attributes_renames={
-        "MEASURE.Sampling_Matrix_Size_(Nx,Ny,Nz)_()": "MEASURE.Shape_()"
+        "MEASURE.Sampling_Matrix_Size_(Nx,Ny,Nz)_()": "MEASURE.Shape_()",
+        "FILEPROP.BLS_HDF5_Version": "HDF5_BLS_version"
     }
 )
 
 # New attributes for v1.1
 # MEASURE.Shape_()
+# MEASURE.Field_Of_View_(X,Y,Z)_(um)
+# FILEPROP.BLS_HDF5_Version
+
+# New dataset types for v1.1
+# Chi_square
+
+
+

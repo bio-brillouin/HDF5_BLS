@@ -50,6 +50,7 @@ class Attribute:
 
     @property
     def full_name(self) -> str:
+        if self.group == "": return self.name
         return f"{self.group}.{self.name}"
 
 # Version configurator (stores the spec for each version)
@@ -241,7 +242,6 @@ class VersionConfig:
         """Generates a CSV file of the normalized attributes."""
         df = self.attributes_to_pandas()
         df.to_csv(path, index=False)
-
 
 # Global registry of version configurations -> key are string, values are VersionConfig 
 REGISTERED_VERSIONS: Dict[str, VersionConfig] = {}

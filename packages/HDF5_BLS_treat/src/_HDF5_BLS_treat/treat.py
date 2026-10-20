@@ -818,6 +818,8 @@ class Treat(Treat_backend):
         wndw_fit = np.unique(wndw_fit.astype(int))
 
         error_fit = False
+
+
         try:
             popt, pcov = optimize.curve_fit(f = func, 
                                             xdata = self.frequency_sample[wndw_fit], 

@@ -250,3 +250,16 @@ def test_close_and_repack():
 
     w.close(delete_temp_file=True)
     assert not os.path.exists(temp_path)
+
+def test_wrapper_file_config(temp_hdf5_file: str):
+    with Wrapper_file(filepath=temp_hdf5_file) as w:
+        assert w.config.version == "1.0"
+        assert w.get_type_description("Raw_data") is not None
+        assert "scattered light" in w.get_type_description("Raw_data")
+        assert w.get_allowed_parent_groups("Shift") == ["Treatment"]
+        assert "Measure" in w.get_allowed_parent_groups("Raw_data")
+        # Structure error when placing Shift in Measure without Treatment
+        w.create_group("Measure", parent_group="Brillouin", brillouin_type="Measure")
+        with pytest.raises(WrapperError_StructureError):
+            w.add_dictionary({"Shift": {"Name": "Shift", "Data": np.ones((5, 5))}}, parent_group="Brillouin/Measure")
+

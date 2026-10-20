@@ -5,5 +5,6 @@ from . import wrapper_compatibility as wrapper_compatibility
 from . import load_data as load_data
 from . import errors as errors
 
-from .wrapper import Wrapper, Wrapper_file
+from .wrapper import Wrapper, File
 from .normalized_attributes import NormalizedAttributes
+from .config import get_config, VersionConfig, GroupType, DatasetType
