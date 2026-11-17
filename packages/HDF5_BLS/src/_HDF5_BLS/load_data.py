@@ -16,156 +16,57 @@ import sys
 ###############################################################################
 
 
-def load_dat_file(filepath, creator = None, parameters = None, brillouin_type = None): # Test made for GHOST
-    """Loads DAT files. The DAT files that can be read are obtained from the following configurations:
-    - GHOST software (fixed brillouin type: PSD)
-    - Time Domain measures (fixed brillouin type: Raw_data)
-    
+from .load_formats.registry import get_registry, register_loader, add_plugin_directory
+from .load_formats.base import BaseLoaderPlugin, ImportPayload, ParameterSpec
+from .load_formats.load_errors import (
+    LoadError,
+    LoadError_creator,
+    LoadError_parameters,
+    PluginNotFoundError,
+    AmbiguousPluginError,
+    InvalidParameterError,
+    PluginExecutionError,
+)
 
-    Parameters
-    ----------
-    filepath : str                           
-        The filepath to the GHOST file
-    creator : str, optional
-        The way this dat file has to be loaded. If None, an error is raised. Possible values are:
-        - "GHOST": the file is assumed to be a GHOST file
-        - "TimeDomain": the file is assumed to be a TimeDomain file
-    brillouin_type : str, optional
-        The brillouin type of the file (not relevant for .dat files)
-    
-    Returns
-    -------
-    dict
-        The dictionary with the data and the attributes of the file stored respectively in the keys "Data" and "Attributes". For time domain files, the dictionary also contains the time vector in the key "Abscissa_dt".
-    """
-    from .load_formats.load_dat import load_dat_GHOST, load_dat_TimeDomain
-    from .load_formats.load_errors import LoadError_creator
 
-    if creator == "GHOST": return load_dat_GHOST(filepath)
-    elif creator == "TimeDomain": return load_dat_TimeDomain(filepath, parameters)
-    else:
-        creator_list = ["GHOST", "TimeDomain"]
-        raise LoadError_creator(f"Unsupported creator {creator}, accepted values are: {', '.join(creator_list)}", creator_list)
+def load_dat_file(filepath, creator = None, parameters = None, brillouin_type = None):
+    """Loads DAT files using registered plugins."""
+    return load_general(filepath, creator = creator, parameters = parameters, brillouin_type = brillouin_type)
 
-def load_image_file(filepath, parameters = None, brillouin_type = None): # Test made
-    """Loads image files using Pillow
 
-    Parameters
-    ----------
-    filepath : str                           
-        The filepath to the image
-    parameters : dict, optional
-        A dictionary with the parameters to load the data, by default None. Please refer to the Note section of this docstring for more information.
-    brillouin_type : str, optional
-        The brillouin type of the file.
-    
-    Returns
-    -------
-    dict
-        The dictionary with the data and the attributes of the file stored respectively in the keys "Data" and "Attributes"
-    
-    Note
-    ----
-    Possible parameters are:
-    grayscale: bool, optional
-        If True, the image is converted to grayscale, by default False
-    """
-    from .load_formats.load_image import load_image_base
+def load_image_file(filepath, parameters = None, brillouin_type = None):
+    """Loads image files using registered plugins."""
+    return load_general(filepath, parameters = parameters, brillouin_type = brillouin_type)
 
-    if brillouin_type is None:
-        return load_image_base(filepath, parameters = parameters)
-    else:
-        return load_image_base(filepath, parameters = parameters, brillouin_type = brillouin_type)
 
-def load_npy_file(filepath, brillouin_type = None): # Test made
-    """Loads npy files
+def load_npy_file(filepath, brillouin_type = None):
+    """Loads npy files using registered plugins."""
+    return load_general(filepath, brillouin_type = brillouin_type)
 
-    Parameters
-    ----------
-    filepath : str                           
-        The filepath to the npy file
-    brillouin_type : str, optional
-        The brillouin type of the file.
-    
-    Returns
-    -------
-    dict
-        The dictionary with the data and the attributes of the file stored respectively in the keys "Data" and "Attributes"
-    """
-    from .load_formats.load_npy import load_npy_base
-
-    if brillouin_type is None:
-        return load_npy_base(filepath)
-    else:
-        return load_npy_base(filepath, brillouin_type = brillouin_type)
 
 def load_sif_file(filepath, parameters = None, brillouin_type = None):
-    """Loads npy files
+    """Loads sif files using registered plugins."""
+    return load_general(filepath, parameters = parameters, brillouin_type = brillouin_type)
+
+
+def load_general(filepath, creator = None, parameters = None, brillouin_type = None):
+    """Loads files using the plugin loading platform based on extension, sniffing, or creator.
 
     Parameters
     ----------
     filepath : str                           
-        The filepath to the npy file
+        The filepath to the file to load
+    creator : str, optional
+        An argument to specify how the data was created or select a specific plugin.
+    parameters : dict, optional
+        A dictionary containing format-specific parameters.
     brillouin_type : str, optional
-        The brillouin type of the file. Not relevant for sif files
+        The Brillouin type of the dataset to load.
     
     Returns
     -------
-    dict
-        The dictionary with the data and the attributes of the file stored respectively in the keys "Data" and "Attributes"
+    ImportPayload
+        The container containing loaded datasets and metadata attributes (compatible with standard dict access).
     """
-    from .load_formats.load_sif import load_sif_base
-
-    return load_sif_base(filepath, parameters = parameters)
-
-def load_general(filepath, creator = None, parameters = None, brillouin_type = None): # Test made 
-    """Loads files based on their extensions
-
-    Parameters
-    ----------
-    filepath : str                           
-        The filepath to the file
-    creator : str
-        An argument to specify how the data was created, useful when the extension of the file is not enough to determine the type of data.
-    parameters : dict
-        A dictionary containing the parameters to be used to interpret the data, for example when multiple files need to be combined to obtain the dataset to add.
-    brillouin_type : str
-        The brillouin type of the dataset to load. Please refer to the documentation of the Brillouin software for the possible values.
-    
-    Returns
-    -------
-    dict
-        The dictionary created with the given filepath and eventually parameters.
-    """
-    _, file_extension = os.path.splitext(filepath)
-    
-    if file_extension.lower() == ".dat":
-        # Load .DAT file format data
-        if brillouin_type is None:
-            return load_dat_file(filepath, creator = creator, parameters = parameters)
-        else:
-            return load_dat_file(filepath, creator = creator, parameters = parameters, brillouin_type = brillouin_type)
-
-    elif file_extension.lower() in ['.apng', '.blp', '.bmp', '.bw', '.cur', '.dcx', '.dds', '.dib', '.emf', '.eps', '.fit', '.fits', '.flc', '.fli', '.ftc', '.ftu', '.gbr', '.gif', '.hdf', '.icb', '.icns', '.ico', '.iim', '.im', '.j2c', '.j2k', '.jfif', '.jp2', '.jpc', '.jpe', '.jpeg', '.jpf', '.jpg', '.jpx', '.mpg', '.msp', '.pbm', '.pcd', '.pcx', '.pfm', '.pgm', '.png', '.pnm', '.ppm', '.ps', '.psd', '.pxr', '.qoi', '.ras', '.rgb', '.rgba', '.sgi', '.tga', '.tif', '.tiff', '.vda', '.vst', '.webp', '.wmf', '.xbm', '.xpm']:
-        # Load image files
-        if brillouin_type is None:
-            return load_image_file(filepath, parameters = parameters)
-        else:
-            return load_image_file(filepath, parameters = parameters, brillouin_type = brillouin_type)
-    
-    elif file_extension.lower() == ".npy":
-        # Load .npy file format data
-        if brillouin_type is None:
-            return load_npy_file(filepath)
-        else:
-            return load_npy_file(filepath, brillouin_type = brillouin_type)
-    
-    elif file_extension.lower() == ".sif":
-        # Load .npy file format data
-        if brillouin_type is None:
-            return load_sif_file(filepath, parameters = parameters)
-        else:
-            return load_sif_file(filepath, parameters = parameters, brillouin_type = brillouin_type)
-
-    else:
-        raise ValueError(f"Unsupported file format: {file_extension}")
+    registry = get_registry()
+    return registry.load(filepath, creator = creator, parameters = parameters, brillouin_type = brillouin_type)

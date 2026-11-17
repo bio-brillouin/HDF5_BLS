@@ -148,6 +148,30 @@ VERSION_1_1 = VersionConfig(
             allowed_parent_groups=["Treatment"],
             default_unit="AU"
         ),
+        "Slope": DatasetType(
+            name="Slope",
+            description="Slope used to approximate the effect of the elastic peak on the fitted data",
+            allowed_parent_groups=["Treatment"],
+            default_unit="AU"
+        ),
+        "Slope_err": DatasetType(
+            name="Slope_err",
+            description="Uncertainty of the slope.",
+            allowed_parent_groups=["Treatment"],
+            default_unit="AU"
+        ),
+        "Offset": DatasetType(
+            name="Offset",
+            description="Offset to add to the fitted peak.",
+            allowed_parent_groups=["Treatment"],
+            default_unit="AU"
+        ),
+        "Offset_err": DatasetType(
+            name="Offset_err",
+            description="Uncertainty of the offset.",
+            allowed_parent_groups=["Treatment"],
+            default_unit="AU"
+        ),
         "Chi_square": DatasetType(
             name="Chi_square",
             description="Chi square of the fit.",
@@ -176,6 +200,10 @@ VERSION_1_1 = VersionConfig(
 
 # New dataset types for v1.1
 # Chi_square
+# Slope
+# Slope_err
+# Offset
+# Offset_err
 
 
 

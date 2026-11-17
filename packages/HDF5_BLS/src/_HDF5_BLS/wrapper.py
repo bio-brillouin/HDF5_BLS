@@ -10,6 +10,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from .load_data import load_general
+from .wrapper_compatibility import brillouin_type_update
 from .errors import (
     WrapperError,
     WrapperError_FileNotFound,
@@ -62,9 +63,9 @@ class Wrapper:
     filepath: str
         The path to the HDF5 file
     need_for_repack: bool
-        A flag to check wether elements were deleted in the file using the "del" method. If so, a repacking of the file is needed to optimize memory usage.
+        A flag to check whether elements were deleted in the file using the "del" method. If so, a repacking of the file is needed to optimize memory usage.
     save: bool
-        A flag to check wether the file needs to be saved or not. If the file needs to be saved, it means that the user has worked on a temporary file located in the module directory, that will be deleted when the class is closed.
+        A flag to check whether the file needs to be saved or not. If the file needs to be saved, it means that the user has worked on a temporary file located in the module directory, that will be deleted when the class is closed.
     """
     ###############################
     #     General attributes      #
@@ -240,7 +241,7 @@ class Wrapper:
         WrapperError_Overwrite
             If the two wrappers share a group of same name.
         WrapperError
-            If an error occured while adding the data.
+            If an error occurred while adding the data.
         """
         # Create the new wrapper to return
         new_wrapper = Wrapper()
@@ -419,25 +420,25 @@ class Wrapper:
                         else:
                             new_group.create_dataset(key, data=file_copy[f"Brillouin/{key}"])
             except Exception as e:
-                raise WrapperError(f"A problem occured when adding the data to the file '{self.filepath}'. Error message: {e}")
+                raise WrapperError(f"A problem occurred when adding the data to the file '{self.filepath}'. Error message: {e}")
 
         # If the file was added to a temporary save, set the saving flag to True.
         if is_tempfile(self.filepath):
             self.save = True
 
     def add_dictionnary(self, dic, parent_group = None, name_group = None, Brillouin_type = "Measure", overwrite = False): # Test made
-        """Adds a data dictionnary to the wrapper. This is the preferred way to add data using the GUI.
+        """Adds a data dictionary to the wrapper. This is the preferred way to add data using the GUI.
 
         Parameters
         ----------
         dic : dict
-            The data dictionnary. Support for the following keys:
+            The data dictionary. Support for the following keys:
             - "Raw_data": the raw data
             - "PSD": a power spectral density array
             - "Frequency": a frequency array associated to the power spectral density
             - "Abscissa_...": An abscissa array for the measures where the name is written after the underscore.
-            Each of these keys can either be a numpy array or a dictionnary with two keys: "Name" and "Data". The "Name" key is the name that will be given to the dataset, while the "Data" key is the data itself.
-            The "Abscissa_..." keys are forced to link to a dictionnary with five keys: "Name", "Data", "Unit", "Dim_start", "Dim_end". If the abscissa applies to dimension 1 for example, the "Dim_start" key should be set to 1, and the "Dim_end" to 2.
+            Each of these keys can either be a numpy array or a dictionary with two keys: "Name" and "Data". The "Name" key is the name that will be given to the dataset, while the "Data" key is the data itself.
+            The "Abscissa_..." keys are forced to link to a dictionary with five keys: "Name", "Data", "Unit", "Dim_start", "Dim_end". If the abscissa applies to dimension 1 for example, the "Dim_start" key should be set to 1, and the "Dim_end" to 2.
         parent_group : str, optional
             The path to the parent path, by default None
         name_group : str, optional
@@ -456,7 +457,7 @@ class Wrapper:
         WrapperError_ArgumentType
             Raises an error if arguments given to the function do not match the expected type.
         WrapperError_AttributeError
-            Raises an error if the keys of the dictionnary do not match the expected keys.
+            Raises an error if the keys of the dictionary do not match the expected keys.
         """
         only_parent = False
         # If the parent group is not specified, we set it to "Brillouin", which is the top group of the file for Brillouin spectra
@@ -518,7 +519,7 @@ class Wrapper:
             for key, value in dic.items():
                 if type(value) is dict and "Abscissa_" in key:
                     if not list(value.keys()) == ["Name", "Data", "Unit", "Dim_start", "Dim_end"]:
-                        raise WrapperError_ArgumentType("The abscissa should be a dictionnary with the keys 'Name', 'Data', 'Unit', 'Dim_start' and 'Dim_end'.")
+                        raise WrapperError_ArgumentType("The abscissa should be a dictionary with the keys 'Name', 'Data', 'Unit', 'Dim_start' and 'Dim_end'.")
                     
                     name_dataset = value["Name"]
                     dataset = new_group.create_dataset(name_dataset, data=np.array(value["Data"]))
@@ -552,7 +553,7 @@ class Wrapper:
         ----------
         dic : dict
             The data dictionary to add. The accepted keys for this dictionary are either the one given in the self.BRILLOUIN_TYPES_DATASET list, a key starting with 'Abscissa' or 'Attributes'.
-            All the element of the dictionary are also dictionnaries.
+            All the element of the dictionary are also dictionaries.
             Except for attributes, each dictionary has at least two keys: "Name" and "Data". If an abscissa is to be added, then the keys "Dim_start", "Dim_end" and "Units" need to be populated. 
             For attributes, each key is the name of the attribute, and the value is the value of the attribute, which will automatically be converted to string if it is not a string.
         parent_group : str, optional
@@ -859,7 +860,7 @@ class Wrapper:
         """
         with h5py.File(self.filepath, "a") as f:
             # Update the Brillouin_type attribute
-            f.visititems(Brillouin_type_update)
+            f.visititems(brillouin_type_update)
 
             # Update the HDF5_BLS_version attribute
             f["Brillouin"].attrs["HDF5_BLS_version"] = HDF5_BLS_Version
@@ -1052,7 +1053,7 @@ class Wrapper:
                     try:
                         del file[path]
                     except Exception as e:
-                        raise WrapperError(f"An error occured while deleting the element '{path}'. Error message: {e}")
+                        raise WrapperError(f"An error occurred while deleting the element '{path}'. Error message: {e}")
         else:
             if path not in file:
                 raise WrapperError_StructureError(f"The path '{path}' does not lead to an element.")
@@ -1061,7 +1062,7 @@ class Wrapper:
                 try:
                     del file[path]
                 except Exception as e:
-                    raise WrapperError(f"An error occured while deleting the element '{path}'. Error message: {e}")
+                    raise WrapperError(f"An error occurred while deleting the element '{path}'. Error message: {e}")
         
         # Set the need_for_repack flag to True
         self.need_for_repack = True
@@ -1248,7 +1249,7 @@ class Wrapper:
                     plt.savefig(filepath)
 
     def get_attributes(self, path=None): # Test made 18.09.25
-        """Returns the attributes associated to a given path. The attributes are retireved hierarchically, meaning that the attributes of all the groups above the given path are also retrieved, and their value is only changed if they are redefined at a lower level.
+        """Returns the attributes associated to a given path. The attributes are retrieved hierarchically, meaning that the attributes of all the groups above the given path are also retrieved, and their value is only changed if they are redefined at a lower level.
 
         Parameters
         ----------
@@ -1606,7 +1607,7 @@ class Wrapper:
                 os.remove(self.filepath)
             self.filepath = filepath
         except Exception as e:
-            raise WrapperError(f"An error occured while saving the file '{self.filepath}'. Error message: {e}")
+            raise WrapperError(f"An error occurred while saving the file '{self.filepath}'. Error message: {e}")
     
         self.save = False
 
@@ -1815,7 +1816,7 @@ class Wrapper:
                                 raise WrapperError_Overwrite(f"The attribute {k} already exists in the metadata group {parent_group}.")
                     file[parent_group].attrs.create(k, v)
             except:
-                raise WrapperError(f"An error occured while updating the metadata of the HDF5 file.")
+                raise WrapperError(f"An error occurred while updating the metadata of the HDF5 file.")
 
         if is_tempfile(self.filepath):
             self.save = True
@@ -2044,6 +2045,31 @@ class Wrapper:
         else:
             self.clear_empty_attributes(path = "/".join(path.split("/")[:-1]))
 
+    def import_file(self, filepath, parent_group="Brillouin", creator=None, parameters=None, overwrite=False):
+        """Unified import method using the plugin loading platform.
+        Loads the file via load_general() and routes datasets and attributes to the target group.
+        """
+        if not os.path.isfile(filepath):
+            raise WrapperError_FileNotFound(f"The file '{filepath}' does not exist.")
+        payload = load_general(filepath, creator=creator, parameters=parameters)
+        for key, ds in payload.datasets.items():
+            tpe = ds.dataset_type.lower()
+            ds_name = ds.name or key
+            if tpe in ["raw_data", "raw data"]:
+                self.add_raw_data(ds.data, parent_group, name=ds_name, overwrite=overwrite)
+            elif tpe == "psd":
+                self.add_PSD(ds.data, parent_group, name=ds_name, overwrite=overwrite)
+            elif tpe == "frequency":
+                self.add_frequency(ds.data, parent_group, name=ds_name, overwrite=overwrite)
+            elif tpe in ["abscissa", "abscissa_time"]:
+                unit = ds.units or "s"
+                self.add_abscissa(ds.data, parent_group, name=ds_name, unit=unit, overwrite=overwrite)
+            else:
+                self.add_other(ds.data, parent_group, name=ds_name, overwrite=overwrite)
+        if payload.attributes:
+            self.add_attributes(payload.attributes, parent_group=parent_group, overwrite=overwrite)
+        return payload
+
     def import_raw_data(self, filepath, parent_group = "Brillouin", name = None, creator = None, parameters = None, reshape = None, overwrite = False): 
         """Adds a raw data array to the HDF5 file from a file.
         
@@ -2144,7 +2170,7 @@ class Wrapper:
         dic = load_general(filepath,
                             creator=creator,
                             parameters=parameters,
-                            Brillouin_type = "Other")
+                            brillouin_type = "Other")
 
         if reshape is not None: 
             dic["Other"]["Data"] = np.reshape(dic["Other"]["Data"], reshape)
@@ -3570,6 +3596,31 @@ class File(h5py.File):
         else:
             self.clear_empty_attributes(path="/".join(path.split("/")[:-1]))
 
+    def import_file(self, filepath, parent_group="Brillouin", creator=None, parameters=None, overwrite=False):
+        """Unified import method using the plugin loading platform.
+        Loads the file via load_general() and routes datasets and attributes to the target group.
+        """
+        if not os.path.isfile(filepath):
+            raise WrapperError_FileNotFound(f"The file '{filepath}' does not exist.")
+        payload = load_general(filepath, creator=creator, parameters=parameters)
+        for key, ds in payload.datasets.items():
+            tpe = ds.dataset_type.lower()
+            ds_name = ds.name or key
+            if tpe in ["raw_data", "raw data"]:
+                self.add_raw_data(ds.data, parent_group=parent_group, name=ds_name, overwrite=overwrite)
+            elif tpe == "psd":
+                self.add_PSD(ds.data, parent_group=parent_group, name=ds_name, overwrite=overwrite)
+            elif tpe == "frequency":
+                self.add_frequency(ds.data, parent_group=parent_group, name=ds_name, overwrite=overwrite)
+            elif tpe in ["abscissa", "abscissa_time"]:
+                unit = ds.units or "s"
+                self.add_abscissa(ds.data, parent_group=parent_group, name=ds_name, unit=unit, overwrite=overwrite)
+            else:
+                self.add_other(ds.data, parent_group=parent_group, name=ds_name, overwrite=overwrite)
+        if payload.attributes:
+            self.add_attributes(payload.attributes, parent_group=parent_group, overwrite=overwrite)
+        return payload
+
     def import_raw_data(self, filepath, parent_group="Brillouin", name=None, creator=None, parameters=None, reshape=None, overwrite=False):
         if not os.path.isfile(filepath):
             raise WrapperError_FileNotFound(f"The file '{filepath}' does not exist.")
@@ -3584,7 +3635,7 @@ class File(h5py.File):
             raise WrapperError_FileNotFound(f"The file '{filepath}' does not exist.")
         dic = load_general(filepath, creator=creator, parameters=parameters)
         if reshape is not None:
-            dic["PSD"]["Data"] = np.reshape(dic["Raw_data"]["Data"], reshape)
+            dic["PSD"]["Data"] = np.reshape(dic["PSD"]["Data"], reshape)
         self.add_PSD(dic["PSD"]["Data"], parent_group, name=name, overwrite=overwrite)
         self.add_frequency(dic["Frequency"]["Data"], parent_group, name="Frequency", overwrite=overwrite)
         self.add_attributes(dic["Attributes"], parent_group, overwrite=overwrite)
@@ -3678,3 +3729,7 @@ class File(h5py.File):
         dic = self.get_attributes(path)
         for k, v in dic.items():
             print(k, " : ", v)
+
+
+# Backwards compatibility alias for File
+Wrapper_file = File

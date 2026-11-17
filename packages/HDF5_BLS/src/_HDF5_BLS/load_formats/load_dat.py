@@ -716,3 +716,54 @@ def load_dat_TimeDomain(filepath, parameters = None):
             "Frequency": {"Name": "Frequency", "Data": freqs_out_GHz},
             "Attributes": attributes}
 
+
+from .base import BaseLoaderPlugin, ImportPayload, ParameterSpec
+from typing import Optional, Dict, Any
+
+class GhostDatPlugin(BaseLoaderPlugin):
+    id = "ghost_dat"
+    name = "GHOST DAT Loader"
+    description = "Loads .DAT files produced by GHOST software."
+    supported_extensions = [".dat"]
+    creator_tag = "GHOST"
+
+    def can_handle(self, filepath: str, creator: Optional[str] = None) -> bool:
+        if not super().can_handle(filepath, creator):
+            return False
+        if creator is not None:
+            return creator.lower() == "ghost"
+        return False
+
+    def load(
+        self,
+        filepath: str,
+        parameters: Optional[Dict[str, Any]] = None,
+        brillouin_type: Optional[str] = None
+    ) -> ImportPayload:
+        dic = load_dat_GHOST(filepath)
+        return ImportPayload.from_dict(dic)
+
+
+class TimeDomainDatPlugin(BaseLoaderPlugin):
+    id = "timedomain_dat"
+    name = "TimeDomain DAT Loader"
+    description = "Loads time-domain .DAT measurement files with companion .m metadata."
+    supported_extensions = [".dat"]
+    creator_tag = "TimeDomain"
+
+    def can_handle(self, filepath: str, creator: Optional[str] = None) -> bool:
+        if not super().can_handle(filepath, creator):
+            return False
+        if creator is not None:
+            return creator.lower() == "timedomain"
+        return False
+
+    def load(
+        self,
+        filepath: str,
+        parameters: Optional[Dict[str, Any]] = None,
+        brillouin_type: Optional[str] = None
+    ) -> ImportPayload:
+        dic = load_dat_TimeDomain(filepath, parameters=parameters)
+        return ImportPayload.from_dict(dic)
+
